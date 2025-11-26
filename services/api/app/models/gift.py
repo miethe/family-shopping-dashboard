@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import BaseModel
 
 if TYPE_CHECKING:
+    from app.models.list_item import ListItem
     from app.models.tag import Tag
 
 
@@ -73,6 +74,14 @@ class Gift(BaseModel):
         secondary="gift_tags",
         back_populates="gifts",
         lazy="select",
+    )
+
+    # One-to-many relationship to ListItem (which lists contain this gift)
+    list_items: Mapped[list["ListItem"]] = relationship(
+        "ListItem",
+        back_populates="gift",
+        lazy="select",
+        cascade="all, delete-orphan",  # Delete list items when gift is deleted
     )
 
     __table_args__ = (
