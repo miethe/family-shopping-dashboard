@@ -6,4 +6,30 @@ deployed_at = "2025-11-26T11:15:39.498652"
 artifact_path = "skills/claude-code"
 content_hash = "8e21ab21c9fa8727c966ea2b0b1983e2b38a85fe91e8019e95b617d0a39ff4f8"
 local_modifications = false
+version_lineage = [
+    "8e21ab21c9fa8727c966ea2b0b1983e2b38a85fe91e8019e95b617d0a39ff4f8",
+]
 collection_sha = "8e21ab21c9fa8727c966ea2b0b1983e2b38a85fe91e8019e95b617d0a39ff4f8"
+
+[[deployed]]
+artifact_name = "frontend-development"
+artifact_type = "skill"
+from_collection = "default"
+deployed_at = "2025-11-26T12:28:58.626586"
+artifact_path = "skills/frontend-development"
+content_hash = "2ac3d769211abc5bc10d0af3989b3d0379f1f99830e33d5d5f945daf44e35a29"
+local_modifications = false
+version_lineage = [
+    "2ac3d769211abc5bc10d0af3989b3d0379f1f99830e33d5d5f945daf44e35a29",
+]
+collection_sha = "2ac3d769211abc5bc10d0af3989b3d0379f1f99830e33d5d5f945daf44e35a29"
+
+[[deployed]]
+artifact_name = "supabase-realtime-optimizer.md"
+artifact_type = "agent"
+from_collection = "default"
+deployed_at = "2025-11-26T13:14:33.354857"
+artifact_path = "agents/supabase-realtime-optimizer.md.md"
+content_hash = "8f4a5f1d157cd92b3d66e54b636cc9e47a29b3df73358f89c2cb73761aa77fb8"
+local_modifications = false
+collection_sha = "8f4a5f1d157cd92b3d66e54b636cc9e47a29b3df73358f89c2cb73761aa77fb8"
