@@ -1,0 +1,389 @@
+{
+  "metadata": {
+    "projectName": "MeatyGifts",
+    "version": "1.0.0",
+    "description": "Family Gifting Dashboard - A private, collaborative web app for couples and families to coordinate gift planning across occasions",
+    "author": "Family Dashboard Team",
+    "configVersion": "1.0",
+    "lastUpdated": "2025-11-26",
+    "templateUrl": "https://github.com/meatyprompts/claude-export",
+    "documentationUrl": ""
+  },
+
+  "identity": {
+    "PROJECT_NAME": {
+      "description": "Project or organization name used in agent descriptions, templates, and configuration",
+      "default": "MeatyGifts",
+      "required": true,
+      "type": "string"
+    },
+    "PROJECT_DESCRIPTION": {
+      "description": "Brief description of the project and its primary purpose",
+      "default": "Family gifting dashboard for collaborative gift planning and coordination",
+      "required": true,
+      "type": "string"
+    },
+    "PROJECT_DOMAIN": {
+      "description": "Primary business domain or industry of the project",
+      "default": "Gift Planning & Family Collaboration",
+      "required": true,
+      "type": "string"
+    }
+  },
+
+  "architecture": {
+    "PROJECT_ARCHITECTURE": {
+      "description": "System architecture description explaining how layers and components interact",
+      "default": "Next.js Frontend → FastAPI Backend → SQLAlchemy ORM → PostgreSQL (layered architecture with WebSocket real-time updates)",
+      "required": true,
+      "type": "string"
+    },
+    "LAYER_ARCHITECTURE": {
+      "description": "Detailed breakdown of architectural layers from database to deployment",
+      "default": "1. Database Layer (PostgreSQL schema, migrations)\n2. Repository Layer (SQLAlchemy data access, queries)\n3. Service Layer (business logic, DTOs)\n4. API Layer (FastAPI routes, validation)\n5. UI Layer (Next.js components, hooks)\n6. Real-time Layer (WebSocket event streams)\n7. Testing Layer (unit, integration, E2E)\n8. Deployment Layer (Docker, self-hosted)",
+      "required": true,
+      "type": "string"
+    },
+    "ARCHITECTURE_DIAGRAM": {
+      "description": "URL to architecture diagram or ASCII art representation of system architecture",
+      "default": "See /docs/project_plans/init/family-dashboard-v1.md",
+      "required": false,
+      "type": "string"
+    }
+  },
+
+  "standards": {
+    "PROJECT_STANDARDS": {
+      "description": "Core standards and patterns enforced across the codebase",
+      "default": "Layered architecture, DTOs in separate modules, real-time WebSocket updates, typed models (TypeScript/Python), mobile-first responsive design, PWA-ready",
+      "required": true,
+      "type": "string"
+    },
+    "VALIDATION_RULES": {
+      "description": "Task completion and code validation criteria specific to the project",
+      "default": "Typed models, mobile-first responsive, real-time collaboration support, secure auth, test coverage for critical paths",
+      "required": true,
+      "type": "string"
+    },
+    "NAMING_CONVENTION": {
+      "description": "Naming conventions for tasks, issues, branches, and identifiers",
+      "default": "PREFIX-NUMBER format (e.g., FEAT-123), kebab-case slugs, semantic versioning",
+      "required": true,
+      "type": "string"
+    },
+    "CODE_QUALITY_STANDARDS": {
+      "description": "Code quality expectations and enforcement rules",
+      "default": "Type safety (TypeScript/Python typing), separation of concerns (Repository → Service → API), secure data access, test coverage for business logic",
+      "required": true,
+      "type": "string"
+    }
+  },
+
+  "workflow": {
+    "PM_WORKFLOW": {
+      "description": "Primary product management tool and workflow system",
+      "default": "GitHub Issues",
+      "required": true,
+      "type": "string"
+    },
+    "TASK_TRACKER": {
+      "description": "Task tracking system name (often same as PM_WORKFLOW)",
+      "default": "GitHub Issues",
+      "required": true,
+      "type": "string"
+    },
+    "SPRINT_DURATION": {
+      "description": "Sprint duration in days (use 'Continuous' for flow-based development)",
+      "default": "Continuous",
+      "required": false,
+      "type": "string"
+    },
+    "APPROVAL_WORKFLOW": {
+      "description": "Code review and approval process for PRs/MRs",
+      "default": "GitHub PR with maintainer approval",
+      "required": false,
+      "type": "string"
+    }
+  },
+
+  "documentation": {
+    "DOC_POLICY": {
+      "description": "Documentation creation and maintenance policy",
+      "default": "Document only when explicitly needed, in allowed buckets, or for tracking. Prioritize code clarity and practical guides.",
+      "required": true,
+      "type": "string"
+    },
+    "DOC_BUCKETS": {
+      "description": "Allowed documentation categories and types",
+      "default": "User Documentation, Developer Documentation, Architecture & Design, README Files, Configuration, Testing, Product Planning, API Documentation",
+      "required": true,
+      "type": "string"
+    },
+    "ADR_PATH": {
+      "description": "Location where Architecture Decision Records are stored",
+      "default": "/docs/architecture/ADRs",
+      "required": true,
+      "type": "string"
+    },
+    "DOC_FRONTMATTER": {
+      "description": "Required YAML frontmatter fields for documentation files",
+      "default": "title, description, audience, tags, created, updated",
+      "required": false,
+      "type": "string"
+    }
+  },
+
+  "observability": {
+    "OBSERVABILITY_REQUIRED": {
+      "description": "Whether observability (logging, tracing, metrics) is required in the project",
+      "default": false,
+      "required": false,
+      "type": "boolean"
+    },
+    "LOGGING_FORMAT": {
+      "description": "Standard logging format for application logs",
+      "default": "Structured JSON",
+      "required": false,
+      "type": "string"
+    },
+    "TRACING_ENABLED": {
+      "description": "Distributed tracing system and standard",
+      "default": "None",
+      "required": false,
+      "type": "string"
+    },
+    "METRICS_SYSTEM": {
+      "description": "Metrics collection and monitoring system",
+      "default": "None",
+      "required": false,
+      "type": "string"
+    }
+  },
+
+  "permissions": {
+    "PERMISSIONS": {
+      "description": "Tool permissions configuration for Claude Code (deny/ask/allow rules)",
+      "default": {
+        "deny": [
+          "Read(./secrets/**)",
+          "Bash(rm -rf:*)"
+        ],
+        "ask": [
+          "Bash(git push:*)",
+          "Bash(docker:*)",
+          "Bash(npm install:*)",
+          "Bash(pnpm add:*)"
+        ],
+        "allow": [
+          "Bash(pnpm:*)",
+          "Bash(uv:*)",
+          "Bash(git status:*)",
+          "Bash(git diff:*)",
+          "Bash(git add:*)",
+          "Bash(git commit:*)",
+          "Read(./**)",
+          "Write(./**)",
+          "Edit",
+          "Grep",
+          "Glob"
+        ]
+      },
+      "required": false,
+      "type": "object"
+    },
+    "HOOKS": {
+      "description": "Pre/post tool-use hooks for Claude Code integration",
+      "default": {
+        "PreToolUse": [],
+        "PostToolUse": []
+      },
+      "required": false,
+      "type": "object"
+    },
+    "AUTH_METHOD": {
+      "description": "Primary authentication method for the application",
+      "default": "Password-based (future: Apple Sign In)",
+      "required": false,
+      "type": "string"
+    },
+    "ENV_GATE_SECRET": {
+      "description": "Secret for development authentication bypass (32+ chars, generated)",
+      "default": "",
+      "required": false,
+      "type": "string"
+    }
+  },
+
+  "paths": {
+    "PROJECT_PATHS": {
+      "description": "Project directory structure and key paths",
+      "default": {
+        "api": "backend",
+        "web": "frontend",
+        "docs": "docs",
+        "scripts": "scripts"
+      },
+      "required": true,
+      "type": "object"
+    },
+    "EXCLUDED_PATHS": {
+      "description": "Paths to exclude from analysis and symbol generation",
+      "default": "node_modules, .git, __pycache__, .pytest_cache, build, dist, coverage, .next",
+      "required": false,
+      "type": "string"
+    },
+    "SYMBOL_FILES": {
+      "description": "Symbol file locations and domain mappings",
+      "default": {
+        "api": "ai/symbols-api.json",
+        "web": "ai/symbols-web.json",
+        "apiTests": "ai/symbols-api-tests.json",
+        "webTests": "ai/symbols-web-tests.json"
+      },
+      "required": false,
+      "type": "object"
+    }
+  },
+
+  "technology": {
+    "FRONTEND_FRAMEWORK": {
+      "description": "Primary frontend framework and version",
+      "default": "React with Next.js",
+      "required": true,
+      "type": "string"
+    },
+    "BACKEND_LANGUAGE": {
+      "description": "Primary backend programming language and version",
+      "default": "Python 3.12",
+      "required": true,
+      "type": "string"
+    },
+    "BACKEND_FRAMEWORK": {
+      "description": "Primary backend framework and version",
+      "default": "FastAPI",
+      "required": true,
+      "type": "string"
+    },
+    "DATABASE": {
+      "description": "Primary database system and ORM/driver",
+      "default": "PostgreSQL with SQLAlchemy ORM",
+      "required": true,
+      "type": "string"
+    },
+    "UI_LIBRARY": {
+      "description": "UI component library and styling approach",
+      "default": "Radix UI components with Tailwind CSS",
+      "required": true,
+      "type": "string"
+    },
+    "PACKAGE_MANAGER": {
+      "description": "Package manager for the project",
+      "default": "pnpm",
+      "required": false,
+      "type": "string"
+    },
+    "BUILD_TOOL": {
+      "description": "Primary build tool",
+      "default": "Next.js",
+      "required": false,
+      "type": "string"
+    },
+    "TESTING_FRAMEWORK": {
+      "description": "Primary testing framework",
+      "default": "Pytest (backend), Jest (frontend)",
+      "required": false,
+      "type": "string"
+    }
+  },
+
+  "examples": {
+    "PROJECT_EXAMPLES": {
+      "description": "Real code examples and patterns from the project codebase",
+      "default": "See docs/project_plans/ for PRDs and planning documentation",
+      "required": false,
+      "type": "string"
+    },
+    "EXAMPLE_FEATURE": {
+      "description": "A real feature example to illustrate project patterns",
+      "default": "Real-time collaborative gift list planning with status updates",
+      "required": false,
+      "type": "string"
+    },
+    "EXAMPLE_ARCHITECTURE": {
+      "description": "Detailed example of the project's architecture",
+      "default": "Full layered architecture: Next.js → FastAPI → SQLAlchemy → PostgreSQL with WebSocket real-time layer",
+      "required": false,
+      "type": "string"
+    },
+    "EXAMPLE_ERROR_HANDLING": {
+      "description": "Example of proper error handling in the project",
+      "default": "FastAPI exception handlers with clear error messages and HTTP status codes",
+      "required": false,
+      "type": "string"
+    }
+  },
+
+  "agents": {
+    "COMPLEXITY_SCALE": {
+      "description": "Feature complexity assessment scale",
+      "default": "S (1-3 days), M (4-7 days), L (1-2 weeks), XL (3+ weeks)",
+      "required": false,
+      "type": "string"
+    }
+  },
+
+  "subagents": {
+    "SUBAGENTS_CONFIG": {
+      "description": "Subagent configuration and invocation rules",
+      "default": {
+        "rules": [
+          {
+            "when": "codebase_exploration",
+            "agent": "codebase-explorer",
+            "confidence": 0.95
+          },
+          {
+            "when": "architecture_analysis",
+            "agent": "lead-architect",
+            "confidence": 0.9
+          },
+          {
+            "when": "documentation",
+            "agent": "documentation-writer",
+            "confidence": 0.85
+          }
+        ]
+      },
+      "required": false,
+      "type": "object"
+    }
+  },
+
+  "version": {
+    "CONFIG_VERSION": {
+      "description": "Version of this configuration format (not project version)",
+      "default": "1.0.0",
+      "required": true,
+      "type": "string"
+    },
+    "SCHEMA_VERSION": {
+      "description": "Version of the configuration JSON schema",
+      "default": "1.0.0",
+      "required": true,
+      "type": "string"
+    }
+  },
+
+  "notes": {
+    "IMPORTANT_NOTES": "Configuration for MeatyGifts (Family Gifting Dashboard). This is a V1 configuration focused on core gift planning and collaboration features. See docs/project_plans/ for comprehensive PRD documentation.",
+    "USAGE": "This config supports the claude-export template system for MeatyGifts. Run install.sh to apply template substitutions across agent prompts and commands.",
+    "CUSTOMIZATION_GUIDE": "See TEMPLATIZATION_GUIDE.md in .claude/ for comprehensive documentation on each variable and how to customize for your project.",
+    "NEXT_STEPS": [
+      "1. Run install.sh to apply this configuration",
+      "2. Review agent prompts in .claude/agents/",
+      "3. Customize commands in .claude/commands/",
+      "4. Set up symbol files for efficient codebase navigation",
+      "5. Begin development following the V1 PRD at docs/project_plans/init/family-dashboard-v1.md"
+    ]
+  }
+}
