@@ -1,0 +1,9 @@
+[[deployed]]
+artifact_name = "claude-code"
+artifact_type = "skill"
+from_collection = "default"
+deployed_at = "2025-11-26T11:15:39.498652"
+artifact_path = "skills/claude-code"
+content_hash = "8e21ab21c9fa8727c966ea2b0b1983e2b38a85fe91e8019e95b617d0a39ff4f8"
+local_modifications = false
+collection_sha = "8e21ab21c9fa8727c966ea2b0b1983e2b38a85fe91e8019e95b617d0a39ff4f8"
