@@ -183,6 +183,16 @@ from app.api import persons
 
 app.include_router(persons.router)
 
+# Dashboard routes (aggregated dashboard data)
+from app.api import dashboard
+
+app.include_router(dashboard.router)
+
+# WebSocket routes (real-time updates)
+from app.api import ws
+
+app.include_router(ws.router)
+
 # Additional routers to be added:
 # from app.api import occasions, users
 # app.include_router(occasions.router)
