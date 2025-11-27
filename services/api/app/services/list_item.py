@@ -1,10 +1,14 @@
 """ListItem service for gift list item management."""
 
+from datetime import datetime, timezone
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.list_item import ListItemStatus
 from app.repositories.list_item import ListItemRepository
 from app.schemas.list_item import ListItemCreate, ListItemResponse, ListItemUpdate
+from app.schemas.ws import WSEvent
+from app.services.ws_manager import manager
 
 
 # Valid status transitions
@@ -45,15 +49,62 @@ class ListItemService:
         self.session = session
         self.repo = ListItemRepository(session)
 
-    async def create(self, data: ListItemCreate) -> ListItemResponse:
+    async def _broadcast_event(
+        self,
+        list_id: int,
+        event_type: str,
+        entity_id: int,
+        payload: dict,
+        user_id: int,
+    ) -> None:
+        """
+        Broadcast WebSocket event for list item changes.
+
+        Sends real-time notification to all clients subscribed to the list topic.
+
+        Args:
+            list_id: ID of the list that changed
+            event_type: Type of event (ADDED, UPDATED, DELETED, STATUS_CHANGED, ASSIGNED)
+            entity_id: ID of the list item that changed
+            payload: Serialized entity data (from model_dump())
+            user_id: ID of the user who triggered the change
+
+        Example:
+            ```python
+            await self._broadcast_event(
+                list_id=123,
+                event_type="ADDED",
+                entity_id=456,
+                payload=response.model_dump(),
+                user_id=789
+            )
+            ```
+        """
+        event = WSEvent(
+            topic=f"list:{list_id}",
+            event=event_type,
+            data={
+                "entity_id": str(entity_id),
+                "payload": payload,
+                "user_id": str(user_id),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            },
+        )
+        await manager.broadcast_event(event)
+
+    async def create(
+        self, data: ListItemCreate, user_id: int
+    ) -> ListItemResponse:
         """
         Add a gift to a list.
 
         Creates a new list item with initial status (defaults to 'idea').
         Validates that the gift can be added to the list (no duplicate constraint violations).
+        Broadcasts ADDED event to subscribed WebSocket clients.
 
         Args:
             data: ListItemCreate DTO with gift_id, list_id, status, assigned_to, notes
+            user_id: ID of the user creating the item (for event tracking)
 
         Returns:
             ListItemResponse DTO with created item details
@@ -63,19 +114,23 @@ class ListItemService:
 
         Example:
             ```python
-            item = await service.create(ListItemCreate(
-                gift_id=1,
-                list_id=2,
-                status=ListItemStatus.idea,
-                assigned_to=None,
-                notes="Need to check size"
-            ))
+            item = await service.create(
+                ListItemCreate(
+                    gift_id=1,
+                    list_id=2,
+                    status=ListItemStatus.idea,
+                    assigned_to=None,
+                    notes="Need to check size"
+                ),
+                user_id=123
+            )
             print(f"Added item: {item.id}")
             ```
 
         Note:
             Default status is 'idea' if not specified.
             Gift can only appear once per list (enforced by database).
+            Broadcasts ADDED event after successful creation.
         """
         # Convert DTO to dict for repository
         create_data = data.model_dump()
@@ -84,7 +139,7 @@ class ListItemService:
         list_item = await self.repo.create(create_data)
 
         # Convert ORM model to DTO
-        return ListItemResponse(
+        response = ListItemResponse(
             id=list_item.id,
             gift_id=list_item.gift_id,
             list_id=list_item.list_id,
@@ -94,6 +149,17 @@ class ListItemService:
             created_at=list_item.created_at,
             updated_at=list_item.updated_at,
         )
+
+        # Broadcast event to subscribed clients
+        await self._broadcast_event(
+            list_id=list_item.list_id,
+            event_type="ADDED",
+            entity_id=list_item.id,
+            payload=response.model_dump(),
+            user_id=user_id,
+        )
+
+        return response
 
     async def get(self, item_id: int) -> ListItemResponse | None:
         """
@@ -167,7 +233,7 @@ class ListItemService:
         ]
 
     async def update_status(
-        self, item_id: int, status: ListItemStatus
+        self, item_id: int, status: ListItemStatus, user_id: int
     ) -> ListItemResponse | None:
         """
         Update the status of a list item with state machine validation.
@@ -178,9 +244,12 @@ class ListItemService:
         - PURCHASED → RECEIVED or IDEA (reset)
         - RECEIVED → IDEA (reset)
 
+        Broadcasts STATUS_CHANGED event to subscribed WebSocket clients.
+
         Args:
             item_id: Primary key of the list item
             status: New ListItemStatus enum value
+            user_id: ID of the user changing the status (for event tracking)
 
         Returns:
             Updated ListItemResponse DTO if found, None if item not found
@@ -191,17 +260,26 @@ class ListItemService:
         Example:
             ```python
             # Valid transitions
-            item = await service.update_status(item_id=1, status=ListItemStatus.selected)
+            item = await service.update_status(
+                item_id=1,
+                status=ListItemStatus.selected,
+                user_id=123
+            )
 
             # Invalid transition (will raise ValueError)
             try:
-                await service.update_status(item_id=1, status=ListItemStatus.received)
+                await service.update_status(
+                    item_id=1,
+                    status=ListItemStatus.received,
+                    user_id=123
+                )
             except ValueError as e:
                 print(f"Invalid transition: {e}")
             ```
 
         Note:
             Any status can transition back to IDEA (reset).
+            Broadcasts STATUS_CHANGED event after successful update.
         """
         # Get current item to check current status
         current_item = await self.repo.get(item_id)
@@ -225,7 +303,7 @@ class ListItemService:
             return None
 
         # Convert ORM model to DTO
-        return ListItemResponse(
+        response = ListItemResponse(
             id=updated_item.id,
             gift_id=updated_item.gift_id,
             list_id=updated_item.list_id,
@@ -236,35 +314,54 @@ class ListItemService:
             updated_at=updated_item.updated_at,
         )
 
-    async def assign(self, item_id: int, user_id: int) -> ListItemResponse | None:
+        # Broadcast event to subscribed clients
+        await self._broadcast_event(
+            list_id=updated_item.list_id,
+            event_type="STATUS_CHANGED",
+            entity_id=item_id,
+            payload=response.model_dump(),
+            user_id=user_id,
+        )
+
+        return response
+
+    async def assign(
+        self, item_id: int, assigned_to: int, user_id: int
+    ) -> ListItemResponse | None:
         """
         Assign a list item to a user who will purchase it.
 
         Updates the assigned_to field to track who is responsible for purchasing.
+        Broadcasts ASSIGNED event to subscribed WebSocket clients.
 
         Args:
             item_id: Primary key of the list item
-            user_id: Foreign key of the user to assign
+            assigned_to: User ID to assign the item to
+            user_id: ID of the user performing the assignment (for event tracking)
 
         Returns:
             Updated ListItemResponse DTO if found, None if item not found
 
         Example:
             ```python
-            item = await service.assign(item_id=42, user_id=123)
+            item = await service.assign(
+                item_id=42,
+                assigned_to=123,
+                user_id=456
+            )
             if item:
                 print(f"Item assigned to user {item.assigned_to}")
             ```
 
         Note:
             Does not validate user existence (relies on foreign key constraint).
-            Use user_id=None to unassign (handled by update method).
+            Broadcasts ASSIGNED event after successful assignment.
         """
-        updated_item = await self.repo.update(item_id, {"assigned_to": user_id})
+        updated_item = await self.repo.update(item_id, {"assigned_to": assigned_to})
         if updated_item is None:
             return None
 
-        return ListItemResponse(
+        response = ListItemResponse(
             id=updated_item.id,
             gift_id=updated_item.gift_id,
             list_id=updated_item.list_id,
@@ -275,18 +372,31 @@ class ListItemService:
             updated_at=updated_item.updated_at,
         )
 
+        # Broadcast event to subscribed clients
+        await self._broadcast_event(
+            list_id=updated_item.list_id,
+            event_type="ASSIGNED",
+            entity_id=item_id,
+            payload=response.model_dump(),
+            user_id=user_id,
+        )
+
+        return response
+
     async def update(
-        self, item_id: int, data: ListItemUpdate
+        self, item_id: int, data: ListItemUpdate, user_id: int
     ) -> ListItemResponse | None:
         """
         Update list item fields (status, assigned_to, notes).
 
         General update method for partial updates. Only updates provided fields.
         For status updates with validation, prefer update_status method.
+        Broadcasts UPDATED or STATUS_CHANGED event depending on what changed.
 
         Args:
             item_id: Primary key of the list item
             data: ListItemUpdate DTO with optional fields to update
+            user_id: ID of the user performing the update (for event tracking)
 
         Returns:
             Updated ListItemResponse DTO if found, None if item not found
@@ -299,7 +409,8 @@ class ListItemService:
             # Update notes only
             item = await service.update(
                 item_id=42,
-                data=ListItemUpdate(notes="Found a better price online")
+                data=ListItemUpdate(notes="Found a better price online"),
+                user_id=123
             )
 
             # Update multiple fields
@@ -308,7 +419,8 @@ class ListItemService:
                 data=ListItemUpdate(
                     status=ListItemStatus.purchased,
                     notes="Bought on sale!"
-                )
+                ),
+                user_id=123
             )
             ```
 
@@ -316,6 +428,7 @@ class ListItemService:
             - Only updates fields that are not None in the DTO
             - If status is provided, validates transition using state machine
             - Returns None if item not found
+            - Broadcasts UPDATED event after successful update (or STATUS_CHANGED if status changed)
         """
         # Check item exists
         existing_item = await self.repo.get(item_id)
@@ -324,6 +437,7 @@ class ListItemService:
 
         # Build update dict (only non-None fields)
         update_data = {}
+        status_changed = False
 
         if data.status is not None:
             # Validate status transition using state machine
@@ -336,6 +450,7 @@ class ListItemService:
                         f"Valid transitions from {current_status.value}: "
                         f"{', '.join(s.value for s in valid_next_statuses)}"
                     )
+                status_changed = True
             update_data["status"] = data.status
 
         if data.assigned_to is not None:
@@ -355,7 +470,7 @@ class ListItemService:
             item = existing_item
 
         # Convert ORM model to DTO
-        return ListItemResponse(
+        response = ListItemResponse(
             id=item.id,
             gift_id=item.gift_id,
             list_id=item.list_id,
@@ -366,22 +481,37 @@ class ListItemService:
             updated_at=item.updated_at,
         )
 
-    async def delete(self, item_id: int) -> bool:
+        # Broadcast event to subscribed clients if changes were made
+        if update_data:
+            event_type = "STATUS_CHANGED" if status_changed else "UPDATED"
+            await self._broadcast_event(
+                list_id=item.list_id,
+                event_type=event_type,
+                entity_id=item_id,
+                payload=response.model_dump(),
+                user_id=user_id,
+            )
+
+        return response
+
+    async def delete(self, item_id: int, user_id: int) -> bool:
         """
         Remove an item from a list.
 
         Permanently deletes the list item. This does not delete the gift itself,
         only removes it from the specific list.
+        Broadcasts DELETED event to subscribed WebSocket clients.
 
         Args:
             item_id: Primary key of the list item to delete
+            user_id: ID of the user deleting the item (for event tracking)
 
         Returns:
             True if item was deleted, False if item not found
 
         Example:
             ```python
-            success = await service.delete(item_id=42)
+            success = await service.delete(item_id=42, user_id=123)
             if success:
                 print("Item removed from list")
             else:
@@ -391,5 +521,34 @@ class ListItemService:
         Note:
             Cascading delete behavior depends on database foreign key constraints.
             This operation is permanent and cannot be undone.
+            Broadcasts DELETED event before deletion (uses current item data).
         """
-        return await self.repo.delete(item_id)
+        # Get item before deletion to access list_id for broadcast
+        item_to_delete = await self.repo.get(item_id)
+        if item_to_delete is None:
+            return False
+
+        # Delete from database
+        success = await self.repo.delete(item_id)
+
+        # Broadcast event after successful deletion
+        if success:
+            response = ListItemResponse(
+                id=item_to_delete.id,
+                gift_id=item_to_delete.gift_id,
+                list_id=item_to_delete.list_id,
+                status=item_to_delete.status,
+                assigned_to=item_to_delete.assigned_to,
+                notes=item_to_delete.notes,
+                created_at=item_to_delete.created_at,
+                updated_at=item_to_delete.updated_at,
+            )
+            await self._broadcast_event(
+                list_id=item_to_delete.list_id,
+                event_type="DELETED",
+                entity_id=item_id,
+                payload=response.model_dump(),
+                user_id=user_id,
+            )
+
+        return success
