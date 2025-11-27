@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" fill="url(#grad)"/>
+  <!-- Gift box -->
+  <rect x="48" y="67.19999999999999" width="96" height="76.80000000000001" fill="white"/>
+  <!-- Ribbon vertical -->
+  <rect x="86.4" y="67.19999999999999" width="19.200000000000003" height="76.80000000000001" fill="white"/>
+  <!-- Bow left -->
+  <circle cx="76.80000000000001" cy="57.599999999999994" r="14.399999999999999" fill="white"/>
+  <!-- Bow right -->
+  <circle cx="115.19999999999999" cy="57.599999999999994" r="14.399999999999999" fill="white"/>
+</svg>
