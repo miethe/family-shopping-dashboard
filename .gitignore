@@ -90,3 +90,6 @@ Pipfile.lock
 *.bak
 *.orig
 *.rej
+
+# Kubernetes secrets (DO NOT commit)
+k8s/secrets.yaml

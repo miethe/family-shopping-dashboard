@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   // Typed routes (moved from experimental in Next.js 15)
   typedRoutes: true,
 
+  // Enable standalone output for Docker
+  output: 'standalone',
+
   // Environment variables
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,

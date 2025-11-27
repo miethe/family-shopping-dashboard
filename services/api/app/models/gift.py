@@ -3,8 +3,7 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Index, Numeric, String, Text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Index, JSON, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
@@ -62,10 +61,10 @@ class Gift(BaseModel):
     )
 
     extra_data: Mapped[dict] = mapped_column(
-        JSONB,
+        JSON,
         nullable=False,
         default=dict,
-        server_default="{}",  # PostgreSQL default
+        server_default="{}",
     )
 
     # Many-to-many relationship to Tag
@@ -84,9 +83,7 @@ class Gift(BaseModel):
         cascade="all, delete-orphan",  # Delete list items when gift is deleted
     )
 
-    __table_args__ = (
-        Index("ix_gifts_name", "name"),  # Explicit name for search index
-    )
+    # Index is defined on name column via index=True
 
     def __repr__(self) -> str:
         """String representation of Gift."""

@@ -1,15 +1,11 @@
 """Authentication service for JWT tokens and password management."""
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING
 
+import bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 from app.core.config import settings
-
-if TYPE_CHECKING:
-    pass
 
 
 class AuthService:
@@ -30,7 +26,6 @@ class AuthService:
         ```
 
     Attributes:
-        pwd_context: Passlib context configured for bcrypt hashing.
         algorithm: JWT signing algorithm (HS256).
         secret_key: Secret key for JWT signing from environment.
         default_expiry: Default token expiration time (24 hours).
@@ -38,7 +33,6 @@ class AuthService:
 
     def __init__(self) -> None:
         """Initialize authentication service with bcrypt and JWT settings."""
-        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         self.algorithm = "HS256"
         self.secret_key = settings.JWT_SECRET_KEY
         self.default_expiry = timedelta(hours=24)
@@ -59,7 +53,8 @@ class AuthService:
             # Returns: "$2b$12$..."
             ```
         """
-        return self.pwd_context.hash(password)
+        salt = bcrypt.gensalt()
+        return bcrypt.hashpw(password.encode(), salt).decode()
 
     def verify_password(self, plain: str, hashed: str) -> bool:
         """
@@ -80,7 +75,10 @@ class AuthService:
                 pass
             ```
         """
-        return self.pwd_context.verify(plain, hashed)
+        try:
+            return bcrypt.checkpw(plain.encode(), hashed.encode())
+        except (ValueError, TypeError):
+            return False
 
     def create_access_token(
         self, user_id: int, expires_delta: timedelta | None = None
