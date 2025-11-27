@@ -270,3 +270,31 @@ class UserService:
             created_at=user.created_at,
             updated_at=user.updated_at,
         )
+
+    async def delete(self, user_id: int) -> bool:
+        """
+        Delete a user account.
+
+        Permanently deletes a user account and all associated data.
+        This operation is irreversible.
+
+        Args:
+            user_id: User ID to delete
+
+        Returns:
+            True if user was deleted, False if user not found
+
+        Example:
+            ```python
+            deleted = await service.delete(user_id=42)
+            if deleted:
+                print("User deleted successfully")
+            else:
+                print("User not found")
+            ```
+
+        Note:
+            - Deletion is permanent and cannot be undone
+            - Should be used with caution
+        """
+        return await self.repo.delete(user_id)
