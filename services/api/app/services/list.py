@@ -122,14 +122,21 @@ class ListService:
         )
 
     async def list(
-        self, cursor: int | None = None, limit: int = 50
+        self,
+        cursor: int | None = None,
+        limit: int = 50,
+        filters: dict | None = None,
     ) -> tuple[list[ListResponse], bool, int | None]:
         """
-        Get paginated list of all lists using cursor-based pagination.
+        Get paginated list of all lists using cursor-based pagination with optional filters.
 
         Args:
             cursor: ID of the last item from previous page (None for first page)
             limit: Maximum number of items to return (default: 50)
+            filters: Optional dict of filters:
+                - person_id: Filter by person ID
+                - occasion_id: Filter by occasion ID
+                - visibility: Filter by visibility (public, private, secret)
 
         Returns:
             Tuple of (items, has_more, next_cursor):
@@ -139,25 +146,61 @@ class ListService:
 
         Example:
             ```python
-            # First page
-            lists, has_more, next_cursor = await service.list(limit=20)
+            # First page with filters
+            lists, has_more, next_cursor = await service.list(
+                limit=20,
+                filters={"person_id": 5, "visibility": "family"}
+            )
 
             # Second page
             if has_more:
                 lists, has_more, next_cursor = await service.list(
                     cursor=next_cursor,
-                    limit=20
+                    limit=20,
+                    filters={"person_id": 5, "visibility": "family"}
                 )
             ```
 
         Note:
             Uses cursor-based pagination for better performance with large datasets.
+            Filters are applied using AND logic (all must match).
+        """
+        # Get filtered results from repository (returns list, not paginated)
+        if filters and filters.get("person_id"):
+            list_objs = await self.repo.get_by_person(filters["person_id"])
+        elif filters and filters.get("occasion_id"):
+            list_objs = await self.repo.get_by_occasion(filters["occasion_id"])
+        else:
+            # For unfiltered queries, use the paginated get_multi method
+            list_responses, has_more, next_cursor = await self._get_paginated_lists(
+                cursor=cursor, limit=limit
+            )
+            return list_responses, has_more, next_cursor
+
+        # Apply cursor-based pagination manually to filtered results
+        list_responses, has_more, next_cursor = self._apply_cursor_pagination(
+            list_objs, cursor=cursor, limit=limit
+        )
+
+        return list_responses, has_more, next_cursor
+
+    async def _get_paginated_lists(
+        self, cursor: int | None = None, limit: int = 50
+    ) -> tuple[list[ListResponse], bool, int | None]:
+        """
+        Get paginated lists using repository pagination.
+
+        Args:
+            cursor: Pagination cursor
+            limit: Page limit
+
+        Returns:
+            Tuple of (ListResponse list, has_more, next_cursor)
         """
         list_objs, has_more, next_cursor = await self.repo.get_multi(
             cursor=cursor, limit=limit
         )
 
-        # Convert ORM models to DTOs
         list_responses = [
             ListResponse(
                 id=obj.id,
@@ -171,6 +214,51 @@ class ListService:
                 updated_at=obj.updated_at,
             )
             for obj in list_objs
+        ]
+
+        return list_responses, has_more, next_cursor
+
+    def _apply_cursor_pagination(
+        self, items: list, cursor: int | None = None, limit: int = 50
+    ) -> tuple[list[ListResponse], bool, int | None]:
+        """
+        Apply cursor-based pagination to a list of items.
+
+        Args:
+            items: List of ORM model instances
+            cursor: ID of last item from previous page (None for first page)
+            limit: Maximum items to return
+
+        Returns:
+            Tuple of (ListResponse list, has_more, next_cursor)
+        """
+        # Filter items based on cursor (start after cursor ID)
+        if cursor is not None:
+            filtered_items = [item for item in items if item.id > cursor]
+        else:
+            filtered_items = items
+
+        # Check if more items exist after this page
+        has_more = len(filtered_items) > limit
+        page_items = filtered_items[:limit]
+
+        # Determine next cursor
+        next_cursor = page_items[-1].id if page_items and has_more else None
+
+        # Convert to DTOs
+        list_responses = [
+            ListResponse(
+                id=obj.id,
+                name=obj.name,
+                type=obj.type,
+                visibility=obj.visibility,
+                user_id=obj.user_id,
+                person_id=obj.person_id,
+                occasion_id=obj.occasion_id,
+                created_at=obj.created_at,
+                updated_at=obj.updated_at,
+            )
+            for obj in page_items
         ]
 
         return list_responses, has_more, next_cursor
