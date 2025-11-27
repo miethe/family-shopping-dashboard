@@ -3,14 +3,14 @@ type: progress
 prd: "family-dashboard-v1"
 title: "Family Gifting Dashboard V1 - All Phases Progress"
 status: in_progress
-progress: 36
+progress: 55
 total_tasks: 77
-completed_tasks: 28
+completed_tasks: 43
 in_progress_tasks: 0
 blocked_tasks: 0
-pending_tasks: 49
+pending_tasks: 34
 total_points: 95
-completed_points: 34
+completed_points: 51
 created: 2025-11-26
 updated: 2025-11-26
 owners: []
@@ -39,18 +39,18 @@ phases:
     agent: "python-backend-engineer"
   - id: 4
     name: "API Layer - REST"
-    status: not_started
+    status: complete
     points: 10
     tasks: 10
-    completed: 0
-    agent: "python-backend-engineer"
+    completed: 10
+    agent: "backend-architect"
   - id: 5
     name: "API Layer - WebSocket"
-    status: not_started
+    status: complete
     points: 8
     tasks: 6
-    completed: 0
-    agent: "python-backend-engineer"
+    completed: 5
+    agent: "realtime-architect"
   - id: 6
     name: "Frontend Foundation"
     status: not_started
@@ -223,53 +223,69 @@ risks:
 
 ## Phase 4: API Layer - REST
 
-**Status**: Not Started | **Points**: 10 | **Agent**: python-backend-engineer
+**Status**: In Progress | **Points**: 10 | **Agent**: python-backend-engineer
+**Started**: 2025-11-26
 
 ### Tasks
 
-| ID | Task | Status | Points | Notes |
-|----|------|--------|--------|-------|
-| API-001 | Router Setup (CORS, error handlers) | Pending | 1 | |
-| API-002 | Auth Routes | Pending | 2 | |
-| API-003 | User Routes | Pending | 1 | |
-| API-004 | Person Routes | Pending | 1 | |
-| API-005 | Occasion Routes | Pending | 1 | |
-| API-006 | List Routes | Pending | 1 | |
-| API-007 | Gift Routes | Pending | 1 | |
-| API-008 | ListItem Routes | Pending | 1 | |
-| API-009 | Dashboard Route | Pending | 0.5 | |
-| API-010 | Health Check | Pending | 0.5 | |
+| ID | Task | Status | Points | Agent | Group |
+|----|------|--------|--------|-------|-------|
+| API-001 | Router Setup (CORS, error handlers, OpenAPI) | Complete | 1 | backend-architect | A |
+| API-010 | Health Check | Complete | 0.5 | python-backend-engineer | A |
+| API-002 | Auth Routes | Complete | 2 | backend-architect | B |
+| API-003 | User Routes | Complete | 1 | python-backend-engineer | C |
+| API-004 | Person Routes | Complete | 1 | python-backend-engineer | C |
+| API-005 | Occasion Routes | Complete | 1 | python-backend-engineer | C |
+| API-006 | List Routes | Complete | 1 | python-backend-engineer | C |
+| API-007 | Gift Routes | Complete | 1 | python-backend-engineer | C |
+| API-008 | ListItem Routes | Complete | 1 | python-backend-engineer | C |
+| API-009 | Dashboard Route | Complete | 0.5 | python-backend-engineer | D |
+
+### Parallelization Strategy
+- **Group A**: API-001 + API-010 (parallel - independent setup)
+- **Group B**: API-002 (sequential - depends on router setup)
+- **Group C**: API-003 through API-008 (parallel - all depend on auth patterns)
+- **Group D**: API-009 (sequential - depends on entity routes)
 
 ### Quality Gates
 
-- [ ] All routers in services/api/app/api/
-- [ ] OpenAPI docs generate correctly
-- [ ] Consistent error envelope
-- [ ] Authentication on protected routes
+- [x] All routers in services/api/app/api/
+- [x] OpenAPI docs generate correctly at /docs
+- [x] Consistent error envelope
+- [x] Authentication on protected routes
+- [ ] <300ms response times on list operations (to verify in production)
 
 ---
 
 ## Phase 5: API Layer - WebSocket
 
-**Status**: Not Started | **Points**: 8 | **Agent**: python-backend-engineer
+**Status**: Complete | **Points**: 8 | **Agent**: realtime-architect
+**Completed**: 2025-11-26
 
 ### Tasks
 
-| ID | Task | Status | Points | Notes |
-|----|------|--------|--------|-------|
-| WS-001 | WS Manager (connection handling) | Pending | 2 | |
-| WS-002 | WS Endpoint (auth) | Pending | 1 | |
-| WS-003 | Event Schema | Pending | 1 | |
-| WS-004 | Broadcast Integration | Pending | 2 | |
-| WS-005 | Client Topics | Pending | 1 | |
-| WS-006 | Presence (optional) | Pending | 1 | |
+| ID | Task | Status | Points | Agent | Group |
+|----|------|--------|--------|-------|-------|
+| WS-001 | WS Manager (ConnectionManager) | Complete | 2 | realtime-architect | A |
+| WS-003 | Event Schema (WSEvent) | Complete | 1 | python-backend-engineer | A |
+| WS-002 | WS Endpoint (auth) | Complete | 1 | python-backend-engineer | B |
+| WS-005 | Client Topics (subscribe/unsubscribe) | Complete | 1 | python-backend-engineer | B |
+| WS-004 | Broadcast Integration | Complete | 2 | python-backend-engineer | C |
+| WS-006 | Presence Tracking (optional) | Skipped | 1 | - | D |
+
+### Parallelization Strategy
+- **Group A**: WS-001 + WS-003 (parallel - manager + schema)
+- **Group B**: WS-002 + WS-005 (parallel - endpoint + subscription logic)
+- **Group C**: WS-004 (sequential - requires working WS system)
+- **Group D**: WS-006 (optional - only if time permits)
 
 ### Quality Gates
 
-- [ ] WebSocket endpoint at /ws
-- [ ] Topic-based subscription working
-- [ ] Events broadcast on mutations
-- [ ] Connection cleanup on disconnect
+- [x] WebSocket endpoint at /ws
+- [x] Topic-based subscription working
+- [x] Events broadcast on mutations
+- [x] Connection cleanup on disconnect
+- [ ] Integration test with 2 concurrent clients (future)
 
 ---
 

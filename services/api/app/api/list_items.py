@@ -114,7 +114,7 @@ async def update_item_status(
 
     # Update status (service validates transition)
     try:
-        updated = await service.update_status(item_id, status_enum)
+        updated = await service.update_status(item_id, status_enum, user_id=current_user_id)
         if updated is None:
             # Should not happen since we checked existence, but handle gracefully
             raise NotFoundError(
@@ -208,7 +208,7 @@ async def update_item_assignment(
         )
 
     # Assign user (None is valid for unassign)
-    updated = await service.assign(item_id, data.assigned_to_id)
+    updated = await service.assign(item_id, data.assigned_to_id, user_id=current_user_id)
     if updated is None:
         # Should not happen since we checked existence, but handle gracefully
         raise NotFoundError(

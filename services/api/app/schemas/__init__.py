@@ -23,6 +23,7 @@ from app.schemas.tag import TagCreate, TagResponse, TagUpdate
 from app.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
 from app.schemas.dashboard import DashboardOccasionSummary, DashboardResponse, PersonSummary
 from app.schemas.user import UserCreate, UserResponse
+from app.schemas.ws import WSClientMessage, WSEvent
 
 __all__ = [
     # Base
@@ -66,4 +67,7 @@ __all__ = [
     "DashboardResponse",
     "DashboardOccasionSummary",
     "PersonSummary",
+    # WebSocket
+    "WSEvent",
+    "WSClientMessage",
 ]

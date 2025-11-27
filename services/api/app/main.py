@@ -193,7 +193,12 @@ from app.api import ws
 
 app.include_router(ws.router)
 
-# Additional routers to be added:
-# from app.api import occasions, users
-# app.include_router(occasions.router)
-# app.include_router(users.router)
+# Occasion routes (CRUD)
+from app.api import occasions
+
+app.include_router(occasions.router)
+
+# User routes (profile management)
+from app.api import users
+
+app.include_router(users.router)

@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     DEBUG: bool = False
     JWT_SECRET_KEY: str = "dev-secret-key-change-in-production"
+    CORS_ORIGINS: str = "http://localhost:3000"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
