@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/family_gifting"
     API_PORT: int = 8000
     DEBUG: bool = False
+    JWT_SECRET_KEY: str = "dev-secret-key-change-in-production"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
