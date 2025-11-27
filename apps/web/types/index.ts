@@ -41,26 +41,38 @@ export interface UserUpdate {
 
 export interface Person extends TimestampFields {
   id: number;
-  name: string;
-  interests?: string[];
-  sizes?: Record<string, any>;
+  display_name: string;
+  relationship?: string;
+  birthdate?: string;
+  notes?: string;
+  interests?: string;
+  sizes?: Record<string, string>;
+  photo_url?: string;
 }
 
 export interface PersonCreate {
-  name: string;
-  interests?: string[];
-  sizes?: Record<string, any>;
+  display_name: string;
+  relationship?: string;
+  birthdate?: string;
+  notes?: string;
+  interests?: string;
+  sizes?: Record<string, string>;
+  photo_url?: string;
 }
 
 export interface PersonUpdate {
-  name?: string;
-  interests?: string[];
-  sizes?: Record<string, any>;
+  display_name?: string;
+  relationship?: string;
+  birthdate?: string;
+  notes?: string;
+  interests?: string;
+  sizes?: Record<string, string>;
+  photo_url?: string;
 }
 
 export interface PersonSummary {
   id: number;
-  name: string;
+  display_name: string;
 }
 
 // ============================================================================

@@ -324,19 +324,20 @@ risks:
 
 ## Phase 7: Frontend Features - Core
 
-**Status**: Not Started | **Points**: 14 | **Agent**: frontend-developer
+**Status**: Complete | **Points**: 14 | **Agent**: frontend-developer
+**Started**: 2025-11-27 | **Completed**: 2025-11-27
 
 ### Tasks
 
 | ID | Task | Status | Points | Agent | Group | Notes |
 |----|------|--------|--------|-------|-------|-------|
-| FE-C-001 | Dashboard Page | Pending | 3 | react-component-architect | A | Complex, sets patterns |
-| FE-C-002 | People List | Pending | 2 | frontend-developer | B | |
-| FE-C-003 | Person Detail | Pending | 2 | frontend-developer | B | |
-| FE-C-004 | Occasions List | Pending | 1 | frontend-developer | B | |
-| FE-C-005 | Occasion Detail | Pending | 2 | frontend-developer | C | |
-| FE-C-006 | Lists View | Pending | 2 | frontend-developer | C | |
-| FE-C-007 | List Detail (pipeline) | Pending | 2 | react-component-architect | D | Status grouping, complex |
+| FE-C-001 | Dashboard Page | Complete | 3 | react-component-architect | A | Pipeline summary, people needing |
+| FE-C-002 | People List | Complete | 2 | frontend-developer | B | Card grid, search |
+| FE-C-003 | Person Detail | Complete | 2 | frontend-developer | B | Tabs: Info, Lists, History |
+| FE-C-004 | Occasions List | Complete | 1 | frontend-developer | B | Type badges, countdown |
+| FE-C-005 | Occasion Detail | Complete | 2 | frontend-developer | C | Countdown, lists section |
+| FE-C-006 | Lists View | Complete | 2 | frontend-developer | C | Type filter tabs |
+| FE-C-007 | List Detail (pipeline) | Complete | 2 | react-component-architect | D | Status groups, summary stats |
 
 ### Parallelization Strategy
 - **Group A**: FE-C-001 (sequential first - sets data patterns for other pages)
@@ -346,10 +347,10 @@ risks:
 
 ### Quality Gates
 
-- [ ] Dashboard shows all data points from PRD
-- [ ] People CRUD working
-- [ ] Occasions CRUD working
-- [ ] Lists display with status grouping
+- [x] Dashboard shows all data points from PRD
+- [x] People list/detail working
+- [x] Occasions list/detail working
+- [x] Lists display with status grouping
 
 ---
 

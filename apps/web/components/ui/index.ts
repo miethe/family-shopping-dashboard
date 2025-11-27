@@ -55,3 +55,4 @@ export {
   SkeletonCard,
   type SkeletonProps,
 } from './skeleton';
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';

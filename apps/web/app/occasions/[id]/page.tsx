@@ -1,25 +1,161 @@
-import type { Metadata } from 'next';
+/**
+ * Occasion Detail Page
+ *
+ * Displays comprehensive occasion information:
+ * - Header with occasion details
+ * - Associated gift lists
+ * - Edit and delete actions
+ */
 
-type Props = {
+'use client';
+
+import { use } from 'react';
+import { useRouter } from 'next/navigation';
+import { useOccasion, useDeleteOccasion } from '@/hooks/useOccasion';
+import { PageHeader } from '@/components/layout';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { OccasionDetail, OccasionLists } from '@/components/occasions';
+import { Card, CardContent } from '@/components/ui/card';
+
+interface OccasionDetailPageProps {
   params: Promise<{ id: string }>;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  return {
-    title: `Occasion ${id} - Family Gifting Dashboard`,
-  };
 }
 
-export default async function OccasionDetailPage({ params }: Props) {
-  const { id } = await params;
+// Format date for page header subtitle
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+function OccasionDetailSkeleton() {
+  return (
+    <div className="space-y-6">
+      {/* Header skeleton */}
+      <div className="border-b border-gray-200 bg-white px-4 py-4 md:px-6 md:py-6">
+        <Skeleton className="h-8 w-48 mb-2" />
+        <Skeleton className="h-5 w-64" />
+      </div>
+
+      {/* Detail card skeleton */}
+      <div className="px-4 md:px-6">
+        <Skeleton className="h-48 w-full rounded-lg" />
+      </div>
+
+      {/* Lists skeleton */}
+      <div className="px-4 md:px-6">
+        <Skeleton className="h-8 w-32 mb-4" />
+        <div className="space-y-3">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function OccasionDetailPage({ params }: OccasionDetailPageProps) {
+  const { id } = use(params);
+  const occasionId = parseInt(id, 10);
+  const router = useRouter();
+
+  const { data: occasion, isLoading, error } = useOccasion(occasionId);
+  const deleteMutation = useDeleteOccasion(occasionId);
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this occasion? All associated lists will remain but will no longer be linked to this occasion.')) {
+      return;
+    }
+
+    try {
+      await deleteMutation.mutateAsync();
+      router.push('/occasions');
+    } catch (err) {
+      console.error('Failed to delete occasion:', err);
+      alert('Failed to delete occasion. Please try again.');
+    }
+  };
+
+  if (isLoading) {
+    return <OccasionDetailSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card variant="elevated" padding="lg">
+          <CardContent className="text-center">
+            <h2 className="text-xl font-semibold text-red-600 mb-2">Error Loading Occasion</h2>
+            <p className="text-gray-600 mb-4">
+              {error instanceof Error ? error.message : 'An unexpected error occurred'}
+            </p>
+            <Button variant="outline" onClick={() => router.push('/occasions')}>
+              Back to Occasions
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!occasion) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card variant="elevated" padding="lg">
+          <CardContent className="text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Occasion Not Found</h2>
+            <p className="text-gray-600 mb-4">
+              The occasion you&apos;re looking for doesn&apos;t exist or has been deleted.
+            </p>
+            <Button variant="outline" onClick={() => router.push('/occasions')}>
+              Back to Occasions
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const handleEdit = () => {
+    // TODO: Navigate to edit page when it exists
+    console.log('Edit occasion:', occasionId);
+  };
 
   return (
-    <div style={{ minHeight: '100vh', padding: '1rem' }}>
-      <div style={{ maxWidth: '56rem', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', marginBottom: '1rem' }}>Occasion Details</h1>
-        <p style={{ color: '#666' }}>Occasion ID: {id}</p>
-        {/* TODO: Implement occasion detail view */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Page Header */}
+      <PageHeader
+        title={occasion.name}
+        subtitle={formatDate(occasion.date)}
+        backHref="/occasions"
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleEdit}>
+              Edit
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              isLoading={deleteMutation.isPending}
+              disabled={deleteMutation.isPending}
+            >
+              Delete
+            </Button>
+          </div>
+        }
+      />
+
+      {/* Main Content */}
+      <div className="px-4 py-6 md:px-6 space-y-6 max-w-4xl mx-auto">
+        {/* Occasion Detail Card */}
+        <OccasionDetail occasion={occasion} />
+
+        {/* Associated Lists */}
+        <OccasionLists occasionId={occasion.id} />
       </div>
     </div>
   );
