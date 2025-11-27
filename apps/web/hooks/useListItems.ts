@@ -8,17 +8,28 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { listItemApi, ListItemListParams } from '@/lib/api/endpoints';
 import type { ListItemCreate, ListItemUpdate } from '@/types';
+import { useRealtimeSync } from './useRealtimeSync';
 
 /**
  * Fetch list items with optional filters
  * @param params - Optional list_id, assigned_to, status filters
  */
 export function useListItems(params?: ListItemListParams) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['list-items', params],
     queryFn: () => listItemApi.list(params),
     enabled: !!params?.list_id, // Only fetch if list_id is provided
   });
+
+  // Real-time sync for list item changes
+  useRealtimeSync({
+    topic: params?.list_id ? `list:${params.list_id}` : '',
+    queryKey: ['list-items', params],
+    events: ['ADDED', 'UPDATED', 'DELETED', 'STATUS_CHANGED'],
+    enabled: !!params?.list_id, // Only sync if list_id is provided
+  });
+
+  return query;
 }
 
 /**

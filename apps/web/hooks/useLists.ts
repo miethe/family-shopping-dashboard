@@ -8,16 +8,27 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { listApi, ListListParams } from '@/lib/api/endpoints';
 import type { GiftList, ListCreate, ListUpdate } from '@/types';
+import { useRealtimeSync } from './useRealtimeSync';
 
 /**
  * Fetch paginated list of gift lists with optional filters
  * @param params - Optional cursor, limit, type, person_id, occasion_id
  */
 export function useLists(params?: ListListParams) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['lists', params],
     queryFn: () => listApi.list(params),
   });
+
+  // Real-time sync for list metadata changes
+  // Subscribe to a general lists topic for new lists, deletions, etc.
+  useRealtimeSync({
+    topic: 'lists',
+    queryKey: ['lists', params],
+    events: ['ADDED', 'UPDATED', 'DELETED'],
+  });
+
+  return query;
 }
 
 /**
@@ -25,11 +36,21 @@ export function useLists(params?: ListListParams) {
  * @param id - List ID
  */
 export function useList(id: number) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['lists', id],
     queryFn: () => listApi.get(id),
     enabled: !!id,
   });
+
+  // Real-time sync for specific list changes
+  useRealtimeSync({
+    topic: id ? `list:${id}` : '',
+    queryKey: ['lists', id],
+    events: ['UPDATED', 'DELETED'],
+    enabled: !!id,
+  });
+
+  return query;
 }
 
 /**

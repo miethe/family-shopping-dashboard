@@ -3,6 +3,8 @@
 import { Header } from './Header';
 import { MobileNav } from './MobileNav';
 import { DesktopNav } from './DesktopNav';
+import { QuickAddButton } from '@/components/quick-add';
+import { ConnectionIndicatorCompact } from '@/components/websocket/ConnectionIndicator';
 
 interface ShellProps {
   children: React.ReactNode;
@@ -51,6 +53,9 @@ export function Shell({ children }: ShellProps) {
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
         <MobileNav />
       </div>
+
+      {/* Quick Add FAB - Available on all authenticated pages */}
+      <QuickAddButton variant="fab" />
     </div>
   );
 }

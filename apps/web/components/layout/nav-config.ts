@@ -3,7 +3,8 @@ import {
   UsersIcon,
   CalendarIcon,
   GiftIcon,
-  ListIcon
+  ListIcon,
+  ClipboardListIcon
 } from './icons';
 
 export interface NavItem {
@@ -17,6 +18,11 @@ export const navItems = [
     href: '/dashboard',
     label: 'Dashboard',
     icon: HomeIcon
+  },
+  {
+    href: '/assignments',
+    label: 'Assignments',
+    icon: ClipboardListIcon
   },
   {
     href: '/people',

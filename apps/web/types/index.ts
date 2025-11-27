@@ -274,6 +274,27 @@ export interface WSEvent<T = unknown> {
 }
 
 // ============================================================================
+// Comment Types
+// ============================================================================
+
+export type CommentEntityType = 'list' | 'occasion' | 'list_item';
+
+export interface Comment extends TimestampFields {
+  id: number;
+  entity_type: CommentEntityType;
+  entity_id: number;
+  user_id: number;
+  user_name: string;
+  text: string;
+}
+
+export interface CommentCreate {
+  entity_type: CommentEntityType;
+  entity_id: number;
+  text: string;
+}
+
+// ============================================================================
 // API Error Types (from lib/api/types.ts)
 // ============================================================================
 

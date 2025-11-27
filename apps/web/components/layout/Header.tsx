@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { PlusIcon, UserCircleIcon } from './icons';
+import { ConnectionIndicatorCompact } from '@/components/websocket/ConnectionIndicator';
 
 /**
  * Mobile header component
@@ -21,6 +22,9 @@ export function Header() {
 
       {/* Actions */}
       <div className="flex items-center gap-2">
+        {/* Connection Status */}
+        <ConnectionIndicatorCompact className="mr-1" />
+
         {/* Quick Add Button - Placeholder for now */}
         <button
           className="
