@@ -96,7 +96,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column(
             "type",
-            postgresql.ENUM("birthday", "holiday", "other", name="occasiontype"),
+            occasion_type,  # Use the already-created enum object
             nullable=False,
         ),
         sa.Column("date", sa.Date(), nullable=False),
@@ -179,12 +179,12 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column(
             "type",
-            postgresql.ENUM("wishlist", "ideas", "assigned", name="listtype"),
+            list_type,  # Use the already-created enum object
             nullable=False,
         ),
         sa.Column(
             "visibility",
-            postgresql.ENUM("private", "family", "public", name="listvisibility"),
+            list_visibility,  # Use the already-created enum object
             server_default="family",
             nullable=False,
         ),
@@ -223,7 +223,7 @@ def upgrade() -> None:
         sa.Column("list_id", sa.Integer(), nullable=False),
         sa.Column(
             "status",
-            postgresql.ENUM("idea", "selected", "purchased", "received", name="listitemstatus"),
+            list_item_status,  # Use the already-created enum object
             server_default="idea",
             nullable=False,
         ),
@@ -271,9 +271,7 @@ def upgrade() -> None:
         sa.Column("author_id", sa.Integer(), nullable=False),
         sa.Column(
             "parent_type",
-            postgresql.ENUM(
-                "list_item", "list", "occasion", "person", name="commentparenttype"
-            ),
+            comment_parent_type,  # Use the already-created enum object
             nullable=False,
         ),
         sa.Column("parent_id", sa.Integer(), nullable=False),
