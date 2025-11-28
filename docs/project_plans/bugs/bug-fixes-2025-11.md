@@ -136,3 +136,15 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## API Client URL Construction Bug
+
+**Issue**: All API calls missing `/api/v1` prefix - calls to `/dashboard` and `/lists` returning 404
+
+- **Location**: `apps/web/lib/api/client.ts:57`
+- **Root Cause**: The `new URL(path, baseUrl)` constructor doesn't preserve path segments in the base URL when the path starts with `/`. When path is `/dashboard` and baseUrl is `http://localhost:8000/api/v1`, the result is `http://localhost:8000/dashboard` instead of `http://localhost:8000/api/v1/dashboard`.
+- **Fix**: Changed from `new URL(path, this.baseUrl)` to `new URL(\`${this.baseUrl}${path}\`)` to concatenate the full path before parsing
+- **Commit(s)**: `a6dcab3`
+- **Status**: RESOLVED
+
+---
