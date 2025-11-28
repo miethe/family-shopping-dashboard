@@ -2,15 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  /* Colors - Backgrounds */
+  --color-bg-base: #FAF8F5;
+  --color-bg-subtle: #F5F2ED;
+  --color-bg-elevated: #FFFFFF;
+  --color-surface-primary: #FFFFFF;
+  --color-surface-secondary: #F5F2ED;
+  --color-surface-tertiary: #EBE7E0;
+  --color-surface-translucent: rgba(250, 248, 245, 0.8);
+
+  /* Colors - Text */
+  --color-text-primary: #2D2520;
+  --color-text-secondary: #5C534D;
+  --color-text-tertiary: #8A827C;
+  --color-text-disabled: #C4BDB7;
+  --color-text-inverse: #FFFFFF;
+
+  /* Colors - Primary Coral */
+  --color-primary-50: #FEF3F1;
+  --color-primary-100: #FDE5E0;
+  --color-primary-200: #FBC9BC;
+  --color-primary-300: #F5A894;
+  --color-primary-400: #EE8F76;
+  --color-primary-500: #E8846B;
+  --color-primary-600: #D66A51;
+  --color-primary-700: #B95440;
+  --color-primary-800: #9A4234;
+  --color-primary-900: #7D352B;
+
+  /* Spacing */
+  --spacing-1: 0.25rem;  /* 4px */
+  --spacing-2: 0.5rem;   /* 8px */
+  --spacing-3: 0.75rem;  /* 12px */
+  --spacing-4: 1rem;     /* 16px */
+  --spacing-5: 1.25rem;  /* 20px */
+  --spacing-6: 1.5rem;   /* 24px */
+  --spacing-8: 2rem;     /* 32px */
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px rgba(45, 37, 32, 0.04), 0 0 0 1px rgba(45, 37, 32, 0.02);
+  --shadow-low: 0 2px 8px rgba(45, 37, 32, 0.06), 0 0 0 1px rgba(45, 37, 32, 0.03);
+  --shadow-medium: 0 4px 16px rgba(45, 37, 32, 0.08), 0 1px 4px rgba(45, 37, 32, 0.04);
+  --shadow-high: 0 8px 32px rgba(45, 37, 32, 0.12), 0 2px 8px rgba(45, 37, 32, 0.06);
+  --shadow-extra-high: 0 16px 48px rgba(45, 37, 32, 0.16), 0 4px 16px rgba(45, 37, 32, 0.08);
+
+  /* Radii */
+  --radius-small: 0.5rem;    /* 8px */
+  --radius-medium: 0.75rem;  /* 12px */
+  --radius-large: 1rem;      /* 16px */
+  --radius-xlarge: 1.25rem;  /* 20px */
+  --radius-2xlarge: 1.5rem;  /* 24px */
+  --radius-3xlarge: 2rem;    /* 32px */
+
+  /* Typography */
+  --font-family-base: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, 'Nunito', sans-serif;
+  --font-size-display-large: 3rem;       /* 48px */
+  --font-size-heading-1: 1.5rem;         /* 24px */
+  --font-size-body-large: 1rem;          /* 16px */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-bg-base: #0a0a0a;
+    --color-text-primary: #FFFFFF;
   }
 }
 
@@ -28,9 +85,9 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: var(--color-text-primary);
+  background: var(--color-bg-base);
+  font-family: var(--font-family-base);
   line-height: 1.5;
 }
 
@@ -67,4 +124,39 @@ body {
 .touch-target {
   min-height: 44px;
   min-width: 44px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-medium);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}
+
+/* Focus ring styling */
+:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
 }
