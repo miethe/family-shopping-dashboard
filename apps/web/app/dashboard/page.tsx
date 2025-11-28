@@ -15,9 +15,9 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="p-4">
+      <div className="p-4 animate-fade-in">
         <PageHeader title="Dashboard" />
-        <div className="text-red-600 p-4 bg-red-50 rounded-lg mt-4">
+        <div className="text-red-600 p-4 bg-red-50 rounded-lg mt-4 border border-red-100">
           Error loading dashboard: {error instanceof Error ? error.message : 'Unknown error'}
         </div>
       </div>
@@ -25,40 +25,50 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <PageHeader title="Dashboard" subtitle="Welcome back!" />
+    <div className="space-y-6 pb-20 md:pb-6">
+      <div className="animate-slide-up-fade" style={{ animationDelay: '0ms' }}>
+        <PageHeader title="Dashboard" subtitle="Welcome back!" />
+      </div>
 
       {/* Quick Actions */}
-      <QuickActions />
+      <div className="animate-slide-up-fade" style={{ animationDelay: '100ms' }}>
+        <QuickActions />
+      </div>
 
       {/* Primary Occasion */}
-      {isLoading ? (
-        <Skeleton className="h-32" />
-      ) : data?.primary_occasion ? (
-        <PrimaryOccasion occasion={data.primary_occasion} />
-      ) : (
-        <div className="text-gray-500 text-center py-8 bg-gray-50 rounded-lg">
-          No upcoming occasions
-        </div>
-      )}
+      <div className="animate-slide-up-fade" style={{ animationDelay: '200ms' }}>
+        {isLoading ? (
+          <Skeleton className="h-32 rounded-xlarge" />
+        ) : data?.primary_occasion ? (
+          <PrimaryOccasion occasion={data.primary_occasion} />
+        ) : (
+          <div className="text-warm-500 text-center py-8 bg-surface-secondary/50 rounded-xlarge border border-dashed border-warm-200">
+            No upcoming occasions
+          </div>
+        )}
+      </div>
 
       {/* Pipeline Summary */}
-      {isLoading ? (
-        <Skeleton className="h-24" />
-      ) : (
-        <PipelineSummary
-          ideas={data?.total_ideas ?? 0}
-          purchased={data?.total_purchased ?? 0}
-          myAssignments={data?.my_assignments ?? 0}
-        />
-      )}
+      <div className="animate-slide-up-fade" style={{ animationDelay: '300ms' }}>
+        {isLoading ? (
+          <Skeleton className="h-24 rounded-xlarge" />
+        ) : (
+          <PipelineSummary
+            ideas={data?.total_ideas ?? 0}
+            purchased={data?.total_purchased ?? 0}
+            myAssignments={data?.my_assignments ?? 0}
+          />
+        )}
+      </div>
 
       {/* People Needing Gifts */}
-      {isLoading ? (
-        <Skeleton className="h-48" />
-      ) : (
-        <PeopleNeeding people={data?.people_needing_gifts ?? []} />
-      )}
+      <div className="animate-slide-up-fade" style={{ animationDelay: '400ms' }}>
+        {isLoading ? (
+          <Skeleton className="h-48 rounded-xlarge" />
+        ) : (
+          <PeopleNeeding people={data?.people_needing_gifts ?? []} />
+        )}
+      </div>
     </div>
   );
 }
