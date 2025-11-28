@@ -56,3 +56,8 @@ export {
   type SkeletonProps,
 } from './skeleton';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
+export {
+  StatusPill,
+  type GiftStatus,
+  type StatusPillProps,
+} from './status-pill';
