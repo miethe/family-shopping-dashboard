@@ -44,7 +44,7 @@ export function Shell({ children }: ShellProps) {
       {/* Main Content Area */}
       <main className="flex-1 overflow-auto md:pl-64 transition-[padding] duration-300 ease-in-out">
         {/* Content wrapper with padding and safe areas */}
-        <div className="pb-20 md:pb-0 min-h-screen">
+        <div className="pb-20 md:pb-0 min-h-screen px-4 md:px-8 py-6">
           {children}
         </div>
       </main>
