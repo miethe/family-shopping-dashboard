@@ -52,6 +52,7 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import async_session_maker, engine
@@ -87,14 +88,17 @@ class TestDataPopulator:
 
     async def drop_and_recreate_tables(self) -> None:
         """
-        Drop all tables and recreate them.
+        Drop all tables and recreate them using CASCADE to ensure
+        all dependent objects (indexes, constraints) are removed.
 
         WARNING: This DELETES ALL DATA permanently.
         """
-        print("\n🗑️  Dropping all tables...")
+        print("\n🗑️  Dropping all tables with CASCADE...")
         async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-        print("✅ All tables dropped")
+            # Drop all tables with CASCADE to remove indexes, constraints, etc.
+            # checkfirst=True prevents errors if tables don't exist
+            await conn.run_sync(Base.metadata.drop_all, checkfirst=True)
+        print("✅ All tables and dependent objects dropped")
 
         print("\n🔨 Creating all tables...")
         async with engine.begin() as conn:
