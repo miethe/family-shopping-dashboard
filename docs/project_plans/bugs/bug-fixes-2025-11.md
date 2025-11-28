@@ -172,7 +172,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Location**: `services/api/app/services/occasion.py:145`
 - **Root Cause**: The OccasionService called `self.repo.list_paginated()` but the BaseRepository provides `get_multi()` for cursor-based pagination. The method name was inconsistent.
 - **Fix**: Changed `list_paginated` to `get_multi` in OccasionService and corresponding test mock
-- **Commit(s)**: `PENDING`
+- **Commit(s)**: `0d661e8`
 - **Status**: RESOLVED
 
 ---
