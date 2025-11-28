@@ -165,6 +165,18 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 
 ---
 
+## OccasionRepository Missing list_paginated Method
+
+**Issue**: Occasions page fails to load with `AttributeError: 'OccasionRepository' object has no attribute 'list_paginated'`
+
+- **Location**: `services/api/app/services/occasion.py:145`
+- **Root Cause**: The OccasionService called `self.repo.list_paginated()` but the BaseRepository provides `get_multi()` for cursor-based pagination. The method name was inconsistent.
+- **Fix**: Changed `list_paginated` to `get_multi` in OccasionService and corresponding test mock
+- **Commit(s)**: `PENDING`
+- **Status**: RESOLVED
+
+---
+
 ## Create Pages Navigate to Non-Existent Entities
 
 **Issue**: Create pages for Lists, People, and Occasions navigate to detail pages showing "entity not found" error instead of displaying create forms

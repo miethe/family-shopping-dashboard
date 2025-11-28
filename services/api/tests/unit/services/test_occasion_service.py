@@ -134,7 +134,7 @@ class TestOccasionService:
             Occasion(id=1, name="Occasion 1", type=OccasionType.birthday, date=date(2025, 1, 1)),
             Occasion(id=2, name="Occasion 2", type=OccasionType.holiday, date=date(2025, 2, 1)),
         ]
-        mock_occasion_repo.list_paginated.return_value = (mock_occasions, True, 2)
+        mock_occasion_repo.get_multi.return_value = (mock_occasions, True, 2)
 
         # Act
         occasions, has_more, next_cursor = await occasion_service.list(limit=2)

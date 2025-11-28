@@ -142,7 +142,7 @@ class OccasionService:
             Cursor-based pagination prevents duplicate/missed results
             during concurrent modifications.
         """
-        occasions, has_more, next_cursor = await self.repo.list_paginated(
+        occasions, has_more, next_cursor = await self.repo.get_multi(
             cursor=cursor, limit=limit
         )
 
