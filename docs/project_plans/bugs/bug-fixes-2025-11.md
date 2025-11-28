@@ -48,3 +48,15 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## User Model Missing Comments Relationship
+
+**Issue**: User registration fails with SQLAlchemy error `InvalidRequestError: Mapper 'Mapper[User(users)]' has no property 'comments'`
+
+- **Location**: `services/api/app/models/user.py:42-48`
+- **Root Cause**: The `Comment` model defined a bidirectional relationship with `back_populates="comments"` but the `User` model did not have the corresponding `comments` relationship defined
+- **Fix**: Added `comments` relationship to User model with proper `back_populates="author"`, `lazy="selectin"`, and `cascade="all, delete-orphan"` to match the Comment model's expectation
+- **Commit(s)**: `600948b`
+- **Status**: RESOLVED
+
+---

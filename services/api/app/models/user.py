@@ -1,7 +1,12 @@
 """User model for authentication and profile management."""
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Index, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+if TYPE_CHECKING:
+    from app.models.comment import Comment
 
 from app.models.base import BaseModel
 
@@ -32,6 +37,14 @@ class User(BaseModel):
     password_hash: Mapped[str] = mapped_column(
         String(255),  # Bcrypt hash length
         nullable=False,
+    )
+
+    # Relationships
+    comments: Mapped[list["Comment"]] = relationship(
+        "Comment",
+        back_populates="author",
+        lazy="selectin",
+        cascade="all, delete-orphan",
     )
 
     __table_args__ = (
