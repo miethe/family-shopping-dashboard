@@ -24,6 +24,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /**
    * Validate token and load user data
+   * Note: Token validation failures (e.g., 401) are expected for expired tokens.
+   * We clear the token silently without setting error state. Only actual login
+   * attempts that fail should set error state for display to the user.
    */
   const validateAndLoadUser = useCallback(async (authToken: string) => {
     try {
@@ -35,10 +38,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(authToken);
     } catch (err) {
       console.error('Token validation failed:', err);
+      // Token validation failure is expected for expired tokens - not an error to show
       clearToken();
       setUser(null);
       setToken(null);
-      setError(err instanceof Error ? err.message : 'Authentication failed');
+      // Do NOT set error state here - only login/register attempts should display errors
     } finally {
       setLoading(false);
     }

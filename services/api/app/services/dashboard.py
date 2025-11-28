@@ -156,13 +156,13 @@ class DashboardService:
         stmt = (
             select(
                 Person.id,
-                Person.name,
+                Person.display_name,
                 func.count(ListItem.id).label("pending_gifts"),
             )
             .join(List, List.person_id == Person.id)
             .join(ListItem, ListItem.list_id == List.id)
             .where(ListItem.status.in_(pending_statuses))
-            .group_by(Person.id, Person.name)
+            .group_by(Person.id, Person.display_name)
             .having(func.count(ListItem.id) > 0)
             .order_by(func.count(ListItem.id).desc())
         )
@@ -173,7 +173,7 @@ class DashboardService:
         return [
             PersonSummary(
                 id=row.id,
-                name=row.name,
+                name=row.display_name,
                 pending_gifts=row.pending_gifts,
             )
             for row in rows
