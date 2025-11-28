@@ -2,6 +2,7 @@
 
 from datetime import datetime, timezone
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.list_item import ListItemStatus
@@ -136,7 +137,14 @@ class ListItemService:
         create_data = data.model_dump()
 
         # Create in database
-        list_item = await self.repo.create(create_data)
+        try:
+            list_item = await self.repo.create(create_data)
+        except IntegrityError as e:
+            await self.session.rollback()
+            # Check if it's the duplicate constraint
+            if "uq_list_items_gift_list" in str(e):
+                raise ValueError("This gift is already in the list") from e
+            raise  # Re-raise if it's a different constraint
 
         # Convert ORM model to DTO
         response = ListItemResponse(

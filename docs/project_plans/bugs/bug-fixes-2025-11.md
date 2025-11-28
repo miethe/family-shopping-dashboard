@@ -444,3 +444,56 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Add Item Buttons Save to Wrong Category
+
+**Issue**: Clicking "Add Idea" button under the Ideas section opens modal but saves item as the previously selected status. Clicking different section buttons keeps using the old status.
+
+- **Location**: `apps/web/components/lists/AddListItemModal.tsx:66`
+- **Root Cause**: `useState(defaultStatus)` only captures the initial value when the component mounts. When `defaultStatus` prop changes (from clicking different section buttons), the internal `status` state does not update because React's `useState` doesn't re-initialize on prop changes.
+- **Fix**: Added `useEffect` hook to synchronize internal `status` state when the modal opens with a new `defaultStatus`:
+  ```typescript
+  useEffect(() => {
+    if (isOpen) {
+      setStatus(defaultStatus);
+    }
+  }, [isOpen, defaultStatus]);
+  ```
+- **Commit(s)**: `1cc55e6`
+- **Status**: RESOLVED
+
+---
+
+## Duplicate Gift Addition Returns 500 Error
+
+**Issue**: Adding a gift that's already in a list returns 500 Internal Server Error instead of a user-friendly validation error message.
+
+- **Location**: `services/api/app/services/list_item.py:139`
+- **Root Cause**: The `create` method called `repo.create()` without handling `IntegrityError` from the database. The `uq_list_items_gift_list` unique constraint prevents duplicate gift/list combinations, but the error propagated uncaught causing a 500 response.
+- **Fix**: Wrapped `repo.create()` in try/except to catch `IntegrityError`:
+  ```python
+  try:
+      list_item = await self.repo.create(create_data)
+  except IntegrityError as e:
+      await self.session.rollback()
+      if "uq_list_items_gift_list" in str(e):
+          raise ValueError("This gift is already in the list") from e
+      raise
+  ```
+  The router already converts `ValueError` to `ValidationError` with proper 400 response.
+- **Commit(s)**: `1cc55e6`
+- **Status**: RESOLVED
+
+---
+
+## useEntityLifecycle Context Error (Stale Build Cache)
+
+**Issue**: Error displayed: "useEntityLifecycle must be used within EntityLifecycleProvider" at hooks/useEntityLifecycle.tsx:592
+
+- **Location**: `apps/web/.next/` (build cache)
+- **Root Cause**: Stale Next.js build cache referencing a non-existent `useEntityLifecycle` hook. File does not exist in the current codebase (confirmed via git status and grep). The error was from a previous development iteration that was never committed.
+- **Fix**: Clear Next.js build cache: `rm -rf apps/web/.next` and restart dev server
+- **Commit(s)**: N/A (no code change required)
+- **Status**: RESOLVED
+
+---

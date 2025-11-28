@@ -11,7 +11,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
@@ -66,6 +66,13 @@ export function AddListItemModal({
   const [status, setStatus] = useState<ListItemStatus>(defaultStatus);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  // Sync status when modal opens with new defaultStatus
+  useEffect(() => {
+    if (isOpen) {
+      setStatus(defaultStatus);
+    }
+  }, [isOpen, defaultStatus]);
 
   // Filter gifts based on search query
   const filteredGifts = useMemo(() => {
