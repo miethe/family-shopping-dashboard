@@ -178,7 +178,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - Added `useCreateOccasion` hook to `hooks/useOccasion.ts` (was missing)
   - Added `PersonForm` component to `components/people/`
 - **Pattern Reference**: Existing `/gifts/new/page.tsx` worked correctly and served as the template
-- **Commit(s)**: `878db21`, `4a4e460`
+- **Commit(s)**: `878db21`, `6e8161e`
 - **Status**: RESOLVED
 
 ---
