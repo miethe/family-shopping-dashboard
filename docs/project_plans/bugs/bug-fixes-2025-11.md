@@ -430,3 +430,15 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Adding Gift to List Fails with 422 list_id Required
+
+**Issue**: Adding any gift (new or existing) to a list from /lists page fails with 422 error: "body -> list_id: Field required"
+
+- **Location**: `services/api/app/schemas/list_item.py:24-27`
+- **Root Cause**: `ListItemCreate` schema required `list_id` in the request body, but the frontend correctly passes `list_id` via URL path parameter (`POST /lists/{list_id}/items`). Pydantic validation fails before the router can inject `list_id` from path.
+- **Fix**: Made `list_id` field optional (`int | None = None`) in `ListItemCreate` since the router (`lists.py:524-530`) already injects it from the path parameter.
+- **Commit(s)**: `4825f47`
+- **Status**: RESOLVED
+
+---
