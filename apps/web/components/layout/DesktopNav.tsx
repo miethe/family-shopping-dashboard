@@ -20,18 +20,18 @@ export function DesktopNav() {
 
   return (
     <aside
-      className="fixed left-0 top-0 bottom-0 w-60 bg-[rgba(250,248,245,0.8)] backdrop-blur-lg border-r border-border-subtle shadow-translucent overflow-y-auto flex flex-col"
+      className="fixed left-0 top-0 bottom-0 w-64 bg-white/60 backdrop-blur-xl border-r border-white/20 shadow-glass overflow-y-auto flex flex-col z-50"
       style={{ paddingLeft: 'env(safe-area-inset-left)' }}
     >
       {/* Header */}
       <div className="p-6 flex-shrink-0">
-        <h1 className="text-xl font-bold text-warm-900">
+        <h1 className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
           Family Gifting
         </h1>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 space-y-1">
+      <nav className="flex-1 px-4 space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
@@ -41,13 +41,16 @@ export function DesktopNav() {
               key={item.href}
               href={item.href as any}
               className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-large font-semibold transition-all duration-200 ease-out',
+                'flex items-center gap-3 px-4 py-3 rounded-xlarge font-semibold transition-all duration-300 ease-out group relative overflow-hidden',
                 isActive
-                  ? 'bg-primary-100 text-primary-600 shadow-subtle'
-                  : 'text-warm-700 hover:bg-warm-100 hover:text-warm-900'
+                  ? 'bg-white/80 text-primary-600 shadow-low'
+                  : 'text-warm-600 hover:bg-white/40 hover:text-warm-900 hover:shadow-subtle'
               )}
             >
-              <Icon className="w-5 h-5" />
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary-500 rounded-r-full" />
+              )}
+              <Icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110", isActive && "text-primary-500")} />
               <span>{item.label}</span>
             </Link>
           );
@@ -55,16 +58,18 @@ export function DesktopNav() {
       </nav>
 
       {/* User Profile Section */}
-      <div className="p-4 border-t border-border-subtle flex-shrink-0">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <UserCircleIcon className="w-8 h-8 text-warm-400" />
+      <div className="p-4 border-t border-white/20 flex-shrink-0 bg-white/30 backdrop-blur-md">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-large hover:bg-white/40 transition-colors duration-200 cursor-pointer group">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center shadow-inner">
+            <UserCircleIcon className="w-6 h-6 text-primary-600" />
+          </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-warm-900 truncate">
-              {user?.email || 'User'}
+            <p className="text-sm font-bold text-warm-900 truncate group-hover:text-primary-700 transition-colors">
+              {user?.email?.split('@')[0] || 'User'}
             </p>
             <button
               onClick={logout}
-              className="text-xs text-warm-600 hover:text-warm-900 transition-colors duration-200"
+              className="text-xs text-warm-500 hover:text-primary-600 transition-colors duration-200 font-medium"
             >
               Sign out
             </button>
