@@ -41,7 +41,7 @@ class Occasion(BaseModel):
     )
 
     type: Mapped[OccasionType] = mapped_column(
-        ENUM(OccasionType, name="occasion_type", create_type=True),
+        ENUM(OccasionType, name="occasiontype", create_type=False),
         nullable=False,
         index=True,
     )
