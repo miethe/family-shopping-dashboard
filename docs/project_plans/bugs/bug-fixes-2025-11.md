@@ -253,8 +253,8 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - Updated PersonForm to use tag-based interests input (array handling)
   - Updated PersonCard, PersonDetail, PersonInfo to use new field names
   - Updated people list search filter for array interests
-- **Commit(s)**: `f7f9e7c`
-- **Status**: RESOLVED
+- **Commit(s)**: `f7f9e7c` → superseded by `0e82b42` (full PRD implementation)
+- **Status**: RESOLVED (re-implemented with full schema)
 
 ---
 
@@ -266,6 +266,21 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Root Cause**: Missing `layout.tsx` file in the assignments directory. All other routes (/people, /occasions, /lists, /dashboard) wrap their content in Shell + ProtectedRoute via layout.tsx, but assignments had no layout wrapper.
 - **Fix**: Created `apps/web/app/assignments/layout.tsx` following the pattern from other working pages, wrapping children in ProtectedRoute and Shell components
 - **Commit(s)**: `f7f9e7c`
+- **Status**: RESOLVED
+
+---
+
+## Person Schema Missing PRD Fields
+
+**Issue**: Backend Person model only had 3 fields (name, interests, sizes) but PRD specifies 8+ fields
+
+- **Location**: `services/api/app/models/person.py`, `services/api/app/schemas/person.py`, `apps/web/types/index.ts`
+- **Root Cause**: Initial implementation only added minimal fields. PRD section 4.1.2 specifies: `id, display_name, relationship, birthdate, notes, interests, sizes, constraints, photo_url`
+- **Fix**:
+  - Backend: Added all missing columns to Person model, updated DTOs with proper validation
+  - Migration: Created `39be0dfc7e1d_add_person_fields_per_prd.py`
+  - Frontend: Updated types, enhanced PersonForm with sections for all fields, PersonCard shows relationship/birthday, PersonDetail shows age calculation
+- **Commit(s)**: `0e82b42`
 - **Status**: RESOLVED
 
 ---
