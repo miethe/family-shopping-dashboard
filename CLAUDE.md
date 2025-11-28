@@ -31,6 +31,7 @@
 - ✓ **Focus** on reasoning, analysis, planning, and orchestration
 
 **Delegation Pattern**:
+
 ```text
 1. Analyze task → identify what needs to change
 2. Delegate exploration → codebase-explorer finds files/patterns
@@ -57,12 +58,14 @@ Tech:
 ```
 
 **Critical Rules**:
+
 - ✗ No DTO/ORM mixing
 - ✗ No DB I/O in services
 - ✓ Repository owns ALL queries
 - ✓ Service returns DTOs only
 
 **Domain-Specific Guides**:
+
 - API patterns → `services/api/CLAUDE.md`
 - Web patterns → `apps/web/CLAUDE.md`
 
@@ -202,12 +205,14 @@ Pyramid (2-3 users = simplified):
 **Reference**: `.claude/specs/doc-policy-spec.md`
 
 **Allowed**:
+
 - `/docs/` → User/dev/architecture docs (with frontmatter)
 - `.claude/progress/[prd]/` → ONE per phase
 - `.claude/worknotes/fixes/` → ONE per month
 - `.claude/worknotes/observations/` → ONE per month
 
 **Prohibited**:
+
 - Debugging summaries → git commit
 - Multiple progress per phase
 - Daily/weekly reports
@@ -218,6 +223,8 @@ Pyramid (2-3 users = simplified):
 ## Agent Delegation
 
 **Mandatory**: All implementation work MUST be delegated. Opus orchestrates only.
+
+Below is a table of common tasks and which subagent/model to delegate to. This is a guideline and not all-encompassing; adapt as needed per task complexity, and use your updated context to find the best subagents per task.
 
 ### Exploration & Analysis
 
@@ -294,12 +301,10 @@ Pyramid (2-3 users = simplified):
 1. Define event (schemas/ws.py) → 2. Broadcast (api/ws.py) → 3. Frontend hook → 4. Invalidate RQ cache
 ```
 
-### Deploy to Homelab
+### Deploy
 
 ```bash
-docker build -t gifting-api:latest ./services/api
-docker build -t gifting-web:latest ./apps/web
-kubectl apply -f k8s/
+docker-compose up -d --build
 ```
 
 ---
@@ -319,6 +324,7 @@ EOF
 ```
 
 **Types**: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
+**Scope**: `api`, `web`, `common`, `ai`, `docs`, `package`
 
 ---
 
@@ -346,6 +352,7 @@ EOF
 **State**: Greenfield, no code yet
 
 **Implications**:
+
 - Establish patterns early
 - Lock architecture decisions
 - Keep simple

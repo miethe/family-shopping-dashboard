@@ -17,29 +17,29 @@ interface PipelineSummaryProps {
 
 export function PipelineSummary({ ideas, purchased, myAssignments }: PipelineSummaryProps) {
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-4 animate-slide-up-fade" style={{ animationDelay: '300ms' }}>
       {/* Ideas */}
-      <Card className="border-gray-200 hover:shadow-md transition-shadow">
+      <Card className="border-gray-200 lift-effect hover:border-yellow-200 group cursor-default">
         <CardContent className="p-4 text-center">
-          <LightbulbIcon className="mx-auto h-8 w-8 text-yellow-500 mb-2" />
+          <LightbulbIcon className="mx-auto h-8 w-8 text-yellow-500 mb-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
           <span className="text-2xl font-bold block text-gray-900">{ideas}</span>
           <span className="text-sm text-gray-500 block mt-1">Ideas</span>
         </CardContent>
       </Card>
 
       {/* Purchased */}
-      <Card className="border-gray-200 hover:shadow-md transition-shadow">
+      <Card className="border-gray-200 lift-effect hover:border-green-200 group cursor-default">
         <CardContent className="p-4 text-center">
-          <CheckIcon className="mx-auto h-8 w-8 text-green-500 mb-2" />
+          <CheckIcon className="mx-auto h-8 w-8 text-green-500 mb-2 transition-transform duration-300 group-hover:scale-110" />
           <span className="text-2xl font-bold block text-gray-900">{purchased}</span>
           <span className="text-sm text-gray-500 block mt-1">Purchased</span>
         </CardContent>
       </Card>
 
       {/* My Assignments */}
-      <Card className="border-gray-200 hover:shadow-md transition-shadow">
+      <Card className="border-gray-200 lift-effect hover:border-blue-200 group cursor-default">
         <CardContent className="p-4 text-center">
-          <UserIcon className="mx-auto h-8 w-8 text-blue-500 mb-2" />
+          <UserIcon className="mx-auto h-8 w-8 text-blue-500 mb-2 transition-transform duration-300 group-hover:scale-110" />
           <span className="text-2xl font-bold block text-gray-900">{myAssignments}</span>
           <span className="text-sm text-gray-500 block mt-1">My Tasks</span>
         </CardContent>

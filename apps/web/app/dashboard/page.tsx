@@ -26,17 +26,17 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 pb-20 md:pb-6">
-      <div className="animate-slide-up-fade" style={{ animationDelay: '0ms' }}>
+      <div>
         <PageHeader title="Dashboard" subtitle="Welcome back!" />
       </div>
 
       {/* Quick Actions */}
-      <div className="animate-slide-up-fade" style={{ animationDelay: '100ms' }}>
+      <div>
         <QuickActions />
       </div>
 
       {/* Primary Occasion */}
-      <div className="animate-slide-up-fade" style={{ animationDelay: '200ms' }}>
+      <div>
         {isLoading ? (
           <Skeleton className="h-32 rounded-xlarge" />
         ) : data?.primary_occasion ? (
@@ -49,7 +49,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Pipeline Summary */}
-      <div className="animate-slide-up-fade" style={{ animationDelay: '300ms' }}>
+      <div>
         {isLoading ? (
           <Skeleton className="h-24 rounded-xlarge" />
         ) : (
@@ -62,7 +62,7 @@ export default function DashboardPage() {
       </div>
 
       {/* People Needing Gifts */}
-      <div className="animate-slide-up-fade" style={{ animationDelay: '400ms' }}>
+      <div>
         {isLoading ? (
           <Skeleton className="h-48 rounded-xlarge" />
         ) : (
