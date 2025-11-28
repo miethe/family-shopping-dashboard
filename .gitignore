@@ -11,7 +11,8 @@ develop-eggs/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/ - Removed: was ignoring apps/web/lib/ source code
+# Use explicit Python lib paths if needed
 lib64/
 parts/
 sdist/

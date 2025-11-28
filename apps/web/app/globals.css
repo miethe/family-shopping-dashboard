@@ -1,4 +1,6 @@
-/* Base styles - Tailwind will be added in FE-002 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;

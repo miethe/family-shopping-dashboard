@@ -83,3 +83,56 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Missing Tailwind CSS Directives
+
+**Issue**: CSS styling completely broken across the entire app - no Tailwind classes rendering
+
+- **Location**: `apps/web/app/globals.css:1`
+- **Root Cause**: globals.css was missing the required `@tailwind base; @tailwind components; @tailwind utilities;` directives. The file had a comment indicating "Tailwind will be added in FE-002" but the directives were never added. Without these directives, PostCSS cannot inject the Tailwind utility classes into the compiled CSS.
+- **Fix**: Added the three `@tailwind` directives at the top of globals.css
+- **Commit(s)**: `9c8a2a8`
+- **Status**: RESOLVED
+
+---
+
+## Dashboard API Endpoint Path Mismatch
+
+**Issue**: Dashboard page showing 404 error - `GET http://localhost:8000/dashboard/summary 404`
+
+- **Location**: `apps/web/lib/api/endpoints.ts:197`
+- **Root Cause**: Frontend calling `/dashboard/summary` but backend route is `/dashboard`. The recent API prefix fix added `/api/v1` to all routes correctly, but the frontend endpoint definition had an extra `/summary` suffix that doesn't exist on the backend.
+- **Fix**: Changed `'/dashboard/summary'` to `'/dashboard'` in dashboardApi.summary()
+- **Commit(s)**: `9c8a2a8`
+- **Status**: RESOLVED
+
+---
+
+## PWA Files Returning 400 Bad Request
+
+**Issue**: manifest.json and sw.js returning 400 Bad Request, Service Worker registration failing
+
+- **Location**: `apps/web/public/manifest.json`, `apps/web/public/sw.js`
+- **Root Cause**: File permissions were set to `0600` (owner read/write only), which prevented the Next.js server process from reading these static files. When the server couldn't read the files, it returned 400 Bad Request.
+- **Fix**: Changed file permissions to `0644` (world-readable) using `chmod 644`
+- **Commit(s)**: `9c8a2a8` (documented; permissions not tracked in git)
+- **Status**: RESOLVED
+
+---
+
+## Frontend lib/ Directory Not Tracked in Git
+
+**Issue**: Critical frontend source code in `apps/web/lib/` not tracked in git - 16 files including API client, auth utilities, WebSocket provider, and React context
+
+- **Location**: `.gitignore:14`, `apps/web/lib/`
+- **Root Cause**: Root `.gitignore` had `lib/` pattern from Python packaging conventions (Distribution/packaging section) which unintentionally ignored the Next.js frontend's `lib/` source directory containing API client, authentication, WebSocket, and utility code.
+- **Fix**: Removed `lib/` from root `.gitignore` (added comment explaining removal). Added all 16 previously-ignored files to git tracking:
+  - `apps/web/lib/api/` (client.ts, endpoints.ts, types.ts, index.ts)
+  - `apps/web/lib/auth/` (api.ts, storage.ts, types.ts)
+  - `apps/web/lib/context/` (AuthContext.tsx)
+  - `apps/web/lib/websocket/` (WebSocketProvider.tsx, types.ts, index.ts)
+  - `apps/web/lib/query-client.ts`, `apps/web/lib/utils.ts`
+- **Commit(s)**: `9c8a2a8`
+- **Status**: RESOLVED
+
+---
