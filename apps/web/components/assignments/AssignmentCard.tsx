@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, Badge } from '@/components/ui';
 import { GiftIcon, CheckCircleIcon, ShoppingCartIcon, LightbulbIcon } from '@/components/layout/icons';
+import { formatPrice } from '@/lib/utils';
 import type { AssignmentItem } from '@/hooks/useMyAssignments';
 import type { ListItemStatus } from '@/types';
 
@@ -128,7 +129,7 @@ export function AssignmentCard({ assignment }: AssignmentCardProps) {
               </Badge>
               {assignment.gift.price !== null && assignment.gift.price !== undefined && (
                 <span className="text-sm font-semibold text-gray-700">
-                  ${assignment.gift.price.toFixed(2)}
+                  ${formatPrice(assignment.gift.price)}
                 </span>
               )}
             </div>

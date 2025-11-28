@@ -5,7 +5,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 
 from app.schemas.base import TimestampSchema
 
@@ -67,6 +67,10 @@ class GiftResponse(TimestampSchema):
     source: str | None
     extra_data: dict = Field(default_factory=dict)
 
+    @field_serializer('price')
+    def serialize_price(self, price: Decimal | None) -> float | None:
+        return float(price) if price is not None else None
+
 
 class GiftSummary(BaseModel):
     """Lightweight gift summary."""
@@ -75,6 +79,10 @@ class GiftSummary(BaseModel):
     name: str
     price: Decimal | None
     image_url: str | None
+
+    @field_serializer('price')
+    def serialize_price(self, price: Decimal | None) -> float | None:
+        return float(price) if price is not None else None
 
 
 class GiftWithTags(GiftResponse):

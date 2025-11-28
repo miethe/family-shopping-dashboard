@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { GiftIcon } from '@/components/layout/icons';
+import { formatPrice } from '@/lib/utils';
 import type { Gift } from '@/types';
 
 export interface GiftDetailProps {
@@ -60,7 +61,7 @@ export function GiftDetail({ gift }: GiftDetailProps) {
 
           {gift.price !== undefined && gift.price !== null && (
             <p className="text-3xl font-bold text-primary-600">
-              ${gift.price.toFixed(2)}
+              ${formatPrice(gift.price)}
             </p>
           )}
 

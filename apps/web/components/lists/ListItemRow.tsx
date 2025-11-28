@@ -12,6 +12,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { GiftIcon } from '@/components/layout/icons';
+import { formatPrice } from '@/lib/utils';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
 
 interface ListItemRowProps {
@@ -59,7 +60,7 @@ export function ListItemRow({ item, onStatusChange }: ListItemRowProps) {
         {/* Price */}
         {item.gift?.price && (
           <p className="text-sm text-gray-500 mt-0.5">
-            ${item.gift.price.toFixed(2)}
+            ${formatPrice(item.gift.price)}
           </p>
         )}
 

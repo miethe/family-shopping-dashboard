@@ -49,3 +49,23 @@ export function formatRelativeTime(dateString: string): string {
     return `${diffYear}y ago`;
   }
 }
+
+/**
+ * Format price value with defensive parsing for both string and number types
+ *
+ * @param price - Price value (number, string, undefined, or null)
+ * @returns Formatted price string with 2 decimal places, or empty string if invalid
+ *
+ * @example
+ * formatPrice(50) // "50.00"
+ * formatPrice("50") // "50.00"
+ * formatPrice("50.5") // "50.50"
+ * formatPrice(null) // ""
+ * formatPrice(undefined) // ""
+ * formatPrice("invalid") // ""
+ */
+export function formatPrice(price: number | string | undefined | null): string {
+  if (price == null) return '';
+  const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+  return isNaN(numPrice) ? '' : numPrice.toFixed(2);
+}

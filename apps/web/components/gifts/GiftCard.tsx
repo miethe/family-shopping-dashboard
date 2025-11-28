@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, StatusPill, Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/ui';
 import { GiftIcon } from '@/components/layout/icons';
+import { formatPrice } from '@/lib/utils';
 import type { Gift } from '@/types';
 import type { GiftStatus } from '@/components/ui/status-pill';
 
@@ -61,7 +62,7 @@ export function GiftCard({ gift }: GiftCardProps) {
           <div className="flex items-center justify-between mt-3">
             {gift.price !== null && gift.price !== undefined ? (
               <span className="text-sm font-semibold text-primary-600">
-                ${gift.price.toFixed(2)}
+                ${formatPrice(gift.price)}
               </span>
             ) : (
               <span className="text-sm text-warm-400">No price</span>
