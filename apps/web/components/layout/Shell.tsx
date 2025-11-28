@@ -30,21 +30,21 @@ interface ShellProps {
  */
 export function Shell({ children }: ShellProps) {
   return (
-    <div className="flex h-screen flex-col md:flex-row overflow-hidden bg-bg-base">
+    <div className="flex min-h-screen flex-col md:flex-row overflow-hidden">
       {/* Mobile Header - Hidden on desktop */}
-      <div className="md:hidden sticky top-0 z-50 bg-surface-primary safe-area-top border-b border-border-subtle shadow-subtle">
+      <div className="md:hidden sticky top-0 z-50 bg-surface-primary/80 backdrop-blur-md safe-area-top border-b border-border-subtle shadow-subtle">
         <Header />
       </div>
 
-      {/* Desktop Sidebar - Hidden on mobile */}
-      <div className="hidden md:flex md:w-60 md:flex-shrink-0 md:flex-col">
+      {/* Desktop Sidebar - Fixed position handled in component */}
+      <div className="hidden md:block">
         <DesktopNav />
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-auto bg-bg-base">
+      <main className="flex-1 overflow-auto md:pl-64 transition-[padding] duration-300 ease-in-out">
         {/* Content wrapper with padding and safe areas */}
-        <div className="pb-20 md:pb-0">
+        <div className="pb-20 md:pb-0 min-h-screen">
           {children}
         </div>
       </main>
