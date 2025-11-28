@@ -1,9 +1,12 @@
 """Person model representing gift recipients (family members and friends)."""
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import JSON, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+if TYPE_CHECKING:
+    from app.models.list import List
 
 from app.models.base import BaseModel
 
@@ -42,6 +45,13 @@ class Person(BaseModel):
         JSON,
         nullable=True,
         default=None,
+    )
+
+    # Relationships
+    lists: Mapped[list["List"]] = relationship(
+        "List",
+        back_populates="person",
+        lazy="selectin",
     )
 
     def __repr__(self) -> str:

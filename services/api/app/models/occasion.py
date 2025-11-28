@@ -2,10 +2,14 @@
 
 from datetime import date
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Date, Index, String, Text
 from sqlalchemy.dialects.postgresql import ENUM
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+if TYPE_CHECKING:
+    from app.models.list import List
 
 from app.models.base import BaseModel
 
@@ -55,6 +59,13 @@ class Occasion(BaseModel):
     description: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
+    )
+
+    # Relationships
+    lists: Mapped[list["List"]] = relationship(
+        "List",
+        back_populates="occasion",
+        lazy="selectin",
     )
 
     __table_args__ = (

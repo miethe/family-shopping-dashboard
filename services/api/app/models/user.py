@@ -7,6 +7,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from app.models.comment import Comment
+    from app.models.list import List
+    from app.models.list_item import ListItem
 
 from app.models.base import BaseModel
 
@@ -45,6 +47,19 @@ class User(BaseModel):
         back_populates="author",
         lazy="selectin",
         cascade="all, delete-orphan",
+    )
+
+    lists: Mapped[list["List"]] = relationship(
+        "List",
+        back_populates="user",
+        lazy="selectin",
+        cascade="all, delete-orphan",
+    )
+
+    assigned_items: Mapped[list["ListItem"]] = relationship(
+        "ListItem",
+        back_populates="assignee",
+        lazy="selectin",
     )
 
     __table_args__ = (

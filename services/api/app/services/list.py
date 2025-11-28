@@ -368,11 +368,9 @@ class ListService:
 
         # Convert list items with gift details to DTOs
         items: list[ListItemWithGift] = []
-        for gift in list_obj.gifts:
-            # Note: list_obj.gifts is actually the relationship to Gift model
-            # We need to access through the list_items relationship instead
-            # This is a simplified conversion - the actual list items would come
-            # from a different relationship or query
+        for list_item in list_obj.list_items:
+            # Access the gift through the list_item relationship
+            # This is a simplified conversion - proper DTO mapping will be added
             pass
 
         # For now, return list with empty items

@@ -84,8 +84,8 @@ class List(BaseModel):
         back_populates="lists",
         lazy="select",
     )
-    gifts: Mapped[list["Gift"]] = relationship(
-        "Gift",
+    list_items: Mapped[list["ListItem"]] = relationship(
+        "ListItem",
         back_populates="list",
         lazy="select",
         cascade="all, delete-orphan",

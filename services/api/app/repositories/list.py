@@ -130,20 +130,20 @@ class ListRepository(BaseRepository[List]):
             ```python
             list_obj = await repo.get_with_gifts(list_id=123)
             if list_obj:
-                print(f"List '{list_obj.name}' has {len(list_obj.gifts)} gifts")
-                for gift in list_obj.gifts:
-                    print(f"  - {gift.name}: ${gift.price}")
+                print(f"List '{list_obj.name}' has {len(list_obj.list_items)} items")
+                for list_item in list_obj.list_items:
+                    print(f"  - {list_item.gift.name}: ${list_item.gift.price}")
             ```
 
         Note:
             This uses selectinload to avoid N+1 query problems.
-            All related gifts are loaded in a single additional query.
+            All related list_items are loaded in a single additional query.
         """
         stmt = (
             select(List)
             .where(List.id == list_id)
             .options(
-                selectinload(List.gifts),  # Eager load all gifts
+                selectinload(List.list_items),  # Eager load all list items
                 selectinload(List.user),  # Eager load owner
                 selectinload(List.person),  # Eager load person (if set)
                 selectinload(List.occasion),  # Eager load occasion (if set)
