@@ -336,3 +336,31 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Add Item Button on List Detail Page Has No Function
+
+**Issue**: The "Add Item" button in the list detail page header does nothing when clicked. Users have no way to add items to a list from the list view.
+
+- **Location**: `apps/web/app/lists/[id]/page.tsx:101-104`, `apps/web/components/lists/ListItemGroup.tsx`
+- **Root Cause**: The Add Item button was rendered but had no onClick handler - it was purely visual placeholder. Additionally, there were no inline add buttons within each status group (Ideas, Selected, Purchased, Received) to provide contextual item addition.
+- **Fix**:
+  - Created `AddListItemModal` component (`apps/web/components/lists/AddListItemModal.tsx`) with:
+    - Gift selection with search/filter functionality
+    - Status dropdown (idea, selected, purchased, received)
+    - Optional notes field
+    - Pre-selects status via `defaultStatus` prop
+    - Uses `useCreateListItem` hook for mutation
+    - Follows design guide (44px touch targets, proper spacing)
+  - Updated list detail page (`apps/web/app/lists/[id]/page.tsx`):
+    - Added modal state management
+    - Wired header "Add Item" button to open modal
+    - Connected `handleAddItem` to PipelineView for status-specific additions
+  - Updated `ListItemGroup` component:
+    - Added `onAddItem` prop to callback with status
+    - Shows "Add [Status]" button at top of items when items exist
+    - Shows "Add [Status]" button in empty state
+  - Updated `PipelineView` to pass `onAddItem` handler to each ListItemGroup
+- **Commit(s)**: `2cc284f`
+- **Status**: RESOLVED
+
+---
