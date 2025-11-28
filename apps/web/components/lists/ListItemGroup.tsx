@@ -15,6 +15,7 @@ import {
   CheckCircleIcon,
   ShoppingCartIcon,
   GiftIcon,
+  PlusIcon,
 } from '@/components/layout/icons';
 import { ListItemRow } from './ListItemRow';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
@@ -24,6 +25,7 @@ interface ListItemGroupProps {
   status: ListItemStatus;
   items: ListItemWithGift[];
   onItemStatusChange?: (itemId: number, newStatus: ListItemStatus) => void;
+  onAddItem?: (status: ListItemStatus) => void;
 }
 
 // Status icons
@@ -50,7 +52,7 @@ const statusLabels: Record<ListItemStatus, string> = {
   received: 'Received',
 };
 
-export function ListItemGroup({ status, items, onItemStatusChange }: ListItemGroupProps) {
+export function ListItemGroup({ status, items, onItemStatusChange, onAddItem }: ListItemGroupProps) {
   const StatusIcon = statusIcons[status];
 
   return (
@@ -70,24 +72,49 @@ export function ListItemGroup({ status, items, onItemStatusChange }: ListItemGro
 
       {/* Items List or Empty State */}
       {items.length === 0 ? (
-        <div className="p-8 text-center text-gray-500">
+        <div className="p-8 text-center">
           <StatusIcon className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-          <p className="text-sm">No items in {statusLabels[status].toLowerCase()}</p>
+          <p className="text-sm text-gray-500 mb-4">No items in {statusLabels[status].toLowerCase()}</p>
+          {onAddItem && (
+            <button
+              onClick={() => onAddItem(status)}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors min-h-[44px]"
+            >
+              <PlusIcon className="w-4 h-4" />
+              Add {statusLabels[status].replace(/s$/, '')}
+            </button>
+          )}
         </div>
       ) : (
-        <ul className="divide-y divide-gray-200">
-          {items.map((item) => (
-            <ListItemRow
-              key={item.id}
-              item={item}
-              onStatusChange={
-                onItemStatusChange
-                  ? (newStatus) => onItemStatusChange(item.id, newStatus)
-                  : undefined
-              }
-            />
-          ))}
-        </ul>
+        <div>
+          {/* Add Item Button - shown at top when items exist */}
+          {onAddItem && (
+            <div className="px-4 py-3 border-b border-gray-200">
+              <button
+                onClick={() => onAddItem(status)}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors min-h-[44px] w-full"
+              >
+                <PlusIcon className="w-4 h-4" />
+                Add {statusLabels[status].replace(/s$/, '')}
+              </button>
+            </div>
+          )}
+
+          {/* Items List */}
+          <ul className="divide-y divide-gray-200">
+            {items.map((item) => (
+              <ListItemRow
+                key={item.id}
+                item={item}
+                onStatusChange={
+                  onItemStatusChange
+                    ? (newStatus) => onItemStatusChange(item.id, newStatus)
+                    : undefined
+                }
+              />
+            ))}
+          </ul>
+        </div>
       )}
     </Card>
   );

@@ -14,6 +14,7 @@ import type { ListItemWithGift, ListItemStatus } from '@/types';
 interface PipelineViewProps {
   items: ListItemWithGift[];
   onItemStatusChange?: (itemId: number, newStatus: ListItemStatus) => void;
+  onAddItem?: (status: ListItemStatus) => void;
 }
 
 // Status order for pipeline
@@ -33,7 +34,7 @@ function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
   }, {} as Record<string, T[]>);
 }
 
-export function PipelineView({ items, onItemStatusChange }: PipelineViewProps) {
+export function PipelineView({ items, onItemStatusChange, onAddItem }: PipelineViewProps) {
   // Group items by status
   const groupedItems = groupBy(items, 'status');
 
@@ -45,6 +46,7 @@ export function PipelineView({ items, onItemStatusChange }: PipelineViewProps) {
           status={status}
           items={groupedItems[status] || []}
           onItemStatusChange={onItemStatusChange}
+          onAddItem={onAddItem}
         />
       ))}
     </div>

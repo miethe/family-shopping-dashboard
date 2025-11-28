@@ -8,7 +8,7 @@
 
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import Link from 'next/link';
 import { useList } from '@/hooks/useLists';
 import { useListItems } from '@/hooks/useListItems';
@@ -16,8 +16,9 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
-import { ListDetail, PipelineView, ListSummary } from '@/components/lists';
+import { ListDetail, PipelineView, ListSummary, AddListItemModal } from '@/components/lists';
 import { PlusIcon } from '@/components/layout/icons';
+import type { ListItemStatus } from '@/types';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -74,11 +75,21 @@ export default function ListDetailPage({ params }: Props) {
   const { id } = use(params);
   const listId = parseInt(id, 10);
 
+  // Modal state
+  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [defaultStatus, setDefaultStatus] = useState<ListItemStatus>('idea');
+
   // Fetch list data
   const { data: listData, isLoading: listLoading, error: listError } = useList(listId);
 
   // Fetch list items
   const { data: items, isLoading: itemsLoading } = useListItems(listId);
+
+  // Handler for adding items with a specific status
+  const handleAddItem = (status: ListItemStatus) => {
+    setDefaultStatus(status);
+    setIsAddItemModalOpen(true);
+  };
 
   // Show loading state
   if (listLoading) {
@@ -98,7 +109,11 @@ export default function ListDetailPage({ params }: Props) {
         backHref="/lists"
         actions={
           <div className="flex gap-2">
-            <Button variant="outline" size="default">
+            <Button
+              variant="outline"
+              size="default"
+              onClick={() => setIsAddItemModalOpen(true)}
+            >
               <PlusIcon className="w-4 h-4 mr-2" />
               Add Item
             </Button>
@@ -135,10 +150,18 @@ export default function ListDetailPage({ params }: Props) {
               <Skeleton className="h-64" />
             </div>
           ) : (
-            <PipelineView items={items || []} />
+            <PipelineView items={items || []} onAddItem={handleAddItem} />
           )}
         </div>
       </div>
+
+      {/* Add Item Modal */}
+      <AddListItemModal
+        isOpen={isAddItemModalOpen}
+        onClose={() => setIsAddItemModalOpen(false)}
+        listId={listId}
+        defaultStatus={defaultStatus}
+      />
     </div>
   );
 }
