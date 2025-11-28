@@ -13,9 +13,14 @@ const badgeVariants = cva(
         progress: 'bg-status-progress-100 text-status-progress-800 border-status-progress-300',
         urgent: 'bg-status-warning-100 text-status-warning-800 border-status-warning-300',
         primary: 'bg-primary-100 text-primary-800 border-primary-300',
+        success: 'bg-status-success-100 text-status-success-800 border-status-success-300',
+        warning: 'bg-status-warning-100 text-status-warning-800 border-status-warning-300',
+        error: 'bg-status-error-100 text-status-error-800 border-status-error-300',
+        info: 'bg-status-info-100 text-status-info-800 border-status-info-300',
       },
       size: {
         sm: 'px-2 py-1 text-[10px]',
+        default: 'px-3 py-1.5 text-xs',
         md: 'px-3 py-1.5 text-xs',
         lg: 'px-4 py-2 text-sm',
       },
@@ -35,6 +40,10 @@ const dotColorMap = {
   progress: 'bg-status-progress-600',
   urgent: 'bg-status-warning-600',
   primary: 'bg-primary-600',
+  success: 'bg-status-success-600',
+  warning: 'bg-status-warning-600',
+  error: 'bg-status-error-600',
+  info: 'bg-status-info-600',
 } as const;
 
 export interface BadgeProps
@@ -44,7 +53,7 @@ export interface BadgeProps
 }
 
 function Badge({ className, variant = 'default', size, withDot = false, children, ...props }: BadgeProps) {
-  const dotColor = dotColorMap[variant];
+  const dotColor = dotColorMap[variant ?? 'default'];
 
   return (
     <div className={cn(badgeVariants({ variant, size }), className)} {...props}>

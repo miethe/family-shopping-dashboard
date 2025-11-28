@@ -12,6 +12,7 @@ const avatarVariants = cva(
       size: {
         xs: 'h-6 w-6',      // 24px
         sm: 'h-8 w-8',      // 32px
+        default: 'h-10 w-10',    // 40px (alias for md)
         md: 'h-10 w-10',    // 40px
         lg: 'h-14 w-14',    // 56px
         xl: 'h-20 w-20',    // 80px
@@ -59,7 +60,7 @@ const Avatar = React.forwardRef<
           'absolute -bottom-0.5 -right-0.5 rounded-full border-2 border-white',
           size === 'xs' && 'w-2 h-2',
           size === 'sm' && 'w-2.5 h-2.5',
-          size === 'md' && 'w-3 h-3',
+          (size === 'md' || size === 'default') && 'w-3 h-3',
           size === 'lg' && 'w-4 h-4',
           size === 'xl' && 'w-5 h-5',
           status === 'active' && 'bg-status-success-500',
@@ -76,7 +77,7 @@ const Avatar = React.forwardRef<
           'absolute -bottom-1 -right-1 rounded-full bg-primary-500 text-white font-bold flex items-center justify-center border-2 border-white shadow-medium',
           size === 'xs' && 'w-4 h-4 text-[10px]',
           size === 'sm' && 'w-5 h-5 text-xs',
-          size === 'md' && 'w-6 h-6 text-xs',
+          (size === 'md' || size === 'default') && 'w-6 h-6 text-xs',
           size === 'lg' && 'w-7 h-7 text-sm',
           size === 'xl' && 'w-8 h-8 text-sm'
         )}

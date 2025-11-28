@@ -216,3 +216,26 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## UI Component Variant/Size Type Mismatches Breaking Docker Build
+
+**Issue**: Docker Compose build failing with TypeScript type error: `Type '"outline"' is not assignable to type '"link" | "primary" | "secondary" | "ghost" | "tertiary" | "destructive" | null | undefined'` and multiple similar variant/size type mismatches across UI components
+
+- **Location**: `apps/web/components/ui/button.tsx`, `apps/web/components/ui/badge.tsx`, `apps/web/components/ui/avatar.tsx`, `apps/web/components/ui/card.tsx`, `apps/web/components/ui/skeleton.tsx`
+- **Root Cause**: UI components using `class-variance-authority` (cva) defined limited variant/size options, but usage across the codebase referenced variants and sizes not defined in the type system:
+  - Button: used `variant="outline"`, `variant="default"`, `size="default"` (not in type)
+  - Badge: used `variant="success"`, `"warning"`, `"error"`, `"info"` (not in type)
+  - Avatar: used `size="default"` (not in type)
+  - Card: used `padding="default"` (not in type)
+  - Skeleton: `SkeletonProps` interface not exported
+  - Badge: null index type error when accessing `dotColorMap[variant]`
+- **Fix**:
+  - **Button**: Added `outline`, `default` variants; added `default` size (aliases existing styles)
+  - **Badge**: Added `success`, `warning`, `error`, `info` semantic variants with appropriate colors; added `default` size; added null coalescing for `dotColorMap` access
+  - **Avatar**: Added `default` size aliasing `md`
+  - **Card**: Added `default` padding aliasing `md`
+  - **Skeleton**: Exported `SkeletonProps` interface
+- **Commit(s)**: `1f2aea0`
+- **Status**: RESOLVED
+
+---
