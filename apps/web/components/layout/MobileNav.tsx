@@ -18,7 +18,7 @@ export function MobileNav() {
 
   return (
     <nav
-      className="bg-[rgba(250,248,245,0.8)] backdrop-blur-lg border-t border-border-subtle shadow-high"
+      className="bg-white/70 backdrop-blur-xl border-t border-white/20 shadow-glass z-50 fixed bottom-0 left-0 right-0"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="flex items-center justify-around px-2 py-2">
@@ -34,17 +34,17 @@ export function MobileNav() {
                 'flex flex-col items-center justify-center',
                 'min-w-[44px] min-h-[44px]',
                 'px-3 py-2',
-                'rounded-large',
-                'transition-all duration-200 ease-out',
+                'rounded-xlarge',
+                'transition-all duration-200 ease-out active:scale-95',
                 isActive
-                  ? 'text-primary-500'
+                  ? 'text-primary-500 bg-primary-50/50'
                   : 'text-warm-500 hover:text-warm-700'
               )}
             >
-              <Icon className="w-6 h-6" />
+              <Icon className={cn("w-6 h-6 transition-transform duration-200", isActive && "scale-110")} />
               <span
                 className={cn(
-                  'text-[10px] font-semibold mt-1',
+                  'text-[10px] font-bold mt-1',
                   isActive ? 'text-primary-600' : 'text-warm-600'
                 )}
               >
