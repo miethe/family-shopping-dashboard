@@ -284,3 +284,30 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Dashboard Person.name AttributeError
+
+**Issue**: Dashboard API crashes with `AttributeError: type object 'Person' has no attribute 'name'`
+
+- **Location**: `services/api/app/services/dashboard.py:159,165,176`
+- **Root Cause**: Dashboard service referenced `Person.name` in SQLAlchemy query but the Person model uses `display_name` column (per PRD schema update in `0e82b42`)
+- **Fix**: Updated query to use `Person.display_name` instead of `Person.name`:
+  - Line 159: SELECT clause `Person.name` → `Person.display_name`
+  - Line 165: GROUP BY clause `Person.name` → `Person.display_name`
+  - Line 176: PersonSummary instantiation `row.name` → `row.display_name`
+- **Commit(s)**: `aba7e40`
+- **Status**: RESOLVED
+
+---
+
+## Login Page Displays 401 Error Before User Attempts Login
+
+**Issue**: Login page shows "Authentication failed" error message before user tries to login when visiting with an expired token
+
+- **Location**: `apps/web/lib/context/AuthContext.tsx:36-41`
+- **Root Cause**: AuthContext's `validateAndLoadUser` function sets `error` state when token validation fails (401 from `/auth/me`). Login page displays this error via `const displayError = validationError || error`, causing expired token validation failures to appear as login errors.
+- **Fix**: Removed `setError()` call from token validation failure handler. Token expiration is an expected condition (not an error to display) - only actual login/register attempts should set user-visible error state.
+- **Commit(s)**: `aba7e40`
+- **Status**: RESOLVED
+
+---
