@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center font-semibold transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 min-h-[44px] min-w-[44px]',
+  'inline-flex items-center justify-center font-semibold transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 min-h-[44px] min-w-[44px] active:scale-[0.98]',
   {
     variants: {
       variant: {
@@ -13,6 +13,7 @@ const buttonVariants = cva(
         secondary: 'bg-transparent text-warm-900 border-2 border-warm-300 hover:bg-warm-100 hover:border-warm-400 active:bg-warm-200 focus-visible:ring-primary-500',
         outline: 'bg-transparent text-warm-900 border-2 border-warm-300 hover:bg-warm-100 hover:border-warm-400 active:bg-warm-200 focus-visible:ring-primary-500',
         ghost: 'bg-transparent text-warm-900 hover:bg-warm-100 active:bg-warm-200 focus-visible:ring-primary-500',
+        glass: 'bg-white/40 backdrop-blur-md border border-white/40 text-warm-900 hover:bg-white/60 shadow-glass hover:shadow-medium',
         tertiary: 'bg-transparent text-primary-600 hover:text-primary-700 hover:bg-warm-100 active:bg-warm-200 focus-visible:ring-primary-500 focus-visible:ring-offset-1',
         destructive: 'bg-status-warning-500 text-white hover:bg-status-warning-600 active:bg-status-warning-700 shadow-low hover:shadow-medium focus-visible:ring-status-warning-500',
         link: 'text-primary-600 underline-offset-4 hover:underline focus-visible:ring-primary-500',
@@ -35,7 +36,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   isLoading?: boolean;
 }
