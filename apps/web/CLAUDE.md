@@ -271,6 +271,26 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
 ---
 
+## Design System
+
+Design docs provide specifications, tokens, and patterns for consistent UI.
+
+| Use Case | Document | Purpose |
+|----------|----------|---------|
+| Building new component | `../../docs/designs/COMPONENTS.md` | Button, Card, Input, Avatar, Modal specs |
+| Need color/spacing/typography value | `../../docs/designs/DESIGN-TOKENS.md` | Exact token values (colors, spacing, fonts) |
+| Page layout patterns | `../../docs/designs/LAYOUT-PATTERNS.md` | Dashboard, sidebar, bottom nav |
+| Tailwind/CSS setup | `../../docs/designs/DESIGN-IMPLEMENTATION.md` | Tailwind config, CSS vars, PWA |
+| Design decisions/philosophy | `../../docs/designs/DESIGN-GUIDE.md` | Principles, checklist, rationale |
+
+**Quick Reference**:
+- Starting component → COMPONENTS.md for specs
+- Need exact value → DESIGN-TOKENS.md
+- Building page → LAYOUT-PATTERNS.md
+- Config setup → DESIGN-IMPLEMENTATION.md
+
+---
+
 ## Responsive Design (Tailwind)
 
 ### Breakpoints
