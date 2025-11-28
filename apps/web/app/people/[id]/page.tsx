@@ -102,7 +102,7 @@ export default function PersonDetailPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={person.name}
+        title={person.display_name}
         backHref="/people"
         actions={
           <div className="flex gap-2">

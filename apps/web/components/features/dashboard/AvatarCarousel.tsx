@@ -6,7 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/u
 
 interface Person {
   id: string;
-  name: string;
+  display_name: string;
   avatarUrl?: string;
   giftCount: number;
   needsAttention?: boolean;
@@ -56,7 +56,7 @@ export function AvatarCarousel({ people, onPersonClick }: AvatarCarouselProps) {
             key={person.id}
             onClick={() => onPersonClick?.(person.id)}
             className="flex flex-col items-center gap-2 snap-start flex-shrink-0 min-w-[80px] transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-medium"
-            aria-label={`View ${person.name}'s profile`}
+            aria-label={`View ${person.display_name}'s profile`}
           >
             <div className="relative">
               {/* Attention ring - pulsing terracotta */}
@@ -67,12 +67,12 @@ export function AvatarCarousel({ people, onPersonClick }: AvatarCarouselProps) {
                 />
               )}
               <Avatar size="lg" badge={person.giftCount > 0 ? person.giftCount : undefined}>
-                <AvatarImage src={person.avatarUrl} alt={person.name} />
-                <AvatarFallback>{getInitials(person.name)}</AvatarFallback>
+                <AvatarImage src={person.avatarUrl} alt={person.display_name} />
+                <AvatarFallback>{getInitials(person.display_name)}</AvatarFallback>
               </Avatar>
             </div>
             <span className="text-xs font-medium text-warm-700 text-center truncate max-w-[72px]">
-              {person.name.split(' ')[0]}
+              {person.display_name.split(' ')[0]}
             </span>
           </button>
         ))}

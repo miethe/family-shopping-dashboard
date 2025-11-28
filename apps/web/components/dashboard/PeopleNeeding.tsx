@@ -33,9 +33,9 @@ export function PeopleNeeding({ people }: PeopleNeedingProps) {
                 >
                   <div className="flex items-center gap-3">
                     <Avatar>
-                      <AvatarFallback>{getInitials(person.name)}</AvatarFallback>
+                      <AvatarFallback>{getInitials(person.display_name)}</AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-gray-900">{person.name}</span>
+                    <span className="font-medium text-gray-900">{person.display_name}</span>
                   </div>
                   <Badge variant="info">
                     {person.pending_gifts} pending

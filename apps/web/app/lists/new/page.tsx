@@ -158,7 +158,7 @@ export default function NewListPage() {
                 <option value="">Select a person</option>
                 {persons.map((person) => (
                   <option key={person.id} value={person.id}>
-                    {person.name}
+                    {person.display_name}
                   </option>
                 ))}
               </select>

@@ -33,7 +33,8 @@ export default function PeoplePage() {
     const query = searchQuery.toLowerCase();
     return data.items.filter((person: Person) => {
       return (
-        person.name.toLowerCase().includes(query) ||
+        person.display_name.toLowerCase().includes(query) ||
+        person.relationship?.toLowerCase().includes(query) ||
         person.interests?.some(interest => interest.toLowerCase().includes(query))
       );
     });
