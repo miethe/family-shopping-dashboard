@@ -54,7 +54,9 @@ export class ApiClient {
     path: string,
     options: RequestOptions = {}
   ): Promise<T> {
-    const url = new URL(path, this.baseUrl);
+    // Construct URL by concatenating base + path (new URL() doesn't work with base path segments)
+    const fullPath = `${this.baseUrl}${path}`;
+    const url = new URL(fullPath);
 
     // Add query parameters
     if (options.params) {
