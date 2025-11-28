@@ -8,6 +8,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { listApi } from '@/lib/api';
@@ -16,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlusIcon } from '@/components/layout/icons';
+import { AddListModal } from '@/components/lists/AddListModal';
 import type { ListType } from '@/types';
 
 interface OccasionListsProps {
@@ -30,6 +32,8 @@ const listTypeBadgeVariant: Record<ListType, 'default' | 'success' | 'warning' |
 };
 
 export function OccasionLists({ occasionId }: OccasionListsProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ['lists', { occasion_id: occasionId }],
     queryFn: () => listApi.list({ occasion_id: occasionId }),
@@ -64,12 +68,18 @@ export function OccasionLists({ occasionId }: OccasionListsProps) {
         <Card variant="default" padding="lg">
           <CardContent className="text-center">
             <p className="text-gray-500 mb-4">No gift lists for this occasion yet.</p>
-            <Button variant="outline" size="default">
+            <Button variant="outline" size="default" onClick={() => setIsModalOpen(true)}>
               <PlusIcon className="w-4 h-4 mr-2" />
               Create List
             </Button>
           </CardContent>
         </Card>
+
+        <AddListModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          occasionId={occasionId}
+        />
       </div>
     );
   }
@@ -80,7 +90,7 @@ export function OccasionLists({ occasionId }: OccasionListsProps) {
         <h3 className="text-lg font-semibold text-gray-900">
           Gift Lists ({lists.length})
         </h3>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={() => setIsModalOpen(true)}>
           <PlusIcon className="w-4 h-4 mr-2" />
           New List
         </Button>
@@ -127,6 +137,12 @@ export function OccasionLists({ occasionId }: OccasionListsProps) {
           </Link>
         ))}
       </div>
+
+      <AddListModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        occasionId={occasionId}
+      />
     </div>
   );
 }

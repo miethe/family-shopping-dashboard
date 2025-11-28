@@ -311,3 +311,28 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Add List Buttons Not Wired on Occasion and Person Detail Pages
+
+**Issue**: Clicking "Add a List" or "New List" buttons on occasion detail pages does nothing. PersonLists component has no "Add List" button at all.
+
+- **Location**: `apps/web/components/occasions/OccasionLists.tsx:67-70,83-86`, `apps/web/components/people/PersonLists.tsx`
+- **Root Cause**: OccasionLists had two Button components for adding lists but neither had an onClick handler. PersonLists component had no button for creating lists, only text suggesting the user should "Create a list to start adding gift ideas" without any actionable UI.
+- **Fix**:
+  - Created `AddListModal` component (`apps/web/components/lists/AddListModal.tsx`) with:
+    - Name, Type, Visibility form fields
+    - Optional `occasionId` and `personId` props for pre-filling context
+    - Uses `useCreateList` hook for mutation
+    - Mobile-first design with 44px touch targets
+  - Updated `OccasionLists`:
+    - Added state for modal open/close
+    - Wired both "Create List" and "New List" buttons to open modal
+    - Modal pre-fills `occasionId` on creation
+  - Updated `PersonLists`:
+    - Added "Create List" button to empty state
+    - Added header with "New List" button when lists exist
+    - Modal pre-fills `personId` on creation
+- **Commit(s)**: `e469e76`
+- **Status**: RESOLVED
+
+---
