@@ -1,7 +1,7 @@
 /**
  * PersonInfo Component
  *
- * Info tab displaying person details: interests, sizes, birthdate, and notes.
+ * Info tab displaying person details: interests and sizes.
  * Shows structured data in a clean, scannable format.
  */
 
@@ -9,24 +9,23 @@
 
 import type { Person } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface PersonInfoProps {
   person: Person;
 }
 
 export function PersonInfo({ person }: PersonInfoProps) {
-  const hasInterests = person.interests && person.interests.trim().length > 0;
+  const hasInterests = person.interests && person.interests.length > 0;
   const hasSizes = person.sizes && Object.keys(person.sizes).length > 0;
-  const hasNotes = person.notes && person.notes.trim().length > 0;
-  const hasBirthdate = person.birthdate;
 
   // Show message if no data
-  if (!hasInterests && !hasSizes && !hasNotes && !hasBirthdate) {
+  if (!hasInterests && !hasSizes) {
     return (
       <Card>
         <CardContent className="p-6 text-center text-gray-500">
           <p>No additional information available for this person.</p>
-          <p className="mt-2 text-sm">Use the Edit button to add interests, sizes, or notes.</p>
+          <p className="mt-2 text-sm">Use the Edit button to add interests or sizes.</p>
         </CardContent>
       </Card>
     );
@@ -35,27 +34,18 @@ export function PersonInfo({ person }: PersonInfoProps) {
   return (
     <Card>
       <CardContent className="space-y-6 p-6">
-        {hasBirthdate && (
-          <section>
-            <h3 className="font-semibold text-gray-500 text-sm uppercase tracking-wide mb-3">
-              Birthday
-            </h3>
-            <p className="text-gray-900">
-              {new Date(person.birthdate!).toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </p>
-          </section>
-        )}
-
         {hasInterests && (
           <section>
             <h3 className="font-semibold text-gray-500 text-sm uppercase tracking-wide mb-3">
               Interests
             </h3>
-            <p className="text-gray-900 whitespace-pre-wrap">{person.interests}</p>
+            <div className="flex flex-wrap gap-2">
+              {person.interests!.map((interest, index) => (
+                <Badge key={index} variant="info">
+                  {interest}
+                </Badge>
+              ))}
+            </div>
           </section>
         )}
 
@@ -72,15 +62,6 @@ export function PersonInfo({ person }: PersonInfoProps) {
                 </div>
               ))}
             </dl>
-          </section>
-        )}
-
-        {hasNotes && (
-          <section>
-            <h3 className="font-semibold text-gray-500 text-sm uppercase tracking-wide mb-3">
-              Notes
-            </h3>
-            <p className="text-gray-900 whitespace-pre-wrap">{person.notes}</p>
           </section>
         )}
       </CardContent>

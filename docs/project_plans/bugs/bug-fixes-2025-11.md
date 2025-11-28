@@ -239,3 +239,33 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## POST /api/v1/persons Returns 422 Unprocessable Entity
+
+**Issue**: Creating a new person fails with 422 validation error when submitting the person form
+
+- **Location**: `apps/web/types/index.ts:42-64`, `apps/web/components/people/PersonForm.tsx`
+- **Root Cause**: Frontend `PersonCreate` type used `display_name` but backend schema expects `name`. Frontend also sent extra fields not in backend (relationship, birthdate, notes, photo_url) and `interests` as string instead of string array.
+- **Fix**: Updated all Person-related types and components to match backend schema:
+  - Changed `display_name` → `name` in Person, PersonCreate, PersonUpdate interfaces
+  - Changed `interests` from `string` → `string[]`
+  - Removed unsupported fields: relationship, birthdate, notes, photo_url
+  - Updated PersonForm to use tag-based interests input (array handling)
+  - Updated PersonCard, PersonDetail, PersonInfo to use new field names
+  - Updated people list search filter for array interests
+- **Commit(s)**: `f7f9e7c`
+- **Status**: RESOLVED
+
+---
+
+## Assignments Page Missing Layout Shell
+
+**Issue**: The /assignments page has broken formatting with the sidebar disappearing
+
+- **Location**: `apps/web/app/assignments/` (missing layout.tsx)
+- **Root Cause**: Missing `layout.tsx` file in the assignments directory. All other routes (/people, /occasions, /lists, /dashboard) wrap their content in Shell + ProtectedRoute via layout.tsx, but assignments had no layout wrapper.
+- **Fix**: Created `apps/web/app/assignments/layout.tsx` following the pattern from other working pages, wrapping children in ProtectedRoute and Shell components
+- **Commit(s)**: `f7f9e7c`
+- **Status**: RESOLVED
+
+---

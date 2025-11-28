@@ -30,14 +30,16 @@ export default function AssignmentsPage() {
   });
 
   return (
-    <div className="space-y-6 p-4 md:p-6">
+    <div className="space-y-6">
       <PageHeader
         title="My Assignments"
         subtitle="Gifts assigned to you across all lists"
       />
 
-      {/* Filters and Controls */}
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+      {/* Content with consistent padding */}
+      <div className="px-4 md:px-6 space-y-6">
+        {/* Filters and Controls */}
+        <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
         {/* Status Filter */}
         <div className="flex flex-wrap gap-2">
           <FilterButton
@@ -176,6 +178,7 @@ export default function AssignmentsPage() {
         /* Assignments List */
         <AssignmentList assignments={assignments} groupBy={groupBy} />
       )}
+      </div>
     </div>
   );
 }

@@ -33,9 +33,8 @@ export default function PeoplePage() {
     const query = searchQuery.toLowerCase();
     return data.items.filter((person: Person) => {
       return (
-        person.display_name.toLowerCase().includes(query) ||
-        person.relationship?.toLowerCase().includes(query) ||
-        person.interests?.toLowerCase().includes(query)
+        person.name.toLowerCase().includes(query) ||
+        person.interests?.some(interest => interest.toLowerCase().includes(query))
       );
     });
   }, [data?.items, searchQuery]);

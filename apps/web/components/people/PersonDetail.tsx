@@ -34,23 +34,11 @@ export function PersonDetail({ person }: PersonDetailProps) {
     <Card>
       <div className="flex items-start gap-4 p-6">
         <Avatar size="xl" className="text-xl">
-          {person.photo_url ? (
-            <AvatarImage src={person.photo_url} alt={person.display_name} />
-          ) : (
-            <AvatarFallback>{getInitials(person.display_name)}</AvatarFallback>
-          )}
+          <AvatarFallback>{getInitials(person.name)}</AvatarFallback>
         </Avatar>
 
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900 truncate">{person.display_name}</h1>
-
-          {person.relationship && (
-            <div className="mt-2">
-              <Badge variant="default" size="sm">
-                {person.relationship}
-              </Badge>
-            </div>
-          )}
+          <h1 className="text-2xl font-bold text-gray-900 truncate">{person.name}</h1>
 
           <div className="mt-2 flex flex-wrap gap-2 items-center text-sm text-gray-500">
             <span>Added {formatDate(person.created_at)}</span>
@@ -62,9 +50,15 @@ export function PersonDetail({ person }: PersonDetailProps) {
             )}
           </div>
 
-          {person.interests && person.interests.trim().length > 0 && (
+          {person.interests && person.interests.length > 0 && (
             <div className="mt-3">
-              <p className="text-sm text-gray-600">{person.interests}</p>
+              <div className="flex flex-wrap gap-2">
+                {person.interests.map((interest, index) => (
+                  <Badge key={index} variant="info" size="sm">
+                    {interest}
+                  </Badge>
+                ))}
+              </div>
             </div>
           )}
         </div>

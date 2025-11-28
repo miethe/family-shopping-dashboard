@@ -27,44 +27,35 @@ export function PersonCard({ person }: PersonCardProps) {
       <Link
         href={`/people/${person.id}`}
         className="block p-4 min-h-[44px]"
-        aria-label={`View details for ${person.display_name}`}
+        aria-label={`View details for ${person.name}`}
       >
         <div className="flex items-start gap-4">
           {/* Avatar */}
           <Avatar size="lg" className="flex-shrink-0">
-            {person.photo_url ? (
-              <AvatarImage src={person.photo_url} alt={person.display_name} />
-            ) : (
-              <AvatarFallback>{getInitials(person.display_name)}</AvatarFallback>
-            )}
+            <AvatarFallback>{getInitials(person.name)}</AvatarFallback>
           </Avatar>
 
           {/* Content */}
           <div className="flex-1 min-w-0 space-y-2">
             {/* Name */}
             <h3 className="font-semibold text-lg truncate text-gray-900">
-              {person.display_name}
+              {person.name}
             </h3>
 
-            {/* Relationship Badge */}
-            {person.relationship && (
-              <Badge variant="default" size="sm">
-                {person.relationship}
-              </Badge>
-            )}
-
             {/* Interests Preview */}
-            {person.interests && (
-              <p className="text-sm text-gray-500 line-clamp-2">
-                {person.interests}
-              </p>
-            )}
-
-            {/* Birthdate (if available) */}
-            {person.birthdate && (
-              <p className="text-xs text-gray-400">
-                Birthday: {new Date(person.birthdate).toLocaleDateString()}
-              </p>
+            {person.interests && person.interests.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {person.interests.slice(0, 3).map((interest, index) => (
+                  <Badge key={index} variant="info" size="sm">
+                    {interest}
+                  </Badge>
+                ))}
+                {person.interests.length > 3 && (
+                  <span className="text-xs text-gray-400">
+                    +{person.interests.length - 3} more
+                  </span>
+                )}
+              </div>
             )}
           </div>
         </div>

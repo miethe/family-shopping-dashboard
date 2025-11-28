@@ -16,36 +16,42 @@ import { useToast } from '@/components/ui/use-toast';
 import type { PersonCreate } from '@/types';
 
 export function PersonForm() {
-  const [displayName, setDisplayName] = useState('');
-  const [relationship, setRelationship] = useState('');
-  const [birthdate, setBirthdate] = useState('');
-  const [notes, setNotes] = useState('');
-  const [interests, setInterests] = useState('');
-  const [photoUrl, setPhotoUrl] = useState('');
+  const [name, setName] = useState('');
+  const [interests, setInterests] = useState<string[]>([]);
+  const [interestInput, setInterestInput] = useState('');
+  const [sizes, setSizes] = useState<Record<string, string>>({});
 
   const { mutate, isPending } = useCreatePerson();
   const { toast } = useToast();
   const router = useRouter();
 
+  const handleAddInterest = () => {
+    if (interestInput.trim() && !interests.includes(interestInput.trim())) {
+      setInterests([...interests, interestInput.trim()]);
+      setInterestInput('');
+    }
+  };
+
+  const handleRemoveInterest = (index: number) => {
+    setInterests(interests.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!displayName.trim()) return;
+    if (!name.trim()) return;
 
     const personData: PersonCreate = {
-      display_name: displayName.trim(),
-      relationship: relationship.trim() || undefined,
-      birthdate: birthdate || undefined,
-      notes: notes.trim() || undefined,
-      interests: interests.trim() || undefined,
-      photo_url: photoUrl.trim() || undefined,
+      name: name.trim(),
+      interests: interests.length > 0 ? interests : undefined,
+      sizes: Object.keys(sizes).length > 0 ? sizes : undefined,
     };
 
     mutate(personData, {
       onSuccess: (person) => {
         toast({
           title: 'Person created!',
-          description: `${person.display_name} has been added.`,
+          description: `${person.name} has been added.`,
           variant: 'success',
         });
         router.push(`/people/${person.id}`);
@@ -64,70 +70,66 @@ export function PersonForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
         label="Name"
-        value={displayName}
-        onChange={(e) => setDisplayName(e.target.value)}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
         required
         placeholder="Enter person's name"
-      />
-
-      <Input
-        label="Relationship (optional)"
-        value={relationship}
-        onChange={(e) => setRelationship(e.target.value)}
-        placeholder="e.g., Sister, Aunt, Friend"
-        helperText="How are they related to you?"
-      />
-
-      <Input
-        label="Birthdate (optional)"
-        type="date"
-        value={birthdate}
-        onChange={(e) => setBirthdate(e.target.value)}
-        helperText="YYYY-MM-DD format"
-      />
-
-      <Input
-        label="Photo URL (optional)"
-        type="url"
-        value={photoUrl}
-        onChange={(e) => setPhotoUrl(e.target.value)}
-        placeholder="https://..."
-        helperText="Direct link to photo"
       />
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Interests (optional)
         </label>
-        <textarea
-          value={interests}
-          onChange={(e) => setInterests(e.target.value)}
-          placeholder="e.g., Photography, Cooking, Gaming"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          rows={3}
-        />
+        <div className="flex gap-2 mb-2">
+          <Input
+            value={interestInput}
+            onChange={(e) => setInterestInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddInterest();
+              }
+            }}
+            placeholder="e.g., Photography, Cooking, Gaming"
+          />
+          <Button
+            type="button"
+            onClick={handleAddInterest}
+            variant="outline"
+            disabled={!interestInput.trim()}
+          >
+            Add
+          </Button>
+        </div>
+        {interests.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {interests.map((interest, index) => (
+              <span
+                key={index}
+                className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+              >
+                {interest}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveInterest(index)}
+                  className="text-blue-600 hover:text-blue-800"
+                  aria-label={`Remove ${interest}`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
         <p className="mt-1 text-xs text-gray-500">
-          List their interests to help with gift ideas
+          Add interests to help with gift ideas
         </p>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Notes (optional)
-        </label>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Any other details to remember..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          rows={3}
-        />
       </div>
 
       <Button
         type="submit"
         isLoading={isPending}
-        disabled={isPending || !displayName.trim()}
+        disabled={isPending || !name.trim()}
         className="w-full"
       >
         {isPending ? 'Adding...' : 'Add Person'}
