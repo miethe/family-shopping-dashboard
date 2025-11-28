@@ -160,3 +160,123 @@ body {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
 }
+
+/* ============================================
+   Micro-interaction Utilities
+   ============================================ */
+@layer utilities {
+  /* Press effect - subtle scale down on active */
+  .press-effect {
+    @apply transition-transform duration-150 ease-out active:scale-[0.98];
+  }
+
+  /* Lift effect - elevation increase on hover */
+  .lift-effect {
+    @apply transition-all duration-200 ease-out hover:shadow-medium hover:-translate-y-0.5;
+  }
+
+  /* Pulse animation for attention */
+  .attention-pulse {
+    animation: attention-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Subtle bounce for success feedback */
+  .success-bounce {
+    animation: success-bounce 0.5s ease-out;
+  }
+
+  /* Shimmer loading effect */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--color-bg-subtle) 0%,
+      var(--color-bg-base) 50%,
+      var(--color-bg-subtle) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* Hover card lift */
+  .hover-lift {
+    @apply transition-all duration-300 ease-out;
+  }
+  .hover-lift:hover {
+    @apply shadow-high -translate-y-1;
+  }
+
+  /* Interactive scale */
+  .interactive-scale {
+    @apply transition-transform duration-200 ease-out;
+  }
+  .interactive-scale:hover {
+    @apply scale-[1.02];
+  }
+  .interactive-scale:active {
+    @apply scale-[0.98];
+  }
+}
+
+/* ============================================
+   Micro-interaction Keyframes
+   ============================================ */
+@keyframes attention-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes success-bounce {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.05); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ============================================
+   Status Pill Animations
+   ============================================ */
+
+/* Scale-in animation for entrance */
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 300ms ease-out;
+}
+
+/* Status change flash animation */
+@keyframes status-flash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+    background-color: white;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.status-flash {
+  animation: status-flash 0.3s ease-out;
+}

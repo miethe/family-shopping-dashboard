@@ -186,6 +186,9 @@ const config: Config = {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.6' },
         },
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
       },
 
       animation: {
@@ -193,6 +196,7 @@ const config: Config = {
         'slide-in-right': 'slideInRight 300ms ease-out',
         'scale-in': 'scaleIn 200ms ease-out',
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'shimmer': 'shimmer 1.5s infinite',
       },
 
       minHeight: {

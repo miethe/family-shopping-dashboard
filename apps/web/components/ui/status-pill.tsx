@@ -9,6 +9,7 @@ interface StatusPillProps extends React.HTMLAttributes<HTMLSpanElement> {
   status: GiftStatus;
   withDot?: boolean;
   size?: 'sm' | 'md' | 'lg';
+  animated?: boolean;
 }
 
 const statusConfig: Record<GiftStatus, { bg: string; text: string; border: string; dot: string; label: string }> = {
@@ -86,6 +87,7 @@ export function StatusPill({
   status,
   withDot = true,
   size = 'md',
+  animated = false,
   className,
   ...props
 }: StatusPillProps) {
@@ -93,8 +95,11 @@ export function StatusPill({
 
   return (
     <span
+      data-status={status}
       className={cn(
-        'inline-flex items-center gap-1.5 font-semibold rounded-small border transition-all duration-200',
+        'inline-flex items-center gap-1.5 font-semibold rounded-small border',
+        'transition-all duration-300 ease-out',
+        animated && 'animate-scale-in',
         sizeClasses[size],
         config.bg,
         config.text,
@@ -104,7 +109,13 @@ export function StatusPill({
       {...props}
     >
       {withDot && (
-        <span className={cn('rounded-full', dotSizeClasses[size], config.dot)} />
+        <span
+          className={cn(
+            'rounded-full transition-colors duration-300',
+            dotSizeClasses[size],
+            config.dot
+          )}
+        />
       )}
       {config.label}
     </span>
