@@ -60,3 +60,26 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Multiple Missing Bidirectional Relationships Across Models
+
+**Issue**: User registration fails with SQLAlchemy error `InvalidRequestError: Mapper 'Mapper[User(users)]' has no property 'lists'` (and similar errors for other missing relationships)
+
+- **Location**: Multiple models in `services/api/app/models/`
+- **Root Cause**: Several models defined bidirectional relationships with `back_populates` but the target models did not have the corresponding relationships defined:
+  - `List.user` → `back_populates="lists"` but User had no `lists`
+  - `ListItem.assignee` → `back_populates="assigned_items"` but User had no `assigned_items`
+  - `List.person` → `back_populates="lists"` but Person had no `lists`
+  - `List.occasion` → `back_populates="lists"` but Occasion had no `lists`
+  - `List.gifts` was pointing to Gift model but should be `list_items` to ListItem
+- **Fix**:
+  - User: Added `lists` and `assigned_items` relationships
+  - Person: Added `lists` relationship
+  - Occasion: Added `lists` relationship
+  - List: Changed incorrect `gifts→Gift` relationship to `list_items→ListItem`
+  - Updated list repository and service to use `list_items` instead of `gifts`
+- **Commit(s)**: `23530ce`
+- **Validated**: API registration and login tested successfully via curl
+- **Status**: RESOLVED
+
+---
