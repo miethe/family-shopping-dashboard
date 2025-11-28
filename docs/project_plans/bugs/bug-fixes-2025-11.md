@@ -164,3 +164,21 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Create Pages Navigate to Non-Existent Entities
+
+**Issue**: Create pages for Lists, People, and Occasions navigate to detail pages showing "entity not found" error instead of displaying create forms
+
+- **Location**: `apps/web/app/lists/new/`, `apps/web/app/people/new/`, `apps/web/app/occasions/new/` (missing directories)
+- **Root Cause**: Missing static route pages for `/lists/new`, `/people/new`, and `/occasions/new`. The dynamic `[id]` routes were catching "new" as an entity ID and attempting to fetch entities with `id="new"`, which returns NaN when parsed and causes 404 errors.
+- **Fix**:
+  - Created `apps/web/app/lists/new/page.tsx` with form for ListCreate fields
+  - Created `apps/web/app/people/new/page.tsx` with PersonForm component
+  - Created `apps/web/app/occasions/new/page.tsx` with form for OccasionCreate fields
+  - Added `useCreateOccasion` hook to `hooks/useOccasion.ts` (was missing)
+  - Added `PersonForm` component to `components/people/`
+- **Pattern Reference**: Existing `/gifts/new/page.tsx` worked correctly and served as the template
+- **Commit(s)**: `878db21`, `4a4e460`
+- **Status**: RESOLVED
+
+---

@@ -7,7 +7,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { occasionApi } from '@/lib/api';
-import type { OccasionUpdate } from '@/types';
+import type { OccasionCreate, OccasionUpdate } from '@/types';
 
 /**
  * Fetch a single occasion by ID
@@ -45,6 +45,21 @@ export function useDeleteOccasion(id: number) {
 
   return useMutation({
     mutationFn: () => occasionApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['occasions'] });
+    },
+  });
+}
+
+/**
+ * Create a new occasion
+ * Invalidates the occasions list cache
+ */
+export function useCreateOccasion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: OccasionCreate) => occasionApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['occasions'] });
     },
