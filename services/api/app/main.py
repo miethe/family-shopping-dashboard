@@ -153,7 +153,10 @@ async def root() -> dict[str, str]:
     }
 
 
-# Health check endpoint
+# API version prefix for all routes (except health)
+API_V1_PREFIX = "/api/v1"
+
+# Health check endpoint (at root for K8s probes)
 from app.api import health
 
 app.include_router(health.router)
@@ -161,34 +164,34 @@ app.include_router(health.router)
 # Authentication routes
 from app.api import auth
 
-app.include_router(auth.router)
+app.include_router(auth.router, prefix=API_V1_PREFIX)
 
 # List routes (CRUD + items)
 from app.api import lists
 
-app.include_router(lists.router)
+app.include_router(lists.router, prefix=API_V1_PREFIX)
 
 # List item routes (status transitions, assignments)
 from app.api import list_items
 
-app.include_router(list_items.router)
+app.include_router(list_items.router, prefix=API_V1_PREFIX)
 
 # Gift routes (CRUD + search)
 from app.api import gifts
 
-app.include_router(gifts.router)
+app.include_router(gifts.router, prefix=API_V1_PREFIX)
 
 # Person routes (gift recipients CRUD)
 from app.api import persons
 
-app.include_router(persons.router)
+app.include_router(persons.router, prefix=API_V1_PREFIX)
 
 # Dashboard routes (aggregated dashboard data)
 from app.api import dashboard
 
-app.include_router(dashboard.router)
+app.include_router(dashboard.router, prefix=API_V1_PREFIX)
 
-# WebSocket routes (real-time updates)
+# WebSocket routes (real-time updates - no version prefix, WS is protocol-level)
 from app.api import ws
 
 app.include_router(ws.router)
@@ -196,9 +199,9 @@ app.include_router(ws.router)
 # Occasion routes (CRUD)
 from app.api import occasions
 
-app.include_router(occasions.router)
+app.include_router(occasions.router, prefix=API_V1_PREFIX)
 
 # User routes (profile management)
 from app.api import users
 
-app.include_router(users.router)
+app.include_router(users.router, prefix=API_V1_PREFIX)

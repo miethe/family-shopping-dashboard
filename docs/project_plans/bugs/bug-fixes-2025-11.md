@@ -35,3 +35,16 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## API Endpoints Returning 404 - Missing /api/v1 Prefix
+
+**Issue**: All API endpoints returning 404 errors. Login (`POST /api/v1/auth/login`) and register (`POST /api/v1/auth/register`) both fail with 404 Not Found.
+
+- **Location**: `services/api/app/main.py:156-207`
+- **Root Cause**: All API routers were registered WITHOUT the `/api/v1` prefix in `main.py`, but the frontend expects ALL endpoints to have this prefix. Backend provided `/auth/login` but frontend called `/api/v1/auth/login`.
+- **Fix**: Added `prefix="/api/v1"` to all router includes in main.py (except health for K8s probes and WebSocket which is protocol-level). Created `API_V1_PREFIX` constant for consistency.
+- **Affected Routers**: auth, lists, list_items, gifts, persons, dashboard, occasions, users (8 routers)
+- **Commit(s)**: `85a5b0b`
+- **Status**: RESOLVED
+
+---
