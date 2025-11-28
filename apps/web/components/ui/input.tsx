@@ -20,22 +20,30 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 mb-1.5"
+            className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide"
           >
             {label}
-            {props.required && <span className="text-red-500 ml-1">*</span>}
+            {props.required && <span className="text-status-warning-600 ml-1">*</span>}
           </label>
         )}
         <input
           type={type}
           id={inputId}
           className={cn(
-            'flex h-11 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base',
+            // Base
+            'w-full px-4 py-3 bg-white text-base text-warm-900 font-normal',
+            'placeholder:text-warm-400',
             'min-h-[44px]', // Touch target
-            'placeholder:text-gray-400',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50',
-            error && 'border-red-500 focus-visible:ring-red-500',
+            // Border
+            'border-2 border-border-medium rounded-medium shadow-subtle',
+            // Focus
+            'focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200',
+            // Transitions
+            'transition-all duration-200 ease-out',
+            // Error state
+            error && 'border-status-warning-500 focus:ring-status-warning-200',
+            // Disabled
+            'disabled:bg-warm-100 disabled:text-warm-500 disabled:border-warm-300 disabled:cursor-not-allowed',
             className
           )}
           ref={ref}
@@ -47,12 +55,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <p id={errorId} className="mt-1.5 text-sm text-red-600" role="alert">
+          <p id={errorId} className="mt-1.5 text-xs text-status-warning-600" role="alert">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p id={helperId} className="mt-1.5 text-sm text-gray-500">
+          <p id={helperId} className="mt-1.5 text-xs text-warm-600">
             {helperText}
           </p>
         )}
