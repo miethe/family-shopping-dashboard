@@ -532,7 +532,7 @@ async def add_item_to_list(
     item_service = ListItemService(db)
 
     try:
-        item = await item_service.create(item_data)
+        item = await item_service.create(item_data, current_user_id)
         return item
 
     except ValueError as e:
