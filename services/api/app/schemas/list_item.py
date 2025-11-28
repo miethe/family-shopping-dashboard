@@ -21,9 +21,9 @@ class ListItemCreate(BaseModel):
         ...,
         description="ID of the gift to add",
     )
-    list_id: int = Field(
-        ...,
-        description="ID of the list",
+    list_id: int | None = Field(
+        None,
+        description="ID of the list (optional - typically provided via URL path)",
     )
     status: ListItemStatus = Field(
         default=ListItemStatus.idea,
