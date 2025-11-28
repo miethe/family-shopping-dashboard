@@ -364,3 +364,69 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Price toFixed TypeError When Adding Gift
+
+**Issue**: Adding a gift with a price from the /gifts screen fails with client-side error: `TypeError: s.price.toFixed is not a function`
+
+- **Location**: Multiple frontend components + backend schema
+  - `services/api/app/schemas/gift.py:65,76` (GiftResponse, GiftSummary)
+  - `apps/web/components/lists/ListItemRow.tsx:62`
+  - `apps/web/components/lists/AddListItemModal.tsx:184`
+  - `apps/web/components/gifts/GiftCard.tsx:64`
+  - `apps/web/components/gifts/GiftDetail.tsx:63`
+  - `apps/web/components/assignments/AssignmentCard.tsx:131`
+- **Root Cause**: Pydantic v2 serializes `Decimal` to JSON as a string (e.g., `"29.99"`), but the frontend TypeScript types declared `price?: number`. When frontend called `.toFixed(2)` on a string, it threw TypeError.
+- **Fix**:
+  - Backend: Added `@field_serializer('price')` to GiftResponse and GiftSummary to convert Decimal to float during JSON serialization
+  - Frontend: Created `formatPrice()` utility in `lib/utils.ts` for defensive parsing (handles both string and number)
+  - Updated all 5 components to use `formatPrice()` instead of raw `.toFixed()`
+- **Commit(s)**: `47a123f`
+- **Status**: RESOLVED
+
+---
+
+## Lists Fail to Load After Adding Gift
+
+**Issue**: After creating a gift, navigating to lists or list detail pages would fail to render properly
+
+- **Location**: Same as above (price serialization issue)
+- **Root Cause**: Same root cause as price toFixed error. React Query cache invalidation triggered refetch, new data included string-typed prices, and ListItemRow.tsx crashed trying to render with `.toFixed()`.
+- **Fix**: Same fix as above - proper Decimal→float serialization and defensive formatPrice() utility
+- **Commit(s)**: `47a123f`
+- **Status**: RESOLVED
+
+---
+
+## Add Item Modal Only Shows Existing Items
+
+**Issue**: When viewing a list and clicking "Add Item", the modal only allows adding existing items with no option to create a new gift inline
+
+- **Location**: `apps/web/components/lists/AddListItemModal.tsx`
+- **Root Cause**: Modal was designed for single use case (select existing gift). Users had to navigate away to /gifts/new to create gifts, breaking the flow.
+- **Fix**: Enhanced modal with tabbed interface:
+  - "Add Existing" tab: Original functionality (search and select existing gift)
+  - "Create New" tab: Embedded gift creation form (name, URL, price, image URL)
+  - Two-step process: Creates gift via useCreateGift(), then adds to list with selected status
+  - Status and notes fields available in both tabs
+- **Commit(s)**: `63a1505`
+- **Status**: RESOLVED
+
+---
+
+## Gift Creation Missing List Attachment Option
+
+**Issue**: When creating a gift, there's no way to attach it to lists. When adding from /lists screen, it should auto-select the current list while allowing additional selections.
+
+- **Location**: `apps/web/components/gifts/ManualGiftForm.tsx`, `apps/web/components/gifts/UrlGiftForm.tsx`
+- **Root Cause**: Gift creation forms had no awareness of lists - users had to create gift, then separately add it to lists through list detail pages.
+- **Fix**:
+  - Created reusable Checkbox UI component
+  - Added multi-select list attachment to both ManualGiftForm and UrlGiftForm
+  - Added `defaultListId` prop for pre-selection when coming from list context
+  - After gift creation, automatically creates list items (status: 'idea') for each selected list
+  - Navigates to first selected list on success (or gift detail if no lists selected)
+- **Commit(s)**: `05b2d11`
+- **Status**: RESOLVED
+
+---
