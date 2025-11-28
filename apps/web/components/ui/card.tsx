@@ -3,15 +3,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const cardVariants = cva(
-  'bg-surface-primary rounded-xlarge border transition-all duration-300 ease-out',
+  'rounded-xlarge border transition-all duration-300 ease-out',
   {
     variants: {
       variant: {
-        default: 'border-border-subtle shadow-low',
-        elevated: 'border-border-subtle shadow-low hover:shadow-medium',
-        interactive: 'border-border-subtle shadow-low hover:shadow-medium hover:border-border-medium active:shadow-subtle cursor-pointer hover:scale-[1.01] active:scale-[0.99]',
-        stat: 'border-2 shadow-medium p-8 bg-gradient-to-br',
-        flat: 'bg-surface-secondary border-border-subtle shadow-subtle',
+        default: 'bg-surface-primary border-border-subtle shadow-low',
+        glass: 'bg-white/60 backdrop-blur-md border-white/40 shadow-glass',
+        elevated: 'bg-surface-primary border-border-subtle shadow-medium hover:shadow-high',
+        interactive: 'bg-surface-primary border-border-subtle shadow-low hover:shadow-medium hover:border-border-medium active:shadow-subtle cursor-pointer hover:scale-[1.01] active:scale-[0.99]',
+        stat: 'bg-surface-primary border-border-subtle shadow-subtle hover:shadow-medium',
+        flat: 'bg-surface-secondary border-transparent',
       },
       padding: {
         none: 'p-0',
@@ -30,7 +31,7 @@ const cardVariants = cva(
 
 export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {}
+  VariantProps<typeof cardVariants> { }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, padding, ...props }, ref) => {
