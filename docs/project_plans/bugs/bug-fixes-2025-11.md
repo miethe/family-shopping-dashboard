@@ -194,3 +194,25 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## List Items API Endpoint Path Mismatch
+
+**Issue**: Adding items to lists fails with 404 - `GET /api/v1/list-items?list_id=1 404 Not Found`
+
+- **Location**: `apps/web/lib/api/endpoints.ts:182-190`, `apps/web/hooks/useListItems.ts`
+- **Root Cause**: Frontend assumed list items were a flat resource (`/list-items?list_id=X`) but backend implements them as nested resources under lists (`/lists/{list_id}/items`). The backend `/list-items` router only provides status update and assignment endpoints (`PUT /list-items/{id}/status`, `PUT /list-items/{id}/assign`), not CRUD operations.
+- **Fix**:
+  - Updated `listItemApi` in endpoints.ts to use correct nested resource paths:
+    - `list()` → `GET /lists/{list_id}/items`
+    - `create()` → `POST /lists/{list_id}/items`
+    - Added `updateStatus()` → `PUT /list-items/{id}/status`
+    - Added `assign()` → `PUT /list-items/{id}/assign`
+    - Removed non-existent endpoints: `get()`, `update()`, `delete()`
+  - Updated `useListItems` hook to accept `listId: number | undefined` instead of params object
+  - Updated `useCreateListItem` hook to accept listId in mutation params
+  - Stubbed `useMyAssignments` hook (requires backend endpoint `GET /list-items?assigned_to=X`)
+  - Updated callers: `app/lists/[id]/page.tsx`, `components/quick-add/QuickAddModal.tsx`
+- **Commit(s)**: `73559a3`
+- **Status**: RESOLVED
+
+---

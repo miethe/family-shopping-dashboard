@@ -54,9 +54,8 @@ export function QuickAddModal({ isOpen, onClose }: QuickAddModalProps) {
 
       // 2. Add to selected list as idea
       await createListItem.mutateAsync({
-        gift_id: gift.id,
-        list_id: selectedListId,
-        status: 'idea',
+        listId: selectedListId,
+        data: { gift_id: gift.id, status: 'idea' },
       });
 
       toast({

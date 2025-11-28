@@ -3,10 +3,13 @@
  *
  * React Query hook for fetching list items assigned to the current user.
  * Provides filtering and grouping capabilities for assignment management.
+ *
+ * TODO: Backend needs GET /list-items?assigned_to=X endpoint.
+ * Currently disabled - returns empty array.
+ * See: https://github.com/family-gifting/dashboard/issues/TBD
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { listItemApi } from '@/lib/api/endpoints';
 import { useAuth } from './useAuth';
 import type { ListItemWithGift } from '@/types';
 
@@ -29,6 +32,9 @@ export interface AssignmentFilterParams {
 /**
  * Fetch all list items assigned to the current user
  * @param params - Optional filter parameters (status)
+ *
+ * NOTE: Currently returns empty array - backend endpoint not implemented.
+ * Backend needs: GET /list-items?assigned_to=X or GET /users/{id}/assignments
  */
 export function useMyAssignments(params?: AssignmentFilterParams) {
   const { user } = useAuth();
@@ -36,17 +42,10 @@ export function useMyAssignments(params?: AssignmentFilterParams) {
   return useQuery({
     queryKey: ['assignments', 'me', params],
     queryFn: async () => {
-      if (!user?.id) {
-        return [];
-      }
-
-      // Fetch items assigned to current user
-      const items = await listItemApi.list({
-        assigned_to: user.id,
-        status: params?.status,
-      });
-
-      return items as AssignmentItem[];
+      // TODO: Implement when backend supports GET /list-items?assigned_to=X
+      // Currently no endpoint exists to query items by assigned user across all lists
+      console.warn('useMyAssignments: Backend endpoint not implemented');
+      return [] as AssignmentItem[];
     },
     enabled: !!user?.id,
   });

@@ -174,19 +174,39 @@ export const listApi = {
 // ============================================================================
 
 export interface ListItemListParams {
-  list_id?: number;
+  list_id: number; // Required - items are nested under lists
   assigned_to?: number;
   status?: string;
 }
 
 export const listItemApi = {
-  list: (params?: ListItemListParams) =>
-    apiClient.get<ListItemWithGift[]>('/list-items', params),
-  get: (id: number) => apiClient.get<ListItemWithGift>(`/list-items/${id}`),
-  create: (data: ListItemCreate) => apiClient.post<ListItem>('/list-items', data),
-  update: (id: number, data: ListItemUpdate) =>
-    apiClient.put<ListItem>(`/list-items/${id}`, data),
-  delete: (id: number) => apiClient.delete<void>(`/list-items/${id}`),
+  /**
+   * Get all items in a list.
+   * Uses nested resource: GET /lists/{list_id}/items
+   */
+  list: (params: ListItemListParams) =>
+    apiClient.get<ListItemWithGift[]>(`/lists/${params.list_id}/items`),
+
+  /**
+   * Add item to a list.
+   * Uses nested resource: POST /lists/{list_id}/items
+   */
+  create: (listId: number, data: Omit<ListItemCreate, 'list_id'>) =>
+    apiClient.post<ListItem>(`/lists/${listId}/items`, data),
+
+  /**
+   * Update item status.
+   * Uses: PUT /list-items/{id}/status
+   */
+  updateStatus: (id: number, status: string) =>
+    apiClient.put<ListItem>(`/list-items/${id}/status`, { status }),
+
+  /**
+   * Assign item to user.
+   * Uses: PUT /list-items/{id}/assign
+   */
+  assign: (id: number, assignedToId: number | null) =>
+    apiClient.put<ListItem>(`/list-items/${id}/assign`, { assigned_to_id: assignedToId }),
 };
 
 // ============================================================================

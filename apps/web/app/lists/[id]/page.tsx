@@ -78,7 +78,7 @@ export default function ListDetailPage({ params }: Props) {
   const { data: listData, isLoading: listLoading, error: listError } = useList(listId);
 
   // Fetch list items
-  const { data: items, isLoading: itemsLoading } = useListItems({ list_id: listId });
+  const { data: items, isLoading: itemsLoading } = useListItems(listId);
 
   // Show loading state
   if (listLoading) {
