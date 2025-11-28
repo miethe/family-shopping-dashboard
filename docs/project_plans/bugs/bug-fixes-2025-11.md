@@ -437,8 +437,10 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 
 - **Location**: `services/api/app/schemas/list_item.py:24-27`
 - **Root Cause**: `ListItemCreate` schema required `list_id` in the request body, but the frontend correctly passes `list_id` via URL path parameter (`POST /lists/{list_id}/items`). Pydantic validation fails before the router can inject `list_id` from path.
-- **Fix**: Made `list_id` field optional (`int | None = None`) in `ListItemCreate` since the router (`lists.py:524-530`) already injects it from the path parameter.
-- **Commit(s)**: `4825f47`
+- **Fix**:
+  1. Made `list_id` field optional (`int | None = None`) in `ListItemCreate` since the router injects it from path
+  2. Added missing `current_user_id` argument to `item_service.create()` call in router
+- **Commit(s)**: `4825f47`, `403ffc5`
 - **Status**: RESOLVED
 
 ---
