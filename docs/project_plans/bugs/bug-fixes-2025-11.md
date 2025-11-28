@@ -212,7 +212,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - Updated `useCreateListItem` hook to accept listId in mutation params
   - Stubbed `useMyAssignments` hook (requires backend endpoint `GET /list-items?assigned_to=X`)
   - Updated callers: `app/lists/[id]/page.tsx`, `components/quick-add/QuickAddModal.tsx`
-- **Commit(s)**: `73559a3`
+- **Commit(s)**: `660684e`
 - **Status**: RESOLVED
 
 ---
