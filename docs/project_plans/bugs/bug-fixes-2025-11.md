@@ -148,3 +148,19 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## ListItemStatus Enum Case Mismatch
+
+**Issue**: Dashboard API crashing with `AttributeError: IDEA` - enum attribute not found
+
+- **Location**: `services/api/app/services/dashboard.py:74,75,126,154,212`, `services/api/tests/unit/services/test_dashboard_service.py:203,222`
+- **Root Cause**: The `ListItemStatus` enum uses lowercase values (`idea`, `selected`, `purchased`, `received`) but the dashboard service referenced uppercase attributes (`IDEA`, `SELECTED`, `PURCHASED`, `RECEIVED`). Python enums are case-sensitive.
+- **Fix**: Changed all references from uppercase to lowercase:
+  - `ListItemStatus.IDEA` → `ListItemStatus.idea`
+  - `ListItemStatus.SELECTED` → `ListItemStatus.selected`
+  - `ListItemStatus.PURCHASED` → `ListItemStatus.purchased`
+  - `ListItemStatus.RECEIVED` → `ListItemStatus.received`
+- **Commit(s)**: `a571d78`
+- **Status**: RESOLVED
+
+---

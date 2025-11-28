@@ -200,7 +200,7 @@ class TestDashboardService:
         dashboard_service.session.execute = AsyncMock(return_value=mock_execute)
 
         # Act
-        result = await dashboard_service._count_by_status(ListItemStatus.IDEA)
+        result = await dashboard_service._count_by_status(ListItemStatus.idea)
 
         # Assert
         assert result == 15
@@ -219,7 +219,7 @@ class TestDashboardService:
         dashboard_service.session.execute = AsyncMock(return_value=mock_execute)
 
         # Act
-        result = await dashboard_service._count_by_status(ListItemStatus.IDEA)
+        result = await dashboard_service._count_by_status(ListItemStatus.idea)
 
         # Assert
         assert result == 0

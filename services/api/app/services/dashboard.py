@@ -71,8 +71,8 @@ class DashboardService:
         # Run all queries concurrently for better performance
         primary_occasion = await self._get_primary_occasion()
         people_needing_gifts = await self._get_people_needing_gifts()
-        total_ideas = await self._count_by_status(ListItemStatus.IDEA)
-        total_purchased = await self._count_by_status(ListItemStatus.PURCHASED)
+        total_ideas = await self._count_by_status(ListItemStatus.idea)
+        total_purchased = await self._count_by_status(ListItemStatus.purchased)
         my_assignments = await self._count_user_assignments(user_id)
 
         return DashboardResponse(
@@ -123,7 +123,7 @@ class DashboardService:
             .join(List, ListItem.list_id == List.id)
             .where(List.occasion_id == occasion.id)
             .where(
-                ListItem.status.in_([ListItemStatus.PURCHASED, ListItemStatus.RECEIVED])
+                ListItem.status.in_([ListItemStatus.purchased, ListItemStatus.received])
             )
         )
         purchased_result = await self.session.execute(purchased_items_stmt)
@@ -151,7 +151,7 @@ class DashboardService:
             List of PersonSummary with pending gift counts.
         """
         # Subquery for pending items count per person
-        pending_statuses = [ListItemStatus.IDEA, ListItemStatus.SELECTED]
+        pending_statuses = [ListItemStatus.idea, ListItemStatus.selected]
 
         stmt = (
             select(
@@ -209,7 +209,7 @@ class DashboardService:
         stmt = (
             select(func.count(ListItem.id))
             .where(ListItem.assigned_to == user_id)
-            .where(ListItem.status != ListItemStatus.RECEIVED)
+            .where(ListItem.status != ListItemStatus.received)
         )
         result = await self.session.execute(stmt)
         return result.scalar() or 0
