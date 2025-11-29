@@ -333,7 +333,7 @@ EOF
 ### Core Docs
 
 - North Star: `docs/project_plans/north-star/family-gifting-dash.md`
-- V1 PRD: `docs/project_plans/init/family-dashboard-v1.md`
+- V1 PRD: `docs/project_plans/family-dashboard-v1/family-dashboard-v1.md`
 
 ### Domain Guides
 

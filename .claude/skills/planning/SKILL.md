@@ -48,18 +48,18 @@ User: "Create a PRD for advanced filtering on the prompts page"
 
 ```bash
 # Provide PRD path
-User: "Create implementation plan for docs/project_plans/PRDs/harden-polish/advanced-filtering-v1.md"
+User: "Create implementation plan for docs/project_plans/advanced-filtering-v1/advanced-filtering-v1.md"
 
 # Skill generates:
-# - Main plan: docs/project_plans/implementation_plans/harden-polish/advanced-filtering-v1.md
-# - Phase files (if needed): docs/project_plans/implementation_plans/harden-polish/advanced-filtering-v1/phase-[N]-[name].md
+# - Main plan: docs/project_plans/advanced-filtering-v1/advanced-filtering-v1.md
+# - Phase files (if needed): docs/project_plans/advanced-filtering-v1/advanced-filtering-v1/phase-[N]-[name].md
 ```
 
 ### Optimize Existing Plan
 
 ```bash
 # Provide existing plan path
-User: "Optimize docs/project_plans/implementation_plans/harden-polish/sidebar-polish-v1.md"
+User: "Optimize docs/project_plans/sidebar-polish-v1/sidebar-polish-v1.md"
 
 # Skill:
 # 1. Analyzes plan length (e.g., 1200 lines)
@@ -267,7 +267,7 @@ Phase Files (if plan >800 lines):
 **Example**:
 
 ```markdown
-Input: docs/project_plans/implementation_plans/harden-polish/sidebar-polish-v1.md (1200 lines)
+Input: docs/project_plans/{PRD_NAME}/sidebar-polish-v1.md (1200 lines)
 
 Analysis:
 - 8 phases, ~150 lines each
@@ -902,7 +902,7 @@ Phase Files Created:
 
 **Input**:
 ```
-User: "Optimize docs/project_plans/implementation_plans/harden-polish/sidebar-polish-v1.md - it's 1200 lines"
+User: "Optimize docs/project_plans/{PRD_NAME}/sidebar-polish-v1.md - it's 1200 lines"
 ```
 
 **Process**:
@@ -916,7 +916,7 @@ User: "Optimize docs/project_plans/implementation_plans/harden-polish/sidebar-po
 
 **Output**:
 ```
-Updated: docs/project_plans/implementation_plans/harden-polish/sidebar-polish-v1.md (200 lines)
+Updated: docs/project_plans/{PRD_NAME}/sidebar-polish-v1.md (200 lines)
 
 Created Phase Files:
 - sidebar-polish-v1/phase-1-3-backend.md (450 lines)

@@ -46,7 +46,7 @@
     },
     "ARCHITECTURE_DIAGRAM": {
       "description": "URL to architecture diagram or ASCII art representation of system architecture",
-      "default": "See /docs/project_plans/init/family-dashboard-v1.md",
+      "default": "See /docs/project_plans/family-dashboard-v1/family-dashboard-v1.md",
       "required": false,
       "type": "string"
     }
@@ -383,7 +383,7 @@
       "2. Review agent prompts in .claude/agents/",
       "3. Customize commands in .claude/commands/",
       "4. Set up symbol files for efficient codebase navigation",
-      "5. Begin development following the V1 PRD at docs/project_plans/init/family-dashboard-v1.md"
+      "5. Begin development following the V1 PRD at docs/project_plans/family-dashboard-v1/family-dashboard-v1.md"
     ]
   }
 }

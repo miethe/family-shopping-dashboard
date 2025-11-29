@@ -4,7 +4,7 @@
 **Date**: 2025-11-26
 **Author**: Implementation Planning (Opus)
 **Related Documents**:
-- **PRD**: `docs/project_plans/init/family-dashboard-v1.md`
+- **PRD**: `docs/project_plans/family-dashboard-v1/family-dashboard-v1.md`
 - **North Star**: `docs/project_plans/north-star/family-gifting-dash.md`
 
 **Complexity**: Large (Full Application MVP)

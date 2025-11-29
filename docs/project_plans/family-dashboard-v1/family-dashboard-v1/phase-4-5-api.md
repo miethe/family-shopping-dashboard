@@ -2,7 +2,7 @@
 
 **Plan ID**: `IMPL-2025-11-26-FAMILY-DASH-V1`
 **Parent Document**: [Family Dashboard V1 Implementation Plan](../family-dashboard-v1-implementation.md)
-**PRD**: `docs/project_plans/init/family-dashboard-v1.md`
+**PRD**: `docs/project_plans/family-dashboard-v1/family-dashboard-v1.md`
 
 ---
 
