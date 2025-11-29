@@ -88,22 +88,25 @@ class TestDataPopulator:
 
     async def drop_and_recreate_tables(self) -> None:
         """
-        Drop all tables and recreate them using CASCADE to ensure
-        all dependent objects (indexes, constraints) are removed.
+        Drop and recreate the public schema using raw SQL.
+        This is the most reliable way to ensure a clean slate.
 
         WARNING: This DELETES ALL DATA permanently.
         """
-        print("\n🗑️  Dropping all tables with CASCADE...")
+        print("\n🗑️  Dropping public schema with CASCADE...")
         async with engine.begin() as conn:
-            # Drop all tables with CASCADE to remove indexes, constraints, etc.
-            # checkfirst=True prevents errors if tables don't exist
-            await conn.run_sync(Base.metadata.drop_all, checkfirst=True)
-        print("✅ All tables and dependent objects dropped")
+            # Drop entire public schema and recreate
+            await conn.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
+            await conn.execute(text("CREATE SCHEMA public"))
+            # Grant permissions
+            await conn.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
+            await conn.execute(text("GRANT ALL ON SCHEMA public TO public"))
+        print("✅ Schema dropped and recreated")
 
         print("\n🔨 Creating all tables...")
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        print("✅ All tables created")
+        print("✅ All tables created successfully")
 
     async def create_users(self, session: AsyncSession) -> None:
         """
