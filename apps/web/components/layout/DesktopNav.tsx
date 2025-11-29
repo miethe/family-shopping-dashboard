@@ -65,7 +65,7 @@ export function DesktopNav() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-warm-900 truncate group-hover:text-primary-700 transition-colors">
-              {user?.email?.split('@')[0] || user?.name?.split(' ')[0] || 'User'}
+              {user?.email?.split('@')[0] || 'User'}
             </p>
             <button
               onClick={logout}
