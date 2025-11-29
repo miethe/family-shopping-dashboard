@@ -143,7 +143,7 @@ export function OccasionDetailModal({
                     <TypeIcon className={cn("h-6 w-6", typeConfig.iconColor)} />
                   </div>
                 )}
-                <Badge variant="secondary" className="text-sm">
+                <Badge variant="default" className="text-sm">
                   {typeConfig?.label}
                 </Badge>
               </div>

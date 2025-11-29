@@ -157,7 +157,7 @@ export function GiftDetailModal({
               {gift.source && (
                 <div className="flex items-center gap-2">
                   <Tag className="h-4 w-4 text-warm-500" />
-                  <Badge variant="secondary" className="text-sm">
+                  <Badge variant="default" className="text-sm">
                     {gift.source}
                   </Badge>
                 </div>
@@ -204,12 +204,6 @@ export function GiftDetailModal({
               <div className="flex items-center gap-2">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>Added on {formatDate(gift.created_at)}</span>
-              </div>
-            )}
-            {gift.user_id && (
-              <div className="flex items-center gap-2">
-                <User className="h-3.5 w-3.5" />
-                <span>Added by User {gift.user_id}</span>
               </div>
             )}
           </div>

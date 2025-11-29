@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { EntityModal } from "./EntityModal";
-import { Avatar, getInitials } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback, getInitials } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Cake, Calendar, ExternalLink, Heart, Sparkles } from "@/components/ui/icons";
@@ -86,16 +86,19 @@ export function PersonDetailModal({
             )}
           >
             <Avatar
-              src={person.photo_url}
-              alt={person.display_name}
-              size="2xl"
+              size="xl"
               className={cn(
                 "ring-4 ring-white shadow-xl mb-4",
                 "animate-in zoom-in-95 duration-700",
                 "[animation-delay:100ms]"
               )}
             >
-              {getInitials(person.display_name)}
+              {person.photo_url && (
+                <AvatarImage src={person.photo_url} alt={person.display_name} />
+              )}
+              <AvatarFallback>
+                {getInitials(person.display_name)}
+              </AvatarFallback>
             </Avatar>
 
             <h2
@@ -110,7 +113,7 @@ export function PersonDetailModal({
 
             {person.relationship && (
               <Badge
-                variant="secondary"
+                variant="default"
                 className={cn(
                   "text-sm px-4 py-1",
                   "animate-in slide-in-from-bottom-4 fade-in-0 duration-500",
@@ -178,7 +181,7 @@ export function PersonDetailModal({
                 {person.interests.map((interest, index) => (
                   <Badge
                     key={index}
-                    variant="secondary"
+                    variant="default"
                     className={cn(
                       "text-sm px-3 py-1.5",
                       "bg-gradient-to-br from-purple-50 to-pink-50",

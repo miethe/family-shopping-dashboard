@@ -143,11 +143,11 @@ export function ListDetailModal({
               )}
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="default" className="text-xs">
                     {typeConfig?.label}
                   </Badge>
                   {VisIcon && (
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="default" className="text-xs">
                       <VisIcon className="h-3 w-3 mr-1" />
                       {visConfig?.label}
                     </Badge>
@@ -227,7 +227,7 @@ export function ListDetailModal({
                       {item.status && (
                         <div className="absolute top-2 right-2">
                           <Badge
-                            variant="secondary"
+                            variant="default"
                             className="text-xs bg-white/90 backdrop-blur-sm"
                           >
                             {item.status}
