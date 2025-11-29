@@ -256,7 +256,9 @@ class TestDataPopulator:
         """
         print("\n🎉 Creating occasions...")
 
-        today = date.today()
+        # Use UTC timezone-aware datetime, then convert to date to ensure consistency
+        # This prevents timezone discrepancies between server and client
+        today = datetime.now(timezone.utc).date()
 
         occasions_data = [
             {

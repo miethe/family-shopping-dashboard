@@ -621,6 +621,64 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - Link now controls text color at the parent level, preventing default link styles from overriding
   - Maintains accessibility with excellent contrast ratio (>10:1) and preserves hover effects
 - **Commit(s)**: `d8d0520`
+- **Status**: RESOLVED (superseded by fix below - text still invisible)
+
+---
+
+## Dashboard Text Invisible Due to Missing Color Palette
+
+**Issue**: After initial fix attempt, People Needing Gifts and Pipeline Summary sections still had completely invisible text on the dashboard.
+
+- **Location**: `apps/web/tailwind.config.ts`, `apps/web/components/dashboard/PeopleNeeding.tsx`, `apps/web/components/dashboard/PipelineSummary.tsx`
+- **Root Cause**: Multiple issues compounding:
+  1. Custom Tailwind theme defines "warm" color palette but components used standard "gray" colors that don't exist
+  2. Badge components used `variant="info"` referencing `status-info-100/300/800` colors that were missing from config
+  3. Tailwind fell back to defaults without proper contrast, causing invisible text
+- **Fix**:
+  - **tailwind.config.ts**: Added complete `status-info` (blue) and `status-error` (red) color palettes (50-900 scale)
+  - **PeopleNeeding.tsx**: Migrated all colors from `gray` to `warm` palette:
+    - Person names: `text-gray-900` → `text-warm-900`
+    - Empty state: `text-gray-500` → `text-warm-600`
+    - Hover: `hover:bg-gray-50` → `hover:bg-warm-50`
+    - Borders: `border-gray-200` → `border-warm-200`
+  - **PipelineSummary.tsx**: Migrated all colors from `gray` to `warm` palette:
+    - Numbers: `text-gray-900` → `text-warm-900`
+    - Labels: `text-gray-500` → `text-warm-600`
+    - Borders: `border-gray-200` → `border-warm-200`
+    - Hover borders: Updated to use status colors (`status-idea-200`, `status-success-200`, `status-info-200`)
+- **Additional Notes**: 38 other files still use `gray` colors and should be migrated to `warm` palette eventually
+- **Commit(s)**: TBD
+- **Status**: RESOLVED
+
+---
+
+## Tomorrow's Birthday Showing Wrong Date (Timezone Issue)
+
+**Issue**: "Tomorrow's Birthday" occasion displays date as Nov 28 when it should show Nov 29 (actual tomorrow).
+
+- **Location**: `services/api/scripts/populate_test_data.py:259`
+- **Root Cause**: Timezone mismatch between server and client. The code used `date.today()` which returns the date in the server's local timezone. When the local system is in a timezone behind UTC (like PST/PDT), `date.today()` returns Nov 28, but in UTC it's already Nov 29. The API/database stores dates in UTC, causing the mismatch.
+- **Fix**: Changed from `date.today()` to `datetime.now(timezone.utc).date()` to ensure all date calculations use UTC as the reference, preventing timezone discrepancies between server and client
+- **Commit(s)**: TBD
+- **Status**: RESOLVED
+
+---
+
+## Gift Items Opening Full Page Instead of Modal
+
+**Issue**: Clicking a gift item entry from the list detail page navigates to the full gift page (`/gifts/{id}`) instead of opening the gift modal overlay.
+
+- **Location**: `apps/web/components/lists/ListItemRow.tsx`
+- **Root Cause**: Gift name was wrapped in a `Link` component that navigated to `/gifts/{id}`, rather than using a button with click handler to open the modal. This pattern was inconsistent with other entity cards (PersonCard, OccasionCard, ListCard) which all open modals on click.
+- **Fix**:
+  - Removed `Link` import and `<Link href={/gifts/${item.gift_id}}>` wrapper
+  - Added `GiftDetailModal` and `useEntityModal('gift')` imports
+  - Changed gift name from `Link` to `button` with `onClick` handler calling `openModal(item.gift_id)`
+  - Added `GiftDetailModal` component at bottom of component tree
+  - Wrapped return in React Fragment to accommodate both list item and modal
+  - Maintained all existing styling, hover effects, and 44px touch target compliance
+- **Pattern**: Now follows same pattern as PersonCard, OccasionCard, and ListCard components
+- **Commit(s)**: TBD
 - **Status**: RESOLVED
 
 ---
