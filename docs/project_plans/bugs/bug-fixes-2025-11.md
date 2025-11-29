@@ -563,7 +563,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - **Frontend**:
     - Added `item_count?: number;` to `GiftList` interface in types
     - Removed type assertion, changed from `(list as any).item_count || 0` to `list.item_count || 0`
-- **Commit(s)**: TBD
+- **Commit(s)**: `2a0f483`
 - **Status**: RESOLVED
 
 ---
@@ -585,7 +585,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - Added `cursor-help` class to indicate hoverable content
   - Exported Tooltip components from UI component library index
   - Installed `@radix-ui/react-tooltip` v1.2.8
-- **Commit(s)**: TBD
+- **Commit(s)**: `2a0f483`
 - **Status**: RESOLVED
 
 ---
