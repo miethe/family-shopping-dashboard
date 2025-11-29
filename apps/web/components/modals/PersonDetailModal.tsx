@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Cake, Calendar, ExternalLink, Heart, Sparkles } from "@/components/ui/icons";
 import { formatDate, getAge, getNextBirthday } from "@/lib/date-utils";
+import { personApi } from "@/lib/api/endpoints";
 import type { Person } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -24,11 +25,7 @@ export function PersonDetailModal({
 }: PersonDetailModalProps) {
   const { data: person, isLoading } = useQuery<Person>({
     queryKey: ["people", personId],
-    queryFn: async () => {
-      const res = await fetch(`/api/people/${personId}`);
-      if (!res.ok) throw new Error("Failed to fetch person");
-      return res.json();
-    },
+    queryFn: () => personApi.get(Number(personId)),
     enabled: !!personId && open,
   });
 

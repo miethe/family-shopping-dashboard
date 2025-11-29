@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, Gift as GiftIcon, DollarSign, Calendar, User, Tag } from "@/components/ui/icons";
 import { formatDate } from "@/lib/date-utils";
 import { formatPrice } from "@/lib/utils";
+import { giftApi } from "@/lib/api/endpoints";
 import type { Gift } from "@/types";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -25,11 +26,7 @@ export function GiftDetailModal({
 }: GiftDetailModalProps) {
   const { data: gift, isLoading } = useQuery<Gift>({
     queryKey: ["gifts", giftId],
-    queryFn: async () => {
-      const res = await fetch(`/api/gifts/${giftId}`);
-      if (!res.ok) throw new Error("Failed to fetch gift");
-      return res.json();
-    },
+    queryFn: () => giftApi.get(Number(giftId)),
     enabled: !!giftId && open,
   });
 

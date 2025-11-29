@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/icons";
 import { formatDate } from "@/lib/date-utils";
 import { formatPrice } from "@/lib/utils";
+import { listApi } from "@/lib/api/endpoints";
 import type { ListWithItems } from "@/types";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -63,11 +64,7 @@ export function ListDetailModal({
 }: ListDetailModalProps) {
   const { data: list, isLoading } = useQuery<ListWithItems>({
     queryKey: ["lists", listId],
-    queryFn: async () => {
-      const res = await fetch(`/api/lists/${listId}`);
-      if (!res.ok) throw new Error("Failed to fetch list");
-      return res.json();
-    },
+    queryFn: () => listApi.get(Number(listId)),
     enabled: !!listId && open,
   });
 

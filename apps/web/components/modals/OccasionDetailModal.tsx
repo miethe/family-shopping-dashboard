@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock } from "@/components/ui/icons";
 import { formatDate, getDaysUntil } from "@/lib/date-utils";
+import { occasionApi } from "@/lib/api/endpoints";
 import type { Occasion } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -54,11 +55,7 @@ export function OccasionDetailModal({
 }: OccasionDetailModalProps) {
   const { data: occasion, isLoading } = useQuery<Occasion>({
     queryKey: ["occasions", occasionId],
-    queryFn: async () => {
-      const res = await fetch(`/api/occasions/${occasionId}`);
-      if (!res.ok) throw new Error("Failed to fetch occasion");
-      return res.json();
-    },
+    queryFn: () => occasionApi.get(Number(occasionId)),
     enabled: !!occasionId && open,
   });
 
