@@ -511,7 +511,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - **AvatarCarousel.tsx**: `person.display_name?.split(' ')[0] || 'User'`
   - **GiftCard.tsx**: `gift.assignee.name?.split(' ')[0] || 'User'`
   - **DesktopNav.tsx**: Enhanced with `user?.email?.split('@')[0] || user?.name?.split(' ')[0] || 'User'`
-- **Commit(s)**: TBD
+- **Commit(s)**: `d541a4e`
 - **Status**: RESOLVED
 
 ---
