@@ -16,7 +16,7 @@ interface PeopleNeedingProps {
 
 export function PeopleNeeding({ people }: PeopleNeedingProps) {
   return (
-    <div className="animate-slide-up-fade" style={{ animationDelay: '400ms' }}>
+    <div>
       <Card className="border-gray-200 lift-effect">
         <CardHeader>
           <CardTitle>People Needing Gifts</CardTitle>
@@ -30,13 +30,13 @@ export function PeopleNeeding({ people }: PeopleNeedingProps) {
                 <li key={person.id}>
                   <Link
                     href={`/people/${person.id}`}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 min-h-[44px] transition-all hover:translate-x-1"
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 min-h-[44px] transition-all hover:translate-x-1 text-gray-900 no-underline"
                   >
                     <div className="flex items-center gap-3">
                       <Avatar>
                         <AvatarFallback>{getInitials(person.display_name)}</AvatarFallback>
                       </Avatar>
-                      <span className="font-medium text-gray-900">{person.display_name}</span>
+                      <span className="font-medium">{person.display_name}</span>
                     </div>
                     <Badge variant="info">
                       {person.pending_gifts} pending

@@ -113,8 +113,7 @@ export function OccasionDetailModal({
               "relative overflow-hidden",
               "bg-gradient-to-br",
               typeConfig?.gradient,
-              "rounded-2xl p-8 border border-amber-100",
-              "animate-in fade-in-0 zoom-in-95 duration-500"
+              "rounded-2xl p-8 border border-amber-100"
             )}
           >
             {/* Decorative background element */}
@@ -128,13 +127,7 @@ export function OccasionDetailModal({
 
             <div className="relative z-10">
               {/* Icon and Type */}
-              <div
-                className={cn(
-                  "flex items-center gap-3 mb-4",
-                  "animate-in slide-in-from-left-4 fade-in-0 duration-500",
-                  "[animation-delay:100ms]"
-                )}
-              >
+              <div className="flex items-center gap-3 mb-4">
                 {TypeIcon && (
                   <div className={cn("rounded-xl p-3", typeConfig.bgColor)}>
                     <TypeIcon className={cn("h-6 w-6", typeConfig.iconColor)} />
@@ -146,24 +139,12 @@ export function OccasionDetailModal({
               </div>
 
               {/* Name */}
-              <h2
-                className={cn(
-                  "text-3xl font-bold text-warm-900 mb-2",
-                  "animate-in slide-in-from-left-4 fade-in-0 duration-500",
-                  "[animation-delay:200ms]"
-                )}
-              >
+              <h2 className="text-3xl font-bold text-warm-900 mb-2">
                 {occasion.name}
               </h2>
 
               {/* Date */}
-              <div
-                className={cn(
-                  "flex items-center gap-2 text-warm-700 mb-4",
-                  "animate-in slide-in-from-left-4 fade-in-0 duration-500",
-                  "[animation-delay:300ms]"
-                )}
-              >
+              <div className="flex items-center gap-2 text-warm-700 mb-4">
                 <CalendarIcon className="h-5 w-5" />
                 <span className="text-lg">{formatDate(occasion.date)}</span>
               </div>
@@ -173,8 +154,6 @@ export function OccasionDetailModal({
                 <div
                   className={cn(
                     "inline-flex items-center gap-2 px-6 py-3 rounded-full",
-                    "animate-in slide-in-from-left-4 fade-in-0 duration-500",
-                    "[animation-delay:400ms]",
                     isToday
                       ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/50"
                       : isPast
@@ -199,9 +178,7 @@ export function OccasionDetailModal({
           {occasion.description && (
             <div
               className={cn(
-                "bg-warm-50 rounded-xl p-5 border border-warm-200",
-                "animate-in slide-in-from-bottom-4 fade-in-0 duration-500",
-                "[animation-delay:500ms]"
+                "bg-warm-50 rounded-xl p-5 border border-warm-200"
               )}
             >
               <h3 className="font-semibold text-warm-900 mb-2">Description</h3>
@@ -215,9 +192,7 @@ export function OccasionDetailModal({
           <div
             className={cn(
               "pt-4 border-t border-warm-200",
-              "text-sm text-warm-600 space-y-1",
-              "animate-in fade-in-0 duration-500",
-              "[animation-delay:600ms]"
+              "text-sm text-warm-600 space-y-1"
             )}
           >
             {occasion.created_at && (

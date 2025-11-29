@@ -121,8 +121,7 @@ export function ListDetailModal({
             className={cn(
               "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4",
               "bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50",
-              "rounded-2xl p-5 border border-blue-100",
-              "animate-in fade-in-0 zoom-in-95 duration-500"
+              "rounded-2xl p-5 border border-blue-100"
             )}
           >
             <div className="flex items-center gap-4">
@@ -130,9 +129,7 @@ export function ListDetailModal({
                 <div
                   className={cn(
                     "flex-shrink-0 rounded-xl p-3",
-                    typeConfig.bgColor,
-                    "animate-in zoom-in-95 duration-500",
-                    "[animation-delay:100ms]"
+                    typeConfig.bgColor
                   )}
                 >
                   <TypeIcon className={cn("h-6 w-6", typeConfig.iconColor)} />
@@ -157,13 +154,7 @@ export function ListDetailModal({
             </div>
 
             {/* Stats */}
-            <div
-              className={cn(
-                "flex gap-6",
-                "animate-in slide-in-from-right-4 fade-in-0 duration-500",
-                "[animation-delay:200ms]"
-              )}
-            >
+            <div className="flex gap-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-warm-900">
                   {list.item_count || list.items?.length || 0}
@@ -183,12 +174,7 @@ export function ListDetailModal({
 
           {/* Items Grid */}
           {list.items && list.items.length > 0 ? (
-            <div
-              className={cn(
-                "animate-in fade-in-0 slide-in-from-bottom-4 duration-500",
-                "[animation-delay:300ms]"
-              )}
-            >
+            <div>
               <h3 className="font-semibold text-warm-900 mb-4 flex items-center gap-2">
                 <ShoppingBag className="h-5 w-5 text-blue-500" />
                 List Items
@@ -199,12 +185,7 @@ export function ListDetailModal({
                     key={item.id}
                     variant="elevated"
                     padding="none"
-                    className={cn(
-                      "overflow-hidden hover:shadow-lg transition-all duration-200",
-                      "animate-in zoom-in-95 fade-in-0",
-                      `[animation-delay:${400 + index * 50}ms]`,
-                      "duration-300"
-                    )}
+                    className="overflow-hidden hover:shadow-lg transition-all duration-200"
                   >
                     {/* Gift Image */}
                     <div className="relative aspect-square bg-gradient-to-br from-purple-50 to-pink-50">
@@ -258,9 +239,7 @@ export function ListDetailModal({
             <div
               className={cn(
                 "text-center py-12",
-                "bg-warm-50 rounded-xl border-2 border-dashed border-warm-200",
-                "animate-in fade-in-0 duration-500",
-                "[animation-delay:300ms]"
+                "bg-warm-50 rounded-xl border-2 border-dashed border-warm-200"
               )}
             >
               <ShoppingBag className="h-12 w-12 text-warm-300 mx-auto mb-3" />
@@ -272,9 +251,7 @@ export function ListDetailModal({
           <div
             className={cn(
               "pt-4 border-t border-warm-200",
-              "text-sm text-warm-600 space-y-1",
-              "animate-in fade-in-0 duration-500",
-              "[animation-delay:500ms]"
+              "text-sm text-warm-600 space-y-1"
             )}
           >
             {list.created_at && (

@@ -151,16 +151,8 @@ export function EntityModal({
             </div>
           </div>
 
-          {/* Content with staggered fade-in animation */}
-          <div
-            className={cn(
-              "px-6 py-6",
-              "animate-in fade-in-0 slide-in-from-bottom-4",
-              "duration-400 ease-out",
-              // Delay for stagger effect
-              "[animation-delay:100ms]"
-            )}
-          >
+          {/* Content */}
+          <div className="px-6 py-6">
             {children}
           </div>
 
@@ -169,11 +161,7 @@ export function EntityModal({
             <div
               className={cn(
                 "sticky bottom-0 bg-white/80 backdrop-blur-lg",
-                "border-t border-warm-200/50 px-6 py-4 rounded-b-3xl",
-                "animate-in fade-in-0 slide-in-from-bottom-4",
-                "duration-400 ease-out",
-                // Delay for stagger effect
-                "[animation-delay:200ms]"
+                "border-t border-warm-200/50 px-6 py-4 rounded-b-3xl"
               )}
             >
               {footer}

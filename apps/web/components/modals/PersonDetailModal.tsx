@@ -78,17 +78,12 @@ export function PersonDetailModal({
             className={cn(
               "flex flex-col items-center text-center py-8",
               "bg-gradient-to-br from-orange-50 via-pink-50 to-rose-50",
-              "rounded-2xl border border-orange-100",
-              "animate-in fade-in-0 zoom-in-95 duration-500"
+              "rounded-2xl border border-orange-100"
             )}
           >
             <Avatar
               size="xl"
-              className={cn(
-                "ring-4 ring-white shadow-xl mb-4",
-                "animate-in zoom-in-95 duration-700",
-                "[animation-delay:100ms]"
-              )}
+              className="ring-4 ring-white shadow-xl mb-4"
             >
               {person.photo_url && (
                 <AvatarImage src={person.photo_url} alt={person.display_name} />
@@ -98,24 +93,14 @@ export function PersonDetailModal({
               </AvatarFallback>
             </Avatar>
 
-            <h2
-              className={cn(
-                "text-3xl font-bold text-warm-900 mb-2",
-                "animate-in slide-in-from-bottom-4 fade-in-0 duration-500",
-                "[animation-delay:200ms]"
-              )}
-            >
+            <h2 className="text-3xl font-bold text-warm-900 mb-2">
               {person.display_name}
             </h2>
 
             {person.relationship && (
               <Badge
                 variant="default"
-                className={cn(
-                  "text-sm px-4 py-1",
-                  "animate-in slide-in-from-bottom-4 fade-in-0 duration-500",
-                  "[animation-delay:300ms]"
-                )}
+                className="text-sm px-4 py-1"
               >
                 <Heart className="h-3 w-3 mr-1.5 text-orange-500" />
                 {person.relationship}
@@ -128,9 +113,7 @@ export function PersonDetailModal({
             <div
               className={cn(
                 "bg-gradient-to-br from-amber-50 to-orange-50",
-                "rounded-xl p-5 border border-amber-200",
-                "animate-in slide-in-from-left-4 fade-in-0 duration-500",
-                "[animation-delay:400ms]"
+                "rounded-xl p-5 border border-amber-200"
               )}
             >
               <div className="flex items-start gap-4">
@@ -164,12 +147,7 @@ export function PersonDetailModal({
 
           {/* Interests */}
           {person.interests && person.interests.length > 0 && (
-            <div
-              className={cn(
-                "animate-in slide-in-from-right-4 fade-in-0 duration-500",
-                "[animation-delay:500ms]"
-              )}
-            >
+            <div>
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="h-5 w-5 text-purple-500" />
                 <h3 className="font-semibold text-warm-900">Interests</h3>
@@ -183,9 +161,7 @@ export function PersonDetailModal({
                       "text-sm px-3 py-1.5",
                       "bg-gradient-to-br from-purple-50 to-pink-50",
                       "border-purple-200",
-                      "hover:shadow-md transition-shadow",
-                      "animate-in zoom-in-95 fade-in-0 duration-300",
-                      `[animation-delay:${600 + index * 50}ms]`
+                      "hover:shadow-md transition-shadow"
                     )}
                   >
                     {interest}
@@ -199,9 +175,7 @@ export function PersonDetailModal({
           <div
             className={cn(
               "pt-4 border-t border-warm-200",
-              "text-sm text-warm-600 space-y-1",
-              "animate-in fade-in-0 duration-500",
-              "[animation-delay:700ms]"
+              "text-sm text-warm-600 space-y-1"
             )}
           >
             {person.created_at && (

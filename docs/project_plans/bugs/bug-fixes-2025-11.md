@@ -589,3 +589,61 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Dashboard Primary Occasion Not Populating
+
+**Issue**: Dashboard "Upcoming Occasions" section shows "No upcoming occasions" even when test data includes a birthday tomorrow (2025-11-29).
+
+- **Location**: `services/api/scripts/populate_test_data.py:243-292`
+- **Root Cause**: Test data had hardcoded dates from early 2025 (Christmas 2024, March 2025, May 2025, June 2025), all in the past relative to current system date (November 28, 2025). The dashboard service correctly filtered these out with `Occasion.date >= today`, resulting in `primary_occasion` being `None`.
+- **Fix**: Updated `create_occasions()` method to use relative dates calculated from `date.today()`:
+  - "Tomorrow's Birthday" - 1 day from today
+  - "Next Week Holiday" - 7 days from today
+  - "Grandma's 75th Birthday" - 30 days from today
+  - "Anniversary" - 60 days from today
+  - "Mother's Day" - 90 days from today
+  - Updated all occasion references in lists and comments to match new names
+  - Repopulated database with future-dated test data
+- **Commit(s)**: TBD
+- **Status**: RESOLVED
+
+---
+
+## People Needing Gifts White Text Not Visible
+
+**Issue**: In the dashboard "People Needing Gifts" section, person names appear in white text and are invisible against the light background.
+
+- **Location**: `apps/web/components/dashboard/PeopleNeeding.tsx:33,39`
+- **Root Cause**: The `text-gray-900` class was applied to a child `<span>` element inside a Next.js `<Link>` component. Next.js Link components inherit default browser link styles (typically blue or white text), which override text color classes applied to child elements due to CSS specificity rules.
+- **Fix**:
+  - Added `text-gray-900` and `no-underline` classes directly to the Link component (line 33)
+  - Removed redundant `text-gray-900` from child span (line 39), keeping only `font-medium`
+  - Link now controls text color at the parent level, preventing default link styles from overriding
+  - Maintains accessibility with excellent contrast ratio (>10:1) and preserves hover effects
+- **Commit(s)**: TBD
+- **Status**: RESOLVED
+
+---
+
+## Modal Cascading Animation Performance Issues
+
+**Issue**: Modals have janky, slow animation experience with cascading effects taking ~1100ms total. Modal container animates, then content fades in, then internal elements slide in with staggered delays.
+
+- **Location**: `apps/web/components/modals/EntityModal.tsx`, `apps/web/components/modals/GiftDetailModal.tsx`, `apps/web/components/modals/PersonDetailModal.tsx`, `apps/web/components/modals/ListDetailModal.tsx`, `apps/web/components/modals/OccasionDetailModal.tsx`
+- **Root Cause**: Multiple layers of animations stacking:
+  1. Modal container animates (zoom + slide + fade) - 300ms - CORRECT
+  2. Content wrapper animates (fade + slide with 100ms delay) - 400ms - UNNECESSARY
+  3. Internal content animates (zoom, slide, fade with 100-600ms delays) - 500ms - UNNECESSARY
+  - Total perceived animation time: ~1100ms (too long and visually jarring)
+- **Fix**: Removed all internal content animations from 5 modal files, preserving only container animations:
+  - **EntityModal.tsx**: Removed animations from content wrapper and footer wrapper
+  - **GiftDetailModal.tsx**: Removed animations from hero section, image, info section, metadata (4 locations)
+  - **PersonDetailModal.tsx**: Removed animations from hero section, avatar, title, badge, birthday info, interests (8 locations)
+  - **ListDetailModal.tsx**: Removed animations from header, icon, stats, items grid, item cards, empty state, metadata (7 locations)
+  - **OccasionDetailModal.tsx**: Removed animations from hero section, icon, name, date, countdown, description, metadata (7 locations)
+  - Total: 39 animation class declarations removed
+  - Modal container animations preserved: zoom + fade + slide entrance/exit effect (300ms)
+- **Commit(s)**: TBD
+- **Status**: RESOLVED
+
+---

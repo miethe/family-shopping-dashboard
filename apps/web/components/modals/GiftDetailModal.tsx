@@ -84,21 +84,14 @@ export function GiftDetailModal({
       ) : gift ? (
         <div className="space-y-6">
           {/* Hero Section with Image */}
-          <div
-            className={cn(
-              "grid md:grid-cols-2 gap-6",
-              "animate-in fade-in-0 zoom-in-95 duration-500"
-            )}
-          >
+          <div className="grid md:grid-cols-2 gap-6">
             {/* Image */}
             <div
               className={cn(
                 "relative aspect-square rounded-2xl overflow-hidden",
                 "bg-gradient-to-br from-purple-50 via-fuchsia-50 to-pink-50",
                 "border border-purple-100",
-                "flex items-center justify-center",
-                "animate-in slide-in-from-left-4 fade-in-0 duration-500",
-                "[animation-delay:100ms]"
+                "flex items-center justify-center"
               )}
             >
               {gift.image_url ? (
@@ -118,13 +111,7 @@ export function GiftDetailModal({
             </div>
 
             {/* Info */}
-            <div
-              className={cn(
-                "space-y-4",
-                "animate-in slide-in-from-right-4 fade-in-0 duration-500",
-                "[animation-delay:200ms]"
-              )}
-            >
+            <div className="space-y-4">
               <h2 className="text-2xl font-bold text-warm-900 leading-tight">
                 {gift.name}
               </h2>
@@ -192,9 +179,7 @@ export function GiftDetailModal({
           <div
             className={cn(
               "pt-4 border-t border-warm-200",
-              "text-sm text-warm-600 space-y-1",
-              "animate-in fade-in-0 duration-500",
-              "[animation-delay:400ms]"
+              "text-sm text-warm-600 space-y-1"
             )}
           >
             {gift.created_at && (

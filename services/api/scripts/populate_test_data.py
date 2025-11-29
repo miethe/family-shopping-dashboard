@@ -244,45 +244,50 @@ class TestDataPopulator:
         """
         Create 5 gifting occasions.
 
+        Occasions are created with dates relative to today to ensure they're always
+        in the future for testing the dashboard primary_occasion feature.
+
         Occasions:
-          - Christmas 2024 (holiday)
-          - Grandma's 75th Birthday (birthday)
-          - Mother's Day 2025 (holiday)
-          - Anniversary (other)
-          - Emma's Birthday (birthday)
+          - Tomorrow's Birthday (birthday) - 1 day from now
+          - Next Week Holiday (holiday) - 7 days from now
+          - Grandma's Birthday (birthday) - 30 days from now
+          - Anniversary (other) - 60 days from now
+          - Mother's Day (holiday) - 90 days from now
         """
         print("\n🎉 Creating occasions...")
 
+        today = date.today()
+
         occasions_data = [
             {
-                "name": "Christmas 2024",
+                "name": "Tomorrow's Birthday",
+                "type": OccasionType.birthday,
+                "date": date.fromordinal(today.toordinal() + 1),
+                "description": "Test birthday happening tomorrow",
+            },
+            {
+                "name": "Next Week Holiday",
                 "type": OccasionType.holiday,
-                "date": date(2024, 12, 25),
-                "description": "Family Christmas celebration",
+                "date": date.fromordinal(today.toordinal() + 7),
+                "description": "Test holiday next week",
             },
             {
                 "name": "Grandma's 75th Birthday",
                 "type": OccasionType.birthday,
-                "date": date(2025, 5, 15),
+                "date": date.fromordinal(today.toordinal() + 30),
                 "description": "Milestone birthday party",
-            },
-            {
-                "name": "Mother's Day 2025",
-                "type": OccasionType.holiday,
-                "date": date(2025, 5, 11),
-                "description": None,
             },
             {
                 "name": "Anniversary",
                 "type": OccasionType.other,
-                "date": date(2025, 6, 20),
+                "date": date.fromordinal(today.toordinal() + 60),
                 "description": "Alice & Bob's anniversary",
             },
             {
-                "name": "Emma's Birthday",
-                "type": OccasionType.birthday,
-                "date": date(2025, 3, 10),
-                "description": "Cousin Emma turns 15",
+                "name": "Mother's Day",
+                "type": OccasionType.holiday,
+                "date": date.fromordinal(today.toordinal() + 90),
+                "description": "Mother's Day celebration",
             },
         ]
 
@@ -541,7 +546,7 @@ class TestDataPopulator:
                 "visibility": ListVisibility.family,
                 "user": "Alice",
                 "person": "Grandma Betty",
-                "occasion": "Christmas 2024",
+                "occasion": "Grandma's 75th Birthday",
             },
             {
                 "name": "Uncle Tom Anniversary Ideas",
@@ -557,7 +562,7 @@ class TestDataPopulator:
                 "visibility": ListVisibility.family,
                 "user": "Carol",
                 "person": "Cousin Emma",
-                "occasion": "Emma's Birthday",
+                "occasion": "Tomorrow's Birthday",
             },
             {
                 "name": "Mother's Day - Assigned",
@@ -565,7 +570,7 @@ class TestDataPopulator:
                 "visibility": ListVisibility.family,
                 "user": "Alice",
                 "person": None,
-                "occasion": "Mother's Day 2025",
+                "occasion": "Mother's Day",
             },
             {
                 "name": "Jake's Christmas List",
@@ -573,7 +578,7 @@ class TestDataPopulator:
                 "visibility": ListVisibility.family,
                 "user": "Bob",
                 "person": "Nephew Jake",
-                "occasion": "Christmas 2024",
+                "occasion": "Next Week Holiday",
             },
             {
                 "name": "Carol's Personal Wishlist",
@@ -592,12 +597,12 @@ class TestDataPopulator:
                 "occasion": None,
             },
             {
-                "name": "Christmas Planning 2024",
+                "name": "Next Week Planning",
                 "type": ListType.ideas,
                 "visibility": ListVisibility.public,
                 "user": "Bob",
                 "person": None,
-                "occasion": "Christmas 2024",
+                "occasion": "Next Week Holiday",
             },
         ]
 
@@ -780,21 +785,21 @@ class TestDataPopulator:
                 "status": ListItemStatus.idea,
                 "notes": "Experience gift - Sarah would love this",
             },
-            # Christmas Planning 2024
+            # Next Week Planning
             {
-                "list": "Christmas Planning 2024",
+                "list": "Next Week Planning",
                 "gift": "Gardening Tool Set",
                 "status": ListItemStatus.selected,
                 "assigned_to": "Alice",
             },
             {
-                "list": "Christmas Planning 2024",
+                "list": "Next Week Planning",
                 "gift": "LEGO Dinosaur Set",
                 "status": ListItemStatus.purchased,
                 "assigned_to": "Alice",
             },
             {
-                "list": "Christmas Planning 2024",
+                "list": "Next Week Planning",
                 "gift": "Knitting Yarn Bundle",
                 "status": ListItemStatus.purchased,
                 "assigned_to": "Bob",
@@ -880,7 +885,7 @@ class TestDataPopulator:
                 "content": "Don't forget to RSVP for the party!",
                 "author": "Alice",
                 "parent_type": CommentParentType.occasion,
-                "parent_id": self.occasions["Christmas 2024"].id,
+                "parent_id": self.occasions["Next Week Holiday"].id,
             },
             {
                 "content": "We should plan something special for this milestone birthday",
