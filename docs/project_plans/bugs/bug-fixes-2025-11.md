@@ -742,7 +742,9 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - **Repository**: Added `selectinload(ListItem.gift)` to `get_by_list()` query (line 52)
   - **Service**: Updated `get_for_list()` to return `list[ListItemWithGift]` with nested `GiftSummary` objects (lines 212-254)
   - **Router**: Changed `response_model` and return type to `list[ListItemWithGift]` (lines 376, 385)
-- **Commit(s)**: `c10ee66`
+- **Commit(s)**: `c10ee66`, `da74e53`
 - **Status**: RESOLVED
+
+**Follow-up Fix**: `GiftSummary` was imported under `TYPE_CHECKING`, making it unavailable at runtime. Moved to real import in `list_item.py`.
 
 ---
