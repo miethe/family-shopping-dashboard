@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { PersonDetailModal, useEntityModal } from '@/components/modals';
 import type { Person } from '@/types';
 
 export interface PersonCardProps {
@@ -63,61 +63,74 @@ function formatBirthdayMessage(birthdate: string): string | null {
  */
 export function PersonCard({ person }: PersonCardProps) {
   const birthdayMessage = person.birthdate ? formatBirthdayMessage(person.birthdate) : null;
+  const { open, entityId, openModal, closeModal } = useEntityModal('person');
 
   return (
-    <Card variant="interactive" padding="none" className="min-h-[44px]">
-      <Link
-        href={`/people/${person.id}`}
-        className="block p-4 min-h-[44px]"
+    <>
+      <button
+        onClick={() => openModal(String(person.id))}
+        className="w-full text-left"
         aria-label={`View details for ${person.display_name}`}
       >
-        <div className="flex items-start gap-4">
-          {/* Avatar */}
-          <Avatar size="lg" className="flex-shrink-0">
-            {person.photo_url && <AvatarImage src={person.photo_url} alt={person.display_name} />}
-            <AvatarFallback>{getInitials(person.display_name)}</AvatarFallback>
-          </Avatar>
+        <Card variant="interactive" padding="none" className="min-h-[44px]">
+          <div className="p-4 min-h-[44px]">
+            <div className="flex items-start gap-4">
+              {/* Avatar */}
+              <Avatar size="lg" className="flex-shrink-0">
+                {person.photo_url && <AvatarImage src={person.photo_url} alt={person.display_name} />}
+                <AvatarFallback>{getInitials(person.display_name)}</AvatarFallback>
+              </Avatar>
 
-          {/* Content */}
-          <div className="flex-1 min-w-0 space-y-2">
-            {/* Name and Relationship */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-semibold text-lg truncate text-gray-900">
-                {person.display_name}
-              </h3>
-              {person.relationship && (
-                <Badge variant="default" size="sm">
-                  {person.relationship}
-                </Badge>
-              )}
-            </div>
+              {/* Content */}
+              <div className="flex-1 min-w-0 space-y-2">
+                {/* Name and Relationship */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-semibold text-lg truncate text-gray-900">
+                    {person.display_name}
+                  </h3>
+                  {person.relationship && (
+                    <Badge variant="default" size="sm">
+                      {person.relationship}
+                    </Badge>
+                  )}
+                </div>
 
-            {/* Birthday Alert */}
-            {birthdayMessage && (
-              <div className="flex items-center gap-1 text-sm text-orange-600">
-                <span aria-label="Birthday">🎂</span>
-                <span className="font-medium">{birthdayMessage}</span>
-              </div>
-            )}
+                {/* Birthday Alert */}
+                {birthdayMessage && (
+                  <div className="flex items-center gap-1 text-sm text-orange-600">
+                    <span aria-label="Birthday">🎂</span>
+                    <span className="font-medium">{birthdayMessage}</span>
+                  </div>
+                )}
 
-            {/* Interests Preview */}
-            {person.interests && person.interests.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {person.interests.slice(0, 3).map((interest, index) => (
-                  <Badge key={index} variant="info" size="sm">
-                    {interest}
-                  </Badge>
-                ))}
-                {person.interests.length > 3 && (
-                  <span className="text-xs text-gray-400">
-                    +{person.interests.length - 3} more
-                  </span>
+                {/* Interests Preview */}
+                {person.interests && person.interests.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {person.interests.slice(0, 3).map((interest, index) => (
+                      <Badge key={index} variant="info" size="sm">
+                        {interest}
+                      </Badge>
+                    ))}
+                    {person.interests.length > 3 && (
+                      <span className="text-xs text-gray-400">
+                        +{person.interests.length - 3} more
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
-      </Link>
-    </Card>
+        </Card>
+      </button>
+
+      <PersonDetailModal
+        personId={entityId}
+        open={open}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) closeModal();
+        }}
+      />
+    </>
   );
 }
