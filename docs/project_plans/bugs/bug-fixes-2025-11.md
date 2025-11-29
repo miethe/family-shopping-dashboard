@@ -647,7 +647,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
     - Borders: `border-gray-200` → `border-warm-200`
     - Hover borders: Updated to use status colors (`status-idea-200`, `status-success-200`, `status-info-200`)
 - **Additional Notes**: 38 other files still use `gray` colors and should be migrated to `warm` palette eventually
-- **Commit(s)**: TBD
+- **Commit(s)**: `3a99c08`
 - **Status**: RESOLVED
 
 ---
@@ -659,7 +659,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Location**: `services/api/scripts/populate_test_data.py:259`
 - **Root Cause**: Timezone mismatch between server and client. The code used `date.today()` which returns the date in the server's local timezone. When the local system is in a timezone behind UTC (like PST/PDT), `date.today()` returns Nov 28, but in UTC it's already Nov 29. The API/database stores dates in UTC, causing the mismatch.
 - **Fix**: Changed from `date.today()` to `datetime.now(timezone.utc).date()` to ensure all date calculations use UTC as the reference, preventing timezone discrepancies between server and client
-- **Commit(s)**: TBD
+- **Commit(s)**: `3a99c08`
 - **Status**: RESOLVED
 
 ---
@@ -678,7 +678,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - Wrapped return in React Fragment to accommodate both list item and modal
   - Maintained all existing styling, hover effects, and 44px touch target compliance
 - **Pattern**: Now follows same pattern as PersonCard, OccasionCard, and ListCard components
-- **Commit(s)**: TBD
+- **Commit(s)**: `3a99c08`
 - **Status**: RESOLVED
 
 ---
