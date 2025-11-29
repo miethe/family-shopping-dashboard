@@ -56,6 +56,15 @@ export function KanbanCard({ item, status }: KanbanCardProps) {
   const hasNotes = Boolean(item.notes && item.notes.trim());
   const isPurchased = status === 'purchased' || status === 'received';
 
+  // Handle case where gift might not be loaded
+  if (!item.gift) {
+    return (
+      <div className="bg-white rounded-3xl p-5 shadow-sm opacity-50">
+        <div className="text-gray-400 text-sm">Loading gift...</div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
@@ -67,7 +76,7 @@ export function KanbanCard({ item, status }: KanbanCardProps) {
       {/* Card Content */}
       <div className="flex items-start gap-4 mb-4">
         {/* Product Image */}
-        {item.gift.image_url ? (
+        {item.gift?.image_url ? (
           <img
             src={item.gift.image_url}
             alt={item.gift.name}
@@ -82,7 +91,7 @@ export function KanbanCard({ item, status }: KanbanCardProps) {
         {/* Title and Badge */}
         <div className="flex-1 min-w-0">
           <h3 className="font-bold text-gray-800 leading-tight mb-1 line-clamp-2">
-            {item.gift.name}
+            {item.gift?.name || 'Unnamed Gift'}
           </h3>
           <span
             className={cn(
@@ -109,7 +118,7 @@ export function KanbanCard({ item, status }: KanbanCardProps) {
 
         {/* Price or Status Icons */}
         <div className="flex items-center gap-2">
-          {item.gift.price && (
+          {item.gift?.price && (
             <span className="text-gray-600 font-semibold">
               ${formatPrice(item.gift.price)}
             </span>
