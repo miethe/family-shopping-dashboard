@@ -4,15 +4,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { navItems } from './nav-config';
-import { UserCircleIcon } from './icons';
+import { GiftIcon } from './icons';
 import { cn } from '@/lib/utils';
 
 /**
- * Sidebar navigation for desktop devices
- * - Translucent background with backdrop blur (macOS-style)
- * - Soft Modernity design system (warm colors, rounded corners)
- * - Active state highlighting with coral accent
- * - User profile section at bottom
+ * Icon-only sidebar navigation for desktop devices
+ * - Fixed left sidebar (w-20 lg:w-24)
+ * - Glassmorphism design with backdrop blur
+ * - Icon-only navigation with tooltips
+ * - Active state with salmon color and left border indicator
+ * - Profile avatar at bottom
  */
 export function DesktopNav() {
   const pathname = usePathname();
@@ -20,18 +21,19 @@ export function DesktopNav() {
 
   return (
     <aside
-      className="fixed left-0 top-0 bottom-0 w-64 bg-white/60 backdrop-blur-xl border-r border-white/20 shadow-glass overflow-y-auto flex flex-col z-50"
+      className="w-20 lg:w-24 flex-shrink-0 flex flex-col items-center py-8 h-screen fixed left-0 top-0 z-50 bg-white/40 backdrop-blur-xl border-r border-white/50"
       style={{ paddingLeft: 'env(safe-area-inset-left)' }}
     >
-      {/* Header */}
-      <div className="p-6 flex-shrink-0">
-        <h1 className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
-          Family Gifting
-        </h1>
-      </div>
+      {/* Brand Icon */}
+      <Link
+        href="/dashboard"
+        className="mb-12 p-3 bg-gradient-to-br from-orange-300 to-yellow-300 rounded-2xl shadow-lg shadow-orange-100 cursor-pointer hover:scale-105 transition-transform duration-200"
+      >
+        <GiftIcon className="text-white w-6 h-6" />
+      </Link>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-2">
+      <nav className="flex flex-col gap-8 w-full items-center flex-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
@@ -41,40 +43,41 @@ export function DesktopNav() {
               key={item.href}
               href={item.href as any}
               className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-xlarge font-semibold transition-all duration-300 ease-out group relative overflow-hidden',
+                'p-3 rounded-2xl transition-all duration-300 group relative',
                 isActive
-                  ? 'bg-white/80 text-primary-600 shadow-low'
-                  : 'text-warm-600 hover:bg-white/40 hover:text-warm-900 hover:shadow-subtle'
+                  ? 'bg-salmon text-white shadow-lg shadow-salmon/30'
+                  : 'text-gray-400 hover:bg-white/50 hover:text-salmon'
               )}
+              title={item.label}
             >
+              <Icon className={cn('w-6 h-6', isActive ? 'stroke-[2.5px]' : 'stroke-2')} />
+
+              {/* Active indicator - left border */}
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary-500 rounded-r-full" />
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-salmon rounded-r-full -ml-4 lg:-ml-6" />
               )}
-              <Icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110", isActive && "text-primary-500")} />
-              <span>{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-      {/* User Profile Section */}
-      <div className="p-4 border-t border-white/20 flex-shrink-0 bg-white/30 backdrop-blur-md">
-        <div className="flex items-center gap-3 px-4 py-3 rounded-large hover:bg-white/40 transition-colors duration-200 cursor-pointer group">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center shadow-inner">
-            <UserCircleIcon className="w-6 h-6 text-primary-600" />
+      {/* Profile Avatar */}
+      <div className="mt-auto">
+        <button
+          onClick={logout}
+          className="p-3 text-gray-400 hover:text-gray-600 transition-colors group"
+          title={user?.email || 'Profile'}
+        >
+          <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden ring-2 ring-white group-hover:ring-salmon transition-all duration-200">
+            {user?.email ? (
+              <div className="w-full h-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-primary-600 font-bold text-sm">
+                {user.email.charAt(0).toUpperCase()}
+              </div>
+            ) : (
+              <img src="https://picsum.photos/100/100" alt="Profile" className="w-full h-full object-cover" />
+            )}
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-warm-900 truncate group-hover:text-primary-700 transition-colors">
-              {user?.email?.split('@')[0] || 'User'}
-            </p>
-            <button
-              onClick={logout}
-              className="text-xs text-warm-500 hover:text-primary-600 transition-colors duration-200 font-medium"
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
+        </button>
       </div>
     </aside>
   );

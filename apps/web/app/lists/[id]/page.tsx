@@ -1,23 +1,29 @@
 /**
- * List Detail Page
+ * List Detail Page - Kanban Style
  *
- * Displays a single gift list with pipeline view of items grouped by status.
- * Shows list header, summary stats, and items in Idea → Selected → Purchased → Received order.
- * Fetches data client-side using React Query hooks.
+ * Displays a single gift list with Kanban board layout inspired by SingleListView design.
+ * Features:
+ * - Clean header with back button, list title, and action buttons
+ * - Three-column Kanban board: Idea → Shortlisted → Purchased
+ * - Glassmorphism cards with large rounded corners
+ * - Mobile-first responsive (stacked on mobile, columns on desktop)
  */
 
 'use client';
 
 import { use, useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useList } from '@/hooks/useLists';
 import { useListItems } from '@/hooks/useListItems';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
-import { ListDetail, PipelineView, ListSummary, AddListItemModal } from '@/components/lists';
-import { PlusIcon } from '@/components/layout/icons';
+import { KanbanView, AddListItemModal } from '@/components/lists';
+import {
+  FilterIcon,
+  ArrowUpDownIcon,
+  PlusIcon,
+  SparklesIcon,
+} from '@/components/layout/icons';
 import type { ListItemStatus } from '@/types';
 
 type Props = {
@@ -25,28 +31,19 @@ type Props = {
 };
 
 /**
- * Loading skeleton for list detail page
+ * Loading skeleton for Kanban view
  */
 function ListDetailSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="border-b border-gray-200 bg-white">
-        <div className="px-4 py-4 md:px-6 md:py-6">
-          <div className="flex items-start justify-between gap-4">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-11 w-24" />
-          </div>
-        </div>
+    <div className="p-8 max-w-7xl mx-auto">
+      <div className="mb-8">
+        <Skeleton className="h-10 w-64 mb-2" />
+        <Skeleton className="h-5 w-32" />
       </div>
-      <div className="px-4 md:px-6">
-        <Skeleton className="h-48 w-full mb-6" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Skeleton className="h-24" />
-          <Skeleton className="h-24" />
-          <Skeleton className="h-24" />
-          <Skeleton className="h-24" />
-        </div>
-        <Skeleton className="h-64 w-full" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Skeleton className="h-96" />
+        <Skeleton className="h-96" />
+        <Skeleton className="h-96" />
       </div>
     </div>
   );
@@ -56,22 +53,28 @@ function ListDetailSkeleton() {
  * Error state component
  */
 function ListNotFound() {
+  const router = useRouter();
+
   return (
-    <div className="min-h-[50vh] flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <Card variant="default" padding="lg" className="text-center max-w-md">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">List Not Found</h2>
         <p className="text-gray-500 mb-4">
           The list you are looking for does not exist or has been deleted.
         </p>
-        <Button asChild variant="outline">
-          <Link href="/lists">Back to Lists</Link>
-        </Button>
+        <button
+          onClick={() => router.push('/lists')}
+          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full font-medium text-gray-700 transition-colors min-h-[44px]"
+        >
+          Back to Lists
+        </button>
       </Card>
     </div>
   );
 }
 
 export default function ListDetailPage({ params }: Props) {
+  const router = useRouter();
   const { id } = use(params);
   const listId = parseInt(id, 10);
 
@@ -101,58 +104,68 @@ export default function ListDetailPage({ params }: Props) {
     return <ListNotFound />;
   }
 
+  // Calculate item count
+  const itemCount = items?.length || 0;
+  const newItemsCount = 0; // TODO: Add logic for "new" items if needed
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Page Header */}
-      <PageHeader
-        title={listData.name}
-        backHref="/lists"
-        actions={
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="default"
-              onClick={() => setIsAddItemModalOpen(true)}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="p-4 md:p-8 max-w-7xl mx-auto h-full overflow-y-auto pb-20">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <button
+              onClick={() => router.push('/lists')}
+              className="text-gray-400 hover:text-[#E07A5F] font-bold text-sm mb-2 transition-colors min-h-[44px]"
             >
-              <PlusIcon className="w-4 h-4 mr-2" />
-              Add Item
-            </Button>
-            <Button variant="outline" size="default">
-              Edit
-            </Button>
+              &larr; Back to Lists
+            </button>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#3D405B]">
+              {listData.name}
+            </h1>
+            <p className="text-gray-500 font-medium mt-1">
+              {itemCount} {itemCount === 1 ? 'item' : 'items'}
+              {newItemsCount > 0 && ` · ${newItemsCount} new`}
+            </p>
           </div>
-        }
-      />
 
-      {/* Main Content */}
-      <div className="px-4 py-6 md:px-6 space-y-6 max-w-7xl mx-auto">
-        {/* List Detail Card */}
-        <ListDetail list={listData} />
+          {/* Action Buttons */}
+          <div className="flex gap-3 flex-wrap">
+            <button className="flex items-center gap-2 px-4 py-2 bg-white rounded-full text-gray-600 font-bold shadow-sm hover:shadow-md transition-all border border-transparent hover:border-gray-100 min-h-[44px]">
+              <FilterIcon className="w-[18px] h-[18px]" /> Filter
+            </button>
+            <button className="flex items-center gap-2 px-4 py-2 bg-white rounded-full text-gray-600 font-bold shadow-sm hover:shadow-md transition-all border border-transparent hover:border-gray-100 min-h-[44px]">
+              <ArrowUpDownIcon className="w-[18px] h-[18px]" /> Sort
+            </button>
 
-        {/* Summary Stats */}
+            {/* AI Button - disabled for now, can be enabled later */}
+            <button
+              disabled
+              className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-purple-400 to-indigo-400 text-white rounded-full font-bold shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all opacity-50 cursor-not-allowed min-h-[44px]"
+              title="AI Ideas - Coming Soon"
+            >
+              <SparklesIcon className="w-[18px] h-[18px]" /> AI Ideas
+            </button>
+
+            <button
+              onClick={() => setIsAddItemModalOpen(true)}
+              className="flex items-center gap-2 px-5 py-2 bg-[#E07A5F] text-white rounded-full font-bold shadow-lg shadow-[#E07A5F]/30 hover:bg-[#d66f56] transition-all min-h-[44px]"
+            >
+              <PlusIcon className="w-[18px] h-[18px]" /> Add Gift
+            </button>
+          </div>
+        </div>
+
+        {/* Kanban Board */}
         {itemsLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Skeleton className="h-24" />
-            <Skeleton className="h-24" />
-            <Skeleton className="h-24" />
-            <Skeleton className="h-24" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Skeleton className="h-96" />
+            <Skeleton className="h-96" />
+            <Skeleton className="h-96" />
           </div>
         ) : (
-          <ListSummary items={items || []} />
+          <KanbanView items={items || []} onAddItem={handleAddItem} />
         )}
-
-        {/* Pipeline View */}
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Items</h2>
-          {itemsLoading ? (
-            <div className="space-y-6">
-              <Skeleton className="h-64" />
-              <Skeleton className="h-64" />
-            </div>
-          ) : (
-            <PipelineView items={items || []} onAddItem={handleAddItem} />
-          )}
-        </div>
       </div>
 
       {/* Add Item Modal */}

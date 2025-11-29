@@ -16,8 +16,12 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // Base backgrounds - Cream aesthetic from inspiration
+        'cream': '#F5F1E8',
+        'charcoal': '#3D405B',
+
         // Warm backgrounds - Refined for depth
-        'bg-base': '#FBF9F6', // Slightly lighter/warmer
+        'bg-base': '#F5F1E8', // Cream from inspiration
         'bg-subtle': '#F2EEE6',
         'bg-elevated': '#FFFFFF',
         'surface-primary': '#FFFFFF',
@@ -38,6 +42,11 @@ const config: Config = {
           900: '#2B2622',
         },
 
+        // Primary Salmon - From inspiration app
+        'salmon': '#E07A5F',
+        'mustard': '#DDBEA9',
+        'sage': '#81B29A',
+
         // Primary coral - Vibrant & Modern
         primary: {
           50: '#FFF0ED',
@@ -45,19 +54,33 @@ const config: Config = {
           200: '#FFC2B8',
           300: '#FFA394',
           400: '#FF8570',
-          500: '#FF664D', // More vibrant core
-          600: '#E64D33',
+          500: '#E07A5F', // Salmon from inspiration
+          600: '#d66f56',
           700: '#CC3A21',
           800: '#B32D17',
           900: '#8C1F0D',
         },
 
-        // Status colors refined
+        // Status colors from inspiration
         'status-idea': {
-          50: '#FFFCF0',
-          100: '#FFF6D6',
-          500: '#F5BE47',
-          700: '#B8861B',
+          50: '#F2E8CF',
+          100: '#DDBEA9',
+          500: '#C8A166',
+          700: '#BC8A5F',
+          text: '#7c5e47',
+        },
+        'status-shortlisted': {
+          50: '#F4E3E1',
+          500: '#D08C78',
+          700: '#C07E75',
+          text: '#A65D57',
+        },
+        'status-purchased': {
+          50: '#E8F1E9',
+          100: '#AEC3B0',
+          500: '#84A98C',
+          700: '#81B29A',
+          text: '#3e5240',
         },
         'status-success': {
           50: '#F2FCF4',

@@ -1,12 +1,11 @@
 'use client';
 
-import { PageHeader } from '@/components/layout';
 import { Skeleton } from '@/components/ui';
 import {
-  PrimaryOccasion,
-  PipelineSummary,
-  PeopleNeeding,
-  QuickActions,
+  DashboardHeader,
+  StatsCards,
+  RecentActivity,
+  IdeaInbox,
 } from '@/components/dashboard';
 import { useDashboard } from '@/hooks/useDashboard';
 
@@ -15,9 +14,8 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="p-4 animate-fade-in">
-        <PageHeader title="Dashboard" />
-        <div className="text-red-600 p-4 bg-red-50 rounded-lg mt-4 border border-red-100">
+      <div className="min-h-screen bg-cream p-4 animate-fade-in">
+        <div className="text-red-600 p-4 bg-red-50 rounded-2xlarge mt-4 border border-red-100">
           Error loading dashboard: {error instanceof Error ? error.message : 'Unknown error'}
         </div>
       </div>
@@ -25,49 +23,53 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6 pb-20 md:pb-6">
-      <div>
-        <PageHeader title="Dashboard" subtitle="Welcome back!" />
-      </div>
+    <div className="min-h-screen bg-cream p-4 md:p-8 pb-20 md:pb-6 relative overflow-hidden">
+      {/* Decorative Background Blobs */}
+      <div className="absolute top-20 right-10 w-96 h-96 bg-salmon/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-32 left-10 w-80 h-80 bg-sage/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-mustard/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Quick Actions */}
-      <div>
-        <QuickActions />
-      </div>
+      {/* Content Container */}
+      <div className="max-w-7xl mx-auto relative z-10 animate-fade-in">
+        {/* Header with Occasion and People Carousel */}
+        <div className="mb-10">
+          {isLoading ? (
+            <Skeleton className="h-24 rounded-2xlarge" />
+          ) : (
+            <DashboardHeader
+              occasion={data?.primary_occasion}
+              people={data?.people_needing_gifts ?? []}
+            />
+          )}
+        </div>
 
-      {/* Primary Occasion */}
-      <div>
-        {isLoading ? (
-          <Skeleton className="h-32 rounded-xlarge" />
-        ) : data?.primary_occasion ? (
-          <PrimaryOccasion occasion={data.primary_occasion} />
-        ) : (
-          <div className="text-warm-500 text-center py-8 bg-surface-secondary/50 rounded-xlarge border border-dashed border-warm-200">
-            No upcoming occasions
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+          {/* Left Column: Stats & Actions */}
+          <div className="lg:col-span-5 flex flex-col gap-6 md:gap-8">
+            {/* Stats Row */}
+            {isLoading ? (
+              <Skeleton className="h-32 rounded-2xlarge" />
+            ) : (
+              <StatsCards
+                ideas={data?.total_ideas ?? 0}
+                toBuy={data?.my_assignments ?? 0}
+                purchased={data?.total_purchased ?? 0}
+                occasionId={data?.primary_occasion?.id}
+              />
+            )}
+
+            {/* Idea Inbox */}
+            <div className="flex-1">
+              <IdeaInbox />
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Pipeline Summary */}
-      <div>
-        {isLoading ? (
-          <Skeleton className="h-24 rounded-xlarge" />
-        ) : (
-          <PipelineSummary
-            ideas={data?.total_ideas ?? 0}
-            purchased={data?.total_purchased ?? 0}
-            myAssignments={data?.my_assignments ?? 0}
-          />
-        )}
-      </div>
-
-      {/* People Needing Gifts */}
-      <div>
-        {isLoading ? (
-          <Skeleton className="h-48 rounded-xlarge" />
-        ) : (
-          <PeopleNeeding people={data?.people_needing_gifts ?? []} />
-        )}
+          {/* Right Column: Recent Activity */}
+          <div className="lg:col-span-7">
+            <RecentActivity />
+          </div>
+        </div>
       </div>
     </div>
   );
