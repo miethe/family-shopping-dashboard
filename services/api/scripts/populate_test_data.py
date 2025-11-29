@@ -3,7 +3,8 @@
 Test Data Population Script for Family Gifting Dashboard
 ==========================================================
 
-This script populates the database with realistic test data for development and testing.
+This script resets the database using reset_dev_db.py and populates it with
+comprehensive test data for development, testing, and demos.
 
 What it creates:
   - 3 Users (Alice, Bob, Carol - family members)
@@ -16,18 +17,18 @@ What it creates:
   - 10+ Comments (on various entities)
 
 How to run:
-  Basic usage (clears DB and populates):
-    $ python scripts/populate_test_data.py
+  IMPORTANT: This script MUST be run from the services/api/ directory
 
-  From root directory:
-    $ cd services/api
-    $ PYTHONPATH="$PWD" python scripts/populate_test_data.py
-
-  With uv:
+  With uv (recommended):
     $ cd services/api
     $ uv run python scripts/populate_test_data.py
 
+  Basic usage (clears DB and populates):
+    $ cd services/api
+    $ python scripts/populate_test_data.py
+
   Skip confirmation prompt:
+    $ cd services/api
     $ python scripts/populate_test_data.py --yes
 
 Options:
@@ -41,9 +42,13 @@ Environment variables required:
 ⚠️  WARNING: This script will DROP ALL TABLES and recreate them.
             All existing data will be PERMANENTLY DELETED.
             Only use this in development environments!
+
+Note: This script uses reset_dev_db.py which handles database reset via Alembic migrations.
+      The alembic.ini file must exist in the current directory (services/api/).
 """
 
 import asyncio
+import subprocess
 import sys
 from datetime import date, datetime, timezone
 from decimal import Decimal
@@ -55,8 +60,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import async_session_maker, engine
-from app.models.base import Base
+from app.core.database import async_session_maker
 from app.models.comment import Comment, CommentParentType
 from app.models.gift import Gift
 from app.models.list import List, ListType, ListVisibility
@@ -86,27 +90,44 @@ class TestDataPopulator:
         self.gifts = {}
         self.lists = {}
 
-    async def drop_and_recreate_tables(self) -> None:
+    async def reset_database(self) -> None:
         """
-        Drop and recreate the public schema using raw SQL.
-        This is the most reliable way to ensure a clean slate.
-
-        WARNING: This DELETES ALL DATA permanently.
+        Reset the database using the reset_dev_db.py script.
+        This drops all tables, enums, and runs Alembic migrations.
         """
-        print("\n🗑️  Dropping public schema with CASCADE...")
-        async with engine.begin() as conn:
-            # Drop entire public schema and recreate
-            await conn.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
-            await conn.execute(text("CREATE SCHEMA public"))
-            # Grant permissions
-            await conn.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
-            await conn.execute(text("GRANT ALL ON SCHEMA public TO public"))
-        print("✅ Schema dropped and recreated")
+        print("\n🔄 Resetting database using reset_dev_db.py...")
 
-        print("\n🔨 Creating all tables...")
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        print("✅ All tables created successfully")
+        # Get path to reset_dev_db.py
+        script_dir = Path(__file__).parent
+        reset_script = script_dir / "reset_dev_db.py"
+
+        try:
+            # Run reset_dev_db.py with --yes flag to skip confirmation
+            result = subprocess.run(
+                ["uv", "run", "python", str(reset_script), "--yes"],
+                capture_output=True,
+                text=True,
+                check=True,
+                cwd=script_dir.parent,  # Run from services/api directory
+            )
+
+            print(result.stdout)
+            print("✅ Database reset completed successfully")
+
+        except subprocess.CalledProcessError as e:
+            print("\n❌ ERROR: Database reset failed")
+            print(f"Exit code: {e.returncode}")
+            if e.stdout:
+                print("\nStdout:")
+                print(e.stdout)
+            if e.stderr:
+                print("\nStderr:")
+                print(e.stderr)
+            raise
+        except FileNotFoundError:
+            print("\n❌ ERROR: reset_dev_db.py not found")
+            print(f"Expected at: {reset_script}")
+            raise
 
     async def create_users(self, session: AsyncSession) -> None:
         """
@@ -809,10 +830,10 @@ class TestDataPopulator:
 
         # We need to get list_item IDs for comments
         # For simplicity, we'll just grab the first few list items
-        result = await session.execute("SELECT id FROM list_items LIMIT 5")
+        result = await session.execute(text("SELECT id FROM list_items LIMIT 5"))
         list_item_ids = [row[0] for row in result.fetchall()]
 
-        result = await session.execute("SELECT id FROM lists LIMIT 3")
+        result = await session.execute(text("SELECT id FROM lists LIMIT 3"))
         list_ids = [row[0] for row in result.fetchall()]
 
         comments_data = [
@@ -908,7 +929,7 @@ class TestDataPopulator:
         Main orchestration method that populates all test data.
 
         Execution order:
-          1. Drop and recreate tables
+          1. Reset database using reset_dev_db.py
           2. Create Users
           3. Create People
           4. Create Occasions
@@ -922,8 +943,8 @@ class TestDataPopulator:
         print("  Family Gifting Dashboard - Test Data Population")
         print("=" * 70)
 
-        # Drop and recreate tables
-        await self.drop_and_recreate_tables()
+        # Reset database using reset_dev_db.py
+        await self.reset_database()
 
         # Create all data in dependency order
         async with async_session_maker() as session:
