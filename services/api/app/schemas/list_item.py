@@ -8,9 +8,9 @@ from pydantic import BaseModel, Field
 
 from app.models.list_item import ListItemStatus
 from app.schemas.base import TimestampSchema
+from app.schemas.gift import GiftSummary
 
 if TYPE_CHECKING:
-    from app.schemas.gift import GiftSummary
     from app.schemas.user import UserResponse
 
 
@@ -61,7 +61,7 @@ class ListItemResponse(TimestampSchema):
 class ListItemWithGift(ListItemResponse):
     """List item response including gift details."""
 
-    gift: "GiftSummary" = Field(
+    gift: GiftSummary = Field(
         ...,
         description="Gift details",
     )
