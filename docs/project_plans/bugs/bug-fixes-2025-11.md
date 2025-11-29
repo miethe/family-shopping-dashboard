@@ -604,7 +604,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - "Mother's Day" - 90 days from today
   - Updated all occasion references in lists and comments to match new names
   - Repopulated database with future-dated test data
-- **Commit(s)**: TBD
+- **Commit(s)**: `d8d0520`
 - **Status**: RESOLVED
 
 ---
@@ -620,7 +620,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - Removed redundant `text-gray-900` from child span (line 39), keeping only `font-medium`
   - Link now controls text color at the parent level, preventing default link styles from overriding
   - Maintains accessibility with excellent contrast ratio (>10:1) and preserves hover effects
-- **Commit(s)**: TBD
+- **Commit(s)**: `d8d0520`
 - **Status**: RESOLVED
 
 ---
@@ -643,7 +643,7 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
   - **OccasionDetailModal.tsx**: Removed animations from hero section, icon, name, date, countdown, description, metadata (7 locations)
   - Total: 39 animation class declarations removed
   - Modal container animations preserved: zoom + fade + slide entrance/exit effect (300ms)
-- **Commit(s)**: TBD
+- **Commit(s)**: `d8d0520`
 - **Status**: RESOLVED
 
 ---
