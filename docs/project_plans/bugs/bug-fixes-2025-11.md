@@ -497,3 +497,21 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Dashboard Unsafe .split() on Potentially Undefined Values
+
+**Issue**: Dashboard page crashes on load with client-side error: `Cannot read properties of undefined (reading 'split')` inside Array.map() operation
+
+- **Location**: `apps/web/components/features/dashboard/AvatarCarousel.tsx:75`, `apps/web/components/gifts/GiftCard.tsx:83`, `apps/web/components/layout/DesktopNav.tsx:68`
+- **Root Cause**: Three components called `.split()` on string properties without checking for null/undefined values. The API can return null for `display_name`, `name`, and `email` fields, causing TypeError when JavaScript attempts to call `.split()` on undefined.
+  - **AvatarCarousel.tsx**: `person.display_name.split(' ')[0]` inside `.map()` - most critical as it matched the error stack trace exactly
+  - **GiftCard.tsx**: `gift.assignee.name.split(' ')[0]` - checked assignee existence but not name field
+  - **DesktopNav.tsx**: Already had optional chaining but could be improved with additional fallback
+- **Fix**: Added optional chaining (`?.`) and meaningful fallbacks to all three files:
+  - **AvatarCarousel.tsx**: `person.display_name?.split(' ')[0] || 'User'`
+  - **GiftCard.tsx**: `gift.assignee.name?.split(' ')[0] || 'User'`
+  - **DesktopNav.tsx**: Enhanced with `user?.email?.split('@')[0] || user?.name?.split(' ')[0] || 'User'`
+- **Commit(s)**: TBD
+- **Status**: RESOLVED
+
+---

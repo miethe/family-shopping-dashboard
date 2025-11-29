@@ -72,7 +72,7 @@ export function AvatarCarousel({ people, onPersonClick }: AvatarCarouselProps) {
               </Avatar>
             </div>
             <span className="text-xs font-medium text-warm-700 text-center truncate max-w-[72px]">
-              {person.display_name.split(' ')[0]}
+              {person.display_name?.split(' ')[0] || 'User'}
             </span>
           </button>
         ))}

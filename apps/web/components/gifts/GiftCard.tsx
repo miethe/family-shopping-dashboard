@@ -80,7 +80,7 @@ export function GiftCard({ gift }: GiftCardProps) {
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-xs text-warm-600">
-                  {gift.assignee.name.split(' ')[0]}
+                  {gift.assignee.name?.split(' ')[0] || 'User'}
                 </span>
               </div>
             )}
