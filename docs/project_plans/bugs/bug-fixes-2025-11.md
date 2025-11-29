@@ -527,3 +527,19 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## getInitials() Unsafe .split() Causing Dashboard Crash
+
+**Issue**: Dashboard page crashes on load with client-side error: `Cannot read properties of undefined (reading 'split')` inside `getInitials()` function
+
+- **Location**: `apps/web/components/ui/avatar.tsx:122-129`
+- **Root Cause**: The `getInitials()` function declared parameter type as `name: string` but at runtime received `undefined` or `null` values from the API. When called with undefined inside `AvatarCarousel.tsx` (line 71), the function attempted `undefined.split(' ')` which threw TypeError.
+- **Fix**: 
+  - Updated type signature from `name: string` to `name: string | undefined | null`
+  - Added defensive check: `if (!name || name.trim() === '') return 'U';`
+  - Added `.filter(Boolean)` to remove empty strings from split result
+  - Returns 'U' (for "User") as fallback when name is missing
+- **Commit(s)**: `b25fb1b`
+- **Status**: RESOLVED
+
+---
