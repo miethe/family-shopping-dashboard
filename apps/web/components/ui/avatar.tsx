@@ -118,11 +118,17 @@ AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 
 /**
  * Helper function to generate initials from a name
+ * Returns 'U' as fallback for undefined/null/empty names
  */
-export function getInitials(name: string): string {
+export function getInitials(name: string | undefined | null): string {
+  if (!name || name.trim() === '') {
+    return 'U';  // Fallback for "User"
+  }
+
   return name
     .split(' ')
     .map((n) => n[0])
+    .filter(Boolean)  // Remove empty strings
     .join('')
     .toUpperCase()
     .slice(0, 2);
