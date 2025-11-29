@@ -24,6 +24,13 @@ class PersonSummary(BaseModel):
     id: int
     name: str
     pending_gifts: int
+    photo_url: str | None = None
+    next_occasion: str | None = None  # ISO date string
+    gift_counts: dict[str, int] = {
+        "idea": 0,
+        "needed": 0,
+        "purchased": 0,
+    }
 
 
 class DashboardResponse(BaseSchema):

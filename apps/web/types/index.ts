@@ -251,6 +251,13 @@ export interface PersonSummaryDashboard {
   id: number;
   display_name: string;
   pending_gifts: number;
+  photo_url?: string;
+  next_occasion?: string; // ISO date string
+  gift_counts: {
+    idea: number;
+    needed: number;
+    purchased: number;
+  };
 }
 
 export interface DashboardResponse {

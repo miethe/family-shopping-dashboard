@@ -145,24 +145,30 @@ class DashboardService:
         Get people who have pending gifts (not yet purchased).
 
         Returns people who have lists with items in IDEA or SELECTED status,
-        sorted by number of pending gifts descending.
+        sorted by number of pending gifts descending. Includes photo URLs,
+        next occasion dates, and gift counts by status.
 
         Returns:
-            List of PersonSummary with pending gift counts.
+            List of PersonSummary with all enriched fields.
         """
+        from app.models.occasion import Occasion
+
         # Subquery for pending items count per person
         pending_statuses = [ListItemStatus.idea, ListItemStatus.selected]
+        today = datetime.date.today()
 
+        # Main query with all needed fields
         stmt = (
             select(
                 Person.id,
                 Person.display_name,
+                Person.photo_url,
                 func.count(ListItem.id).label("pending_gifts"),
             )
             .join(List, List.person_id == Person.id)
             .join(ListItem, ListItem.list_id == List.id)
             .where(ListItem.status.in_(pending_statuses))
-            .group_by(Person.id, Person.display_name)
+            .group_by(Person.id, Person.display_name, Person.photo_url)
             .having(func.count(ListItem.id) > 0)
             .order_by(func.count(ListItem.id).desc())
         )
@@ -170,14 +176,63 @@ class DashboardService:
         result = await self.session.execute(stmt)
         rows = result.all()
 
-        return [
-            PersonSummary(
-                id=row.id,
-                name=row.display_name,
-                pending_gifts=row.pending_gifts,
+        # Build PersonSummary objects with additional data
+        people_summaries = []
+        for row in rows:
+            # Query next occasion for this person
+            next_occasion_stmt = (
+                select(Occasion.date)
+                .join(List, List.occasion_id == Occasion.id)
+                .where(List.person_id == row.id)
+                .where(Occasion.date >= today)
+                .order_by(Occasion.date.asc())
+                .limit(1)
             )
-            for row in rows
-        ]
+            next_occasion_result = await self.session.execute(next_occasion_stmt)
+            next_occasion_date = next_occasion_result.scalar_one_or_none()
+
+            # Query gift counts by status for this person
+            gift_counts_stmt = (
+                select(
+                    ListItem.status,
+                    func.count(ListItem.id).label("count"),
+                )
+                .join(List, ListItem.list_id == List.id)
+                .where(List.person_id == row.id)
+                .group_by(ListItem.status)
+            )
+            gift_counts_result = await self.session.execute(gift_counts_stmt)
+            gift_counts_rows = gift_counts_result.all()
+
+            # Map status to counts
+            gift_counts = {
+                "idea": 0,
+                "needed": 0,  # "selected" status
+                "purchased": 0,
+            }
+            for status_row in gift_counts_rows:
+                # status_row is a Row with (status, count)
+                status = status_row[0]
+                count_val = status_row[1]
+                if status == ListItemStatus.idea:
+                    gift_counts["idea"] = count_val
+                elif status == ListItemStatus.selected:
+                    gift_counts["needed"] = count_val
+                elif status == ListItemStatus.purchased:
+                    gift_counts["purchased"] = count_val
+
+            people_summaries.append(
+                PersonSummary(
+                    id=row.id,
+                    name=row.display_name,
+                    pending_gifts=row.pending_gifts,
+                    photo_url=row.photo_url,
+                    next_occasion=next_occasion_date.isoformat() if next_occasion_date else None,
+                    gift_counts=gift_counts,
+                )
+            )
+
+        return people_summaries
 
     async def _count_by_status(self, status: ListItemStatus) -> int:
         """
