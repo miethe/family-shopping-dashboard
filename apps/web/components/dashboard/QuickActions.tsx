@@ -12,7 +12,7 @@ import { PlusIcon, ListIcon, UserIcon } from '@/components/layout/icons';
 
 export function QuickActions() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 animate-slide-up-fade" style={{ animationDelay: '100ms' }}>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
       <Link href="/gifts/new" className="group">
         <Button
           variant="default"

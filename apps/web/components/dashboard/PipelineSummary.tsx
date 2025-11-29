@@ -17,7 +17,7 @@ interface PipelineSummaryProps {
 
 export function PipelineSummary({ ideas, purchased, myAssignments }: PipelineSummaryProps) {
   return (
-    <div className="grid grid-cols-3 gap-4 animate-slide-up-fade" style={{ animationDelay: '300ms' }}>
+    <div className="grid grid-cols-3 gap-4">
       {/* Ideas */}
       <Card className="border-gray-200 lift-effect hover:border-yellow-200 group cursor-default">
         <CardContent className="p-4 text-center">

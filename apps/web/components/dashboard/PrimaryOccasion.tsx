@@ -27,7 +27,7 @@ export function PrimaryOccasion({ occasion }: PrimaryOccasionProps) {
   });
 
   return (
-    <div className="animate-slide-up-fade" style={{ animationDelay: '200ms' }}>
+    <div>
       <Link href={`/occasions/${occasion.id}`}>
         <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 hover:from-blue-600 hover:to-blue-700 transition-all cursor-pointer lift-effect">
           <CardContent className="p-6">
@@ -37,7 +37,7 @@ export function PrimaryOccasion({ occasion }: PrimaryOccasionProps) {
                 <p className="text-blue-100 text-sm mt-1">{formattedDate}</p>
               </div>
               <div className="text-right">
-                <span className="text-4xl font-bold block animate-scale-in">{occasion.days_until}</span>
+                <span className="text-4xl font-bold block">{occasion.days_until}</span>
                 <p className="text-blue-100 text-sm">
                   {occasion.days_until === 1 ? 'day left' : 'days left'}
                 </p>
