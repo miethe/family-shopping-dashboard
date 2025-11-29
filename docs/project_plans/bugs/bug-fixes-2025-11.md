@@ -515,3 +515,15 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## TypeScript Error: User Type Missing 'name' Property
+
+**Issue**: Build failure due to TypeScript error in DesktopNav component attempting to access non-existent `name` property on User type.
+
+- **Location**: `apps/web/components/layout/DesktopNav.tsx:68`
+- **Root Cause**: DesktopNav referenced `user?.name?.split(' ')[0]` but the auth User type (`lib/auth/types.ts`) only has `id`, `email`, `created_at`, `updated_at` fields. The `name` property doesn't exist on this type.
+- **Fix**: Removed the invalid `user?.name?.split(' ')[0]` reference, keeping only `user?.email?.split('@')[0] || 'User'` which extracts username from email address.
+- **Commit(s)**: `639489c`
+- **Status**: RESOLVED
+
+---
