@@ -73,7 +73,7 @@ class ListService:
 
         list_obj = await self.repo.create(list_data)
 
-        # Convert ORM model to DTO
+        # Convert ORM model to DTO (new lists have 0 items)
         return ListResponse(
             id=list_obj.id,
             name=list_obj.name,
@@ -82,6 +82,7 @@ class ListService:
             user_id=list_obj.user_id,
             person_id=list_obj.person_id,
             occasion_id=list_obj.occasion_id,
+            item_count=0,
             created_at=list_obj.created_at,
             updated_at=list_obj.updated_at,
         )
@@ -109,6 +110,14 @@ class ListService:
         if list_obj is None:
             return None
 
+        # Count items for this list
+        from sqlalchemy import select, func
+        from app.models.list_item import ListItem
+
+        stmt = select(func.count(ListItem.id)).where(ListItem.list_id == list_id)
+        result = await self.session.execute(stmt)
+        item_count = result.scalar() or 0
+
         return ListResponse(
             id=list_obj.id,
             name=list_obj.name,
@@ -117,6 +126,7 @@ class ListService:
             user_id=list_obj.user_id,
             person_id=list_obj.person_id,
             occasion_id=list_obj.occasion_id,
+            item_count=item_count,
             created_at=list_obj.created_at,
             updated_at=list_obj.updated_at,
         )
@@ -197,7 +207,7 @@ class ListService:
         Returns:
             Tuple of (ListResponse list, has_more, next_cursor)
         """
-        list_objs, has_more, next_cursor = await self.repo.get_multi(
+        list_results, has_more, next_cursor = await self.repo.get_multi(
             cursor=cursor, limit=limit
         )
 
@@ -210,10 +220,11 @@ class ListService:
                 user_id=obj.user_id,
                 person_id=obj.person_id,
                 occasion_id=obj.occasion_id,
+                item_count=item_count,
                 created_at=obj.created_at,
                 updated_at=obj.updated_at,
             )
-            for obj in list_objs
+            for obj, item_count in list_results
         ]
 
         return list_responses, has_more, next_cursor
@@ -225,7 +236,7 @@ class ListService:
         Apply cursor-based pagination to a list of items.
 
         Args:
-            items: List of ORM model instances
+            items: List of tuples (ORM model instance, item_count)
             cursor: ID of last item from previous page (None for first page)
             limit: Maximum items to return
 
@@ -234,7 +245,7 @@ class ListService:
         """
         # Filter items based on cursor (start after cursor ID)
         if cursor is not None:
-            filtered_items = [item for item in items if item.id > cursor]
+            filtered_items = [item for item in items if item[0].id > cursor]
         else:
             filtered_items = items
 
@@ -243,7 +254,7 @@ class ListService:
         page_items = filtered_items[:limit]
 
         # Determine next cursor
-        next_cursor = page_items[-1].id if page_items and has_more else None
+        next_cursor = page_items[-1][0].id if page_items and has_more else None
 
         # Convert to DTOs
         list_responses = [
@@ -255,10 +266,11 @@ class ListService:
                 user_id=obj.user_id,
                 person_id=obj.person_id,
                 occasion_id=obj.occasion_id,
+                item_count=item_count,
                 created_at=obj.created_at,
                 updated_at=obj.updated_at,
             )
-            for obj in page_items
+            for obj, item_count in page_items
         ]
 
         return list_responses, has_more, next_cursor
@@ -280,9 +292,9 @@ class ListService:
                 print(f"List for person: {list_obj.name}")
             ```
         """
-        list_objs = await self.repo.get_by_person(person_id)
+        list_results = await self.repo.get_by_person(person_id)
 
-        # Convert ORM models to DTOs
+        # Convert ORM models with item counts to DTOs
         return [
             ListResponse(
                 id=obj.id,
@@ -292,10 +304,11 @@ class ListService:
                 user_id=obj.user_id,
                 person_id=obj.person_id,
                 occasion_id=obj.occasion_id,
+                item_count=item_count,
                 created_at=obj.created_at,
                 updated_at=obj.updated_at,
             )
-            for obj in list_objs
+            for obj, item_count in list_results
         ]
 
     async def filter_by_occasion(self, occasion_id: int) -> list[ListResponse]:
@@ -315,9 +328,9 @@ class ListService:
                 print(f"List for occasion: {list_obj.name}")
             ```
         """
-        list_objs = await self.repo.get_by_occasion(occasion_id)
+        list_results = await self.repo.get_by_occasion(occasion_id)
 
-        # Convert ORM models to DTOs
+        # Convert ORM models with item counts to DTOs
         return [
             ListResponse(
                 id=obj.id,
@@ -327,10 +340,11 @@ class ListService:
                 user_id=obj.user_id,
                 person_id=obj.person_id,
                 occasion_id=obj.occasion_id,
+                item_count=item_count,
                 created_at=obj.created_at,
                 updated_at=obj.updated_at,
             )
-            for obj in list_objs
+            for obj, item_count in list_results
         ]
 
     async def get_with_items(self, list_id: int) -> ListWithItems | None:
@@ -443,6 +457,14 @@ class ListService:
         else:
             list_obj = existing
 
+        # Count items for this list
+        from sqlalchemy import select, func
+        from app.models.list_item import ListItem
+
+        stmt = select(func.count(ListItem.id)).where(ListItem.list_id == list_id)
+        result = await self.session.execute(stmt)
+        item_count = result.scalar() or 0
+
         # Convert ORM model to DTO
         return ListResponse(
             id=list_obj.id,
@@ -452,6 +474,7 @@ class ListService:
             user_id=list_obj.user_id,
             person_id=list_obj.person_id,
             occasion_id=list_obj.occasion_id,
+            item_count=item_count,
             created_at=list_obj.created_at,
             updated_at=list_obj.updated_at,
         )

@@ -166,6 +166,7 @@ export interface GiftList extends TimestampFields {
   user_id: number;
   person_id?: number;
   occasion_id?: number;
+  item_count?: number;
 }
 
 export interface ListCreate {

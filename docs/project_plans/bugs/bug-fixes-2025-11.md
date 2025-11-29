@@ -543,3 +543,49 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Lists Showing Zero Items on Occasion Detail Page
+
+**Issue**: Occasion detail page (`/occasions/{id}`) shows "0 items" for all lists, even when lists contain multiple items. The item counts are always displayed as zero regardless of actual content.
+
+- **Location**: Multiple layers:
+  - Backend: `services/api/app/schemas/list.py:54-64` (ListResponse missing item_count)
+  - Backend: `services/api/app/repositories/list.py` (queries don't include counts)
+  - Backend: `services/api/app/services/list.py` (service doesn't map counts)
+  - Frontend: `apps/web/types/index.ts:161-169` (GiftList type missing item_count)
+  - Frontend: `apps/web/components/occasions/OccasionLists.tsx:114` (using type assertion)
+- **Root Cause**: The backend API never returned `item_count` in the `ListResponse` DTO. The repository queries didn't compute item counts, and the service layer didn't map them. On the frontend, the `GiftList` type didn't include `item_count`, so the component used a type assertion `(list as any).item_count || 0` which always evaluated to 0 since the property didn't exist in the API response.
+- **Fix**:
+  - **Backend**:
+    - Added `item_count: int = Field(0, description="Number of items in this list")` to `ListResponse` schema
+    - Updated repository methods (`get_by_person`, `get_by_occasion`, `get_multi`) to use efficient SQL with `LEFT JOIN` and `COUNT()` aggregation, returning `list[tuple[List, int]]`
+    - Updated service layer to unpack tuples `(obj, item_count)` and map `item_count` to `ListResponse` DTOs
+  - **Frontend**:
+    - Added `item_count?: number;` to `GiftList` interface in types
+    - Removed type assertion, changed from `(list as any).item_count || 0` to `list.item_count || 0`
+- **Commit(s)**: TBD
+- **Status**: RESOLVED
+
+---
+
+## Missing Tooltips on List Status Headers
+
+**Issue**: When viewing a list detail page, the item status headers (Ideas, Selected, Purchased, Received) have no tooltips to explain what each status means. Users unfamiliar with the workflow may not understand the status categories.
+
+- **Location**: `apps/web/components/lists/ListItemGroup.tsx:61-70`
+- **Root Cause**: Status headers were implemented without any hover tooltips or explanatory text. The design included icons and labels but no contextual help for users.
+- **Fix**:
+  - Created Radix UI Tooltip component wrapper (`apps/web/components/ui/tooltip.tsx`)
+  - Added status descriptions mapping:
+    - `idea`: "Gift ideas being considered"
+    - `selected`: "Items chosen to purchase"
+    - `purchased`: "Items that have been bought"
+    - `received`: "Items that have been received"
+  - Wrapped status headers in `TooltipProvider` > `Tooltip` structure
+  - Added `cursor-help` class to indicate hoverable content
+  - Exported Tooltip components from UI component library index
+  - Installed `@radix-ui/react-tooltip` v1.2.8
+- **Commit(s)**: TBD
+- **Status**: RESOLVED
+
+---

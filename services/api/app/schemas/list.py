@@ -61,6 +61,10 @@ class ListResponse(TimestampSchema):
     user_id: int
     person_id: int | None
     occasion_id: int | None
+    item_count: int = Field(
+        0,
+        description="Number of items in this list",
+    )
 
 
 class ListSummary(BaseModel):

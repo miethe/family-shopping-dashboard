@@ -62,3 +62,9 @@ export {
   type GiftStatus,
   type StatusPillProps,
 } from './status-pill';
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from './tooltip';
