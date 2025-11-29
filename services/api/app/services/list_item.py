@@ -7,7 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.list_item import ListItemStatus
 from app.repositories.list_item import ListItemRepository
-from app.schemas.list_item import ListItemCreate, ListItemResponse, ListItemUpdate
+from app.schemas.gift import GiftSummary
+from app.schemas.list_item import (
+    ListItemCreate,
+    ListItemResponse,
+    ListItemUpdate,
+    ListItemWithGift,
+)
 from app.schemas.ws import WSEvent
 from app.services.ws_manager import manager
 
@@ -203,31 +209,32 @@ class ListItemService:
             updated_at=list_item.updated_at,
         )
 
-    async def get_for_list(self, list_id: int) -> list[ListItemResponse]:
+    async def get_for_list(self, list_id: int) -> list[ListItemWithGift]:
         """
-        Get all items in a specific list.
+        Get all items in a specific list with gift details.
 
         Returns items ordered by creation date (newest first).
+        Includes full gift information for each list item.
 
         Args:
             list_id: Foreign key of the list
 
         Returns:
-            List of ListItemResponse DTOs (may be empty)
+            List of ListItemWithGift DTOs (may be empty)
 
         Example:
             ```python
             items = await service.get_for_list(list_id=123)
             print(f"Found {len(items)} items in list")
             for item in items:
-                print(f"- Gift {item.gift_id}: {item.status}")
+                print(f"- {item.gift.name}: {item.status}")
             ```
         """
         list_items = await self.repo.get_by_list(list_id)
 
-        # Convert ORM models to DTOs
+        # Convert ORM models to DTOs with gift details
         return [
-            ListItemResponse(
+            ListItemWithGift(
                 id=item.id,
                 gift_id=item.gift_id,
                 list_id=item.list_id,
@@ -236,6 +243,12 @@ class ListItemService:
                 notes=item.notes,
                 created_at=item.created_at,
                 updated_at=item.updated_at,
+                gift=GiftSummary(
+                    id=item.gift.id,
+                    name=item.gift.name,
+                    price=item.gift.price,
+                    image_url=item.gift.image_url,
+                ),
             )
             for item in list_items
         ]

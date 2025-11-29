@@ -7,7 +7,7 @@ from app.core.deps import get_current_user, get_db
 from app.core.exceptions import NotFoundError, ValidationError
 from app.schemas.base import PaginatedResponse
 from app.schemas.list import ListCreate, ListResponse, ListUpdate
-from app.schemas.list_item import ListItemCreate, ListItemResponse
+from app.schemas.list_item import ListItemCreate, ListItemResponse, ListItemWithGift
 from app.services.list import ListService
 from app.services.list_item import ListItemService
 
@@ -373,16 +373,16 @@ async def delete_list(
 
 @router.get(
     "/{list_id}/items",
-    response_model=list[ListItemResponse],
+    response_model=list[ListItemWithGift],
     status_code=status.HTTP_200_OK,
     summary="Get items in a gift list",
-    description="Get all items (gifts) in a specific list",
+    description="Get all items (gifts) in a specific list with gift details",
 )
 async def get_list_items(
     list_id: int,
     current_user_id: int = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> list[ListItemResponse]:
+) -> list[ListItemWithGift]:
     """
     Get all items in a gift list.
 

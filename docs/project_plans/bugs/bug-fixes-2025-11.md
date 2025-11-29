@@ -727,3 +727,22 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Lists Page Gifts Perpetually Showing "Loading gift..."
+
+**Issue**: When navigating to a list detail page (`/lists/{id}`), gifts never populate - each item perpetually shows "Loading gift..." even though the API returns 200 with data.
+
+- **Location**:
+  - Repository: `services/api/app/repositories/list_item.py:32-56`
+  - Service: `services/api/app/services/list_item.py:206-254`
+  - Router: `services/api/app/api/lists.py:374-450`
+  - Frontend: `apps/web/components/lists/KanbanCard.tsx:59-66`
+- **Root Cause**: The backend `GET /lists/{list_id}/items` endpoint returned `ListItemResponse` which only contains `gift_id` (integer), but the frontend expected `ListItemWithGift` with a nested `gift` object. The repository didn't eager load the gift relationship, the service constructed DTOs without gift data, and the router declared the wrong response model. The frontend KanbanCard component showed "Loading gift..." fallback when `item.gift` was undefined.
+- **Fix**: Updated all three backend layers to include gift data:
+  - **Repository**: Added `selectinload(ListItem.gift)` to `get_by_list()` query (line 52)
+  - **Service**: Updated `get_for_list()` to return `list[ListItemWithGift]` with nested `GiftSummary` objects (lines 212-254)
+  - **Router**: Changed `response_model` and return type to `list[ListItemWithGift]` (lines 376, 385)
+- **Commit(s)**: `784c6f9`
+- **Status**: RESOLVED
+
+---

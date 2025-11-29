@@ -49,6 +49,7 @@ class ListItemRepository(BaseRepository[ListItem]):
         stmt = (
             select(ListItem)
             .where(ListItem.list_id == list_id)
+            .options(selectinload(ListItem.gift))
             .order_by(ListItem.created_at.desc())
         )
         result = await self.session.execute(stmt)
