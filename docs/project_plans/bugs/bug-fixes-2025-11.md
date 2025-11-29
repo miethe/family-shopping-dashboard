@@ -705,3 +705,25 @@ Monthly log of bug fixes and remediations for the Family Gifting Dashboard proje
 - **Status**: RESOLVED
 
 ---
+
+## Dashboard People Section Missing Photos, Dates, and Gift Breakdown
+
+**Issue**: The "People Needing Gifts" dashboard section showed generic "U" placeholders instead of user photos/initials, no occasion dates, and only total pending count instead of gift type breakdown (idea/needed/purchased).
+
+- **Location**:
+  - Frontend: `apps/web/components/dashboard/PeopleNeeding.tsx:29-46`
+  - Frontend: `apps/web/types/index.ts:250-254`
+  - Backend: `services/api/app/schemas/dashboard.py:21-26`
+  - Backend: `services/api/app/services/dashboard.py:143-180`
+- **Root Cause**: Backend `PersonSummary` schema and dashboard service query didn't include photo URLs, occasion dates, or gift count breakdowns. Frontend component only rendered basic placeholders without attempting to display these fields.
+- **Fix**: Enhanced both backend and frontend layers:
+  - **Backend Schema**: Added `photo_url`, `next_occasion`, and `gift_counts` fields to PersonSummary
+  - **Backend Service**: Updated query to fetch photo URLs from Person table, next upcoming occasion date, and gift counts aggregated by status (idea, needed, purchased)
+  - **Frontend Types**: Added corresponding fields to PersonSummaryDashboard interface
+  - **Frontend Component**: Implemented avatar with photo support (fallback to initials via AvatarImage + AvatarFallback pattern), occasion date formatting (MMM DD), and visual gift count breakdown with emojis (💡 ideas, ✓ needed, 🎁 purchased)
+  - Added `formatOccasionDate()` helper for consistent date display
+  - Improved visual design with better spacing, hover effects, and color coding
+- **Commit(s)**: `3cbdf21`
+- **Status**: RESOLVED
+
+---
