@@ -12,6 +12,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
@@ -288,10 +289,13 @@ export function AddListItemModal({
                         }`}
                       >
                         {gift.image_url && (
-                          <img
+                          <Image
                             src={gift.image_url}
                             alt={gift.name}
+                            width={48}
+                            height={48}
                             className="w-12 h-12 object-cover rounded"
+                            unoptimized
                           />
                         )}
                         <div className="flex-1 min-w-0">

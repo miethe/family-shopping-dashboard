@@ -6,6 +6,7 @@
 
 'use client';
 
+import Image from 'next/image';
 import { Button } from '@/components/ui';
 
 // Mock data for now - replace with real data when available
@@ -43,10 +44,13 @@ export function IdeaInbox() {
             className="flex items-center justify-between group p-2 hover:bg-white rounded-2xl transition-colors"
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <img
+              <Image
                 src={item.imageUrl}
-                alt=""
+                alt={item.name}
+                width={48}
+                height={48}
                 className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                unoptimized
               />
               <span className="text-charcoal font-semibold text-sm truncate">
                 {item.name}

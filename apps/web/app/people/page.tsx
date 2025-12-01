@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePersons } from '@/hooks/usePersons';
 import { useOccasions } from '@/hooks/useOccasions';
 import { Button } from '@/components/ui/button';
@@ -299,10 +300,13 @@ export default function RecipientsPage() {
                     >
                       <div className="relative inline-block">
                         {person.photo_url ? (
-                          <img
+                          <Image
                             src={person.photo_url}
                             alt={person.display_name}
+                            width={96}
+                            height={96}
                             className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-transparent group-hover:border-primary/20 transition-all"
+                            unoptimized
                           />
                         ) : (
                           <div className="w-24 h-24 rounded-full mx-auto bg-slate-200 flex items-center justify-center text-3xl font-bold text-slate-600 border-4 border-transparent group-hover:border-primary/20 transition-all">
@@ -360,10 +364,13 @@ export default function RecipientsPage() {
               {filteredPeople.slice(0, 3).map((person: Person) => (
                 <li key={person.id} className="flex gap-4 items-start">
                   {person.photo_url ? (
-                    <img
+                    <Image
                       src={person.photo_url}
-                      className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
                       alt={person.display_name}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-sm font-bold text-slate-600 flex-shrink-0">
@@ -392,10 +399,13 @@ export default function RecipientsPage() {
               <div className="bg-background-light p-8 rounded-t-3xl text-center relative z-0">
                 <div className="relative inline-block -mb-16">
                   {selectedRecipient.photo_url ? (
-                    <img
+                    <Image
                       src={selectedRecipient.photo_url}
-                      className="w-32 h-32 rounded-full border-8 border-white shadow-xl object-cover"
                       alt={selectedRecipient.display_name}
+                      width={128}
+                      height={128}
+                      className="w-32 h-32 rounded-full border-8 border-white shadow-xl object-cover"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-32 h-32 rounded-full border-8 border-white shadow-xl bg-slate-200 flex items-center justify-center text-5xl font-bold text-slate-600">

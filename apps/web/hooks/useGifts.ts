@@ -19,6 +19,7 @@ export function useGifts(params?: GiftListParams) {
   const query = useQuery({
     queryKey: ['gifts', params],
     queryFn: () => giftApi.list(params),
+    staleTime: 1000 * 60 * 5, // 5 minutes - moderate updates, search-heavy
   });
 
   // Real-time sync for gift list changes
@@ -40,6 +41,7 @@ export function useGift(id: number) {
     queryKey: ['gifts', id],
     queryFn: () => giftApi.get(id),
     enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes - detail pages benefit from caching
   });
 
   // Real-time sync for specific gift changes

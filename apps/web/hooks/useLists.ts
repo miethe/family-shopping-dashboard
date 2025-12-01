@@ -18,6 +18,7 @@ export function useLists(params?: ListListParams) {
   const query = useQuery({
     queryKey: ['lists', params],
     queryFn: () => listApi.list(params),
+    staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently, real-time sync
   });
 
   // Real-time sync for list metadata changes
@@ -40,6 +41,7 @@ export function useList(id: number) {
     queryKey: ['lists', id],
     queryFn: () => listApi.get(id),
     enabled: !!id,
+    staleTime: 1000 * 60 * 10, // 10 minutes - list metadata rarely changes
   });
 
   // Real-time sync for specific list changes

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { navItems } from './nav-config';
@@ -83,7 +84,7 @@ export function DesktopNav() {
                 {user.email.charAt(0).toUpperCase()}
               </div>
             ) : (
-              <img src="https://picsum.photos/100/100" alt="Profile" className="w-full h-full object-cover" />
+              <Image src="https://picsum.photos/100/100" alt="Profile" width={100} height={100} className="w-full h-full object-cover" unoptimized />
             )}
           </div>
         </button>

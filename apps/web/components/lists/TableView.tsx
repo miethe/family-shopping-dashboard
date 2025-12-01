@@ -12,6 +12,7 @@
 
 'use client';
 
+import Image from 'next/image';
 import { Icon, IconNames } from '@/components/ui/icon';
 import { cn } from '@/lib/utils';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
@@ -133,10 +134,13 @@ export function TableView({ items, onItemClick }: TableViewProps) {
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-700 flex-shrink-0 overflow-hidden">
                       {item.gift.image_url ? (
-                        <img
+                        <Image
                           src={item.gift.image_url}
                           alt={item.gift.name}
+                          width={48}
+                          height={48}
                           className="w-full h-full object-cover"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">

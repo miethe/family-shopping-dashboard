@@ -20,6 +20,7 @@ export function useOccasions(params?: OccasionListParams) {
   const query = useQuery({
     queryKey: ['occasions', params],
     queryFn: () => occasionApi.list(params),
+    staleTime: 1000 * 60 * 10, // 10 minutes - occasions change infrequently
   });
 
   // Real-time sync for occasion list changes
@@ -41,6 +42,7 @@ export function useOccasion(id: number) {
     queryKey: ['occasions', id],
     queryFn: () => occasionApi.get(id),
     enabled: !!id,
+    staleTime: 1000 * 60 * 10, // 10 minutes - occasion details rarely change
   });
 
   // Real-time sync for specific occasion changes
