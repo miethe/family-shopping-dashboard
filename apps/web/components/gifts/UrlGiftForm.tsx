@@ -19,9 +19,10 @@ import { useToast } from '@/components/ui/use-toast';
 
 export interface UrlGiftFormProps {
   defaultListId?: number;
+  onSuccess?: () => void;
 }
 
-export function UrlGiftForm({ defaultListId }: UrlGiftFormProps) {
+export function UrlGiftForm({ defaultListId, onSuccess }: UrlGiftFormProps) {
   const [url, setUrl] = useState('');
   const [selectedListIds, setSelectedListIds] = useState<number[]>(
     defaultListId ? [defaultListId] : []
@@ -69,11 +70,16 @@ export function UrlGiftForm({ defaultListId }: UrlGiftFormProps) {
           variant: 'success',
         });
 
-        // Navigate to first selected list or gift detail
-        if (selectedListIds.length > 0) {
-          router.push(`/lists/${selectedListIds[0]}`);
+        // Call onSuccess callback if provided, otherwise navigate
+        if (onSuccess) {
+          onSuccess();
         } else {
-          router.push(`/gifts/${gift.id}`);
+          // Navigate to first selected list or gift detail
+          if (selectedListIds.length > 0) {
+            router.push(`/lists/${selectedListIds[0]}`);
+          } else {
+            router.push(`/gifts/${gift.id}`);
+          }
         }
       },
       onError: (err: any) => {

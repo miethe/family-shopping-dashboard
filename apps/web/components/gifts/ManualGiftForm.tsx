@@ -20,9 +20,10 @@ import type { GiftCreate } from '@/types';
 
 export interface ManualGiftFormProps {
   defaultListId?: number;
+  onSuccess?: () => void;
 }
 
-export function ManualGiftForm({ defaultListId }: ManualGiftFormProps) {
+export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps) {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [price, setPrice] = useState('');
@@ -80,11 +81,16 @@ export function ManualGiftForm({ defaultListId }: ManualGiftFormProps) {
           variant: 'success',
         });
 
-        // Navigate to first selected list or gift detail
-        if (selectedListIds.length > 0) {
-          router.push(`/lists/${selectedListIds[0]}`);
+        // Call onSuccess callback if provided, otherwise navigate
+        if (onSuccess) {
+          onSuccess();
         } else {
-          router.push(`/gifts/${gift.id}`);
+          // Navigate to first selected list or gift detail
+          if (selectedListIds.length > 0) {
+            router.push(`/lists/${selectedListIds[0]}`);
+          } else {
+            router.push(`/gifts/${gift.id}`);
+          }
         }
       },
       onError: (err: any) => {

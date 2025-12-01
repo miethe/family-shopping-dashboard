@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { usePersons } from '@/hooks/usePersons';
 import { useOccasions } from '@/hooks/useOccasions';
@@ -13,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { AddPersonModal } from '@/components/people/AddPersonModal';
 import type { Person, Occasion } from '@/types';
 
 /**
@@ -34,6 +34,7 @@ export default function RecipientsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<GroupFilter>('all');
   const [selectedRecipient, setSelectedRecipient] = useState<Person | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const { data: personsData, isLoading: personsLoading, error: personsError } = usePersons({ cursor });
   const { data: occasionsData, isLoading: occasionsLoading } = useOccasions({ filter: 'upcoming' });
@@ -147,9 +148,13 @@ export default function RecipientsPage() {
               {groupCounts.all} Recipients, organized in {Object.values(groupCounts).filter(c => c > 0).length - 1} groups
             </p>
           </div>
-          <Link href="/people/new">
-            <Button size="lg" className="min-h-[44px]">Add Person</Button>
-          </Link>
+          <Button
+            size="lg"
+            className="min-h-[44px]"
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            Add Person
+          </Button>
         </div>
       </header>
 
@@ -515,6 +520,15 @@ export default function RecipientsPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Add Person Modal */}
+      <AddPersonModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={() => {
+          // React Query will automatically refetch the persons list
+        }}
+      />
     </div>
   );
 }

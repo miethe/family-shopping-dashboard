@@ -12,3 +12,4 @@ export { ManualGiftForm } from './ManualGiftForm';
 export { GiftDetail, type GiftDetailProps } from './GiftDetail';
 export { GiftUsage, type GiftUsageProps } from './GiftUsage';
 export { GiftDetailSkeleton } from './GiftDetailSkeleton';
+export { AddGiftModal, type AddGiftModalProps } from './AddGiftModal';

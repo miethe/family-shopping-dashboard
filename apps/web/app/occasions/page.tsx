@@ -8,17 +8,18 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useOccasions } from '@/hooks/useOccasions';
 import { PageHeader } from '@/components/layout';
 import { Button, Skeleton, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 import { OccasionList } from '@/components/occasions';
+import { AddOccasionModal } from '@/components/occasions/AddOccasionModal';
 import { PlusIcon } from '@/components/layout/icons';
 
 type FilterType = 'upcoming' | 'past' | 'all';
 
 export default function OccasionsPage() {
   const [filter, setFilter] = useState<FilterType>('upcoming');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Determine API filter params (undefined filter for 'all')
   const apiParams = filter === 'all' ? undefined : { filter };
@@ -33,12 +34,10 @@ export default function OccasionsPage() {
         title="Occasions"
         subtitle="Holidays, birthdays, and special events"
         actions={
-          <Link href="/occasions/new">
-            <Button>
-              <PlusIcon className="w-5 h-5 mr-2" />
-              Add Occasion
-            </Button>
-          </Link>
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <PlusIcon className="w-5 h-5 mr-2" />
+            Add Occasion
+          </Button>
         }
       />
 
@@ -76,6 +75,15 @@ export default function OccasionsPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Add Occasion Modal */}
+      <AddOccasionModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={() => {
+          // Modal will handle cache invalidation via mutation
+        }}
+      />
     </div>
   );
 }

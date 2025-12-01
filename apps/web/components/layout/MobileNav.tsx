@@ -6,12 +6,11 @@ import { cn } from '@/lib/utils';
 
 /**
  * Bottom navigation bar for mobile devices
- * - Glassmorphism design matching desktop sidebar
+ * - Warm terracotta/rust background matching desktop sidebar
  * - Fixed to bottom of screen with safe-area padding
  * - 44px minimum touch targets (iOS guidelines)
- * - Active state with coral color (#E57373)
+ * - Active state with white highlight
  * - Material Symbols icons
- * - Dark mode support
  * - WCAG 2.1 AA compliant with aria-current support
  */
 
@@ -55,11 +54,8 @@ export function MobileNav() {
   return (
     <nav
       className={cn(
-        // Glassmorphism matching sidebar
-        'bg-white/60 dark:bg-black/20',
-        'backdrop-blur-md',
-        'border-t border-white/50 dark:border-white/10',
-        'shadow-glass',
+        // Warm terracotta/rust background matching sidebar
+        'bg-[#B67352]',
         // Fixed positioning
         'fixed bottom-0 left-0 right-0 z-50'
       )}
@@ -86,10 +82,10 @@ export function MobileNav() {
                 // Transitions and interactions
                 'transition-all duration-300 ease-out',
                 'active:scale-95',
-                // Active state - coral/salmon primary color
+                // Active state - white highlight
                 isActive
-                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                  : 'text-warm-500 dark:text-warm-400 hover:bg-white/50 dark:hover:bg-white/10 hover:text-primary dark:hover:text-primary'
+                  ? 'bg-white/30 text-white shadow-lg'
+                  : 'text-white/70 hover:bg-white/20 hover:text-white'
               )}
               aria-current={isActive ? 'page' : undefined}
               aria-label={`${item.label}${isActive ? ' - current page' : ''}`}
@@ -107,9 +103,7 @@ export function MobileNav() {
               <span
                 className={cn(
                   'text-[10px] font-bold mt-1',
-                  isActive
-                    ? 'text-white'
-                    : 'text-warm-600 dark:text-warm-500'
+                  'text-white'
                 )}
               >
                 {item.label}

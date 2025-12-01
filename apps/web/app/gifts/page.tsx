@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useGifts } from '@/hooks/useGifts';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button, Skeleton } from '@/components/ui';
-import { GiftCard, GiftSearch, type SortOption } from '@/components/gifts';
+import { GiftCard, GiftSearch, AddGiftModal, type SortOption } from '@/components/gifts';
 
 /**
  * Gifts Page
@@ -16,8 +16,9 @@ import { GiftCard, GiftSearch, type SortOption } from '@/components/gifts';
 export default function GiftsPage() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('recent');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const { data, isLoading, error } = useGifts({
+  const { data, isLoading, error, refetch } = useGifts({
     search: search || undefined,
   });
 
@@ -27,9 +28,7 @@ export default function GiftsPage() {
         title="Gift Catalog"
         subtitle="Browse and manage gift ideas"
         actions={
-          <Link href="/gifts/new">
-            <Button>Add Gift</Button>
-          </Link>
+          <Button onClick={() => setIsAddModalOpen(true)}>Add Gift</Button>
         }
       />
 
@@ -76,6 +75,12 @@ export default function GiftsPage() {
           ))}
         </div>
       )}
+
+      <AddGiftModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

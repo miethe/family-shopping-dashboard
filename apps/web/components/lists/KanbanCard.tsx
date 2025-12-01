@@ -48,12 +48,22 @@ export function KanbanCard({ item, status, onDragStart, onDragEnd }: KanbanCardP
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', item.id.toString());
 
-    // Create a ghost image with reduced opacity
+    // Create a ghost image with constrained dimensions
     if (e.currentTarget instanceof HTMLElement) {
+      const rect = e.currentTarget.getBoundingClientRect();
       const ghost = e.currentTarget.cloneNode(true) as HTMLElement;
-      ghost.style.opacity = '0.5';
+
+      // Set explicit dimensions to prevent size expansion
+      ghost.style.width = `${rect.width}px`;
+      ghost.style.height = `${rect.height}px`;
+      ghost.style.opacity = '0.7';
+      ghost.style.position = 'absolute';
+      ghost.style.top = '-9999px';
+      ghost.style.left = '-9999px';
+      ghost.style.pointerEvents = 'none';
+
       document.body.appendChild(ghost);
-      e.dataTransfer.setDragImage(ghost, 0, 0);
+      e.dataTransfer.setDragImage(ghost, rect.width / 2, rect.height / 2);
       setTimeout(() => document.body.removeChild(ghost), 0);
     }
   };
@@ -76,7 +86,7 @@ export function KanbanCard({ item, status, onDragStart, onDragEnd }: KanbanCardP
         'hover:shadow-lg hover:-translate-y-1 transition-all duration-300',
         'border border-transparent hover:border-slate-200 dark:hover:border-slate-600',
         'touch-manipulation', // Better touch handling on mobile
-        isDragging && 'opacity-40 cursor-grabbing'
+        isDragging && 'opacity-40 cursor-grabbing scale-100'
       )}
     >
       {/* Image with Price Overlay */}

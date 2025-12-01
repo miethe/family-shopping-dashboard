@@ -14,6 +14,7 @@ import { useLists } from '@/hooks/useLists';
 import { useOccasions } from '@/hooks/useOccasions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ListCard } from '@/components/lists';
+import { AddListModal } from '@/components/lists/AddListModal';
 import { FilterIcon, ArrowUpDownIcon, PlusIcon, HeartIcon, LightbulbIcon, CheckIcon } from '@/components/layout/icons';
 import { cn } from '@/lib/utils';
 import type { ListType, GiftList } from '@/types';
@@ -23,6 +24,8 @@ type ListTypeFilter = 'all' | ListType;
 export default function ListsPage() {
   const [typeFilter, setTypeFilter] = useState<ListTypeFilter>('all');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedOccasionId, setSelectedOccasionId] = useState<number | undefined>(undefined);
 
   // Convert filter for API
   const apiFilter = typeFilter === 'all' ? undefined : typeFilter;
@@ -115,11 +118,15 @@ export default function ListsPage() {
           >
             <ArrowUpDownIcon className="w-[18px] h-[18px]" /> Sort
           </button>
-          <Link href="/lists/new">
-            <button className="flex items-center gap-2 px-5 py-2 bg-salmon text-white rounded-full font-bold shadow-lg shadow-salmon/30 hover:bg-[#d66f56] transition-all min-h-[44px]">
-              <PlusIcon className="w-[18px] h-[18px]" /> Create List
-            </button>
-          </Link>
+          <button
+            onClick={() => {
+              setSelectedOccasionId(undefined);
+              setIsAddModalOpen(true);
+            }}
+            className="flex items-center gap-2 px-5 py-2 bg-salmon text-white rounded-full font-bold shadow-lg shadow-salmon/30 hover:bg-[#d66f56] transition-all min-h-[44px]"
+          >
+            <PlusIcon className="w-[18px] h-[18px]" /> Create List
+          </button>
         </div>
       </div>
 
@@ -150,11 +157,15 @@ export default function ListsPage() {
               ? 'Create your first list to get started.'
               : `No ${typeFilter} lists yet.`}
           </p>
-          <Link href="/lists/new">
-            <button className="flex items-center gap-2 px-5 py-2 bg-salmon text-white rounded-full font-bold shadow-lg shadow-salmon/30 hover:bg-[#d66f56] transition-all min-h-[44px] mx-auto">
-              <PlusIcon className="w-[18px] h-[18px]" /> Create your first list
-            </button>
-          </Link>
+          <button
+            onClick={() => {
+              setSelectedOccasionId(undefined);
+              setIsAddModalOpen(true);
+            }}
+            className="flex items-center gap-2 px-5 py-2 bg-salmon text-white rounded-full font-bold shadow-lg shadow-salmon/30 hover:bg-[#d66f56] transition-all min-h-[44px] mx-auto"
+          >
+            <PlusIcon className="w-[18px] h-[18px]" /> Create your first list
+          </button>
         </div>
       ) : (
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8 items-start">
@@ -174,12 +185,16 @@ export default function ListsPage() {
                     <ListCard key={list.id} list={list} />
                   ))}
                   {/* Placeholder card for new list */}
-                  <Link href="/lists/new">
-                    <button className="w-full h-full min-h-[200px] flex flex-col items-center justify-center p-6 rounded-[2rem] bg-white border-2 border-dashed border-slate-200 hover:border-salmon hover:bg-red-50/50 text-slate-400 hover:text-salmon transition-all">
-                      <PlusIcon className="w-10 h-10 mb-2" />
-                      <span className="font-bold text-sm">New Gift List</span>
-                    </button>
-                  </Link>
+                  <button
+                    onClick={() => {
+                      setSelectedOccasionId(occasion.id);
+                      setIsAddModalOpen(true);
+                    }}
+                    className="w-full h-full min-h-[200px] flex flex-col items-center justify-center p-6 rounded-[2rem] bg-white border-2 border-dashed border-slate-200 hover:border-salmon hover:bg-red-50/50 text-slate-400 hover:text-salmon transition-all"
+                  >
+                    <PlusIcon className="w-10 h-10 mb-2" />
+                    <span className="font-bold text-sm">New Gift List</span>
+                  </button>
                 </div>
               </section>
             ))}
@@ -195,12 +210,16 @@ export default function ListsPage() {
                     <ListCard key={list.id} list={list} />
                   ))}
                   {/* Placeholder card for new list */}
-                  <Link href="/lists/new">
-                    <button className="w-full h-full min-h-[200px] flex flex-col items-center justify-center p-6 rounded-[2rem] bg-white border-2 border-dashed border-slate-200 hover:border-salmon hover:bg-red-50/50 text-slate-400 hover:text-salmon transition-all">
-                      <PlusIcon className="w-10 h-10 mb-2" />
-                      <span className="font-bold text-sm">New Wish List</span>
-                    </button>
-                  </Link>
+                  <button
+                    onClick={() => {
+                      setSelectedOccasionId(undefined);
+                      setIsAddModalOpen(true);
+                    }}
+                    className="w-full h-full min-h-[200px] flex flex-col items-center justify-center p-6 rounded-[2rem] bg-white border-2 border-dashed border-slate-200 hover:border-salmon hover:bg-red-50/50 text-slate-400 hover:text-salmon transition-all"
+                  >
+                    <PlusIcon className="w-10 h-10 mb-2" />
+                    <span className="font-bold text-sm">New Wish List</span>
+                  </button>
                 </div>
               </section>
             )}
@@ -273,6 +292,13 @@ export default function ListsPage() {
           </div>
         </div>
       )}
+
+      {/* Add List Modal */}
+      <AddListModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        occasionId={selectedOccasionId}
+      />
     </div>
   );
 }
