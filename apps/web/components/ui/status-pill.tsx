@@ -10,61 +10,66 @@ interface StatusPillProps extends React.HTMLAttributes<HTMLSpanElement> {
   withDot?: boolean;
   size?: 'sm' | 'md' | 'lg';
   animated?: boolean;
+  /**
+   * Optional accessible label override
+   * If not provided, uses status label from config
+   */
+  ariaLabel?: string;
 }
 
 const statusConfig: Record<GiftStatus, { bg: string; text: string; border: string; dot: string; label: string }> = {
   idea: {
     bg: 'bg-status-idea-100',
-    text: 'text-status-idea-800',
+    text: 'text-status-idea-900', // ACCESSIBILITY FIX: Changed from -800 to -900 for better contrast
     border: 'border-status-idea-300',
     dot: 'bg-status-idea-600',
     label: 'Idea',
   },
   shortlisted: {
     bg: 'bg-status-idea-100',
-    text: 'text-status-idea-800',
+    text: 'text-status-idea-900', // ACCESSIBILITY FIX: Changed from -800 to -900 for better contrast
     border: 'border-status-idea-300',
     dot: 'bg-status-idea-600',
     label: 'Shortlisted',
   },
   buying: {
     bg: 'bg-status-progress-100',
-    text: 'text-status-progress-800',
+    text: 'text-status-progress-900', // ACCESSIBILITY FIX: Changed from -800 to -900 for better contrast
     border: 'border-status-progress-300',
     dot: 'bg-status-progress-600',
     label: 'Buying',
   },
   ordered: {
     bg: 'bg-status-progress-100',
-    text: 'text-status-progress-800',
+    text: 'text-status-progress-900', // ACCESSIBILITY FIX: Changed from -800 to -900 for better contrast
     border: 'border-status-progress-300',
     dot: 'bg-status-progress-600',
     label: 'Ordered',
   },
   purchased: {
     bg: 'bg-status-success-100',
-    text: 'text-status-success-800',
+    text: 'text-status-success-900', // ACCESSIBILITY FIX: Changed from -800 to -900 for better contrast
     border: 'border-status-success-300',
     dot: 'bg-status-success-600',
     label: 'Purchased',
   },
   delivered: {
     bg: 'bg-status-success-100',
-    text: 'text-status-success-800',
+    text: 'text-status-success-900', // ACCESSIBILITY FIX: Changed from -800 to -900 for better contrast
     border: 'border-status-success-300',
     dot: 'bg-status-success-600',
     label: 'Delivered',
   },
   gifted: {
     bg: 'bg-status-success-100',
-    text: 'text-status-success-800',
+    text: 'text-status-success-900', // ACCESSIBILITY FIX: Changed from -800 to -900 for better contrast
     border: 'border-status-success-300',
     dot: 'bg-status-success-600',
     label: 'Gifted',
   },
   urgent: {
     bg: 'bg-status-warning-100',
-    text: 'text-status-warning-800',
+    text: 'text-status-warning-900', // ACCESSIBILITY FIX: Changed from -800 to -900 for better contrast
     border: 'border-status-warning-300',
     dot: 'bg-status-warning-600',
     label: 'Urgent',
@@ -88,6 +93,7 @@ export function StatusPill({
   withDot = true,
   size = 'md',
   animated = false,
+  ariaLabel,
   className,
   ...props
 }: StatusPillProps) {
@@ -106,6 +112,8 @@ export function StatusPill({
         config.border,
         className
       )}
+      role="status"
+      aria-label={ariaLabel || `Status: ${config.label}`}
       {...props}
     >
       {withDot && (
@@ -115,6 +123,7 @@ export function StatusPill({
             dotSizeClasses[size],
             config.dot
           )}
+          aria-hidden="true"
         />
       )}
       {config.label}

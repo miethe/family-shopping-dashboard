@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
  * - Active state with coral color (#E57373)
  * - Material Symbols icons
  * - Dark mode support
+ * - WCAG 2.1 AA compliant with aria-current support
  */
 
 interface NavItem {
@@ -63,6 +64,8 @@ export function MobileNav() {
         'fixed bottom-0 left-0 right-0 z-50'
       )}
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      role="navigation"
+      aria-label="Main navigation"
     >
       <div className="flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
@@ -88,6 +91,8 @@ export function MobileNav() {
                   ? 'bg-primary text-white shadow-lg shadow-primary/30'
                   : 'text-warm-500 dark:text-warm-400 hover:bg-white/50 dark:hover:bg-white/10 hover:text-primary dark:hover:text-primary'
               )}
+              aria-current={isActive ? 'page' : undefined}
+              aria-label={`${item.label}${isActive ? ' - current page' : ''}`}
             >
               <span
                 className={cn(
@@ -95,6 +100,7 @@ export function MobileNav() {
                   // Filled style for active state
                   isActive && 'filled'
                 )}
+                aria-hidden="true"
               >
                 {item.icon}
               </span>

@@ -24,78 +24,128 @@ const avatarVariants = cva(
   }
 );
 
+// ACCESSIBILITY: Status label mapping for screen readers
+const statusLabelMap = {
+  active: 'active',
+  inactive: 'inactive',
+  away: 'away',
+} as const;
+
 interface AvatarProps
   extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>,
     VariantProps<typeof avatarVariants> {
   status?: 'active' | 'inactive' | 'away';
   badge?: number;
   withRing?: boolean;
+  /**
+   * Accessible label for the avatar
+   * Should describe who this avatar represents (e.g., "John Doe")
+   */
+  ariaLabel?: string;
+  /**
+   * Optional description for status/badge
+   * If not provided, auto-generates from status and badge
+   */
+  statusDescription?: string;
 }
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   AvatarProps
->(({ className, size, status, badge, withRing, ...props }, ref) => (
-  <div className="relative inline-block">
-    {/* Status ring background (gradient pulse for "needs attention") */}
-    {withRing && (
-      <div className="absolute inset-0 -m-0.5 rounded-full bg-gradient-to-br from-status-success-400 to-status-success-600 animate-pulse" />
-    )}
+>(({ className, size, status, badge, withRing, ariaLabel, statusDescription, ...props }, ref) => {
+  // Generate accessible description
+  const generateDescription = () => {
+    if (statusDescription) return statusDescription;
 
-    {/* Avatar container */}
-    <AvatarPrimitive.Root
-      ref={ref}
-      className={cn(
-        avatarVariants({ size }),
-        'border-2 border-white shadow-low relative',
-        className
+    const parts: string[] = [];
+    if (status) parts.push(statusLabelMap[status]);
+    if (badge !== undefined) parts.push(`${badge} pending ${badge === 1 ? 'item' : 'items'}`);
+
+    return parts.length > 0 ? parts.join(', ') : undefined;
+  };
+
+  const description = generateDescription();
+
+  return (
+    <div
+      className="relative inline-block"
+      role="img"
+      aria-label={ariaLabel}
+      aria-describedby={description ? 'avatar-status' : undefined}
+    >
+      {/* Status ring background (gradient pulse for "needs attention") */}
+      {withRing && (
+        <div
+          className="absolute inset-0 -m-0.5 rounded-full bg-gradient-to-br from-status-success-400 to-status-success-600 animate-pulse"
+          aria-hidden="true"
+        />
       )}
-      {...props}
-    />
 
-    {/* Status indicator dot at bottom-right */}
-    {status && (
-      <span
+      {/* Avatar container */}
+      <AvatarPrimitive.Root
+        ref={ref}
         className={cn(
-          'absolute -bottom-0.5 -right-0.5 rounded-full border-2 border-white',
-          size === 'xs' && 'w-2 h-2',
-          size === 'sm' && 'w-2.5 h-2.5',
-          (size === 'md' || size === 'default') && 'w-3 h-3',
-          size === 'lg' && 'w-4 h-4',
-          size === 'xl' && 'w-5 h-5',
-          status === 'active' && 'bg-status-success-500',
-          status === 'away' && 'bg-status-idea-500',
-          status === 'inactive' && 'bg-warm-300'
+          avatarVariants({ size }),
+          'border-2 border-white shadow-low relative',
+          className
         )}
+        {...props}
       />
-    )}
 
-    {/* Badge (gift count) at bottom-right */}
-    {badge !== undefined && (
-      <span
-        className={cn(
-          'absolute -bottom-1 -right-1 rounded-full bg-primary-500 text-white font-bold flex items-center justify-center border-2 border-white shadow-medium',
-          size === 'xs' && 'w-4 h-4 text-[10px]',
-          size === 'sm' && 'w-5 h-5 text-xs',
-          (size === 'md' || size === 'default') && 'w-6 h-6 text-xs',
-          size === 'lg' && 'w-7 h-7 text-sm',
-          size === 'xl' && 'w-8 h-8 text-sm'
-        )}
-      >
-        {badge}
-      </span>
-    )}
-  </div>
-));
+      {/* Status indicator dot at bottom-right */}
+      {status && (
+        <span
+          className={cn(
+            'absolute -bottom-0.5 -right-0.5 rounded-full border-2 border-white',
+            size === 'xs' && 'w-2 h-2',
+            size === 'sm' && 'w-2.5 h-2.5',
+            (size === 'md' || size === 'default') && 'w-3 h-3',
+            size === 'lg' && 'w-4 h-4',
+            size === 'xl' && 'w-5 h-5',
+            status === 'active' && 'bg-status-success-500',
+            status === 'away' && 'bg-status-idea-500',
+            status === 'inactive' && 'bg-warm-300'
+          )}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Badge (gift count) at bottom-right */}
+      {badge !== undefined && (
+        <span
+          className={cn(
+            'absolute -bottom-1 -right-1 rounded-full bg-primary-500 text-white font-bold flex items-center justify-center border-2 border-white shadow-medium',
+            size === 'xs' && 'w-4 h-4 text-[10px]',
+            size === 'sm' && 'w-5 h-5 text-xs',
+            (size === 'md' || size === 'default') && 'w-6 h-6 text-xs',
+            size === 'lg' && 'w-7 h-7 text-sm',
+            size === 'xl' && 'w-8 h-8 text-sm'
+          )}
+          aria-hidden="true"
+        >
+          {badge}
+        </span>
+      )}
+
+      {/* Screen reader only description */}
+      {description && (
+        <span id="avatar-status" className="sr-only">
+          {description}
+        </span>
+      )}
+    </div>
+  );
+});
 Avatar.displayName = AvatarPrimitive.Root.displayName;
 
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
+>(({ className, alt, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
     className={cn('aspect-square h-full w-full object-cover', className)}
+    alt={alt || ''}
     {...props}
   />
 ));
@@ -147,10 +197,15 @@ interface AvatarStackProps extends VariantProps<typeof avatarVariants> {
   children: React.ReactNode;
   max?: number;
   className?: string;
+  /**
+   * Accessible label describing the group
+   * e.g., "3 family members"
+   */
+  ariaLabel?: string;
 }
 
 const AvatarStack = React.forwardRef<HTMLDivElement, AvatarStackProps>(
-  ({ children, max = 5, size = 'md', className }, ref) => {
+  ({ children, max = 5, size = 'md', className, ariaLabel }, ref) => {
     const childArray = React.Children.toArray(children);
     const displayedAvatars = max ? childArray.slice(0, max) : childArray;
     const overflowCount = childArray.length - displayedAvatars.length;
@@ -187,6 +242,8 @@ const AvatarStack = React.forwardRef<HTMLDivElement, AvatarStackProps>(
           'transition-all duration-300 ease-in-out',
           className
         )}
+        role="group"
+        aria-label={ariaLabel || `${childArray.length} ${childArray.length === 1 ? 'person' : 'people'}`}
       >
         {displayedAvatars.map((child, index) => (
           <div
@@ -212,6 +269,7 @@ const AvatarStack = React.forwardRef<HTMLDivElement, AvatarStackProps>(
               'border-2 border-white shadow-low bg-warm-200 flex items-center justify-center font-bold text-warm-700 transition-all duration-300 ease-in-out'
             )}
             style={{ zIndex: 0 }}
+            aria-label={`${overflowCount} more ${overflowCount === 1 ? 'person' : 'people'}`}
           >
             +{overflowCount}
           </div>

@@ -7,16 +7,18 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-warm-100 text-warm-800 border-warm-300',
-        idea: 'bg-status-idea-100 text-status-idea-800 border-status-idea-300',
-        purchased: 'bg-status-success-100 text-status-success-800 border-status-success-300',
-        progress: 'bg-status-progress-100 text-status-progress-800 border-status-progress-300',
-        urgent: 'bg-status-warning-100 text-status-warning-800 border-status-warning-300',
-        primary: 'bg-primary-100 text-primary-800 border-primary-300',
-        success: 'bg-status-success-100 text-status-success-800 border-status-success-300',
-        warning: 'bg-status-warning-100 text-status-warning-800 border-status-warning-300',
-        error: 'bg-status-error-100 text-status-error-800 border-status-error-300',
-        info: 'bg-status-info-100 text-status-info-800 border-status-info-300',
+        // ACCESSIBILITY FIX: Improved contrast ratios for WCAG AA compliance (4.5:1 minimum)
+        // Changed from -800 text to -900 text for better contrast on -100 backgrounds
+        default: 'bg-warm-100 text-warm-900 border-warm-300',
+        idea: 'bg-status-idea-100 text-status-idea-900 border-status-idea-300',
+        purchased: 'bg-status-success-100 text-status-success-900 border-status-success-300',
+        progress: 'bg-status-progress-100 text-status-progress-900 border-status-progress-300',
+        urgent: 'bg-status-warning-100 text-status-warning-900 border-status-warning-300',
+        primary: 'bg-primary-100 text-primary-900 border-primary-300',
+        success: 'bg-status-success-100 text-status-success-900 border-status-success-300',
+        warning: 'bg-status-warning-100 text-status-warning-900 border-status-warning-300',
+        error: 'bg-status-error-100 text-status-error-900 border-status-error-300',
+        info: 'bg-status-info-100 text-status-info-900 border-status-info-300',
       },
       size: {
         sm: 'px-2 py-1 text-[10px]',
@@ -46,18 +48,56 @@ const dotColorMap = {
   info: 'bg-status-info-600',
 } as const;
 
+// Mapping of variant to accessible label descriptions
+const variantLabelMap = {
+  default: 'Status',
+  idea: 'Idea status',
+  purchased: 'Purchased status',
+  progress: 'In progress status',
+  urgent: 'Urgent status',
+  primary: 'Primary status',
+  success: 'Success status',
+  warning: 'Warning status',
+  error: 'Error status',
+  info: 'Info status',
+} as const;
+
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {
   withDot?: boolean;
+  /**
+   * Optional accessible label for screen readers
+   * If not provided, uses variant name as fallback
+   */
+  ariaLabel?: string;
 }
 
-function Badge({ className, variant = 'default', size, withDot = false, children, ...props }: BadgeProps) {
+function Badge({
+  className,
+  variant = 'default',
+  size,
+  withDot = false,
+  ariaLabel,
+  children,
+  ...props
+}: BadgeProps) {
   const dotColor = dotColorMap[variant ?? 'default'];
+  const defaultLabel = variantLabelMap[variant ?? 'default'];
 
   return (
-    <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
-      {withDot && <span className={cn('w-1.5 h-1.5 rounded-full', dotColor)} />}
+    <div
+      className={cn(badgeVariants({ variant, size }), className)}
+      role="status"
+      aria-label={ariaLabel || `${defaultLabel}: ${children}`}
+      {...props}
+    >
+      {withDot && (
+        <span
+          className={cn('w-1.5 h-1.5 rounded-full', dotColor)}
+          aria-hidden="true"
+        />
+      )}
       {children}
     </div>
   );

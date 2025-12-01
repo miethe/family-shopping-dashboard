@@ -101,12 +101,12 @@ export default function LoginPage() {
             <h2 className="text-2xl font-semibold text-center text-slate-800 mb-8">Login</h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* ACCESSIBILITY FIX: Changed from aria-live="assertive" to role="alert" */}
               {/* Global Error Message */}
               {displayError && (
                 <div
                   className="p-3 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm"
                   role="alert"
-                  aria-live="assertive"
                 >
                   {displayError}
                 </div>
@@ -129,6 +129,7 @@ export default function LoginPage() {
                   required
                   autoComplete="email"
                   autoFocus
+                  aria-describedby={displayError ? 'login-error' : undefined}
                 />
               </div>
 
@@ -148,6 +149,7 @@ export default function LoginPage() {
                   disabled={loading}
                   required
                   autoComplete="current-password"
+                  aria-describedby={displayError ? 'login-error' : undefined}
                 />
               </div>
 
@@ -157,6 +159,7 @@ export default function LoginPage() {
                   type="submit"
                   disabled={loading}
                   className="w-full bg-primary text-white font-bold py-4 rounded-full shadow-lg shadow-primary/30 hover:bg-primary-600 hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-h-[44px]"
+                  aria-busy={loading}
                 >
                   {loading ? 'Signing in...' : 'Log In'}
                 </button>
