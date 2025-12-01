@@ -1,4 +1,4 @@
-import { Shell } from '@/components/layout';
+import { AppLayout } from '@/components/layout';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 /**
@@ -11,7 +11,7 @@ export default function OccasionsLayout({
 }) {
   return (
     <ProtectedRoute>
-      <Shell>{children}</Shell>
+      <AppLayout>{children}</AppLayout>
     </ProtectedRoute>
   );
 }

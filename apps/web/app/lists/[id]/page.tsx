@@ -18,6 +18,7 @@ import { useListItems } from '@/hooks/useListItems';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import { KanbanView, AddListItemModal } from '@/components/lists';
+import { PageHeader } from '@/components/layout';
 import {
   FilterIcon,
   ArrowUpDownIcon,
@@ -109,63 +110,58 @@ export default function ListDetailPage({ params }: Props) {
   const newItemsCount = 0; // TODO: Add logic for "new" items if needed
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="p-4 md:p-8 max-w-7xl mx-auto h-full overflow-y-auto pb-20">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <button
-              onClick={() => router.push('/lists')}
-              className="text-gray-400 hover:text-[#E07A5F] font-bold text-sm mb-2 transition-colors min-h-[44px]"
-            >
-              &larr; Back to Lists
-            </button>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-[#3D405B]">
-              {listData.name}
-            </h1>
-            <p className="text-gray-500 font-medium mt-1">
-              {itemCount} {itemCount === 1 ? 'item' : 'items'}
-              {newItemsCount > 0 && ` · ${newItemsCount} new`}
-            </p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-background-dark dark:to-warm-900">
+      <div className="max-w-7xl mx-auto h-full overflow-y-auto pb-20">
+        {/* Page Header with Breadcrumbs */}
+        <PageHeader
+          title={listData.name}
+          subtitle={`${itemCount} ${itemCount === 1 ? 'item' : 'items'}${newItemsCount > 0 ? ` · ${newItemsCount} new` : ''}`}
+          backHref="/lists"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Lists', href: '/lists' },
+            { label: listData.name }
+          ]}
+          actions={
+            <div className="flex gap-3 flex-wrap">
+              <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-warm-800 rounded-full text-warm-600 dark:text-warm-300 font-bold shadow-sm hover:shadow-md transition-all border border-transparent hover:border-warm-100 dark:hover:border-warm-700 min-h-[44px]">
+                <FilterIcon className="w-[18px] h-[18px]" /> Filter
+              </button>
+              <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-warm-800 rounded-full text-warm-600 dark:text-warm-300 font-bold shadow-sm hover:shadow-md transition-all border border-transparent hover:border-warm-100 dark:hover:border-warm-700 min-h-[44px]">
+                <ArrowUpDownIcon className="w-[18px] h-[18px]" /> Sort
+              </button>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 flex-wrap">
-            <button className="flex items-center gap-2 px-4 py-2 bg-white rounded-full text-gray-600 font-bold shadow-sm hover:shadow-md transition-all border border-transparent hover:border-gray-100 min-h-[44px]">
-              <FilterIcon className="w-[18px] h-[18px]" /> Filter
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-white rounded-full text-gray-600 font-bold shadow-sm hover:shadow-md transition-all border border-transparent hover:border-gray-100 min-h-[44px]">
-              <ArrowUpDownIcon className="w-[18px] h-[18px]" /> Sort
-            </button>
+              {/* AI Button - disabled for now, can be enabled later */}
+              <button
+                disabled
+                className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-purple-400 to-indigo-400 text-white rounded-full font-bold shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all opacity-50 cursor-not-allowed min-h-[44px]"
+                title="AI Ideas - Coming Soon"
+              >
+                <SparklesIcon className="w-[18px] h-[18px]" /> AI Ideas
+              </button>
 
-            {/* AI Button - disabled for now, can be enabled later */}
-            <button
-              disabled
-              className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-purple-400 to-indigo-400 text-white rounded-full font-bold shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all opacity-50 cursor-not-allowed min-h-[44px]"
-              title="AI Ideas - Coming Soon"
-            >
-              <SparklesIcon className="w-[18px] h-[18px]" /> AI Ideas
-            </button>
+              <button
+                onClick={() => setIsAddItemModalOpen(true)}
+                className="flex items-center gap-2 px-5 py-2 bg-primary-500 text-white rounded-full font-bold shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-all min-h-[44px]"
+              >
+                <PlusIcon className="w-[18px] h-[18px]" /> Add Gift
+              </button>
+            </div>
+          }
+        />
 
-            <button
-              onClick={() => setIsAddItemModalOpen(true)}
-              className="flex items-center gap-2 px-5 py-2 bg-[#E07A5F] text-white rounded-full font-bold shadow-lg shadow-[#E07A5F]/30 hover:bg-[#d66f56] transition-all min-h-[44px]"
-            >
-              <PlusIcon className="w-[18px] h-[18px]" /> Add Gift
-            </button>
-          </div>
+        {/* Kanban Board Content */}
+        <div className="px-4 md:px-8 mt-6">
+          {itemsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Skeleton className="h-96" />
+              <Skeleton className="h-96" />
+              <Skeleton className="h-96" />
+            </div>
+          ) : (
+            <KanbanView items={items || []} onAddItem={handleAddItem} />
+          )}
         </div>
-
-        {/* Kanban Board */}
-        {itemsLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Skeleton className="h-96" />
-            <Skeleton className="h-96" />
-            <Skeleton className="h-96" />
-          </div>
-        ) : (
-          <KanbanView items={items || []} onAddItem={handleAddItem} />
-        )}
       </div>
 
       {/* Add Item Modal */}

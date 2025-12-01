@@ -1,47 +1,43 @@
-import {
-  HomeIcon,
-  UsersIcon,
-  CalendarIcon,
-  GiftIcon,
-  ListIcon,
-  ClipboardListIcon
-} from './icons';
+/**
+ * Navigation configuration using Material Symbols icons
+ * Icons reference: https://fonts.google.com/icons
+ */
 
 export interface NavItem {
   href: string;
   label: string;
-  icon: typeof HomeIcon;
+  icon: string; // Material Symbols icon name
 }
 
 export const navItems = [
   {
     href: '/dashboard',
     label: 'Dashboard',
-    icon: HomeIcon
+    icon: 'home'
   },
   {
     href: '/assignments',
     label: 'Assignments',
-    icon: ClipboardListIcon
+    icon: 'assignment'
   },
   {
     href: '/people',
     label: 'People',
-    icon: UsersIcon
+    icon: 'groups'
   },
   {
     href: '/occasions',
     label: 'Occasions',
-    icon: CalendarIcon
+    icon: 'calendar_month'
   },
   {
     href: '/gifts',
     label: 'Gifts',
-    icon: GiftIcon
+    icon: 'card_giftcard'
   },
   {
     href: '/lists',
     label: 'Lists',
-    icon: ListIcon
+    icon: 'list_alt'
   },
 ] as const satisfies readonly NavItem[];

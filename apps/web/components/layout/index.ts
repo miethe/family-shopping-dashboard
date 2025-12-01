@@ -1,13 +1,19 @@
 /**
- * Layout components barrel export
+ * Layout components barrel export - Design System V2
  */
 
-export { Shell } from './Shell';
+export { AppLayout } from './AppLayout';
 export { Header } from './Header';
 export { MobileNav } from './MobileNav';
 export { DesktopNav } from './DesktopNav';
 export { PageHeader } from './PageHeader';
 export type { PageHeaderProps } from './PageHeader';
+
+// New V2 Components
+export { Breadcrumb } from './Breadcrumb';
+export type { BreadcrumbProps, BreadcrumbItem } from './Breadcrumb';
+export { SearchInput } from './SearchInput';
+export type { SearchInputProps } from './SearchInput';
 
 // Icon exports
 export * from './icons';
