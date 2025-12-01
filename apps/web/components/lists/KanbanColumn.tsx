@@ -3,11 +3,12 @@
  *
  * Displays a column in the Kanban board with v2 design colors and styling.
  * Four status columns: Idea → To Buy → Purchased → Gifted
- * Includes count badges and empty state placeholders.
+ * Includes count badges, empty state placeholders, and drop zone handling.
  */
 
 'use client';
 
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
 import { KanbanCard } from './KanbanCard';
@@ -16,6 +17,10 @@ interface KanbanColumnProps {
   status: ListItemStatus;
   items: ListItemWithGift[];
   onAddItem?: (status: ListItemStatus) => void;
+  onDragStart: (item: ListItemWithGift) => void;
+  onDragEnd: () => void;
+  onDrop: (status: ListItemStatus) => void;
+  isDragOver?: boolean;
 }
 
 // Column headers and colors mapping (v2 design)
@@ -56,11 +61,53 @@ const columnConfig: Record<
   },
 };
 
-export function KanbanColumn({ status, items, onAddItem }: KanbanColumnProps) {
+export function KanbanColumn({
+  status,
+  items,
+  onAddItem,
+  onDragStart,
+  onDragEnd,
+  onDrop,
+  isDragOver = false,
+}: KanbanColumnProps) {
   const config = columnConfig[status];
+  const [isHovering, setIsHovering] = useState(false);
+
+  /**
+   * Handle drag over - prevent default to allow drop
+   */
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsHovering(true);
+  };
+
+  /**
+   * Handle drag leave - remove hover state
+   */
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsHovering(false);
+  };
+
+  /**
+   * Handle drop event
+   */
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsHovering(false);
+    onDrop(status);
+  };
 
   return (
-    <div className="flex flex-col gap-4 min-w-[280px] w-[280px] md:w-auto md:min-w-0 snap-center">
+    <div
+      className="flex flex-col gap-4 min-w-[280px] w-[280px] md:w-auto md:min-w-0 snap-center"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       {/* Column Header with Count Badge */}
       <div className="flex items-center justify-between px-2 sticky top-0 bg-white dark:bg-slate-900 py-2 z-10">
         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
@@ -71,15 +118,29 @@ export function KanbanColumn({ status, items, onAddItem }: KanbanColumnProps) {
         </span>
       </div>
 
-      {/* Items Container */}
-      <div className="flex flex-col gap-3 h-full overflow-y-auto pb-4 pr-2">
+      {/* Items Container with Drop Zone Highlighting */}
+      <div
+        className={cn(
+          'flex flex-col gap-3 h-full overflow-y-auto pb-4 pr-2 transition-all duration-200',
+          isHovering && isDragOver && 'bg-slate-100 dark:bg-slate-800/50 rounded-2xl p-2'
+        )}
+      >
         {items.length === 0 ? (
           // Empty State Placeholder with Dashed Border
-          <div className="flex flex-col items-center justify-center p-8 text-center bg-slate-50 dark:bg-slate-800/30 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl min-h-[150px] text-slate-400">
+          <div
+            className={cn(
+              'flex flex-col items-center justify-center p-8 text-center bg-slate-50 dark:bg-slate-800/30 border-2 border-dashed rounded-2xl min-h-[150px] text-slate-400 transition-all duration-200',
+              isHovering && isDragOver
+                ? 'border-primary bg-primary/5 scale-105'
+                : 'border-slate-200 dark:border-slate-700'
+            )}
+          >
             <span className="material-symbols-outlined text-3xl mb-2 opacity-50">
               shopping_bag
             </span>
-            <p className="text-xs font-bold opacity-70">Drag items here</p>
+            <p className="text-xs font-bold opacity-70">
+              {isDragOver ? 'Drop here' : 'Drag items here'}
+            </p>
             {onAddItem && (
               <button
                 onClick={() => onAddItem(status)}
@@ -92,7 +153,13 @@ export function KanbanColumn({ status, items, onAddItem }: KanbanColumnProps) {
         ) : (
           // Item Cards
           items.map((item) => (
-            <KanbanCard key={item.id} item={item} status={status} />
+            <KanbanCard
+              key={item.id}
+              item={item}
+              status={status}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+            />
           ))
         )}
       </div>

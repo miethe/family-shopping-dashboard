@@ -35,7 +35,7 @@ export default function RecipientsPage() {
   const [selectedRecipient, setSelectedRecipient] = useState<Person | null>(null);
 
   const { data: personsData, isLoading: personsLoading, error: personsError } = usePersons({ cursor });
-  const { data: occasionsData, isLoading: occasionsLoading } = useOccasions('upcoming');
+  const { data: occasionsData, isLoading: occasionsLoading } = useOccasions({ filter: 'upcoming' });
 
   // Map relationship to group (normalize to lowercase for matching)
   const getGroup = (relationship?: string): GroupFilter => {

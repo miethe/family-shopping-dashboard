@@ -8,6 +8,7 @@
  * - Four-column Kanban board: Idea → To Buy → Purchased → Gifted
  * - Glassmorphism cards with large rounded corners
  * - Mobile-first responsive (horizontal scroll on mobile, columns on desktop)
+ * - Drag-and-drop functionality with optimistic updates
  */
 
 'use client';
@@ -210,7 +211,7 @@ export default function ListDetailPage({ params }: Props) {
                 <Skeleton className="h-96" />
               </div>
             ) : (
-              <KanbanView items={items || []} onAddItem={handleAddItem} />
+              <KanbanView items={items || []} listId={listId} onAddItem={handleAddItem} />
             )
           ) : itemsLoading ? (
             <div className="h-full bg-white dark:bg-slate-800/50 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">

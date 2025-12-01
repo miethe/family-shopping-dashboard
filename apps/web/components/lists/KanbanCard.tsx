@@ -6,21 +6,27 @@
  * - Title
  * - Recipient avatar + name
  * - Hover effects: shadow-lg and translate-y
+ * - Drag-and-drop support
  *
- * Mobile-first with 44px touch targets.
+ * Mobile-first with 44px touch targets and touch-drag support.
  */
 
 'use client';
 
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
 
 interface KanbanCardProps {
   item: ListItemWithGift;
   status: ListItemStatus;
+  onDragStart: (item: ListItemWithGift) => void;
+  onDragEnd: () => void;
 }
 
-export function KanbanCard({ item, status }: KanbanCardProps) {
+export function KanbanCard({ item, status, onDragStart, onDragEnd }: KanbanCardProps) {
+  const [isDragging, setIsDragging] = useState(false);
+
   // Handle case where gift might not be loaded
   if (!item.gift) {
     return (
@@ -30,12 +36,46 @@ export function KanbanCard({ item, status }: KanbanCardProps) {
     );
   }
 
+  /**
+   * Handle drag start
+   */
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true);
+    onDragStart(item);
+
+    // Set drag data for fallback (though we use state management)
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', item.id.toString());
+
+    // Create a ghost image with reduced opacity
+    if (e.currentTarget instanceof HTMLElement) {
+      const ghost = e.currentTarget.cloneNode(true) as HTMLElement;
+      ghost.style.opacity = '0.5';
+      document.body.appendChild(ghost);
+      e.dataTransfer.setDragImage(ghost, 0, 0);
+      setTimeout(() => document.body.removeChild(ghost), 0);
+    }
+  };
+
+  /**
+   * Handle drag end
+   */
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    onDragEnd();
+  };
+
   return (
     <div
+      draggable={true}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       className={cn(
-        'bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-card cursor-pointer group',
+        'bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-card cursor-move group',
         'hover:shadow-lg hover:-translate-y-1 transition-all duration-300',
-        'border border-transparent hover:border-slate-200 dark:hover:border-slate-600'
+        'border border-transparent hover:border-slate-200 dark:hover:border-slate-600',
+        'touch-manipulation', // Better touch handling on mobile
+        isDragging && 'opacity-40 cursor-grabbing'
       )}
     >
       {/* Image with Price Overlay */}
@@ -45,6 +85,7 @@ export function KanbanCard({ item, status }: KanbanCardProps) {
             src={item.gift.image_url}
             alt={item.gift.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            draggable={false}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

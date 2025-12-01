@@ -20,11 +20,11 @@ type FilterType = 'upcoming' | 'past' | 'all';
 export default function OccasionsPage() {
   const [filter, setFilter] = useState<FilterType>('upcoming');
 
-  // Determine API filter (undefined for 'all')
-  const apiFilter = filter === 'all' ? undefined : filter;
+  // Determine API filter params (undefined filter for 'all')
+  const apiParams = filter === 'all' ? undefined : { filter };
 
   // Fetch occasions with current filter
-  const { data, isLoading, error } = useOccasions(apiFilter);
+  const { data, isLoading, error } = useOccasions(apiParams);
 
   return (
     <div className="space-y-6">
