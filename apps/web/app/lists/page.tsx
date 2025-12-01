@@ -157,9 +157,9 @@ export default function ListsPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          {/* Left 2 Columns: Grouped Sections */}
-          <div className="lg:col-span-2 space-y-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8 items-start">
+          {/* Left Columns: Grouped Sections - Full width on mobile, 2 cols on desktop */}
+          <div className="w-full lg:col-span-2 space-y-8">
             {/* Lists grouped by occasion */}
             {Object.values(groupedLists.withOccasion).map(({ occasion, lists }) => (
               <section
@@ -206,8 +206,8 @@ export default function ListsPage() {
             )}
           </div>
 
-          {/* Right Column: Recent Activity Sidebar */}
-          <div className="lg:col-span-1 lg:sticky lg:top-8">
+          {/* Right Column: Recent Activity Sidebar - Full width on mobile, sticky on desktop */}
+          <div className="w-full lg:col-span-1 lg:sticky lg:top-8">
             <h2 className="text-2xl font-bold text-slate-800 mb-4">Recent List Activity</h2>
             <div className="space-y-6">
               {recentLists.map((list) => {

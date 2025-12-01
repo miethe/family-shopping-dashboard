@@ -23,11 +23,11 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream p-4 md:p-8 pb-20 md:pb-6 relative overflow-hidden">
-      {/* Decorative Background Blobs */}
-      <div className="absolute top-20 right-10 w-96 h-96 bg-salmon/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-32 left-10 w-80 h-80 bg-sage/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-mustard/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-cream p-4 md:p-8 pb-20 md:pb-6 relative overflow-x-hidden overflow-y-auto">
+      {/* Decorative Background Blobs - Reduced size on mobile */}
+      <div className="absolute top-20 right-10 w-64 h-64 md:w-96 md:h-96 bg-salmon/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-32 left-10 w-56 h-56 md:w-80 md:h-80 bg-sage/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/3 w-48 h-48 md:w-64 md:h-64 bg-mustard/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Content Container */}
       <div className="max-w-7xl mx-auto relative z-10 animate-fade-in">

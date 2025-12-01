@@ -190,10 +190,10 @@ export default function RecipientsPage() {
 
           {/* Filter Bar */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex items-center bg-white p-1 rounded-full shadow-sm">
+            <div className="flex items-center bg-white p-1 rounded-full shadow-sm overflow-x-auto w-full sm:w-auto scrollbar-hide">
               <button
                 onClick={() => setSelectedGroup('all')}
-                className={`px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
                   selectedGroup === 'all'
                     ? 'bg-primary text-white shadow-md'
                     : 'text-slate-500 hover:bg-slate-50'
@@ -203,7 +203,7 @@ export default function RecipientsPage() {
               </button>
               <button
                 onClick={() => setSelectedGroup('household')}
-                className={`px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
                   selectedGroup === 'household'
                     ? 'bg-primary text-white shadow-md'
                     : 'text-slate-500 hover:bg-slate-50'
@@ -213,7 +213,7 @@ export default function RecipientsPage() {
               </button>
               <button
                 onClick={() => setSelectedGroup('family')}
-                className={`px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
                   selectedGroup === 'family'
                     ? 'bg-primary text-white shadow-md'
                     : 'text-slate-500 hover:bg-slate-50'
@@ -223,7 +223,7 @@ export default function RecipientsPage() {
               </button>
               <button
                 onClick={() => setSelectedGroup('friends')}
-                className={`px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
                   selectedGroup === 'friends'
                     ? 'bg-primary text-white shadow-md'
                     : 'text-slate-500 hover:bg-slate-50'
@@ -233,7 +233,7 @@ export default function RecipientsPage() {
               </button>
               <button
                 onClick={() => setSelectedGroup('other')}
-                className={`px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
                   selectedGroup === 'other'
                     ? 'bg-primary text-white shadow-md'
                     : 'text-slate-500 hover:bg-slate-50'
@@ -265,7 +265,7 @@ export default function RecipientsPage() {
 
           {/* Loading State */}
           {personsLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div key={i} className="space-y-3">
                   <Skeleton className="h-48 w-full rounded-3xl" />
@@ -291,7 +291,7 @@ export default function RecipientsPage() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
                   {filteredPeople.map((person: Person) => (
                     <div
                       key={person.id}
