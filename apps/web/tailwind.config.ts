@@ -6,6 +6,7 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     screens: {
       'xs': '375px',   // iPhone SE
@@ -16,6 +17,14 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // Background colors for light/dark modes
+        'background-light': '#FBF9F6',
+        'background-dark': '#1a1a2e',
+
+        // Text colors for light/dark modes
+        'text-main': '#1e293b',
+        'text-main-dark': '#f1f5f9',
+
         // Base backgrounds - Cream aesthetic from inspiration
         'cream': '#F5F1E8',
         'charcoal': '#3D405B',
@@ -47,18 +56,19 @@ const config: Config = {
         'mustard': '#DDBEA9',
         'sage': '#81B29A',
 
-        // Primary coral - Vibrant & Modern
+        // Primary coral - Vibrant & Modern (Updated to E57373)
         primary: {
           50: '#FFF0ED',
           100: '#FFE1DB',
           200: '#FFC2B8',
           300: '#FFA394',
           400: '#FF8570',
-          500: '#E07A5F', // Salmon from inspiration
-          600: '#d66f56',
+          500: '#E57373', // Main coral color from plan
+          600: '#D32F2F', // primary-dark from plan
           700: '#CC3A21',
           800: '#B32D17',
           900: '#8C1F0D',
+          DEFAULT: '#E57373',
         },
 
         // Status colors from inspiration
@@ -129,7 +139,7 @@ const config: Config = {
         'border-subtle': 'rgba(0, 0, 0, 0.04)',
         'border-medium': 'rgba(0, 0, 0, 0.08)',
         'border-strong': 'rgba(0, 0, 0, 0.12)',
-        
+
         // Glass borders
         'glass-border': 'rgba(255, 255, 255, 0.4)',
         'glass-border-strong': 'rgba(255, 255, 255, 0.6)',
@@ -141,7 +151,11 @@ const config: Config = {
       },
 
       fontFamily: {
+        display: ['Poppins', 'SF Pro Rounded', 'system-ui', 'sans-serif'],
+        body: ['Quicksand', 'Nunito', 'system-ui', 'sans-serif'],
+        kanban: ['Spline Sans', 'Inter', 'system-ui', 'sans-serif'],
         sans: [
+          'Quicksand',
           'SF Pro Rounded',
           '-apple-system',
           'BlinkMacSystemFont',
@@ -173,6 +187,10 @@ const config: Config = {
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
         'glass-inset': 'inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
         'glow': '0 0 20px rgba(255, 102, 77, 0.3)',
+        // Colored shadow variants
+        'shadow-primary': '0 8px 24px -4px rgba(229, 115, 115, 0.3)',
+        'shadow-card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+        'shadow-soft': '0 4px 20px rgba(0, 0, 0, 0.04)',
       },
 
       borderRadius: {
@@ -181,7 +199,8 @@ const config: Config = {
         'large': '1.25rem',     // 20px
         'xlarge': '1.75rem',    // 28px
         '2xlarge': '2.25rem',   // 36px
-        '3xlarge': '3rem',      // 48px
+        '3xlarge': '3rem',      // 48px (rounded-3xl in inspiration maps to this)
+        '4xl': '2rem',          // 32px
       },
 
       spacing: {
