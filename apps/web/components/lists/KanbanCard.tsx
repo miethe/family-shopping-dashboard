@@ -1,22 +1,18 @@
 /**
- * KanbanCard Component
+ * KanbanCard Component (v2 Design)
  *
  * Displays a gift item card in the Kanban board with:
- * - Product image (rounded-2xl)
- * - Title and status badge
- * - Assigned to info
- * - Approximate price
- * - Comment indicator (for shortlisted)
+ * - Large product image with price overlay (top-right)
+ * - Title
+ * - Recipient avatar + name
+ * - Hover effects: shadow-lg and translate-y
  *
- * Glassmorphism effect with large rounded corners.
  * Mobile-first with 44px touch targets.
  */
 
 'use client';
 
 import { cn } from '@/lib/utils';
-import { formatPrice } from '@/lib/utils';
-import { CheckIcon, MessageCircleIcon } from '@/components/layout/icons';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
 
 interface KanbanCardProps {
@@ -24,42 +20,11 @@ interface KanbanCardProps {
   status: ListItemStatus;
 }
 
-// Status badge colors
-const statusBadgeConfig: Record<
-  ListItemStatus,
-  { bgColor: string; textColor: string; label: string }
-> = {
-  idea: {
-    bgColor: 'bg-[#DDBEA9]',
-    textColor: 'text-[#5e4b3e]',
-    label: 'Idea',
-  },
-  selected: {
-    bgColor: 'bg-[#D08C78]',
-    textColor: 'text-white',
-    label: 'Shortlisted',
-  },
-  purchased: {
-    bgColor: 'bg-[#AEC3B0]',
-    textColor: 'text-[#3e5240]',
-    label: 'Purchased',
-  },
-  received: {
-    bgColor: 'bg-gray-400',
-    textColor: 'text-white',
-    label: 'Received',
-  },
-};
-
 export function KanbanCard({ item, status }: KanbanCardProps) {
-  const badgeConfig = statusBadgeConfig[status];
-  const hasNotes = Boolean(item.notes && item.notes.trim());
-  const isPurchased = status === 'purchased' || status === 'received';
-
   // Handle case where gift might not be loaded
   if (!item.gift) {
     return (
-      <div className="bg-white rounded-3xl p-5 shadow-sm opacity-50">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm opacity-50">
         <div className="text-gray-400 text-sm">Loading gift...</div>
       </div>
     );
@@ -68,69 +33,65 @@ export function KanbanCard({ item, status }: KanbanCardProps) {
   return (
     <div
       className={cn(
-        'bg-white rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow',
-        'backdrop-blur-sm',
-        isPurchased && 'opacity-75 hover:opacity-100'
+        'bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-card cursor-pointer group',
+        'hover:shadow-lg hover:-translate-y-1 transition-all duration-300',
+        'border border-transparent hover:border-slate-200 dark:hover:border-slate-600'
       )}
     >
-      {/* Card Content */}
-      <div className="flex items-start gap-4 mb-4">
-        {/* Product Image */}
+      {/* Image with Price Overlay */}
+      <div className="aspect-[16/10] bg-slate-100 dark:bg-slate-700 rounded-xl mb-3 overflow-hidden relative">
         {item.gift?.image_url ? (
           <img
             src={item.gift.image_url}
             alt={item.gift.name}
-            className="w-16 h-16 rounded-2xl object-cover bg-gray-100 flex-shrink-0"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <span className="text-gray-400 text-xs font-medium">No image</span>
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="material-symbols-outlined text-4xl text-slate-300">
+              redeem
+            </span>
           </div>
         )}
-
-        {/* Title and Badge */}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-gray-800 leading-tight mb-1 line-clamp-2">
-            {item.gift?.name || 'Unnamed Gift'}
-          </h3>
-          <span
-            className={cn(
-              'inline-block px-3 py-1 rounded-full text-xs font-bold',
-              badgeConfig.bgColor,
-              badgeConfig.textColor
-            )}
-          >
-            {badgeConfig.label}
-          </span>
-        </div>
+        {/* Price Badge Overlay (top-right) */}
+        {item.gift?.price && (
+          <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/50 backdrop-blur-md rounded-full text-white text-[10px] font-bold">
+            ${item.gift.price.toFixed(0)}
+          </div>
+        )}
       </div>
 
-      {/* Footer */}
-      <div className="border-t border-gray-100 pt-3 flex justify-between items-center text-sm font-medium text-gray-500">
-        {/* Assigned To or Price */}
-        {item.assigned_to ? (
-          <span className="bg-gray-100 px-3 py-1 rounded-full text-gray-600 text-xs">
-            Assigned to: User {item.assigned_to}
-          </span>
-        ) : (
-          <span className="text-gray-400 text-xs">Unassigned</span>
-        )}
+      {/* Card Content */}
+      <div className="space-y-2">
+        {/* Title */}
+        <h3 className="font-bold text-slate-900 dark:text-white text-base leading-tight line-clamp-2">
+          {item.gift?.name || 'Unnamed Gift'}
+        </h3>
 
-        {/* Price or Status Icons */}
-        <div className="flex items-center gap-2">
-          {item.gift?.price && (
-            <span className="text-gray-600 font-semibold">
-              ${formatPrice(item.gift.price)}
+        {/* Footer: Recipient Info */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-50 dark:bg-slate-700 rounded-lg">
+            {/* Avatar placeholder - in real app, fetch person data */}
+            <div className="w-4 h-4 rounded-full bg-slate-300 dark:bg-slate-600 flex items-center justify-center text-[8px] font-bold text-slate-600 dark:text-slate-300">
+              ?
+            </div>
+            <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
+              {item.assigned_to ? `User ${item.assigned_to}` : 'Unassigned'}
             </span>
-          )}
+          </div>
 
-          {/* Comments indicator for shortlisted items */}
-          {status === 'selected' && hasNotes && (
-            <MessageCircleIcon className="w-5 h-5 text-gray-400" />
-          )}
-
-          {/* Checkmark for purchased items */}
-          {isPurchased && <CheckIcon className="w-5 h-5 text-gray-400" />}
+          {/* Status Indicator Dot */}
+          <span
+            className={cn(
+              'w-2 h-2 rounded-full',
+              status === 'idea' && 'bg-yellow-400',
+              status === 'to_buy' && 'bg-red-400',
+              status === 'purchased' && 'bg-green-400',
+              status === 'gifted' && 'bg-purple-400',
+              status === 'selected' && 'bg-blue-400',
+              status === 'received' && 'bg-gray-400'
+            )}
+          ></span>
         </div>
       </div>
     </div>

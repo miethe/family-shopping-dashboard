@@ -1,13 +1,14 @@
 /**
  * KanbanView Component
  *
- * Kanban board layout displaying items in three columns:
- * - Idea (mustard)
- * - Shortlisted (coral)
- * - Purchased (sage)
+ * Kanban board layout displaying items in four columns:
+ * - Idea (yellow)
+ * - To Buy (red)
+ * - Purchased (green/teal)
+ * - Gifted (purple)
  *
- * Responsive: stacked on mobile, columns on desktop (md+).
- * Maps existing statuses to columns appropriately.
+ * Responsive: horizontal scroll on mobile, grid on desktop.
+ * Includes empty column placeholders with dashed borders.
  */
 
 'use client';
@@ -20,25 +21,29 @@ interface KanbanViewProps {
   onAddItem?: (status: ListItemStatus) => void;
 }
 
-// Define the three columns we want to show
-const kanbanColumns: ListItemStatus[] = ['idea', 'selected', 'purchased'];
+// Define the four columns for the Kanban board
+const kanbanColumns: ListItemStatus[] = ['idea', 'to_buy', 'purchased', 'gifted'];
 
 /**
- * Group items by status and map 'received' to 'purchased' column
+ * Group items by status for Kanban display
  */
 function groupItemsForKanban(items: ListItemWithGift[]): Record<ListItemStatus, ListItemWithGift[]> {
   const grouped: Record<ListItemStatus, ListItemWithGift[]> = {
     idea: [],
-    selected: [],
+    to_buy: [],
     purchased: [],
-    received: [], // Not displayed as separate column
+    gifted: [],
+    selected: [],
+    received: [],
   };
 
   items.forEach((item) => {
-    // Map 'received' status to 'purchased' column
-    if (item.status === 'received') {
-      grouped.purchased.push(item);
-    } else {
+    // Map legacy statuses to new columns if needed
+    if (item.status === 'selected') {
+      grouped.to_buy.push(item);
+    } else if (item.status === 'received') {
+      grouped.gifted.push(item);
+    } else if (grouped[item.status]) {
       grouped[item.status].push(item);
     }
   });
@@ -51,7 +56,7 @@ export function KanbanView({ items, onAddItem }: KanbanViewProps) {
   const groupedItems = groupItemsForKanban(items);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="flex h-full gap-6 overflow-x-auto pb-4 snap-x md:grid md:grid-cols-4 md:overflow-visible">
       {kanbanColumns.map((status) => (
         <KanbanColumn
           key={status}

@@ -14,7 +14,8 @@ import { useLists } from '@/hooks/useLists';
 import { useOccasions } from '@/hooks/useOccasions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ListCard } from '@/components/lists';
-import { FilterIcon, ArrowUpDownIcon, PlusIcon } from '@/components/layout/icons';
+import { FilterIcon, ArrowUpDownIcon, PlusIcon, HeartIcon, LightbulbIcon, CheckIcon } from '@/components/layout/icons';
+import { cn } from '@/lib/utils';
 import type { ListType, GiftList } from '@/types';
 
 type ListTypeFilter = 'all' | ListType;
@@ -63,6 +64,29 @@ export default function ListsPage() {
   const totalLists = listsData?.items.length || 0;
   const activeOccasions = Object.keys(groupedLists.withOccasion).length;
 
+  // Get recent lists for activity sidebar (sorted by updated_at)
+  const recentLists = useMemo(() => {
+    if (!listsData?.items) return [];
+    return [...listsData.items]
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      .slice(0, 5);
+  }, [listsData]);
+
+  // Format relative time (e.g., "2 hours ago")
+  const formatRelativeTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 60) return `${diffMins} ${diffMins === 1 ? 'min' : 'mins'} ago`;
+    if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+    if (diffDays < 30) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+    return date.toLocaleDateString();
+  };
+
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto h-full overflow-y-auto pb-20">
       {/* Header with Actions */}
@@ -99,7 +123,7 @@ export default function ListsPage() {
         </div>
       </div>
 
-      {/* Content: Loading, Error, Empty, or Grouped Sections */}
+      {/* Content: Loading, Error, Empty, or 3-Column Grid Layout */}
       {isLoading ? (
         <div className="space-y-8">
           <div className="bg-white/50 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-sm">
@@ -133,37 +157,120 @@ export default function ListsPage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-8">
-          {/* Lists grouped by occasion */}
-          {Object.values(groupedLists.withOccasion).map(({ occasion, lists }) => (
-            <section
-              key={occasion.id}
-              className="bg-white/50 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-8 shadow-sm"
-            >
-              <h2 className="text-2xl font-bold text-charcoal mb-6 ml-2">
-                {occasion.name}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {lists.map((list) => (
-                  <ListCard key={list.id} list={list} />
-                ))}
-              </div>
-            </section>
-          ))}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          {/* Left 2 Columns: Grouped Sections */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Lists grouped by occasion */}
+            {Object.values(groupedLists.withOccasion).map(({ occasion, lists }) => (
+              <section
+                key={occasion.id}
+                className="bg-white/50 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-8 shadow-sm"
+              >
+                <h2 className="text-2xl font-bold text-charcoal mb-6 ml-2">
+                  {occasion.name}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {lists.map((list) => (
+                    <ListCard key={list.id} list={list} />
+                  ))}
+                  {/* Placeholder card for new list */}
+                  <Link href="/lists/new">
+                    <button className="w-full h-full min-h-[200px] flex flex-col items-center justify-center p-6 rounded-[2rem] bg-white border-2 border-dashed border-slate-200 hover:border-salmon hover:bg-red-50/50 text-slate-400 hover:text-salmon transition-all">
+                      <PlusIcon className="w-10 h-10 mb-2" />
+                      <span className="font-bold text-sm">New Gift List</span>
+                    </button>
+                  </Link>
+                </div>
+              </section>
+            ))}
 
-          {/* Lists without occasion */}
-          {groupedLists.withoutOccasion.length > 0 && (
-            <section className="bg-white/50 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-8 shadow-sm">
-              <h2 className="text-2xl font-bold text-charcoal mb-6 ml-2">
-                General & Other
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {groupedLists.withoutOccasion.map((list) => (
-                  <ListCard key={list.id} list={list} />
-                ))}
-              </div>
-            </section>
-          )}
+            {/* Lists without occasion */}
+            {groupedLists.withoutOccasion.length > 0 && (
+              <section className="bg-white/50 backdrop-blur-xl rounded-[2.5rem] p-6 md:p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-charcoal mb-6 ml-2">
+                  General & Other
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {groupedLists.withoutOccasion.map((list) => (
+                    <ListCard key={list.id} list={list} />
+                  ))}
+                  {/* Placeholder card for new list */}
+                  <Link href="/lists/new">
+                    <button className="w-full h-full min-h-[200px] flex flex-col items-center justify-center p-6 rounded-[2rem] bg-white border-2 border-dashed border-slate-200 hover:border-salmon hover:bg-red-50/50 text-slate-400 hover:text-salmon transition-all">
+                      <PlusIcon className="w-10 h-10 mb-2" />
+                      <span className="font-bold text-sm">New Wish List</span>
+                    </button>
+                  </Link>
+                </div>
+              </section>
+            )}
+          </div>
+
+          {/* Right Column: Recent Activity Sidebar */}
+          <div className="lg:col-span-1 lg:sticky lg:top-8">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">Recent List Activity</h2>
+            <div className="space-y-6">
+              {recentLists.map((list) => {
+                const occasion = occasionsData?.items?.find((o) => o.id === list.occasion_id);
+                const isActive = list.visibility === 'family' || list.visibility === 'public';
+
+                return (
+                  <Link key={list.id} href={`/lists/${list.id}`}>
+                    <div className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-lg transition-all cursor-pointer">
+                      <div className="flex items-start justify-between mb-4">
+                        {/* Icon */}
+                        <div className={cn(
+                          'p-3 rounded-xl',
+                          list.type === 'wishlist' && 'bg-red-100',
+                          list.type === 'ideas' && 'bg-yellow-100',
+                          list.type === 'assigned' && 'bg-blue-100'
+                        )}>
+                          {list.type === 'wishlist' && (
+                            <HeartIcon className="w-6 h-6 text-red-500" />
+                          )}
+                          {list.type === 'ideas' && (
+                            <LightbulbIcon className="w-6 h-6 text-yellow-600" />
+                          )}
+                          {list.type === 'assigned' && (
+                            <CheckIcon className="w-6 h-6 text-blue-600" />
+                          )}
+                        </div>
+
+                        {/* Status Badge */}
+                        <span className={cn(
+                          'px-3 py-1 text-xs font-bold rounded-full',
+                          isActive
+                            ? 'bg-green-50 text-green-700 border border-green-100'
+                            : 'bg-slate-100 text-slate-500'
+                        )}>
+                          {isActive ? 'Ongoing' : 'Private'}
+                        </span>
+                      </div>
+
+                      {/* Title */}
+                      <h4 className="text-lg font-bold text-slate-800 mb-2">{list.name}</h4>
+
+                      {/* Item count and occasion */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-sm text-slate-500">{list.item_count || 0} items</span>
+                        {occasion && (
+                          <>
+                            <span className="text-slate-300">•</span>
+                            <span className="text-sm text-slate-500">{occasion.name}</span>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Footer */}
+                      <div className="mt-4 pt-4 border-t border-slate-100 text-sm text-slate-500">
+                        Updated <span className="text-slate-800 font-semibold">{formatRelativeTime(list.updated_at)}</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
     </div>

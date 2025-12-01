@@ -1,9 +1,9 @@
 /**
  * KanbanColumn Component
  *
- * Displays a column in the Kanban board with colored header and gift cards.
- * Inspired by SingleListView design with mustard/coral/sage color scheme.
- * Mobile-first responsive layout.
+ * Displays a column in the Kanban board with v2 design colors and styling.
+ * Four status columns: Idea → To Buy → Purchased → Gifted
+ * Includes count badges and empty state placeholders.
  */
 
 'use client';
@@ -18,30 +18,41 @@ interface KanbanColumnProps {
   onAddItem?: (status: ListItemStatus) => void;
 }
 
-// Column headers and colors mapping
+// Column headers and colors mapping (v2 design)
 const columnConfig: Record<
   ListItemStatus,
-  { title: string; headerColor: string; textColor: string }
+  { title: string; bgColor: string; textColor: string }
 > = {
   idea: {
     title: 'Idea',
-    headerColor: 'bg-[#DDBEA9]',
-    textColor: 'text-[#5e4b3e]',
+    bgColor: 'bg-yellow-100',
+    textColor: 'text-yellow-800',
   },
-  selected: {
-    title: 'Shortlisted',
-    headerColor: 'bg-[#D08C78]',
-    textColor: 'text-white',
+  to_buy: {
+    title: 'To Buy',
+    bgColor: 'bg-red-100',
+    textColor: 'text-red-800',
   },
   purchased: {
     title: 'Purchased',
-    headerColor: 'bg-[#AEC3B0]',
-    textColor: 'text-[#3e5240]',
+    bgColor: 'bg-green-100',
+    textColor: 'text-green-800',
+  },
+  gifted: {
+    title: 'Gifted',
+    bgColor: 'bg-purple-100',
+    textColor: 'text-purple-800',
+  },
+  // Legacy statuses for backward compatibility
+  selected: {
+    title: 'Shortlisted',
+    bgColor: 'bg-blue-100',
+    textColor: 'text-blue-800',
   },
   received: {
     title: 'Received',
-    headerColor: 'bg-gray-400',
-    textColor: 'text-white',
+    bgColor: 'bg-gray-100',
+    textColor: 'text-gray-800',
   },
 };
 
@@ -49,30 +60,32 @@ export function KanbanColumn({ status, items, onAddItem }: KanbanColumnProps) {
   const config = columnConfig[status];
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Column Header */}
-      <div
-        className={cn(
-          'text-center font-bold py-3 rounded-t-2xl',
-          config.headerColor,
-          config.textColor
-        )}
-      >
-        {config.title}
+    <div className="flex flex-col gap-4 min-w-[280px] w-[280px] md:w-auto md:min-w-0 snap-center">
+      {/* Column Header with Count Badge */}
+      <div className="flex items-center justify-between px-2 sticky top-0 bg-white dark:bg-slate-900 py-2 z-10">
+        <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
+          {config.title}
+        </h2>
+        <span className="flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold">
+          {items.length}
+        </span>
       </div>
 
       {/* Items Container */}
-      <div className="space-y-4">
+      <div className="flex flex-col gap-3 h-full overflow-y-auto pb-4 pr-2">
         {items.length === 0 ? (
-          // Empty State
-          <div className="bg-white/50 rounded-3xl p-8 text-center border-2 border-dashed border-gray-200">
-            <p className="text-sm text-gray-400 mb-3">No items yet</p>
+          // Empty State Placeholder with Dashed Border
+          <div className="flex flex-col items-center justify-center p-8 text-center bg-slate-50 dark:bg-slate-800/30 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl min-h-[150px] text-slate-400">
+            <span className="material-symbols-outlined text-3xl mb-2 opacity-50">
+              shopping_bag
+            </span>
+            <p className="text-xs font-bold opacity-70">Drag items here</p>
             {onAddItem && (
               <button
                 onClick={() => onAddItem(status)}
-                className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors min-h-[44px] px-4"
+                className="mt-3 text-xs font-medium text-slate-500 hover:text-primary transition-colors min-h-[44px] px-4"
               >
-                + Add {config.title}
+                + Add Item
               </button>
             )}
           </div>

@@ -21,11 +21,13 @@ interface ListItemRowProps {
 }
 
 // Status badge variants
-const statusVariants: Record<ListItemStatus, 'warning' | 'default' | 'success' | 'default'> = {
+const statusVariants: Record<ListItemStatus, 'warning' | 'default' | 'success' | 'error'> = {
   idea: 'warning',
   selected: 'default',
+  to_buy: 'error',
   purchased: 'success',
   received: 'default',
+  gifted: 'success',
 };
 
 export function ListItemRow({ item, onStatusChange }: ListItemRowProps) {

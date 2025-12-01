@@ -12,6 +12,7 @@ export { PipelineView } from './PipelineView';
 export { KanbanView } from './KanbanView';
 export { KanbanColumn } from './KanbanColumn';
 export { KanbanCard } from './KanbanCard';
+export { TableView } from './TableView';
 export { ListSummary } from './ListSummary';
 export { AddListModal } from './AddListModal';
 export { AddListItemModal } from './AddListItemModal';

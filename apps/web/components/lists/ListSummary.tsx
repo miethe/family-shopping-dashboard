@@ -23,30 +23,36 @@ interface ListSummaryProps {
 }
 
 // Status order for display
-const statusOrder: ListItemStatus[] = ['idea', 'selected', 'purchased', 'received'];
+const statusOrder: ListItemStatus[] = ['idea', 'to_buy', 'purchased', 'gifted'];
 
 // Status icons
 const statusIcons: Record<ListItemStatus, ComponentType<{ className?: string }>> = {
   idea: LightbulbIcon,
   selected: CheckCircleIcon,
+  to_buy: ShoppingCartIcon,
   purchased: ShoppingCartIcon,
   received: GiftIcon,
+  gifted: GiftIcon,
 };
 
 // Status colors
 const statusColors: Record<ListItemStatus, string> = {
   idea: 'text-yellow-600',
   selected: 'text-blue-600',
+  to_buy: 'text-red-600',
   purchased: 'text-green-600',
   received: 'text-gray-600',
+  gifted: 'text-purple-600',
 };
 
 // Status labels
 const statusLabels: Record<ListItemStatus, string> = {
   idea: 'Ideas',
   selected: 'Selected',
+  to_buy: 'To Buy',
   purchased: 'Purchased',
   received: 'Received',
+  gifted: 'Gifted',
 };
 
 export function ListSummary({ items }: ListSummaryProps) {
