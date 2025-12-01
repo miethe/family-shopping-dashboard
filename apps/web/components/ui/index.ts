@@ -68,3 +68,10 @@ export {
   TooltipContent,
   TooltipProvider,
 } from './tooltip';
+export {
+  Icon,
+  IconNames,
+  type IconProps,
+  type IconSize,
+  type IconName,
+} from './icon';
