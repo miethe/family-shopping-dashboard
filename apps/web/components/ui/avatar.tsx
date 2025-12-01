@@ -134,4 +134,92 @@ export function getInitials(name: string | undefined | null): string {
     .slice(0, 2);
 }
 
-export { Avatar, AvatarImage, AvatarFallback };
+/**
+ * AvatarStack - Display multiple avatars in an overlapping stack
+ *
+ * Features:
+ * - Overlapping avatars with negative spacing
+ * - Hover animation to spread avatars apart
+ * - Overflow indicator (+N) when exceeding max
+ * - z-index ordering (first avatar on top)
+ */
+interface AvatarStackProps extends VariantProps<typeof avatarVariants> {
+  children: React.ReactNode;
+  max?: number;
+  className?: string;
+}
+
+const AvatarStack = React.forwardRef<HTMLDivElement, AvatarStackProps>(
+  ({ children, max = 5, size = 'md', className }, ref) => {
+    const childArray = React.Children.toArray(children);
+    const displayedAvatars = max ? childArray.slice(0, max) : childArray;
+    const overflowCount = childArray.length - displayedAvatars.length;
+
+    // Spacing values based on size
+    const spacingMap = {
+      xs: '-space-x-2',      // -8px overlap
+      sm: '-space-x-2.5',    // -10px overlap
+      default: '-space-x-3', // -12px overlap
+      md: '-space-x-3',      // -12px overlap
+      lg: '-space-x-4',      // -16px overlap
+      xl: '-space-x-6',      // -24px overlap
+    };
+
+    const hoverSpacingMap = {
+      xs: 'hover:space-x-1',      // 4px spacing on hover
+      sm: 'hover:space-x-1.5',    // 6px spacing on hover
+      default: 'hover:space-x-2', // 8px spacing on hover
+      md: 'hover:space-x-2',      // 8px spacing on hover
+      lg: 'hover:space-x-3',      // 12px spacing on hover
+      xl: 'hover:space-x-4',      // 16px spacing on hover
+    };
+
+    const spacing = spacingMap[size || 'md'];
+    const hoverSpacing = hoverSpacingMap[size || 'md'];
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'flex items-center',
+          spacing,
+          hoverSpacing,
+          'transition-all duration-300 ease-in-out',
+          className
+        )}
+      >
+        {displayedAvatars.map((child, index) => (
+          <div
+            key={index}
+            className="transition-all duration-300 ease-in-out"
+            style={{
+              zIndex: displayedAvatars.length - index, // First avatar on top
+            }}
+          >
+            {React.isValidElement(child)
+              ? React.cloneElement(child as React.ReactElement<AvatarProps>, {
+                  size: size || 'md',
+                })
+              : child}
+          </div>
+        ))}
+
+        {/* Overflow indicator */}
+        {overflowCount > 0 && (
+          <div
+            className={cn(
+              avatarVariants({ size }),
+              'border-2 border-white shadow-low bg-warm-200 flex items-center justify-center font-bold text-warm-700 transition-all duration-300 ease-in-out'
+            )}
+            style={{ zIndex: 0 }}
+          >
+            +{overflowCount}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+AvatarStack.displayName = 'AvatarStack';
+
+export { Avatar, AvatarImage, AvatarFallback, AvatarStack };

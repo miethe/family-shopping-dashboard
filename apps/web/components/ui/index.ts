@@ -75,3 +75,46 @@ export {
   type IconSize,
   type IconName,
 } from './icon';
+export {
+  StatsCard,
+  statsCardVariants,
+  type StatsCardProps,
+} from './stats-card';
+export {
+  Timeline,
+  TimelineItem,
+  TimelineDot,
+  TimelineContent,
+  TimelineTitle,
+  TimelineDescription,
+  TimelineTime,
+  timelineDotVariants,
+  type TimelineDotProps,
+} from './timeline';
+export {
+  FilterBar,
+  FilterGroup,
+  FilterChip,
+  FilterDropdown,
+  type FilterBarProps,
+  type FilterGroupProps,
+  type FilterChipProps,
+  type FilterDropdownProps,
+  type FilterDropdownOption,
+} from './filter-bar';
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+  TablePagination,
+  TableEmpty,
+  type TableProps,
+  type TableRowProps,
+  type TablePaginationProps,
+  type TableEmptyProps,
+} from './table';
