@@ -3,11 +3,46 @@
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { PersonDetailModal, useEntityModal } from '@/components/modals';
+import { PersonDetailModal, useEntityModal, ListDetailModal } from '@/components/modals';
+import { useQuery } from '@tanstack/react-query';
+import { listApi } from '@/lib/api/endpoints';
+import Link from 'next/link';
 import type { Person } from '@/types';
 
 export interface PersonCardProps {
   person: Person;
+}
+
+/**
+ * Calculate age from birthdate
+ */
+function calculateAge(birthdate: string): number | null {
+  try {
+    const today = new Date();
+    const birth = new Date(birthdate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Format birthday as "Jan 15"
+ */
+function formatBirthday(birthdate: string): string | null {
+  try {
+    const date = new Date(birthdate);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -56,6 +91,9 @@ function formatBirthdayMessage(birthdate: string): string | null {
  * - Avatar (photo or initials fallback)
  * - Display name
  * - Relationship badge
+ * - Age and birthday display
+ * - Gift count (assigned/needed) with navigation
+ * - Attached lists with badges
  * - Upcoming birthday notification (if within 30 days)
  * - Interests preview (truncated)
  * - Full card is tappable link to detail page
@@ -63,7 +101,24 @@ function formatBirthdayMessage(birthdate: string): string | null {
  */
 export function PersonCard({ person }: PersonCardProps) {
   const birthdayMessage = person.birthdate ? formatBirthdayMessage(person.birthdate) : null;
+  const age = person.birthdate ? calculateAge(person.birthdate) : null;
+  const formattedBirthday = person.birthdate ? formatBirthday(person.birthdate) : null;
+
   const { open, entityId, openModal, closeModal } = useEntityModal('person');
+  const { open: listModalOpen, entityId: listModalId, openModal: openListModal, closeModal: closeListModal } = useEntityModal('list');
+
+  // Fetch lists for this person
+  const { data: listsData, isLoading: listsLoading } = useQuery({
+    queryKey: ['lists', 'person', person.id],
+    queryFn: () => listApi.list({ person_id: person.id }),
+  });
+
+  const lists = listsData?.items || [];
+
+  // Calculate gift counts from lists
+  const totalGifts = lists.reduce((sum, list) => sum + (list.item_count || 0), 0);
+  const giftsNeeded = lists.length > 0 ? lists.length * 5 : 0; // Placeholder: assume 5 gifts needed per list
+  const hasNoGifts = totalGifts === 0 && lists.length > 0;
 
   return (
     <>
@@ -95,11 +150,79 @@ export function PersonCard({ person }: PersonCardProps) {
                   )}
                 </div>
 
+                {/* Age and Birthday */}
+                {(age !== null || formattedBirthday) && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <span aria-label="Birthday">🎂</span>
+                    <span>
+                      {formattedBirthday}
+                      {age !== null && ` • ${age} ${age === 1 ? 'year' : 'years'}`}
+                    </span>
+                  </div>
+                )}
+
                 {/* Birthday Alert */}
                 {birthdayMessage && (
                   <div className="flex items-center gap-1 text-sm text-orange-600">
-                    <span aria-label="Birthday">🎂</span>
+                    <span aria-label="Alert">⚠️</span>
                     <span className="font-medium">{birthdayMessage}</span>
+                  </div>
+                )}
+
+                {/* Gift Count */}
+                {lists.length > 0 && (
+                  <Link
+                    href={`/gifts?recipient=${person.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className={`inline-flex items-center gap-1.5 text-sm font-medium hover:underline ${
+                      hasNoGifts ? 'text-orange-600' : 'text-gray-700'
+                    }`}
+                  >
+                    <span aria-label="Gifts">🎁</span>
+                    <span>
+                      {totalGifts}/{giftsNeeded} gifts
+                    </span>
+                    {hasNoGifts && (
+                      <span className="text-xs">(Add gifts!)</span>
+                    )}
+                  </Link>
+                )}
+
+                {/* Lists Section */}
+                {!listsLoading && lists.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className="text-xs text-gray-500 font-medium">Lists:</span>
+                    {lists.slice(0, 3).map((list) => (
+                      <button
+                        key={list.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openListModal(String(list.id));
+                        }}
+                        className="inline-flex items-center"
+                        title={list.name}
+                      >
+                        <Badge variant="info" size="sm" className="hover:bg-blue-100 cursor-pointer">
+                          {list.name}
+                        </Badge>
+                      </button>
+                    ))}
+                    {lists.length > 3 && (
+                      <div className="group relative">
+                        <Badge variant="default" size="sm" className="cursor-help">
+                          +{lists.length - 3}
+                        </Badge>
+                        <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block z-10 w-48 p-2 bg-gray-900 text-white text-xs rounded shadow-lg">
+                          <div className="space-y-1">
+                            {lists.slice(3).map((list) => (
+                              <div key={list.id} className="truncate">
+                                {list.name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -129,6 +252,14 @@ export function PersonCard({ person }: PersonCardProps) {
         open={open}
         onOpenChange={(isOpen) => {
           if (!isOpen) closeModal();
+        }}
+      />
+
+      <ListDetailModal
+        listId={listModalId}
+        open={listModalOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) closeListModal();
         }}
       />
     </>
