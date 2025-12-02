@@ -48,7 +48,9 @@ export function AddListItemModal({
   const queryClient = useQueryClient();
   const createItemMutation = useCreateListItem();
   const createGiftMutation = useCreateGift();
-  const { data: giftsResponse, isLoading: isLoadingGifts } = useGifts();
+  const { data: giftsResponse, isLoading: isLoadingGifts } = useGifts(undefined, {
+    enabled: isOpen,
+  });
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabMode>('existing');

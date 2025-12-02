@@ -50,8 +50,8 @@ export function AddListModal({
   const updateMutation = useUpdateList(listToEdit?.id || 0);
 
   // Fetch persons and occasions for dropdowns
-  const { data: personsData } = usePersons();
-  const { data: occasionsData } = useOccasions();
+  const { data: personsData } = usePersons(undefined, { enabled: isOpen });
+  const { data: occasionsData } = useOccasions(undefined, { enabled: isOpen });
 
   const isEditMode = mode === 'edit' && !!listToEdit;
 

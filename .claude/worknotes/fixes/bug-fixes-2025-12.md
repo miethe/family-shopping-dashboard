@@ -384,13 +384,19 @@ Monthly bug tracking for December 2025.
 
 ### WebSocket Subscribe Storm on Modal Open
 
-**Issue**: Opening a list modal from `/lists` or loading `/gifts` opened the WebSocket, froze the UI, then closed the connection and crashed the tab (“Aw Snap”), especially on the first load after app start or when switching between /lists and /gifts.
+**Issue**: Opening a list modal from `/lists` (and first loading `/gifts`) opened the WebSocket, froze the UI, then closed the connection and crashed the tab (“Aw Snap”) while `/gifts` and `/lists/{id}` fetches stayed pending.
 
-- **Location**: `apps/web/hooks/useRealtimeSync.ts:90-180`
-- **Root Cause**: `useRealtimeSync` recreated its subscription handler on every render because it depended on raw `queryKey` and `events` references. Pages pass fresh objects/arrays on each render (filters, params), so every render unsubscribed and re-subscribed. With React Strict Mode double-invoking effects and multiple hooks per page (lists, gifts, persons, occasions), this created a subscribe/unsubscribe storm that overwhelmed the WebSocket and crashed the tab.
+- **Location**:
+  - `apps/web/hooks/useGifts.ts`
+  - `apps/web/hooks/usePersons.ts`
+  - `apps/web/hooks/useOccasions.ts`
+  - `apps/web/components/lists/AddListItemModal.tsx`
+  - `apps/web/components/lists/AddListModal.tsx`
+- **Root Cause**: Each list card renders its own hidden `ListDetailModal`, which always mounted `AddListItemModal` and `AddListModal`. These modals eagerly ran `useGifts`, `usePersons`, and `useOccasions`, and each hook subscribed to its WebSocket topic. With dozens of list cards plus React Strict Mode, hundreds of `gifts`/`persons`/`occasions` subscriptions accumulated before any modal was opened, overwhelming the WebSocket and starving the main thread.
 - **Fix**:
-  - Added a stable `DEFAULT_EVENTS` constant and stored `queryKey`/`events` in refs so subscriptions stay stable across renders
-  - Short-circuited when topics are empty to avoid sending invalid subscribe messages during initialization
-  - Kept existing debounce cleanup to prevent timer leaks on unmount
-- **Commit(s)**: 88e2188
+  - Added `enabled` support to `useGifts`, `usePersons`, and `useOccasions` so queries/subscriptions can be gated
+  - Gated `useGifts` in `AddListItemModal` to run only when the modal is open
+  - Gated `usePersons`/`useOccasions` in `AddListModal` to run only when the modal is open
+  - Result: Only the one open modal holds the live WebSocket subscriptions instead of every hidden modal on the page
+- **Commit(s)**: 78e2b6a
 - **Status**: RESOLVED

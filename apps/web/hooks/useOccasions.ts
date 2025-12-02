@@ -12,15 +12,22 @@ import { occasionApi, OccasionListParams } from '@/lib/api/endpoints';
 import type { Occasion, OccasionCreate, OccasionUpdate } from '@/types';
 import { useRealtimeSync } from './useRealtimeSync';
 
+interface UseOccasionsOptions {
+  enabled?: boolean;
+}
+
 /**
  * Fetch paginated list of occasions with optional filters
  * @param params - Optional cursor, limit, and filter (upcoming/past)
  */
-export function useOccasions(params?: OccasionListParams) {
+export function useOccasions(params?: OccasionListParams, options: UseOccasionsOptions = {}) {
+  const { enabled = true } = options;
+
   const query = useQuery({
     queryKey: ['occasions', params],
     queryFn: () => occasionApi.list(params),
     staleTime: 1000 * 60 * 10, // 10 minutes - occasions change infrequently
+    enabled,
   });
 
   // Real-time sync for occasion list changes
@@ -28,6 +35,7 @@ export function useOccasions(params?: OccasionListParams) {
     topic: 'occasions',
     queryKey: ['occasions', params],
     events: ['ADDED', 'UPDATED', 'DELETED'],
+    enabled,
   });
 
   return query;

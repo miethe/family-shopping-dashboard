@@ -11,15 +11,22 @@ import { giftApi, GiftListParams } from '@/lib/api/endpoints';
 import type { Gift, GiftCreate, GiftUpdate } from '@/types';
 import { useRealtimeSync } from './useRealtimeSync';
 
+interface UseGiftsOptions {
+  enabled?: boolean;
+}
+
 /**
  * Fetch paginated list of gifts with optional filters
  * @param params - Optional cursor, limit, search, tags filters
  */
-export function useGifts(params?: GiftListParams) {
+export function useGifts(params?: GiftListParams, options: UseGiftsOptions = {}) {
+  const { enabled = true } = options;
+
   const query = useQuery({
     queryKey: ['gifts', params],
     queryFn: () => giftApi.list(params),
     staleTime: 1000 * 60 * 5, // 5 minutes - moderate updates, search-heavy
+    enabled,
   });
 
   // Real-time sync for gift list changes
@@ -27,6 +34,7 @@ export function useGifts(params?: GiftListParams) {
     topic: 'gifts',
     queryKey: ['gifts', params],
     events: ['ADDED', 'UPDATED', 'DELETED'],
+    enabled,
   });
 
   return query;

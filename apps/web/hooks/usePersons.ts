@@ -11,14 +11,21 @@ import { personApi, PersonListParams } from '@/lib/api/endpoints';
 import type { Person, PersonCreate, PersonUpdate } from '@/types';
 import { useRealtimeSync } from './useRealtimeSync';
 
+interface UsePersonsOptions {
+  enabled?: boolean;
+}
+
 /**
  * Fetch paginated list of persons
  * @param params - Optional cursor and limit for pagination
  */
-export function usePersons(params?: PersonListParams) {
+export function usePersons(params?: PersonListParams, options: UsePersonsOptions = {}) {
+  const { enabled = true } = options;
+
   const query = useQuery({
     queryKey: ['persons', params],
     queryFn: () => personApi.list(params),
+    enabled,
   });
 
   // Real-time sync for person list changes
@@ -26,6 +33,7 @@ export function usePersons(params?: PersonListParams) {
     topic: 'persons',
     queryKey: ['persons', params],
     events: ['ADDED', 'UPDATED', 'DELETED'],
+    enabled,
   });
 
   return query;
