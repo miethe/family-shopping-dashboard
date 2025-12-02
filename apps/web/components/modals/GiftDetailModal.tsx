@@ -39,7 +39,6 @@ export function GiftDetailModal({
   const [activeTab, setActiveTab] = React.useState("overview");
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
-  const [showListModal, setShowListModal] = React.useState(false);
 
   const { data: gift, isLoading } = useQuery<Gift>({
     queryKey: ["gifts", giftId],
@@ -72,7 +71,6 @@ export function GiftDetailModal({
 
   const handleListClick = (listId: number) => {
     setSelectedListId(String(listId));
-    setShowListModal(true);
   };
 
   // Reset tab when modal closes
@@ -437,8 +435,8 @@ export function GiftDetailModal({
       {/* List Detail Modal */}
       <ListDetailModal
         listId={selectedListId}
-        open={showListModal}
-        onOpenChange={setShowListModal}
+        open={!!selectedListId}
+        onOpenChange={(open) => !open && setSelectedListId(null)}
       />
     </>
   );
