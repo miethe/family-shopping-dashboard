@@ -361,3 +361,21 @@ Monthly bug tracking for December 2025.
 - **Status**: RESOLVED
 
 **Note**: Duplicate WebSocket/API requests in development are expected due to `reactStrictMode: true` in next.config.ts. This is not a bug.
+
+---
+
+### Browser Tab Crash - ConnectionIndicator Creating Separate WebSocket Connections
+
+**Issue**: Browser tab crash persisted after the dependency array fix above. Crash occurred when first loading /gifts or /lists page, then alternated between pages.
+
+- **Location**: `apps/web/components/websocket/ConnectionIndicator.tsx:15,66,103`
+- **Root Cause**: `ConnectionIndicator` (and `ConnectionIndicatorCompact`) imported and called `useWebSocket()` directly instead of `useWebSocketContext()`. This caused each component instance to create its own WebSocket connection. Since `ConnectionIndicatorCompact` is rendered in the Header (which is on every page), EVERY page load created a new WebSocket connection. Combined with React Strict Mode doubling effects, this caused:
+  - 4 WebSocket "connection open" events per page load (2 from provider × 2 from indicator, each doubled)
+  - Connections accumulating when navigating between pages
+  - Memory exhaustion leading to browser tab crash
+- **Why previous fix was incomplete**: The `state` dependency fix addressed re-subscription loops in `useRealtimeSync`, but the ConnectionIndicator was independently creating duplicate connections via direct `useWebSocket()` calls.
+- **Fix**:
+  - Changed import from `useWebSocket` to `useWebSocketContext` from `@/lib/websocket/WebSocketProvider`
+  - Updated both `ConnectionIndicator` and `ConnectionIndicatorCompact` to use context
+- **Commit(s)**: ab0d8f0
+- **Status**: RESOLVED
