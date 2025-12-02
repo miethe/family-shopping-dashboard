@@ -5,6 +5,7 @@ from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.list import ListRepository
+from app.schemas.gift import GiftSummary
 from app.schemas.list import ListCreate, ListResponse, ListUpdate, ListWithItems
 from app.schemas.list_item import ListItemWithGift
 
@@ -383,12 +384,25 @@ class ListService:
         # Convert list items with gift details to DTOs
         items: list[ListItemWithGift] = []
         for list_item in list_obj.list_items:
-            # Access the gift through the list_item relationship
-            # This is a simplified conversion - proper DTO mapping will be added
-            pass
+            items.append(
+                ListItemWithGift(
+                    id=list_item.id,
+                    gift_id=list_item.gift_id,
+                    list_id=list_item.list_id,
+                    status=list_item.status,
+                    assigned_to=list_item.assigned_to,
+                    notes=list_item.notes,
+                    created_at=list_item.created_at,
+                    updated_at=list_item.updated_at,
+                    gift=GiftSummary(
+                        id=list_item.gift.id,
+                        name=list_item.gift.name,
+                        price=list_item.gift.price,
+                        image_url=list_item.gift.image_url,
+                    ),
+                )
+            )
 
-        # For now, return list with empty items
-        # This will be properly implemented when ListItem service is added
         return ListWithItems(
             id=list_obj.id,
             name=list_obj.name,
@@ -397,9 +411,10 @@ class ListService:
             user_id=list_obj.user_id,
             person_id=list_obj.person_id,
             occasion_id=list_obj.occasion_id,
+            item_count=len(items),
             created_at=list_obj.created_at,
             updated_at=list_obj.updated_at,
-            items=[],  # TODO: Populate when ListItem service is implemented
+            items=items,
         )
 
     async def update(self, list_id: int, data: ListUpdate) -> ListResponse | None:

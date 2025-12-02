@@ -19,15 +19,18 @@ import {
   Gift as GiftIcon,
   Edit,
   Trash2,
+  Plus,
 } from "@/components/ui/icons";
 import { formatDate } from "@/lib/date-utils";
 import { formatPrice } from "@/lib/utils";
 import { listApi } from "@/lib/api/endpoints";
 import { useDeleteList } from "@/hooks/useLists";
 import { AddListModal } from "@/components/lists/AddListModal";
-import type { ListWithItems } from "@/types";
+import { AddListItemModal } from "@/components/lists/AddListItemModal";
+import { GiftDetailModal } from "./GiftDetailModal";
+import { GiftImage } from "@/components/common/GiftImage";
+import type { ListWithItems, ListItemStatus, ListItemWithGift } from "@/types";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 
 interface ListDetailModalProps {
   listId: string | null;
@@ -62,6 +65,26 @@ const visibilityConfig = {
   public: { icon: Eye, label: "Public" },
 };
 
+// Status filter configuration
+type StatusFilter = 'all' | ListItemStatus;
+
+const statusFilters: { value: StatusFilter; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'idea', label: 'Ideas' },
+  { value: 'purchased', label: 'Purchased' },
+  { value: 'received', label: 'Gifted' },
+];
+
+// Status badge colors mapping
+const statusColors: Record<ListItemStatus, string> = {
+  idea: 'bg-amber-100 text-amber-800 border-amber-200',
+  to_buy: 'bg-rose-100 text-rose-800 border-rose-200',
+  selected: 'bg-blue-100 text-blue-800 border-blue-200',
+  purchased: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  received: 'bg-purple-100 text-purple-800 border-purple-200',
+  gifted: 'bg-purple-100 text-purple-800 border-purple-200',
+};
+
 export function ListDetailModal({
   listId,
   open,
@@ -70,6 +93,9 @@ export function ListDetailModal({
   const { toast } = useToast();
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
+  const [showAddItemModal, setShowAddItemModal] = React.useState(false);
+  const [selectedGiftId, setSelectedGiftId] = React.useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = React.useState<StatusFilter>('all');
 
   const { data: list, isLoading } = useQuery<ListWithItems>({
     queryKey: ["lists", listId],
@@ -79,11 +105,21 @@ export function ListDetailModal({
 
   const deleteMutation = useDeleteList();
 
-  // Reset delete confirmation when modal closes
+  // Filter items based on selected status
+  const filteredItems = React.useMemo(() => {
+    if (!list?.items) return [];
+    if (statusFilter === 'all') return list.items;
+    return list.items.filter(item => item.status === statusFilter);
+  }, [list?.items, statusFilter]);
+
+  // Reset state when modal closes
   React.useEffect(() => {
     if (!open) {
       setShowDeleteConfirm(false);
       setShowEditModal(false);
+      setShowAddItemModal(false);
+      setSelectedGiftId(null);
+      setStatusFilter('all');
     }
   }, [open]);
 
@@ -127,6 +163,22 @@ export function ListDetailModal({
     toast({
       title: "Success",
       description: "List updated successfully",
+    });
+  };
+
+  const handleAddItemClick = () => {
+    setShowAddItemModal(true);
+  };
+
+  const handleGiftCardClick = (giftId: number) => {
+    setSelectedGiftId(String(giftId));
+  };
+
+  const handleAddItemSuccess = () => {
+    setShowAddItemModal(false);
+    toast({
+      title: "Success",
+      description: "Item added to list successfully",
     });
   };
 
@@ -271,80 +323,148 @@ export function ListDetailModal({
               </div>
             </div>
 
-            {/* Items Grid */}
-            {list.items && list.items.length > 0 ? (
-              <div>
-                <h3 className="font-semibold text-warm-900 mb-4 flex items-center gap-2">
-                  <ShoppingBag className="h-5 w-5 text-blue-500" />
-                  List Items
-                </h3>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {list.items.map((item, index) => (
-                    <Card
-                      key={item.id}
-                      variant="elevated"
-                      padding="none"
-                      className="overflow-hidden hover:shadow-lg transition-all duration-200"
-                    >
-                      {/* Gift Image */}
-                      <div className="relative aspect-square bg-gradient-to-br from-purple-50 to-pink-50">
-                        {item.gift.image_url ? (
-                          <Image
-                            src={item.gift.image_url}
-                            alt={item.gift.name}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <GiftIcon className="h-16 w-16 text-purple-200" />
-                          </div>
-                        )}
-                        {item.status && (
-                          <div className="absolute top-2 right-2">
-                            <Badge
-                              variant="default"
-                              className="text-xs bg-white/90 backdrop-blur-sm"
-                            >
-                              {item.status}
-                            </Badge>
-                          </div>
-                        )}
-                      </div>
+            {/* Status Filter Tabs */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {statusFilters.map((filter) => (
+                <button
+                  key={filter.value}
+                  onClick={() => setStatusFilter(filter.value)}
+                  className={cn(
+                    "px-4 py-2 rounded-lg font-medium text-sm transition-all min-h-[44px]",
+                    statusFilter === filter.value
+                      ? "bg-blue-500 text-white shadow-md"
+                      : "bg-warm-100 text-warm-700 hover:bg-warm-200"
+                  )}
+                >
+                  {filter.label}
+                  {filter.value !== 'all' && list.items && (
+                    <span className="ml-2 opacity-75">
+                      ({list.items.filter(item => item.status === filter.value).length})
+                    </span>
+                  )}
+                  {filter.value === 'all' && list.items && (
+                    <span className="ml-2 opacity-75">
+                      ({list.items.length})
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
 
-                      {/* Gift Info */}
-                      <div className="p-4">
-                        <h4 className="font-semibold text-warm-900 mb-1 line-clamp-2">
-                          {item.gift.name}
-                        </h4>
-                        {item.gift.price !== null &&
-                          item.gift.price !== undefined && (
-                            <p className="text-lg font-bold text-blue-600 mb-2">
-                              {formatPrice(item.gift.price)}
-                            </p>
+            {/* Gift Catalog Grid */}
+            <div>
+              <h3 className="font-semibold text-warm-900 mb-4 flex items-center gap-2">
+                <ShoppingBag className="h-5 w-5 text-blue-500" />
+                Gift Catalog
+              </h3>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {/* Add New Gift Card */}
+                <button
+                  onClick={handleAddItemClick}
+                  className={cn(
+                    "aspect-square rounded-2xl border-2 border-dashed border-warm-300",
+                    "flex flex-col items-center justify-center gap-2",
+                    "hover:border-blue-500 hover:bg-blue-50/50 transition-all duration-200",
+                    "group min-h-[44px]"
+                  )}
+                >
+                  <div className="w-12 h-12 rounded-full bg-warm-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                    <Plus className="h-6 w-6 text-warm-400 group-hover:text-blue-500" />
+                  </div>
+                  <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                    Add New Gift
+                  </span>
+                </button>
+
+                {/* Filtered Gift Cards */}
+                {filteredItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => handleGiftCardClick(item.gift_id)}
+                    className={cn(
+                      "text-left group cursor-pointer",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-2xl"
+                    )}
+                  >
+                    {/* Gift Image */}
+                    <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-warm-50 to-warm-100 mb-2 relative">
+                      <GiftImage
+                        src={item.gift.image_url}
+                        alt={item.gift.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        fallbackClassName="aspect-square"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      />
+                      {/* Status Badge Overlay */}
+                      <div className="absolute top-2 right-2">
+                        <Badge
+                          className={cn(
+                            "text-xs font-semibold shadow-sm border",
+                            statusColors[item.status]
                           )}
-                        {item.notes && (
-                          <p className="text-sm text-warm-600 line-clamp-2">
-                            {item.notes}
-                          </p>
-                        )}
+                        >
+                          {item.status === 'idea' ? 'Idea' :
+                           item.status === 'purchased' ? 'Purchased' :
+                           item.status === 'received' ? 'Gifted' :
+                           item.status}
+                        </Badge>
                       </div>
-                    </Card>
-                  ))}
+                    </div>
+
+                    {/* Gift Info */}
+                    <h4 className="font-semibold text-warm-900 text-sm line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">
+                      {item.gift.name}
+                    </h4>
+
+                    {/* Price and Added By */}
+                    <div className="flex items-center justify-between gap-2">
+                      {item.gift.price !== null && item.gift.price !== undefined && (
+                        <span className="text-sm font-bold text-warm-700">
+                          {formatPrice(item.gift.price)}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Empty State */}
+              {filteredItems.length === 0 && list.items && list.items.length > 0 && (
+                <div
+                  className={cn(
+                    "text-center py-12 mt-4",
+                    "bg-warm-50 rounded-xl border-2 border-dashed border-warm-200"
+                  )}
+                >
+                  <ShoppingBag className="h-12 w-12 text-warm-300 mx-auto mb-3" />
+                  <p className="text-warm-600">No items match this filter</p>
                 </div>
-              </div>
-            ) : (
-              <div
-                className={cn(
-                  "text-center py-12",
-                  "bg-warm-50 rounded-xl border-2 border-dashed border-warm-200"
-                )}
-              >
-                <ShoppingBag className="h-12 w-12 text-warm-300 mx-auto mb-3" />
-                <p className="text-warm-600">This list is empty</p>
-              </div>
-            )}
+              )}
+
+              {/* Completely Empty State */}
+              {list.items && list.items.length === 0 && (
+                <div
+                  className={cn(
+                    "text-center py-12 mt-4",
+                    "bg-warm-50 rounded-xl border-2 border-dashed border-warm-200"
+                  )}
+                >
+                  <ShoppingBag className="h-12 w-12 text-warm-300 mx-auto mb-3" />
+                  <p className="text-warm-600 mb-2">This list is empty</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddItemClick}
+                    className="mt-2"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Gift
+                  </Button>
+                </div>
+              )}
+            </div>
 
             {/* Metadata */}
             <div
@@ -380,6 +500,23 @@ export function ListDetailModal({
           onSuccess={handleEditSuccess}
         />
       )}
+
+      {/* Add Item Modal */}
+      {listId && (
+        <AddListItemModal
+          isOpen={showAddItemModal}
+          onClose={() => setShowAddItemModal(false)}
+          listId={Number(listId)}
+          onSuccess={handleAddItemSuccess}
+        />
+      )}
+
+      {/* Gift Detail Modal */}
+      <GiftDetailModal
+        giftId={selectedGiftId}
+        open={!!selectedGiftId}
+        onOpenChange={(open) => !open && setSelectedGiftId(null)}
+      />
     </>
   );
 }

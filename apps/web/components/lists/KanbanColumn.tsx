@@ -84,11 +84,20 @@ export function KanbanColumn({
 
   /**
    * Handle drag leave - remove hover state
+   * Only remove hover if we're actually leaving the column (not just entering a child element)
    */
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-    setIsHovering(false);
+    // Check if we're leaving the column container entirely
+    // by checking if the related target is still within the column
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+
+    // Only clear hover state if cursor is outside column bounds
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      setIsHovering(false);
+    }
   };
 
   /**
@@ -103,7 +112,7 @@ export function KanbanColumn({
 
   return (
     <div
-      className="flex flex-col gap-4 min-w-[280px] w-[280px] md:w-auto md:min-w-0 snap-center"
+      className="flex flex-col gap-4 min-w-[280px] w-[280px] md:w-auto md:min-w-0 snap-center min-h-[400px]"
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -121,7 +130,7 @@ export function KanbanColumn({
       {/* Items Container with Drop Zone Highlighting */}
       <div
         className={cn(
-          'flex flex-col gap-3 h-full overflow-y-auto pb-4 pr-2 transition-all duration-200',
+          'flex flex-col gap-3 flex-1 min-h-[200px] overflow-y-auto pb-4 pr-2 transition-all duration-200',
           isHovering && isDragOver && 'bg-slate-100 dark:bg-slate-800/50 rounded-2xl p-2'
         )}
       >

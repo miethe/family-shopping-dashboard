@@ -93,3 +93,22 @@ Monthly bug tracking for December 2025.
   - Added `font-family` declaration to `.material-symbols-outlined` class
 - **Commit(s)**: e30b76a
 - **Status**: RESOLVED
+
+---
+
+### List Modal Not Showing Gift Items
+
+**Issue**: When opening a list modal (`ListDetailModal`), no gifts were displayed even though the list had items attached to it
+
+- **Location**: `services/api/app/api/lists.py:190-247`, `services/api/app/services/list.py:350-403`
+- **Root Cause**:
+  1. Router used `response_model=ListResponse` instead of `ListWithItems`
+  2. Router called `service.get()` instead of `service.get_with_items()`
+  3. Service method `get_with_items()` had TODO comment and returned `items=[]`
+  4. Repository didn't load nested gift relationship on list items
+- **Fix**:
+  - Router: Changed response model to `ListWithItems`, call `service.get_with_items()`
+  - Service: Implemented ORM→DTO conversion for list items with gift details
+  - Repository: Added nested `selectinload(ListItem.gift)` to eager load gifts
+- **Commit(s)**: pending
+- **Status**: RESOLVED

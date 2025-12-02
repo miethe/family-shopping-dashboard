@@ -14,8 +14,8 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { GiftImage } from '@/components/common/GiftImage';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
 
 interface KanbanCardProps {
@@ -91,23 +91,16 @@ export function KanbanCard({ item, status, onDragStart, onDragEnd }: KanbanCardP
     >
       {/* Image with Price Overlay */}
       <div className="aspect-[16/10] bg-slate-100 dark:bg-slate-700 rounded-xl mb-3 overflow-hidden relative">
-        {item.gift?.image_url ? (
-          <Image
-            src={item.gift.image_url}
-            alt={item.gift.name}
-            width={320}
-            height={200}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            draggable={false}
-            unoptimized
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="material-symbols-outlined text-4xl text-slate-300">
-              redeem
-            </span>
-          </div>
-        )}
+        <GiftImage
+          src={item.gift?.image_url}
+          alt={item.gift?.name || 'Gift'}
+          width={320}
+          height={200}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          fallbackClassName="w-full h-full rounded-xl"
+          draggable={false}
+          unoptimized
+        />
         {/* Price Badge Overlay (top-right) */}
         {item.gift?.price && (
           <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/50 backdrop-blur-md rounded-full text-white text-[10px] font-bold">

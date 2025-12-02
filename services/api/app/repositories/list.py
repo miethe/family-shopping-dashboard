@@ -229,11 +229,14 @@ class ListRepository(BaseRepository[List]):
             This uses selectinload to avoid N+1 query problems.
             All related list_items are loaded in a single additional query.
         """
+        from app.models.list_item import ListItem
+        from app.models.gift import Gift
+
         stmt = (
             select(List)
             .where(List.id == list_id)
             .options(
-                selectinload(List.list_items),  # Eager load all list items
+                selectinload(List.list_items).selectinload(ListItem.gift),  # Eager load list items with gifts
                 selectinload(List.user),  # Eager load owner
                 selectinload(List.person),  # Eager load person (if set)
                 selectinload(List.occasion),  # Eager load occasion (if set)

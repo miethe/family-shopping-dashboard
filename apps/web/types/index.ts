@@ -318,3 +318,38 @@ export interface APIError {
 export interface APIErrorResponse {
   error: APIError;
 }
+
+// ============================================================================
+// Activity Feed Types
+// ============================================================================
+
+export type ActivityAction =
+  | 'gift_added'
+  | 'gift_purchased'
+  | 'gift_received'
+  | 'list_created'
+  | 'status_changed';
+
+export type ActivityEntityType = 'list_item' | 'list' | 'person';
+
+export interface ActivityActor {
+  id: number;
+  email: string;
+}
+
+export interface ActivityEvent {
+  id: number;
+  action: ActivityAction;
+  actor: ActivityActor;
+  entity_type: ActivityEntityType;
+  entity_id: number;
+  entity_name: string;
+  extra_data: Record<string, unknown> | null;
+  created_at: string;
+  description: string;
+}
+
+export interface ActivityFeedResponse {
+  events: ActivityEvent[];
+  total: number;
+}

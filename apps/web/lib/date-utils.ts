@@ -112,3 +112,31 @@ export function formatRelativeTime(dateString: string): string {
   if (days > 1) return `in ${days} days`;
   return `${Math.abs(days)} days ago`;
 }
+
+/**
+ * Format relative time from now (e.g., "2 hours ago", "5 minutes ago")
+ * More granular than formatRelativeTime - handles minutes and hours
+ * @param dateString - ISO date string or Date object
+ * @returns Relative time string
+ */
+export function formatTimeAgo(dateString: string | Date): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSeconds = Math.floor(diffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffSeconds < 60) {
+    return 'just now';
+  } else if (diffMinutes < 60) {
+    return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`;
+  } else if (diffHours < 24) {
+    return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+  } else if (diffDays < 7) {
+    return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+  } else {
+    return formatDate(date);
+  }
+}
