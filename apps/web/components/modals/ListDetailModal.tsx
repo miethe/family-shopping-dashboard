@@ -28,7 +28,10 @@ import { useDeleteList } from "@/hooks/useLists";
 import { AddListModal } from "@/components/lists/AddListModal";
 import { AddListItemModal } from "@/components/lists/AddListItemModal";
 import { GiftDetailModal } from "./GiftDetailModal";
+import { PersonDetailModal } from "./PersonDetailModal";
 import { GiftImage } from "@/components/common/GiftImage";
+import { usePerson } from "@/hooks/usePersons";
+import { useOccasion } from "@/hooks/useOccasions";
 import type { ListWithItems, ListItemStatus, ListItemWithGift } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -95,6 +98,7 @@ export function ListDetailModal({
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [showAddItemModal, setShowAddItemModal] = React.useState(false);
   const [selectedGiftId, setSelectedGiftId] = React.useState<string | null>(null);
+  const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [statusFilter, setStatusFilter] = React.useState<StatusFilter>('all');
 
   const { data: list, isLoading } = useQuery<ListWithItems>({
@@ -102,6 +106,10 @@ export function ListDetailModal({
     queryFn: () => listApi.get(Number(listId)),
     enabled: !!listId && open,
   });
+
+  // Fetch attached person and occasion details
+  const { data: attachedPerson } = usePerson(list?.person_id || 0);
+  const { data: attachedOccasion } = useOccasion(list?.occasion_id || 0);
 
   const deleteMutation = useDeleteList();
 
@@ -119,6 +127,7 @@ export function ListDetailModal({
       setShowEditModal(false);
       setShowAddItemModal(false);
       setSelectedGiftId(null);
+      setSelectedPersonId(null);
       setStatusFilter('all');
     }
   }, [open]);
@@ -469,11 +478,71 @@ export function ListDetailModal({
               )}
             </div>
 
+            {/* Attached Entities */}
+            {(attachedPerson || attachedOccasion) && (
+              <div className="space-y-3">
+                {attachedPerson && (
+                  <div
+                    className={cn(
+                      "bg-blue-50 rounded-xl p-4 border border-blue-100"
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-medium text-blue-600 mb-1">
+                          For Recipient
+                        </div>
+                        <div className="text-sm font-semibold text-warm-900">
+                          {attachedPerson.display_name}
+                        </div>
+                        {attachedPerson.relationship && (
+                          <div className="text-xs text-warm-600">
+                            {attachedPerson.relationship}
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedPersonId(String(attachedPerson.id))}
+                        className="min-h-[44px]"
+                      >
+                        View Details
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {attachedOccasion && (
+                  <div
+                    className={cn(
+                      "bg-purple-50 rounded-xl p-4 border border-purple-100"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Calendar className="h-5 w-5 text-purple-600 flex-shrink-0" />
+                      <div>
+                        <div className="text-xs font-medium text-purple-600 mb-1">
+                          For Occasion
+                        </div>
+                        <div className="text-sm font-semibold text-warm-900">
+                          {attachedOccasion.name}
+                        </div>
+                        <div className="text-xs text-warm-600">
+                          {formatDate(attachedOccasion.date)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Metadata */}
             <div
               className={cn(
                 "pt-4 border-t border-warm-200",
-                "text-sm text-warm-600 space-y-1"
+                "text-sm text-warm-600"
               )}
             >
               {list.created_at && (
@@ -481,12 +550,6 @@ export function ListDetailModal({
                   <Calendar className="h-3.5 w-3.5" />
                   <span>Created on {formatDate(list.created_at)}</span>
                 </div>
-              )}
-              {list.person_id && (
-                <p>Associated with Person ID: {list.person_id}</p>
-              )}
-              {list.occasion_id && (
-                <p>Associated with Occasion ID: {list.occasion_id}</p>
               )}
             </div>
           </div>
@@ -519,6 +582,13 @@ export function ListDetailModal({
         giftId={selectedGiftId}
         open={!!selectedGiftId}
         onOpenChange={(open) => !open && setSelectedGiftId(null)}
+      />
+
+      {/* Person Detail Modal */}
+      <PersonDetailModal
+        personId={selectedPersonId}
+        open={!!selectedPersonId}
+        onOpenChange={(open) => !open && setSelectedPersonId(null)}
       />
     </>
   );

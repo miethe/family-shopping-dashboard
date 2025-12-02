@@ -19,6 +19,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useCreateList, useUpdateList } from '@/hooks/useLists';
+import { usePersons } from '@/hooks/usePersons';
+import { useOccasions } from '@/hooks/useOccasions';
 import { useToast } from '@/components/ui/use-toast';
 import type { GiftList, ListCreate, ListUpdate, ListType, ListVisibility } from '@/types';
 
@@ -46,6 +48,10 @@ export function AddListModal({
   const queryClient = useQueryClient();
   const createMutation = useCreateList();
   const updateMutation = useUpdateList(listToEdit?.id || 0);
+
+  // Fetch persons and occasions for dropdowns
+  const { data: personsData } = usePersons();
+  const { data: occasionsData } = useOccasions();
 
   const isEditMode = mode === 'edit' && !!listToEdit;
 
@@ -92,6 +98,22 @@ export function AddListModal({
 
   const handleVisibilityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFormData((prev) => ({ ...prev, visibility: e.target.value as ListVisibility }));
+  };
+
+  const handlePersonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      person_id: value === '' ? undefined : Number(value)
+    }));
+  };
+
+  const handleOccasionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      occasion_id: value === '' ? undefined : Number(value)
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -227,6 +249,44 @@ export function AddListModal({
               <option value="private">Private</option>
               <option value="family">Family</option>
               <option value="public">Public</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="person" className="block text-sm font-medium text-gray-700 mb-1">
+              For Recipient (Optional)
+            </label>
+            <select
+              id="person"
+              value={formData.person_id || ''}
+              onChange={handlePersonChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[44px]"
+            >
+              <option value="">No recipient selected</option>
+              {personsData?.items?.map((person) => (
+                <option key={person.id} value={person.id}>
+                  {person.display_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="occasion" className="block text-sm font-medium text-gray-700 mb-1">
+              For Occasion (Optional)
+            </label>
+            <select
+              id="occasion"
+              value={formData.occasion_id || ''}
+              onChange={handleOccasionChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[44px]"
+            >
+              <option value="">No occasion selected</option>
+              {occasionsData?.items?.map((occasion) => (
+                <option key={occasion.id} value={occasion.id}>
+                  {occasion.name} ({new Date(occasion.date).toLocaleDateString()})
+                </option>
+              ))}
             </select>
           </div>
 
