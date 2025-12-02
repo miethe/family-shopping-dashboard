@@ -135,6 +135,10 @@ export interface GiftListParams {
   limit?: number;
   search?: string;
   tags?: string;
+  person_ids?: number[];    // Filter by recipient
+  statuses?: string[];      // Filter by status (idea, selected, purchased, received)
+  list_ids?: number[];      // Filter by list
+  occasion_ids?: number[];  // Filter by occasion
   sort?: 'price_asc' | 'price_desc' | 'recent';
 }
 

@@ -4,8 +4,15 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useGifts } from '@/hooks/useGifts';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Button, Skeleton } from '@/components/ui';
-import { GiftCard, GiftSearch, AddGiftModal, type SortOption } from '@/components/gifts';
+import { Button, Skeleton, Badge } from '@/components/ui';
+import {
+  GiftCard,
+  GiftSearch,
+  GiftFilters,
+  AddGiftModal,
+  type SortOption,
+  type GiftFilterValues,
+} from '@/components/gifts';
 
 /**
  * Gifts Page
@@ -17,10 +24,28 @@ export default function GiftsPage() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('recent');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [filters, setFilters] = useState<GiftFilterValues>({
+    person_ids: [],
+    statuses: [],
+    list_ids: [],
+    occasion_ids: [],
+  });
 
   const { data, isLoading, error, refetch } = useGifts({
     search: search || undefined,
+    sort,
+    person_ids: filters.person_ids.length > 0 ? filters.person_ids : undefined,
+    statuses: filters.statuses.length > 0 ? filters.statuses : undefined,
+    list_ids: filters.list_ids.length > 0 ? filters.list_ids : undefined,
+    occasion_ids: filters.occasion_ids.length > 0 ? filters.occasion_ids : undefined,
   });
+
+  // Calculate active filter count for display
+  const activeFilterCount =
+    filters.person_ids.length +
+    filters.statuses.length +
+    filters.list_ids.length +
+    filters.occasion_ids.length;
 
   return (
     <div className="space-y-6">
@@ -38,6 +63,9 @@ export default function GiftsPage() {
         sort={sort}
         onSortChange={setSort}
       />
+
+      {/* Filters */}
+      <GiftFilters filters={filters} onFiltersChange={setFilters} />
 
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

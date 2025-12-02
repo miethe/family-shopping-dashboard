@@ -62,7 +62,14 @@ export class ApiClient {
     if (options.params) {
       Object.entries(options.params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          url.searchParams.append(key, String(value));
+          // Handle array parameters - append each value separately
+          if (Array.isArray(value)) {
+            value.forEach((item) => {
+              url.searchParams.append(key, String(item));
+            });
+          } else {
+            url.searchParams.append(key, String(value));
+          }
         }
       });
     }
