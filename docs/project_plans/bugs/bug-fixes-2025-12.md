@@ -27,3 +27,23 @@ Monthly bug fix tracking document for the Family Gifting Dashboard.
 - **Fix**: Changed endpoint decorator from `@router.put()` to `@router.patch()` to match frontend expectations and REST semantics for partial updates.
 - **Commit(s)**: `5a6d6c8`
 - **Status**: RESOLVED
+
+---
+
+### Kanban Drag-and-Drop Status Update Failures
+
+**Issue**: Dragging gifts in Kanban view to empty columns fails with two distinct errors:
+1. `body -> status: String should match pattern '^(idea|selected|purchased|received)$'`
+2. `Invalid status transition: idea → purchased. Valid transitions from idea: selected`
+
+- **Location**:
+  - `apps/web/components/lists/KanbanView.tsx:29,112-113`
+  - `services/api/app/services/list_item.py:22-27`
+- **Root Cause**: Two issues:
+  1. **Status value mismatch**: Frontend Kanban columns use `to_buy` and `gifted`, but API expects `selected` and `received`. The frontend had display mapping (`selected`→`to_buy`) but no reverse mapping for updates.
+  2. **Overly restrictive state machine**: Backend enforced linear transitions (`idea`→`selected`→`purchased`→`received`), preventing Kanban drag-and-drop to non-adjacent columns.
+- **Fix**:
+  1. Added `mapToApiStatus()` function in KanbanView.tsx to convert frontend column IDs to API status values before API calls
+  2. Relaxed backend state machine to allow any-to-any status transitions for flexible Kanban UX
+- **Commit(s)**: `984e12c`
+- **Status**: RESOLVED

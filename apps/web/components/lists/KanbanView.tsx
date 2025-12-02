@@ -29,6 +29,18 @@ interface KanbanViewProps {
 const kanbanColumns: ListItemStatus[] = ['idea', 'to_buy', 'purchased', 'gifted'];
 
 /**
+ * Map frontend column status to API status value
+ * Frontend uses user-friendly names, API uses original enum values
+ */
+function mapToApiStatus(frontendStatus: ListItemStatus): string {
+  const statusMap: Record<string, string> = {
+    to_buy: 'selected',
+    gifted: 'received',
+  };
+  return statusMap[frontendStatus] || frontendStatus;
+}
+
+/**
  * Group items by status for Kanban display
  */
 function groupItemsForKanban(items: ListItemWithGift[]): Record<ListItemStatus, ListItemWithGift[]> {
@@ -110,7 +122,7 @@ export function KanbanView({ items, listId, onAddItem, onItemClick }: KanbanView
 
       // API call to persist the change
       updateStatusMutation.mutate(
-        { itemId, status: targetStatus },
+        { itemId, status: mapToApiStatus(targetStatus) },
         {
           onError: (error) => {
             // Rollback on error: revert to previous status

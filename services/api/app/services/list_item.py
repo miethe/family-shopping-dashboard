@@ -18,12 +18,12 @@ from app.schemas.ws import WSEvent
 from app.services.ws_manager import manager
 
 
-# Valid status transitions
+# Valid status transitions - allows flexible Kanban drag-and-drop
 VALID_TRANSITIONS: dict[ListItemStatus, set[ListItemStatus]] = {
-    ListItemStatus.idea: {ListItemStatus.selected},
-    ListItemStatus.selected: {ListItemStatus.purchased, ListItemStatus.idea},
-    ListItemStatus.purchased: {ListItemStatus.received, ListItemStatus.idea},
-    ListItemStatus.received: {ListItemStatus.idea},
+    ListItemStatus.idea: {ListItemStatus.selected, ListItemStatus.purchased, ListItemStatus.received},
+    ListItemStatus.selected: {ListItemStatus.idea, ListItemStatus.purchased, ListItemStatus.received},
+    ListItemStatus.purchased: {ListItemStatus.idea, ListItemStatus.selected, ListItemStatus.received},
+    ListItemStatus.received: {ListItemStatus.idea, ListItemStatus.selected, ListItemStatus.purchased},
 }
 
 
@@ -259,11 +259,9 @@ class ListItemService:
         """
         Update the status of a list item with state machine validation.
 
-        Validates status transitions according to state machine rules:
-        - IDEA → SELECTED
-        - SELECTED → PURCHASED or IDEA (reset)
-        - PURCHASED → RECEIVED or IDEA (reset)
-        - RECEIVED → IDEA (reset)
+        Validates status transitions according to state machine rules.
+        Any status can transition to any other status, enabling flexible
+        Kanban drag-and-drop functionality.
 
         Broadcasts STATUS_CHANGED event to subscribed WebSocket clients.
 
@@ -299,7 +297,7 @@ class ListItemService:
             ```
 
         Note:
-            Any status can transition back to IDEA (reset).
+            All status transitions are allowed for flexible Kanban workflow.
             Broadcasts STATUS_CHANGED event after successful update.
         """
         # Get current item to check current status
@@ -447,7 +445,7 @@ class ListItemService:
 
         Note:
             - Only updates fields that are not None in the DTO
-            - If status is provided, validates transition using state machine
+            - If status is provided, validates transition using state machine (all transitions allowed)
             - Returns None if item not found
             - Broadcasts UPDATED event after successful update (or STATUS_CHANGED if status changed)
         """
