@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { FilterBar, FilterGroup, FilterChip } from '@/components/ui/filter-bar';
 import { usePersons } from '@/hooks/usePersons';
 import { useLists } from '@/hooks/useLists';
@@ -32,13 +33,48 @@ const STATUS_OPTIONS = [
  * - Loads filter options dynamically from API
  * - Mobile-responsive with 44px touch targets
  * - Shows active filter count with clear all functionality
+ * - Collapsible filter groups with mobile-first defaults
+ * - Status filter expanded by default, others collapsed
  */
 export function GiftFilters({ filters, onFiltersChange }: GiftFiltersProps) {
   const { data: personsData, isLoading: personsLoading } = usePersons();
   const { data: listsData, isLoading: listsLoading } = useLists();
   const { data: occasionsData, isLoading: occasionsLoading } = useOccasions();
 
-  // Calculate active filter count
+  // TASK-3.7: Mobile-first collapse defaults
+  // Detect if viewport is mobile (<768px) for default collapsed state
+  const [isMobile, setIsMobile] = useState(false);
+  const [filterBarDefaultOpen, setFilterBarDefaultOpen] = useState(true);
+
+  useEffect(() => {
+    // Check if window is available (client-side only)
+    if (typeof window !== 'undefined') {
+      const checkMobile = () => {
+        const mobile = window.innerWidth < 768;
+        setIsMobile(mobile);
+        setFilterBarDefaultOpen(!mobile); // Collapsed on mobile, expanded on desktop
+      };
+
+      // Initial check
+      checkMobile();
+
+      // Listen for resize events
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }
+  }, []);
+
+  // TASK-3.5: Add collapse state management
+  // Track which filter groups are expanded
+  // Status is expanded by default, others collapsed
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    status: true,      // Show status by default
+    recipient: false,  // Collapsed by default
+    list: false,       // Collapsed by default
+    occasion: false    // Collapsed by default
+  });
+
+  // TASK-3.6: Calculate active filter count
   const activeCount =
     filters.person_ids.length +
     filters.statuses.length +
@@ -85,9 +121,18 @@ export function GiftFilters({ filters, onFiltersChange }: GiftFiltersProps) {
   };
 
   return (
-    <FilterBar activeCount={activeCount} onClearAll={handleClearAll}>
-      {/* Status Filter */}
-      <FilterGroup label="Status">
+    <FilterBar
+      activeCount={activeCount}
+      onClearAll={handleClearAll}
+      collapsible
+      defaultOpen={filterBarDefaultOpen}
+    >
+      {/* Status Filter - Expanded by default */}
+      <FilterGroup
+        label="Status"
+        collapsible
+        defaultOpen={expandedGroups.status}
+      >
         {STATUS_OPTIONS.map((status) => (
           <FilterChip
             key={status.value}
@@ -98,9 +143,13 @@ export function GiftFilters({ filters, onFiltersChange }: GiftFiltersProps) {
         ))}
       </FilterGroup>
 
-      {/* Recipient Filter */}
+      {/* Recipient Filter - Collapsed by default */}
       {!personsLoading && personsData?.items && personsData.items.length > 0 && (
-        <FilterGroup label="Recipient">
+        <FilterGroup
+          label="Recipient"
+          collapsible
+          defaultOpen={expandedGroups.recipient}
+        >
           {personsData.items.map((person) => (
             <FilterChip
               key={person.id}
@@ -112,9 +161,13 @@ export function GiftFilters({ filters, onFiltersChange }: GiftFiltersProps) {
         </FilterGroup>
       )}
 
-      {/* List Filter */}
+      {/* List Filter - Collapsed by default */}
       {!listsLoading && listsData?.items && listsData.items.length > 0 && (
-        <FilterGroup label="List">
+        <FilterGroup
+          label="List"
+          collapsible
+          defaultOpen={expandedGroups.list}
+        >
           {listsData.items.map((list) => (
             <FilterChip
               key={list.id}
@@ -126,9 +179,13 @@ export function GiftFilters({ filters, onFiltersChange }: GiftFiltersProps) {
         </FilterGroup>
       )}
 
-      {/* Occasion Filter */}
+      {/* Occasion Filter - Collapsed by default */}
       {!occasionsLoading && occasionsData?.items && occasionsData.items.length > 0 && (
-        <FilterGroup label="Occasion">
+        <FilterGroup
+          label="Occasion"
+          collapsible
+          defaultOpen={expandedGroups.occasion}
+        >
           {occasionsData.items.map((occasion) => (
             <FilterChip
               key={occasion.id}
