@@ -322,7 +322,9 @@ Monthly bug tracking for December 2025.
   2. docker-compose.yml: Added `args` section under web service `build` to pass values at build time
   3. Updated fallback values in code to use port 8030 (external port for Docker dev)
   4. Added clarifying comments throughout distinguishing internal vs external ports
-- **Commit(s)**: c9be299
+- **Commit(s)**: c9be299, 7c3bdf6
 - **Status**: RESOLVED
+
+**Follow-up Fix**: Initial fix was missing `/api/v1` path suffix in the URL. API routes are mounted at `/api/v1/auth/login`, not `/auth/login`.
 
 **Key Insight**: Docker port mapping is `EXTERNAL:INTERNAL`. Browser-accessed URLs (`NEXT_PUBLIC_*`) use EXTERNAL ports. Container-to-container communication uses INTERNAL ports via service names.
