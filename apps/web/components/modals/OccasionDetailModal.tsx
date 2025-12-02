@@ -6,9 +6,12 @@ import { EntityModal } from "./EntityModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock } from "@/components/ui/icons";
+import { useToast } from "@/components/ui/use-toast";
+import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock, Edit, Trash2 } from "@/components/ui/icons";
 import { formatDate, getDaysUntil } from "@/lib/date-utils";
 import { occasionApi } from "@/lib/api/endpoints";
+import { useDeleteOccasion } from "@/hooks/useOccasions";
+import { AddOccasionModal } from "@/components/occasions/AddOccasionModal";
 import type { Occasion } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -54,6 +57,9 @@ export function OccasionDetailModal({
   open,
   onOpenChange,
 }: OccasionDetailModalProps) {
+  const { toast } = useToast();
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [showEditModal, setShowEditModal] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("overview");
 
   const { data: occasion, isLoading } = useQuery<Occasion>({
@@ -62,9 +68,13 @@ export function OccasionDetailModal({
     enabled: !!occasionId && open,
   });
 
-  // Reset tab when modal closes
+  const deleteMutation = useDeleteOccasion();
+
+  // Reset state when modal closes
   React.useEffect(() => {
     if (!open) {
+      setShowDeleteConfirm(false);
+      setShowEditModal(false);
       setActiveTab("overview");
     }
   }, [open]);
@@ -82,32 +92,112 @@ export function OccasionDetailModal({
   const isPast = daysUntil !== null && daysUntil < 0;
   const isToday = daysUntil === 0;
 
+  const handleDelete = async () => {
+    if (!occasionId) return;
+
+    try {
+      await deleteMutation.mutateAsync(Number(occasionId));
+
+      toast({
+        title: "Success",
+        description: "Occasion deleted successfully",
+      });
+
+      // Close modal
+      onOpenChange(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete occasion",
+        variant: "error",
+      });
+    }
+  };
+
+  const handleEditSuccess = () => {
+    setShowEditModal(false);
+    toast({
+      title: "Success",
+      description: "Occasion updated successfully",
+    });
+  };
+
   return (
-    <EntityModal
-      open={open}
-      onOpenChange={onOpenChange}
-      entityType="occasion"
-      title={occasion?.name || "Loading..."}
-      size="lg"
+    <>
+      <EntityModal
+        open={open}
+        onOpenChange={onOpenChange}
+        entityType="occasion"
+        title={occasion?.name || "Loading..."}
+        size="lg"
       footer={
-        <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => onOpenChange(false)}
-          >
-            Close
-          </Button>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              window.location.href = `/occasions/${occasionId}`;
-            }}
-          >
-            <ExternalLink className="h-4 w-4 mr-2" />
-            View Details
-          </Button>
+        <div className="flex flex-col sm:flex-row gap-3 sm:justify-between w-full">
+          {/* Left side: Delete button */}
+          <div className="flex gap-3">
+            {!showDeleteConfirm && (
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => setShowDeleteConfirm(true)}
+                disabled={deleteMutation.isPending}
+                className="border-status-warning-500 text-status-warning-600 hover:bg-status-warning-50"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            )}
+            {showDeleteConfirm && (
+              <>
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={deleteMutation.isPending}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={handleDelete}
+                  disabled={deleteMutation.isPending}
+                  className="border-status-warning-500 bg-status-warning-500 text-white hover:bg-status-warning-600"
+                >
+                  {deleteMutation.isPending ? "Deleting..." : "Confirm Delete"}
+                </Button>
+              </>
+            )}
+          </div>
+
+          {/* Right side: Main action buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:ml-auto">
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => setShowEditModal(true)}
+              disabled={showDeleteConfirm}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => onOpenChange(false)}
+            >
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => {
+                window.location.href = `/occasions/${occasionId}`;
+              }}
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View Details
+            </Button>
+          </div>
         </div>
       }
     >
@@ -275,6 +365,18 @@ export function OccasionDetailModal({
           </Tabs>
         </div>
       ) : null}
-    </EntityModal>
+      </EntityModal>
+
+      {/* Edit Modal */}
+      {occasion && (
+        <AddOccasionModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          mode="edit"
+          occasionToEdit={occasion}
+          onSuccess={handleEditSuccess}
+        />
+      )}
+    </>
   );
 }
