@@ -379,3 +379,18 @@ Monthly bug tracking for December 2025.
   - Updated both `ConnectionIndicator` and `ConnectionIndicatorCompact` to use context
 - **Commit(s)**: ab0d8f0
 - **Status**: RESOLVED
+
+---
+
+### WebSocket Subscribe Storm on Modal Open
+
+**Issue**: Opening a list modal from `/lists` or loading `/gifts` opened the WebSocket, froze the UI, then closed the connection and crashed the tab (“Aw Snap”), especially on the first load after app start or when switching between /lists and /gifts.
+
+- **Location**: `apps/web/hooks/useRealtimeSync.ts:90-180`
+- **Root Cause**: `useRealtimeSync` recreated its subscription handler on every render because it depended on raw `queryKey` and `events` references. Pages pass fresh objects/arrays on each render (filters, params), so every render unsubscribed and re-subscribed. With React Strict Mode double-invoking effects and multiple hooks per page (lists, gifts, persons, occasions), this created a subscribe/unsubscribe storm that overwhelmed the WebSocket and crashed the tab.
+- **Fix**:
+  - Added a stable `DEFAULT_EVENTS` constant and stored `queryKey`/`events` in refs so subscriptions stay stable across renders
+  - Short-circuited when topics are empty to avoid sending invalid subscribe messages during initialization
+  - Kept existing debounce cleanup to prevent timer leaks on unmount
+- **Commit(s)**: 88e2188
+- **Status**: RESOLVED
