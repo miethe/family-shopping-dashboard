@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { EntityModal } from "./EntityModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock } from "@/components/ui/icons";
 import { formatDate, getDaysUntil } from "@/lib/date-utils";
 import { occasionApi } from "@/lib/api/endpoints";
@@ -53,11 +54,20 @@ export function OccasionDetailModal({
   open,
   onOpenChange,
 }: OccasionDetailModalProps) {
+  const [activeTab, setActiveTab] = React.useState("overview");
+
   const { data: occasion, isLoading } = useQuery<Occasion>({
     queryKey: ["occasions", occasionId],
     queryFn: () => occasionApi.get(Number(occasionId)),
     enabled: !!occasionId && open,
   });
+
+  // Reset tab when modal closes
+  React.useEffect(() => {
+    if (!open) {
+      setActiveTab("overview");
+    }
+  }, [open]);
 
   if (!occasion && !isLoading) {
     return null;
@@ -174,37 +184,95 @@ export function OccasionDetailModal({
             </div>
           </div>
 
-          {/* Description */}
-          {occasion.description && (
-            <div
-              className={cn(
-                "bg-warm-50 rounded-xl p-5 border border-warm-200"
-              )}
-            >
-              <h3 className="font-semibold text-warm-900 mb-2">Description</h3>
-              <p className="text-warm-700 leading-relaxed">
-                {occasion.description}
-              </p>
-            </div>
-          )}
+          {/* Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full mb-6">
+              <TabsTrigger value="overview" className="flex-1">
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="linked" className="flex-1">
+                Linked Entities
+              </TabsTrigger>
+              <TabsTrigger value="history" className="flex-1">
+                History
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Metadata */}
-          <div
-            className={cn(
-              "pt-4 border-t border-warm-200",
-              "text-sm text-warm-600 space-y-1"
-            )}
-          >
-            {occasion.created_at && (
-              <div className="flex items-center gap-2">
-                <CalendarIcon className="h-3.5 w-3.5" />
-                <span>Created on {formatDate(occasion.created_at)}</span>
+            {/* Overview Tab */}
+            <TabsContent value="overview" className="space-y-6">
+              {/* Description */}
+              {occasion.description && (
+                <div
+                  className={cn(
+                    "bg-warm-50 rounded-xl p-5 border border-warm-200"
+                  )}
+                >
+                  <h3 className="font-semibold text-warm-900 mb-2">Description</h3>
+                  <p className="text-warm-700 leading-relaxed">
+                    {occasion.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Metadata */}
+              <div
+                className={cn(
+                  "pt-4 border-t border-warm-200",
+                  "text-sm text-warm-600 space-y-1"
+                )}
+              >
+                {occasion.created_at && (
+                  <div className="flex items-center gap-2">
+                    <CalendarIcon className="h-3.5 w-3.5" />
+                    <span>Created on {formatDate(occasion.created_at)}</span>
+                  </div>
+                )}
+                {occasion.updated_at && occasion.updated_at !== occasion.created_at && (
+                  <p>Last updated {formatDate(occasion.updated_at)}</p>
+                )}
               </div>
-            )}
-            {occasion.updated_at && occasion.updated_at !== occasion.created_at && (
-              <p>Last updated {formatDate(occasion.updated_at)}</p>
-            )}
-          </div>
+            </TabsContent>
+
+            {/* Linked Entities Tab */}
+            <TabsContent value="linked" className="space-y-4">
+              <div
+                className={cn(
+                  "bg-warm-50 rounded-xl p-6 border border-warm-200",
+                  "text-center"
+                )}
+              >
+                <h3 className="font-semibold text-warm-900 text-lg mb-2">
+                  Linked Entities
+                </h3>
+                <p className="text-warm-600 text-sm mb-4">
+                  View lists for this occasion and people celebrating
+                </p>
+                <div className="text-warm-500 text-sm italic">
+                  Coming soon: Lists and people associations will be displayed here
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* History Tab */}
+            <TabsContent value="history" className="space-y-4">
+              <div
+                className={cn(
+                  "bg-warm-50 rounded-xl p-6 border border-warm-200",
+                  "text-center"
+                )}
+              >
+                <h3 className="font-semibold text-warm-900 text-lg mb-2">
+                  Activity History
+                </h3>
+                <p className="text-warm-600 text-sm mb-4">
+                  Track changes and updates to this occasion
+                </p>
+                <div className="text-warm-500 text-sm italic">
+                  Coming soon: Activity log will be displayed here
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       ) : null}
     </EntityModal>

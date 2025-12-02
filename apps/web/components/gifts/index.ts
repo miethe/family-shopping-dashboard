@@ -14,3 +14,4 @@ export { GiftDetail, type GiftDetailProps } from './GiftDetail';
 export { GiftUsage, type GiftUsageProps } from './GiftUsage';
 export { GiftDetailSkeleton } from './GiftDetailSkeleton';
 export { AddGiftModal, type AddGiftModalProps } from './AddGiftModal';
+export { GiftEditModal, type GiftEditModalProps } from './GiftEditModal';

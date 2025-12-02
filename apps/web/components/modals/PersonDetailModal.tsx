@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Cake, Calendar, CheckSquare, Edit, ExternalLink, Heart, Sparkles, Trash2, X } from "@/components/ui/icons";
 import { formatDate, getAge, getNextBirthday } from "@/lib/date-utils";
 import { personApi } from "@/lib/api/endpoints";
@@ -30,6 +31,7 @@ export function PersonDetailModal({
   const { toast } = useToast();
   const [isEditing, setIsEditing] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState("overview");
 
   const { data: person, isLoading } = useQuery<Person>({
     queryKey: ["people", personId],
@@ -64,6 +66,7 @@ export function PersonDetailModal({
     if (!open) {
       setIsEditing(false);
       setShowDeleteConfirm(false);
+      setActiveTab("overview");
     }
   }, [open]);
 
@@ -289,114 +292,172 @@ export function PersonDetailModal({
                 )}
               </div>
 
-              {/* Birthday Info */}
-              {person.birthdate && (
-                <div
-                  className={cn(
-                    "bg-gradient-to-br from-amber-50 to-orange-50",
-                    "rounded-xl p-5 border border-amber-200"
-                  )}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="bg-amber-100 rounded-full p-3">
-                        <Cake className="h-6 w-6 text-amber-600" />
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-warm-900 mb-1">Birthday</h3>
-                      <p className="text-warm-700 mb-1">
-                        {formatDate(person.birthdate)}
-                        {age !== null && (
-                          <span className="text-warm-600 ml-2">({age} years old)</span>
-                        )}
-                      </p>
-                      {nextBirthday && (
-                        <p className="text-sm text-warm-600">
-                          <Calendar className="h-3 w-3 inline mr-1" />
-                          {nextBirthday.isPast
-                            ? `Was ${nextBirthday.daysUntil} days ago`
-                            : nextBirthday.daysUntil === 0
-                              ? "🎉 Today!"
-                              : `${nextBirthday.daysUntil} days until next birthday`}
-                        </p>
+              {/* Tabs */}
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="w-full mb-6">
+                  <TabsTrigger value="overview" className="flex-1">
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger value="linked" className="flex-1">
+                    Linked Entities
+                  </TabsTrigger>
+                  <TabsTrigger value="history" className="flex-1">
+                    History
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Overview Tab */}
+                <TabsContent value="overview" className="space-y-6">
+                  {/* Birthday Info */}
+                  {person.birthdate && (
+                    <div
+                      className={cn(
+                        "bg-gradient-to-br from-amber-50 to-orange-50",
+                        "rounded-xl p-5 border border-amber-200"
                       )}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="bg-amber-100 rounded-full p-3">
+                            <Cake className="h-6 w-6 text-amber-600" />
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-warm-900 mb-1">Birthday</h3>
+                          <p className="text-warm-700 mb-1">
+                            {formatDate(person.birthdate)}
+                            {age !== null && (
+                              <span className="text-warm-600 ml-2">({age} years old)</span>
+                            )}
+                          </p>
+                          {nextBirthday && (
+                            <p className="text-sm text-warm-600">
+                              <Calendar className="h-3 w-3 inline mr-1" />
+                              {nextBirthday.isPast
+                                ? `Was ${nextBirthday.daysUntil} days ago`
+                                : nextBirthday.daysUntil === 0
+                                  ? "🎉 Today!"
+                                  : `${nextBirthday.daysUntil} days until next birthday`}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Interests */}
+                  {person.interests && person.interests.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Sparkles className="h-5 w-5 text-purple-500" />
+                        <h3 className="font-semibold text-warm-900">Interests</h3>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {person.interests.map((interest, index) => (
+                          <Badge
+                            key={index}
+                            variant="default"
+                            className={cn(
+                              "text-sm px-3 py-1.5",
+                              "bg-gradient-to-br from-purple-50 to-pink-50",
+                              "border-purple-200",
+                              "hover:shadow-md transition-shadow"
+                            )}
+                          >
+                            {interest}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sizes */}
+                  {person.sizes && Object.keys(person.sizes).length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-warm-900 mb-2">Sizes</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {Object.entries(person.sizes).map(([key, value]) => (
+                          <div key={key} className="flex justify-between bg-warm-50 rounded-lg p-2">
+                            <span className="font-medium text-warm-700">{key}:</span>
+                            <span className="text-warm-900">{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Constraints */}
+                  {person.constraints && (
+                    <div>
+                      <h3 className="font-semibold text-warm-900 mb-2">Constraints</h3>
+                      <p className="text-warm-700 whitespace-pre-wrap">{person.constraints}</p>
+                    </div>
+                  )}
+
+                  {/* Notes */}
+                  {person.notes && (
+                    <div>
+                      <h3 className="font-semibold text-warm-900 mb-2">Notes</h3>
+                      <p className="text-warm-700 whitespace-pre-wrap">{person.notes}</p>
+                    </div>
+                  )}
+
+                  {/* Metadata */}
+                  <div
+                    className={cn(
+                      "pt-4 border-t border-warm-200",
+                      "text-sm text-warm-600 space-y-1"
+                    )}
+                  >
+                    {person.created_at && (
+                      <p>Added on {formatDate(person.created_at)}</p>
+                    )}
+                    {person.updated_at && person.updated_at !== person.created_at && (
+                      <p>Last updated {formatDate(person.updated_at)}</p>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {/* Linked Entities Tab */}
+                <TabsContent value="linked" className="space-y-4">
+                  <div
+                    className={cn(
+                      "bg-warm-50 rounded-xl p-6 border border-warm-200",
+                      "text-center"
+                    )}
+                  >
+                    <h3 className="font-semibold text-warm-900 text-lg mb-2">
+                      Linked Entities
+                    </h3>
+                    <p className="text-warm-600 text-sm mb-4">
+                      View lists for this person and gifts assigned to them
+                    </p>
+                    <div className="text-warm-500 text-sm italic">
+                      Coming soon: Lists and gift associations will be displayed here
                     </div>
                   </div>
-                </div>
-              )}
+                </TabsContent>
 
-              {/* Interests */}
-              {person.interests && person.interests.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="h-5 w-5 text-purple-500" />
-                    <h3 className="font-semibold text-warm-900">Interests</h3>
+                {/* History Tab */}
+                <TabsContent value="history" className="space-y-4">
+                  <div
+                    className={cn(
+                      "bg-warm-50 rounded-xl p-6 border border-warm-200",
+                      "text-center"
+                    )}
+                  >
+                    <h3 className="font-semibold text-warm-900 text-lg mb-2">
+                      Activity History
+                    </h3>
+                    <p className="text-warm-600 text-sm mb-4">
+                      Track changes and updates to this person
+                    </p>
+                    <div className="text-warm-500 text-sm italic">
+                      Coming soon: Activity log will be displayed here
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {person.interests.map((interest, index) => (
-                      <Badge
-                        key={index}
-                        variant="default"
-                        className={cn(
-                          "text-sm px-3 py-1.5",
-                          "bg-gradient-to-br from-purple-50 to-pink-50",
-                          "border-purple-200",
-                          "hover:shadow-md transition-shadow"
-                        )}
-                      >
-                        {interest}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Notes */}
-              {person.notes && (
-                <div>
-                  <h3 className="font-semibold text-warm-900 mb-2">Notes</h3>
-                  <p className="text-warm-700 whitespace-pre-wrap">{person.notes}</p>
-                </div>
-              )}
-
-              {/* Sizes */}
-              {person.sizes && Object.keys(person.sizes).length > 0 && (
-                <div>
-                  <h3 className="font-semibold text-warm-900 mb-2">Sizes</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(person.sizes).map(([key, value]) => (
-                      <div key={key} className="flex justify-between bg-warm-50 rounded-lg p-2">
-                        <span className="font-medium text-warm-700">{key}:</span>
-                        <span className="text-warm-900">{value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Constraints */}
-              {person.constraints && (
-                <div>
-                  <h3 className="font-semibold text-warm-900 mb-2">Constraints</h3>
-                  <p className="text-warm-700 whitespace-pre-wrap">{person.constraints}</p>
-                </div>
-              )}
-
-              {/* Metadata */}
-              <div
-                className={cn(
-                  "pt-4 border-t border-warm-200",
-                  "text-sm text-warm-600 space-y-1"
-                )}
-              >
-                {person.created_at && (
-                  <p>Added on {formatDate(person.created_at)}</p>
-                )}
-                {person.updated_at && person.updated_at !== person.created_at && (
-                  <p>Last updated {formatDate(person.updated_at)}</p>
-                )}
-              </div>
+                </TabsContent>
+              </Tabs>
             </>
           ) : (
             <>

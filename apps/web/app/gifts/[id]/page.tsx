@@ -1,11 +1,11 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGift, useDeleteGift } from '@/hooks/useGift';
 import { PageHeader } from '@/components/layout';
 import { Button } from '@/components/ui/button';
-import { GiftDetail, GiftUsage, GiftDetailSkeleton } from '@/components/gifts';
+import { GiftDetail, GiftUsage, GiftDetailSkeleton, GiftEditModal } from '@/components/gifts';
 import { PencilIcon, TrashIcon } from '@/components/layout/icons';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -18,6 +18,7 @@ export default function GiftDetailPage({ params }: Props) {
   const giftId = parseInt(id, 10);
   const router = useRouter();
   const { toast } = useToast();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: gift, isLoading, error } = useGift(giftId);
   const deleteMutation = useDeleteGift(giftId);
@@ -45,11 +46,14 @@ export default function GiftDetailPage({ params }: Props) {
   };
 
   const handleEdit = () => {
-    // TODO: Implement edit functionality
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSuccess = () => {
     toast({
-      title: 'Coming soon',
-      description: 'Gift editing will be available in a future update.',
-      variant: 'info',
+      title: 'Success',
+      description: 'Gift has been updated successfully.',
+      variant: 'success',
     });
   };
 
@@ -98,40 +102,50 @@ export default function GiftDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title={gift.name}
-        backHref="/gifts"
-        actions={
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleEdit}
-              className="inline-flex items-center gap-2"
-            >
-              <PencilIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Edit</span>
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={handleDelete}
-              disabled={deleteMutation.isPending}
-              className="inline-flex items-center gap-2"
-            >
-              <TrashIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">
-                {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-              </span>
-            </Button>
-          </div>
-        }
+    <>
+      <div className="space-y-6">
+        <PageHeader
+          title={gift.name}
+          backHref="/gifts"
+          actions={
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleEdit}
+                className="inline-flex items-center gap-2"
+              >
+                <PencilIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Edit</span>
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
+                className="inline-flex items-center gap-2"
+              >
+                <TrashIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">
+                  {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                </span>
+              </Button>
+            </div>
+          }
+        />
+
+        <GiftDetail gift={gift} />
+
+        <GiftUsage giftId={gift.id} />
+      </div>
+
+      {/* Edit Modal */}
+      <GiftEditModal
+        gift={gift}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={handleEditSuccess}
       />
-
-      <GiftDetail gift={gift} />
-
-      <GiftUsage giftId={gift.id} />
-    </div>
+    </>
   );
 }

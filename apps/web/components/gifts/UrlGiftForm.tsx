@@ -11,6 +11,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGiftFromUrl } from '@/hooks/useGifts';
 import { useLists } from '@/hooks/useLists';
+import { usePersons } from '@/hooks/usePersons';
+import { useOccasions } from '@/hooks/useOccasions';
 import { useCreateListItem } from '@/hooks/useListItems';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,10 +33,31 @@ export function UrlGiftForm({ defaultListId, onSuccess }: UrlGiftFormProps) {
   const { mutate, isPending, error } = useGiftFromUrl();
   const { mutate: createListItem } = useCreateListItem();
   const { data: listsResponse } = useLists();
+  const { data: personsResponse } = usePersons();
+  const { data: occasionsResponse } = useOccasions();
   const { toast } = useToast();
   const router = useRouter();
 
   const lists = listsResponse?.items ?? [];
+  const persons = personsResponse?.items ?? [];
+  const occasions = occasionsResponse?.items ?? [];
+
+  // Helper to get list context description
+  const getListContext = (list: typeof lists[0]) => {
+    const parts: string[] = [];
+
+    if (list.person_id) {
+      const person = persons.find((p) => p.id === list.person_id);
+      if (person) parts.push(`for ${person.display_name}`);
+    }
+
+    if (list.occasion_id) {
+      const occasion = occasions.find((o) => o.id === list.occasion_id);
+      if (occasion) parts.push(`(${occasion.name})`);
+    }
+
+    return parts.length > 0 ? parts.join(' ') : `${list.type} list`;
+  };
 
   const toggleListSelection = (listId: number) => {
     setSelectedListIds((prev) =>
@@ -124,11 +147,7 @@ export function UrlGiftForm({ defaultListId, onSuccess }: UrlGiftFormProps) {
                   checked={selectedListIds.includes(list.id)}
                   onChange={() => toggleListSelection(list.id)}
                   label={list.name}
-                  helperText={
-                    list.occasion_id || list.person_id
-                      ? `${list.type} list`
-                      : undefined
-                  }
+                  helperText={getListContext(list)}
                 />
               ))}
             </div>

@@ -6,6 +6,7 @@ import { EntityModal } from "./EntityModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import {
   ExternalLink,
@@ -100,6 +101,7 @@ export function ListDetailModal({
   const [selectedGiftId, setSelectedGiftId] = React.useState<string | null>(null);
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [statusFilter, setStatusFilter] = React.useState<StatusFilter>('all');
+  const [activeTab, setActiveTab] = React.useState("overview");
 
   const { data: list, isLoading } = useQuery<ListWithItems>({
     queryKey: ["lists", listId],
@@ -129,6 +131,7 @@ export function ListDetailModal({
       setSelectedGiftId(null);
       setSelectedPersonId(null);
       setStatusFilter('all');
+      setActiveTab("overview");
     }
   }, [open]);
 
@@ -332,226 +335,316 @@ export function ListDetailModal({
               </div>
             </div>
 
-            {/* Status Filter Tabs */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              {statusFilters.map((filter) => (
-                <button
-                  key={filter.value}
-                  onClick={() => setStatusFilter(filter.value)}
+            {/* Tabs */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="w-full mb-6">
+                <TabsTrigger value="overview" className="flex-1">
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="items" className="flex-1">
+                  Items
+                </TabsTrigger>
+                <TabsTrigger value="linked" className="flex-1">
+                  Linked Entities
+                </TabsTrigger>
+                <TabsTrigger value="history" className="flex-1">
+                  History
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Overview Tab */}
+              <TabsContent value="overview" className="space-y-6">
+                <div
                   className={cn(
-                    "px-4 py-2 rounded-lg font-medium text-sm transition-all min-h-[44px]",
-                    statusFilter === filter.value
-                      ? "bg-blue-500 text-white shadow-md"
-                      : "bg-warm-100 text-warm-700 hover:bg-warm-200"
+                    "bg-warm-50 rounded-xl p-6 border border-warm-200"
                   )}
                 >
-                  {filter.label}
-                  {filter.value !== 'all' && list.items && (
-                    <span className="ml-2 opacity-75">
-                      ({list.items.filter(item => item.status === filter.value).length})
-                    </span>
-                  )}
-                  {filter.value === 'all' && list.items && (
-                    <span className="ml-2 opacity-75">
-                      ({list.items.length})
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* Gift Catalog Grid */}
-            <div>
-              <h3 className="font-semibold text-warm-900 mb-4 flex items-center gap-2">
-                <ShoppingBag className="h-5 w-5 text-blue-500" />
-                Gift Catalog
-              </h3>
-
-              {/* Scrollable container with smaller cards */}
-              <div className="max-h-[400px] overflow-y-auto pr-2">
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                  {/* Add New Gift Card - NOW FIRST */}
-                  <button
-                    onClick={handleAddItemClick}
-                    className={cn(
-                      "aspect-square rounded-xl border-2 border-dashed border-warm-300",
-                      "flex flex-col items-center justify-center gap-1.5",
-                      "hover:border-blue-500 hover:bg-blue-50/50 transition-all duration-200",
-                      "group min-h-[44px]"
-                    )}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-warm-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
-                      <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                  <h3 className="font-semibold text-warm-900 text-lg mb-2">
+                    List Information
+                  </h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-warm-600">Type:</span>
+                      <span className="font-medium text-warm-900">{typeConfig?.label}</span>
                     </div>
-                    <span className="text-xs font-medium text-warm-600 group-hover:text-blue-600 px-1 text-center">
-                      Add New
-                    </span>
-                  </button>
+                    <div className="flex justify-between">
+                      <span className="text-warm-600">Visibility:</span>
+                      <span className="font-medium text-warm-900">{visConfig?.label}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-warm-600">Total Items:</span>
+                      <span className="font-medium text-warm-900">
+                        {list.item_count || list.items?.length || 0}
+                      </span>
+                    </div>
+                    {totalValue !== undefined && totalValue > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-warm-600">Total Value:</span>
+                        <span className="font-medium text-warm-900">
+                          {formatPrice(totalValue)}
+                        </span>
+                      </div>
+                    )}
+                    {list.created_at && (
+                      <div className="flex justify-between pt-3 border-t border-warm-200">
+                        <span className="text-warm-600">Created:</span>
+                        <span className="font-medium text-warm-900">
+                          {formatDate(list.created_at)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
 
-                  {/* Filtered Gift Cards */}
-                  {filteredItems.map((item) => (
+              {/* Items Tab */}
+              <TabsContent value="items" className="space-y-6">
+                {/* Status Filter Tabs */}
+                <div className="flex flex-wrap gap-2">
+                  {statusFilters.map((filter) => (
                     <button
-                      key={item.id}
-                      onClick={() => handleGiftCardClick(item.gift_id)}
+                      key={filter.value}
+                      onClick={() => setStatusFilter(filter.value)}
                       className={cn(
-                        "text-left group cursor-pointer",
-                        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-xl"
+                        "px-4 py-2 rounded-lg font-medium text-sm transition-all min-h-[44px]",
+                        statusFilter === filter.value
+                          ? "bg-blue-500 text-white shadow-md"
+                          : "bg-warm-100 text-warm-700 hover:bg-warm-200"
                       )}
                     >
-                      {/* Gift Image - Smaller */}
-                      <div className="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-warm-50 to-warm-100 mb-1.5 relative">
-                        <GiftImage
-                          src={item.gift.image_url}
-                          alt={item.gift.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          fallbackClassName="aspect-square"
-                          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                        />
-                        {/* Status Badge Overlay - Smaller */}
-                        <div className="absolute top-1 right-1">
-                          <Badge
-                            className={cn(
-                              "text-[10px] font-semibold shadow-sm border px-1.5 py-0.5",
-                              statusColors[item.status]
-                            )}
-                          >
-                            {item.status === 'idea' ? 'Idea' :
-                             item.status === 'purchased' ? 'Purchased' :
-                             item.status === 'received' ? 'Gifted' :
-                             item.status}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      {/* Gift Info - Smaller text */}
-                      <h4 className="font-semibold text-warm-900 text-xs line-clamp-2 mb-0.5 group-hover:text-blue-600 transition-colors">
-                        {item.gift.name}
-                      </h4>
-
-                      {/* Price - Smaller */}
-                      <div className="flex items-center justify-between gap-1">
-                        {item.gift.price !== null && item.gift.price !== undefined && (
-                          <span className="text-xs font-bold text-warm-700">
-                            {formatPrice(item.gift.price)}
-                          </span>
-                        )}
-                      </div>
+                      {filter.label}
+                      {filter.value !== 'all' && list.items && (
+                        <span className="ml-2 opacity-75">
+                          ({list.items.filter(item => item.status === filter.value).length})
+                        </span>
+                      )}
+                      {filter.value === 'all' && list.items && (
+                        <span className="ml-2 opacity-75">
+                          ({list.items.length})
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
-              </div>
 
-              {/* Empty State */}
-              {filteredItems.length === 0 && list.items && list.items.length > 0 && (
-                <div
-                  className={cn(
-                    "text-center py-12 mt-4",
-                    "bg-warm-50 rounded-xl border-2 border-dashed border-warm-200"
-                  )}
-                >
-                  <ShoppingBag className="h-12 w-12 text-warm-300 mx-auto mb-3" />
-                  <p className="text-warm-600">No items match this filter</p>
-                </div>
-              )}
+                {/* Gift Catalog Grid */}
+                <div>
+                  <h3 className="font-semibold text-warm-900 mb-4 flex items-center gap-2">
+                    <ShoppingBag className="h-5 w-5 text-blue-500" />
+                    Gift Catalog
+                  </h3>
 
-              {/* Completely Empty State */}
-              {list.items && list.items.length === 0 && (
-                <div
-                  className={cn(
-                    "text-center py-12 mt-4",
-                    "bg-warm-50 rounded-xl border-2 border-dashed border-warm-200"
-                  )}
-                >
-                  <ShoppingBag className="h-12 w-12 text-warm-300 mx-auto mb-3" />
-                  <p className="text-warm-600 mb-2">This list is empty</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleAddItemClick}
-                    className="mt-2"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Your First Gift
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            {/* Attached Entities */}
-            {(attachedPerson || attachedOccasion) && (
-              <div className="space-y-3">
-                {attachedPerson && (
-                  <div
-                    className={cn(
-                      "bg-blue-50 rounded-xl p-4 border border-blue-100"
-                    )}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-xs font-medium text-blue-600 mb-1">
-                          For Recipient
-                        </div>
-                        <div className="text-sm font-semibold text-warm-900">
-                          {attachedPerson.display_name}
-                        </div>
-                        {attachedPerson.relationship && (
-                          <div className="text-xs text-warm-600">
-                            {attachedPerson.relationship}
-                          </div>
+                  {/* Scrollable container with smaller cards */}
+                  <div className="max-h-[400px] overflow-y-auto pr-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                      {/* Add New Gift Card - NOW FIRST */}
+                      <button
+                        onClick={handleAddItemClick}
+                        className={cn(
+                          "aspect-square rounded-xl border-2 border-dashed border-warm-300",
+                          "flex flex-col items-center justify-center gap-1.5",
+                          "hover:border-blue-500 hover:bg-blue-50/50 transition-all duration-200",
+                          "group min-h-[44px]"
                         )}
-                      </div>
+                      >
+                        <div className="w-8 h-8 rounded-full bg-warm-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                          <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                        </div>
+                        <span className="text-xs font-medium text-warm-600 group-hover:text-blue-600 px-1 text-center">
+                          Add New
+                        </span>
+                      </button>
+
+                      {/* Filtered Gift Cards */}
+                      {filteredItems.map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => handleGiftCardClick(item.gift_id)}
+                          className={cn(
+                            "text-left group cursor-pointer",
+                            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-xl"
+                          )}
+                        >
+                          {/* Gift Image - Smaller */}
+                          <div className="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-warm-50 to-warm-100 mb-1.5 relative">
+                            <GiftImage
+                              src={item.gift.image_url}
+                              alt={item.gift.name}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              fallbackClassName="aspect-square"
+                              sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                            />
+                            {/* Status Badge Overlay - Smaller */}
+                            <div className="absolute top-1 right-1">
+                              <Badge
+                                className={cn(
+                                  "text-[10px] font-semibold shadow-sm border px-1.5 py-0.5",
+                                  statusColors[item.status]
+                                )}
+                              >
+                                {item.status === 'idea' ? 'Idea' :
+                                 item.status === 'purchased' ? 'Purchased' :
+                                 item.status === 'received' ? 'Gifted' :
+                                 item.status}
+                              </Badge>
+                            </div>
+                          </div>
+
+                          {/* Gift Info - Smaller text */}
+                          <h4 className="font-semibold text-warm-900 text-xs line-clamp-2 mb-0.5 group-hover:text-blue-600 transition-colors">
+                            {item.gift.name}
+                          </h4>
+
+                          {/* Price - Smaller */}
+                          <div className="flex items-center justify-between gap-1">
+                            {item.gift.price !== null && item.gift.price !== undefined && (
+                              <span className="text-xs font-bold text-warm-700">
+                                {formatPrice(item.gift.price)}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Empty State */}
+                  {filteredItems.length === 0 && list.items && list.items.length > 0 && (
+                    <div
+                      className={cn(
+                        "text-center py-12 mt-4",
+                        "bg-warm-50 rounded-xl border-2 border-dashed border-warm-200"
+                      )}
+                    >
+                      <ShoppingBag className="h-12 w-12 text-warm-300 mx-auto mb-3" />
+                      <p className="text-warm-600">No items match this filter</p>
+                    </div>
+                  )}
+
+                  {/* Completely Empty State */}
+                  {list.items && list.items.length === 0 && (
+                    <div
+                      className={cn(
+                        "text-center py-12 mt-4",
+                        "bg-warm-50 rounded-xl border-2 border-dashed border-warm-200"
+                      )}
+                    >
+                      <ShoppingBag className="h-12 w-12 text-warm-300 mx-auto mb-3" />
+                      <p className="text-warm-600 mb-2">This list is empty</p>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setSelectedPersonId(String(attachedPerson.id))}
-                        className="min-h-[44px]"
+                        onClick={handleAddItemClick}
+                        className="mt-2"
                       >
-                        View Details
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Your First Gift
                       </Button>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+              </TabsContent>
 
-                {attachedOccasion && (
-                  <div
-                    className={cn(
-                      "bg-purple-50 rounded-xl p-4 border border-purple-100"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Calendar className="h-5 w-5 text-purple-600 flex-shrink-0" />
-                      <div>
-                        <div className="text-xs font-medium text-purple-600 mb-1">
-                          For Occasion
-                        </div>
-                        <div className="text-sm font-semibold text-warm-900">
-                          {attachedOccasion.name}
-                        </div>
-                        <div className="text-xs text-warm-600">
-                          {formatDate(attachedOccasion.date)}
+              {/* Linked Entities Tab */}
+              <TabsContent value="linked" className="space-y-4">
+                {(attachedPerson || attachedOccasion) ? (
+                  <div className="space-y-3">
+                    {attachedPerson && (
+                      <div
+                        className={cn(
+                          "bg-blue-50 rounded-xl p-4 border border-blue-100"
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-xs font-medium text-blue-600 mb-1">
+                              For Recipient
+                            </div>
+                            <div className="text-sm font-semibold text-warm-900">
+                              {attachedPerson.display_name}
+                            </div>
+                            {attachedPerson.relationship && (
+                              <div className="text-xs text-warm-600">
+                                {attachedPerson.relationship}
+                              </div>
+                            )}
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedPersonId(String(attachedPerson.id))}
+                            className="min-h-[44px]"
+                          >
+                            View Details
+                          </Button>
                         </div>
                       </div>
+                    )}
+
+                    {attachedOccasion && (
+                      <div
+                        className={cn(
+                          "bg-purple-50 rounded-xl p-4 border border-purple-100"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Calendar className="h-5 w-5 text-purple-600 flex-shrink-0" />
+                          <div>
+                            <div className="text-xs font-medium text-purple-600 mb-1">
+                              For Occasion
+                            </div>
+                            <div className="text-sm font-semibold text-warm-900">
+                              {attachedOccasion.name}
+                            </div>
+                            <div className="text-xs text-warm-600">
+                              {formatDate(attachedOccasion.date)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    className={cn(
+                      "bg-warm-50 rounded-xl p-6 border border-warm-200",
+                      "text-center"
+                    )}
+                  >
+                    <h3 className="font-semibold text-warm-900 text-lg mb-2">
+                      Linked Entities
+                    </h3>
+                    <p className="text-warm-600 text-sm mb-4">
+                      No recipient or occasion attached to this list
+                    </p>
+                    <div className="text-warm-500 text-sm italic">
+                      Edit the list to attach a person or occasion
                     </div>
                   </div>
                 )}
-              </div>
-            )}
+              </TabsContent>
 
-            {/* Metadata */}
-            <div
-              className={cn(
-                "pt-4 border-t border-warm-200",
-                "text-sm text-warm-600"
-              )}
-            >
-              {list.created_at && (
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5" />
-                  <span>Created on {formatDate(list.created_at)}</span>
+              {/* History Tab */}
+              <TabsContent value="history" className="space-y-4">
+                <div
+                  className={cn(
+                    "bg-warm-50 rounded-xl p-6 border border-warm-200",
+                    "text-center"
+                  )}
+                >
+                  <h3 className="font-semibold text-warm-900 text-lg mb-2">
+                    Activity History
+                  </h3>
+                  <p className="text-warm-600 text-sm mb-4">
+                    Track changes and updates to this list
+                  </p>
+                  <div className="text-warm-500 text-sm italic">
+                    Coming soon: Activity log will be displayed here
+                  </div>
                 </div>
-              )}
-            </div>
+              </TabsContent>
+            </Tabs>
           </div>
         ) : null}
       </EntityModal>
