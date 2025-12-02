@@ -7,11 +7,15 @@ One-page reference for WebSocket implementation.
 ## Import Paths
 
 ```typescript
-import { useWebSocket } from '@/hooks/useWebSocket';
+// ✅ PUBLIC API - Use these for all application code
+import { useWebSocketContext } from '@/lib/websocket/WebSocketProvider';
 import { useRealtimeSync, usePollingFallback, optimisticUpdate } from '@/hooks/useRealtimeSync';
-import { WebSocketProvider } from '@/lib/websocket';
+import { WebSocketProvider } from '@/lib/websocket/WebSocketProvider';
 import { ConnectionIndicator } from '@/components/websocket/ConnectionIndicator';
 import type { WSEvent, WSConnectionState, WSEventType } from '@/lib/websocket/types';
+
+// ⛔ INTERNAL ONLY - Never import in application code
+// import { useWebSocket } from '@/hooks/useWebSocket';  // Creates new connections - INTERNAL USE ONLY
 ```
 
 ---
@@ -28,6 +32,40 @@ import type { WSEvent, WSConnectionState, WSEventType } from '@/lib/websocket/ty
   </QueryClientProvider>
 </AuthProvider>
 ```
+
+---
+
+## Architecture: Singleton Connection Pattern
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Application Layer (99% of usage)                    │
+│ - useRealtimeSync()                                 │
+│ - usePollingFallback()                              │
+└─────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────┐
+│ Context Layer (1% - advanced access only)           │
+│ - useWebSocketContext()                             │
+│ - WebSocketProvider                                 │
+└─────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────┐
+│ Connection Layer (INTERNAL - DO NOT USE)            │
+│ - useWebSocket() ← Creates connections              │
+└─────────────────────────────────────────────────────┘
+```
+
+**Why Singleton?**
+- One WebSocket connection per browser tab (not per component)
+- All subscriptions share the same socket
+- Connection state is centralized
+- Prevents duplicate events, state desync, and browser crashes
+
+**Rule of Thumb:**
+- **Application code**: Use `useRealtimeSync()`
+- **Advanced access**: Use `useWebSocketContext()`
+- **Internal only**: `useWebSocket()` (NEVER USE DIRECTLY)
 
 ---
 
@@ -164,44 +202,76 @@ export function useUpdateGift() {
 
 ---
 
-## Direct WebSocket Access (Advanced)
+## Advanced: Direct Context Access
+
+⚠️ **CRITICAL: Never call `useWebSocket()` directly!**
+
+`useWebSocket()` is an **internal hook** used ONLY by `WebSocketProvider`. Calling it directly creates duplicate WebSocket connections.
+
+### When to Use Direct Access
+
+Only use `useWebSocketContext()` if `useRealtimeSync()` doesn't meet your needs (rare).
+
+### Correct Pattern
 
 ```typescript
-const { state, subscribe, unsubscribe, connect, disconnect } = useWebSocket();
+import { useWebSocketContext } from '@/lib/websocket/WebSocketProvider';
 
-// Subscribe to topic
-const unsubscribe = subscribe('gift-list:123', (event) => {
-  console.log('Event:', event);
-});
+function MyComponent() {
+  const { state, subscribe } = useWebSocketContext();
 
-// Check connection state
-if (state === 'connected') {
-  // Do something
+  useEffect(() => {
+    const unsubscribe = subscribe('my-topic', (event) => {
+      console.log('Event:', event);
+    });
+
+    return () => unsubscribe();
+    // ⚠️ CRITICAL: Empty deps - subscribe once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Check connection state (read-only)
+  if (state === 'connected') {
+    // Do something
+  }
 }
+```
 
-// Manual reconnect
-if (state === 'disconnected') {
-  connect();
+### ❌ WRONG - Creates Duplicate Connection
+
+```typescript
+// NEVER DO THIS - useWebSocket() creates a NEW connection!
+import { useWebSocket } from '@/hooks/useWebSocket';
+
+function BadComponent() {
+  const { state } = useWebSocket(); // Bug: Creates duplicate connection
 }
-
-// Cleanup
-unsubscribe();
 ```
 
 ---
 
 ## Topic Naming Convention
 
-```
-Format: {resource-type}:{identifier}
+Format: `{resource-type}` (collection) or `{resource-type}:{id}` (single)
 
-Examples:
-  gift-list:123       All gifts in list 123
-  gift:456            Single gift 456
-  list-items:123      All list items in list 123
-  user:789            User 789 events
-  occasion:101        Occasion 101 events
-```
+### Actual Topics in Codebase
+
+**Collection Topics:**
+- `'gifts'` - All gifts
+- `'lists'` - All lists
+- `'persons'` - All persons
+- `'occasions'` - All occasions
+- `'ideas:inbox'` - Idea inbox
+
+**Single Entity Topics:**
+- `'gift:${id}'` - Specific gift
+- `'list:${id}'` - Specific list (also receives list item events)
+- `'person:${id}'` - Specific person
+- `'occasion:${id}'` - Specific occasion
+
+**Filtered Topics:**
+- `'person:${personId}:lists'` - Lists for person
+- `'occasion:${occasionId}:lists'` - Lists for occasion
 
 ---
 
@@ -280,6 +350,10 @@ NEXT_PUBLIC_WS_URL=wss://api.gifting.home/ws
 **Cause**: Backend rejecting connection or token invalid
 **Fix**: Check backend logs and token validity
 
+### Browser tab crashes when navigating
+**Cause**: Using `useWebSocket()` directly or `state` in effect dependencies
+**Fix**: Use `useWebSocketContext()` and empty dependency arrays. See Anti-Patterns section.
+
 ---
 
 ## Debug Mode
@@ -302,19 +376,92 @@ NEXT_PUBLIC_WS_URL=wss://api.gifting.home/ws
 
 ## Best Practices
 
+### ⚠️ Critical Rules (MUST FOLLOW)
+
+1. **Never call `useWebSocket()` directly** - It's internal to WebSocketProvider
+2. **Always use `useWebSocketContext()`** for advanced access (rarely needed)
+3. **Never include `state` in useEffect dependencies** - Causes infinite re-subscription
+4. **Use `useRealtimeSync()` for 99% of cases** - It handles state correctly
+
 ✅ DO:
-- Use cache invalidation for 2-3 users
-- Subscribe on mount, unsubscribe on unmount
-- Filter events to what you need
+- Use `useRealtimeSync()` for real-time data (handles everything)
+- Use cache invalidation pattern (recommended for 2-3 users)
+- Subscribe on mount, unsubscribe on unmount (automatic with useRealtimeSync)
+- Filter events to only what you need
 - Show connection status to users
 - Use polling fallback for critical data
 
 ❌ DON'T:
+- Call `useWebSocket()` directly (creates duplicate connections)
+- Include `state` in effect dependencies (infinite loop)
+- Create custom WebSocket hooks bypassing context
 - Use direct cache updates unless necessary
 - Subscribe to topics you don't need
 - Forget to unsubscribe (memory leak)
 - Poll if WebSocket is working
 - Hardcode URLs (use env vars)
+
+---
+
+## Anti-Patterns (Avoid These)
+
+### ❌ Anti-Pattern 1: Direct useWebSocket() Call
+
+**Bug:** Creates duplicate WebSocket connections per component.
+
+```typescript
+// ❌ WRONG - creates new connection each time
+import { useWebSocket } from '@/hooks/useWebSocket';
+const { state } = useWebSocket();
+
+// ✅ CORRECT - uses shared connection
+import { useWebSocketContext } from '@/lib/websocket/WebSocketProvider';
+const { state } = useWebSocketContext();
+```
+
+### ❌ Anti-Pattern 2: State in Dependencies
+
+**Bug:** Causes infinite re-subscription loop, crashes browser.
+
+```typescript
+// ❌ WRONG - infinite loop when state changes
+const { state, subscribe } = useWebSocketContext();
+useEffect(() => {
+  subscribe('topic', handler);
+  return () => unsubscribe();
+}, [state, subscribe]); // Bug: re-runs when state changes
+
+// ✅ CORRECT - subscribe once on mount
+useEffect(() => {
+  subscribe('topic', handler);
+  return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []); // Empty deps
+```
+
+### ❌ Anti-Pattern 3: Custom WebSocket Hooks
+
+**Bug:** Bypasses singleton, duplicates connection logic.
+
+```typescript
+// ❌ WRONG - breaks singleton pattern
+function useCustomWebSocket(topic: string) {
+  const socket = useWebSocket(); // Creates duplicate connection
+}
+
+// ✅ CORRECT - build on existing hooks
+function useCustomSync(topic: string) {
+  return useRealtimeSync({ topic, queryKey: [...] });
+}
+```
+
+### Bugs Caused by These Anti-Patterns
+
+- **Commit ab0d8f0**: ConnectionIndicator used useWebSocket() directly
+- **Commit 671a3c1**: useRealtimeSync had state in dependencies
+- **Commit 7bc264a**: useRealtimeSync used useWebSocket() instead of context
+
+All three bugs caused browser tab crashes from memory exhaustion.
 
 ---
 
