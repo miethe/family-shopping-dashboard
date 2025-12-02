@@ -110,5 +110,5 @@ Monthly bug tracking for December 2025.
   - Router: Changed response model to `ListWithItems`, call `service.get_with_items()`
   - Service: Implemented ORM→DTO conversion for list items with gift details
   - Repository: Added nested `selectinload(ListItem.gift)` to eager load gifts
-- **Commit(s)**: pending
+- **Commit(s)**: 48599a4
 - **Status**: RESOLVED
