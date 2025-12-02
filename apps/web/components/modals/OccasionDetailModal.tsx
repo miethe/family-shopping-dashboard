@@ -359,12 +359,12 @@ export function OccasionDetailModal({
                 <div className="flex items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
                 </div>
-              ) : listsData?.data && listsData.data.length > 0 ? (
+              ) : listsData?.items && listsData.items.length > 0 ? (
                 <div className="space-y-3">
                   <h3 className="font-semibold text-warm-900 text-sm mb-3">
                     Lists for this occasion
                   </h3>
-                  {listsData.data.map((list) => {
+                  {listsData.items.map((list) => {
                     const listConfig = listTypeConfig[list.type as keyof typeof listTypeConfig];
                     const ListIcon = listConfig?.icon;
 

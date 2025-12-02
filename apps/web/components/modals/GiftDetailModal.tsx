@@ -324,7 +324,7 @@ export function GiftDetailModal({
                               <div className="flex flex-wrap items-center gap-2 text-sm">
                                 {/* List Type Badge */}
                                 <Badge
-                                  variant="secondary"
+                                  variant="default"
                                   className={cn(
                                     "text-xs",
                                     list.type === "wishlist" && "bg-rose-100 text-rose-700 border-rose-200",
@@ -343,7 +343,7 @@ export function GiftDetailModal({
                                 )}
 
                                 {/* Visibility Badge */}
-                                <Badge variant="outline" className="text-xs text-warm-600">
+                                <Badge variant="default" className="text-xs text-warm-600">
                                   {list.visibility.charAt(0).toUpperCase() + list.visibility.slice(1)}
                                 </Badge>
                               </div>

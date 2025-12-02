@@ -172,7 +172,7 @@ export function useListsForGift(giftId: number | undefined) {
       // We need to check each list's items, so we'll fetch list details
       const listsWithGift: GiftList[] = [];
 
-      for (const list of response.data) {
+      for (const list of response.items) {
         // Fetch full list with items
         const listWithItems = await listApi.get(list.id);
 

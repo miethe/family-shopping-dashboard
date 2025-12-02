@@ -16,7 +16,7 @@ import { formatDate, getAge, getNextBirthday } from "@/lib/date-utils";
 import { personApi } from "@/lib/api/endpoints";
 import { useUpdatePerson, useDeletePerson } from "@/hooks/usePersons";
 import { useListsForPerson } from "@/hooks/useLists";
-import type { Person, PersonUpdate } from "@/types";
+import type { Person, PersonUpdate, GiftList } from "@/types";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -59,7 +59,7 @@ export function PersonDetailModal({
     isLoading: listsLoading
   } = useListsForPerson(personId ? Number(personId) : undefined);
 
-  const lists = listsResponse?.data || [];
+  const lists = listsResponse?.items || [];
 
   // Form state
   const [formData, setFormData] = React.useState<PersonUpdate>({});
@@ -445,7 +445,7 @@ export function PersonDetailModal({
                     </div>
                   ) : lists.length > 0 ? (
                     <div className="space-y-3">
-                      {lists.map((list) => (
+                      {lists.map((list: GiftList) => (
                         <Card
                           key={list.id}
                           variant="interactive"
@@ -458,7 +458,7 @@ export function PersonDetailModal({
                                 {list.name}
                               </h4>
                               <p className="text-sm text-warm-600">
-                                {list.items?.length || 0} {list.items?.length === 1 ? 'item' : 'items'}
+                                {list.item_count || 0} {list.item_count === 1 ? 'item' : 'items'}
                               </p>
                             </div>
                             <Badge variant="default" className="ml-3">
