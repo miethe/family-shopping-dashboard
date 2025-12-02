@@ -8,7 +8,8 @@
 
 import { APIError, APIErrorResponse, RequestOptions } from './types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+// Fallback uses external port (8030) for Docker dev environment
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8030/api/v1';
 
 /**
  * Get JWT token from localStorage

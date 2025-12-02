@@ -9,8 +9,9 @@ services:
       POSTGRES_DB: family_gifting
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    # ports: external:internal (host uses 5442, container listens on 5432)
     ports:
-      - "5432:5432"
+      - "5442:5432"
     volumes:
       - /Users/miethe/dev/homelab/development/pg:/var/lib/postgresql/data
     healthcheck:
@@ -28,12 +29,14 @@ services:
       dockerfile: Dockerfile
     container_name: gifting-api
     environment:
-      # Database
+      # Database - uses internal port (container-to-container via service name)
       DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/family_gifting
 
       # API Configuration
+      # API_PORT: internal port the server listens on (left side of ports mapping)
       API_PORT: 8000
-      CORS_ORIGINS: http://localhost:3000,http://web:3000
+      # CORS_ORIGINS: localhost uses external port (browser access), service name uses internal port
+      CORS_ORIGINS: http://localhost:3030,http://web:3000
 
       # Security (CHANGE IN PRODUCTION!)
       JWT_SECRET_KEY: dev-secret-key-change-in-production
@@ -42,8 +45,9 @@ services:
 
       # Python
       PYTHONUNBUFFERED: 1
+    # ports: external:internal (browser uses 8030, container listens on 8000)
     ports:
-      - "8000:8000"
+      - "8030:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -56,16 +60,23 @@ services:
     build:
       context: ./apps/web
       dockerfile: Dockerfile
+      # Build args for NEXT_PUBLIC_* (baked into JS bundle at build time, NOT runtime)
+      # These MUST use external ports since they're accessed by browser
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8030
+        NEXT_PUBLIC_WS_URL: ws://localhost:8030/ws
     container_name: gifting-web
     environment:
-      # API Connection
-      NEXT_PUBLIC_API_URL: http://localhost:8000
-      NEXT_PUBLIC_WS_URL: ws://localhost:8000
+      # Note: NEXT_PUBLIC_* runtime env vars are IGNORED - they're baked in at build time
+      # These are here for documentation only; actual values come from build args above
+      NEXT_PUBLIC_API_URL: http://localhost:8030
+      NEXT_PUBLIC_WS_URL: ws://localhost:8030/ws
 
       # Node
       NODE_ENV: production
+    # ports: external:internal (browser uses 3030, container listens on 3000)
     ports:
-      - "3000:3000"
+      - "3030:3000"
     depends_on:
       - api
     networks:

@@ -34,7 +34,8 @@ import type {
 } from '@/lib/websocket/types';
 
 const DEFAULT_OPTIONS: Required<WSOptions> = {
-  url: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws',
+  // Fallback uses external port (8030) for Docker dev environment
+  url: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8030/ws',
   reconnect: true,
   reconnectInterval: 5000, // Start at 5s
   reconnectMaxInterval: 20000, // Max 20s

@@ -308,3 +308,21 @@ Monthly bug tracking for December 2025.
   - Dynamic button text and modal title based on mode
 - **Commit(s)**: 42e88bd
 - **Status**: RESOLVED
+
+---
+
+### Frontend Not Connecting to API in Docker
+
+**Issue**: After updating docker-compose to use external port 8030 for API, frontend still tried to connect to port 8000, causing CORS errors
+
+- **Location**: `apps/web/Dockerfile`, `docker-compose.yml`, `apps/web/lib/api/client.ts`, `apps/web/lib/auth/api.ts`, `apps/web/hooks/useWebSocket.ts`
+- **Root Cause**: `NEXT_PUBLIC_*` environment variables are baked into the JavaScript bundle at **build time**, not read at runtime. The docker-compose runtime environment variables were ignored because the Next.js app was already built with fallback values (port 8000).
+- **Fix**:
+  1. Dockerfile: Added `ARG` and `ENV` directives for `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` with correct defaults (port 8030)
+  2. docker-compose.yml: Added `args` section under web service `build` to pass values at build time
+  3. Updated fallback values in code to use port 8030 (external port for Docker dev)
+  4. Added clarifying comments throughout distinguishing internal vs external ports
+- **Commit(s)**: c9be299
+- **Status**: RESOLVED
+
+**Key Insight**: Docker port mapping is `EXTERNAL:INTERNAL`. Browser-accessed URLs (`NEXT_PUBLIC_*`) use EXTERNAL ports. Container-to-container communication uses INTERNAL ports via service names.
