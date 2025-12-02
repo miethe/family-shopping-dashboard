@@ -158,7 +158,7 @@ export function PersonDetailModal({
       onOpenChange={onOpenChange}
       entityType="person"
       title={isEditing ? "Edit Person" : person?.display_name || "Loading..."}
-      size="lg"
+      size="xl"
       footer={
         <div className="flex flex-col sm:flex-row gap-3 sm:justify-between w-full">
           {/* Left side: Delete button (only in edit mode) */}
@@ -256,7 +256,8 @@ export function PersonDetailModal({
               {/* Hero Section with Avatar */}
               <div
                 className={cn(
-                  "flex flex-col items-center text-center py-8",
+                  "flex flex-col items-center text-center py-12 px-6",
+                  "min-h-[240px]",
                   "bg-gradient-to-br from-orange-50 via-pink-50 to-rose-50",
                   "rounded-2xl border border-orange-100"
                 )}
