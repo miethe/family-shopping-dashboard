@@ -2,17 +2,20 @@
 
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { EntityModal } from "./EntityModal";
+import { EntityModal, useEntityModal } from "./EntityModal";
+import { ListDetailModal } from "./ListDetailModal";
 import { Avatar, AvatarImage, AvatarFallback, getInitials } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 import { Cake, Calendar, CheckSquare, Edit, ExternalLink, Heart, Sparkles, Trash2, X } from "@/components/ui/icons";
 import { formatDate, getAge, getNextBirthday } from "@/lib/date-utils";
 import { personApi } from "@/lib/api/endpoints";
 import { useUpdatePerson, useDeletePerson } from "@/hooks/usePersons";
+import { useListsForPerson } from "@/hooks/useLists";
 import type { Person, PersonUpdate } from "@/types";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
@@ -41,6 +44,22 @@ export function PersonDetailModal({
 
   const updateMutation = useUpdatePerson(Number(personId));
   const deleteMutation = useDeletePerson();
+
+  // List modal management
+  const {
+    open: listModalOpen,
+    entityId: listModalId,
+    openModal: openListModal,
+    closeModal: closeListModal
+  } = useEntityModal('list');
+
+  // Fetch lists for this person
+  const {
+    data: listsResponse,
+    isLoading: listsLoading
+  } = useListsForPerson(personId ? Number(personId) : undefined);
+
+  const lists = listsResponse?.data || [];
 
   // Form state
   const [formData, setFormData] = React.useState<PersonUpdate>({});
@@ -420,22 +439,47 @@ export function PersonDetailModal({
 
                 {/* Linked Entities Tab */}
                 <TabsContent value="linked" className="space-y-4">
-                  <div
-                    className={cn(
-                      "bg-warm-50 rounded-xl p-6 border border-warm-200",
-                      "text-center"
-                    )}
-                  >
-                    <h3 className="font-semibold text-warm-900 text-lg mb-2">
-                      Linked Entities
-                    </h3>
-                    <p className="text-warm-600 text-sm mb-4">
-                      View lists for this person and gifts assigned to them
-                    </p>
-                    <div className="text-warm-500 text-sm italic">
-                      Coming soon: Lists and gift associations will be displayed here
+                  {listsLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
                     </div>
-                  </div>
+                  ) : lists.length > 0 ? (
+                    <div className="space-y-3">
+                      {lists.map((list) => (
+                        <Card
+                          key={list.id}
+                          variant="interactive"
+                          padding="default"
+                          onClick={() => openListModal(String(list.id))}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-warm-900 truncate">
+                                {list.name}
+                              </h4>
+                              <p className="text-sm text-warm-600">
+                                {list.items?.length || 0} {list.items?.length === 1 ? 'item' : 'items'}
+                              </p>
+                            </div>
+                            <Badge variant="default" className="ml-3">
+                              {list.type}
+                            </Badge>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div
+                      className={cn(
+                        "bg-warm-50 rounded-xl p-12 border border-warm-200",
+                        "text-center"
+                      )}
+                    >
+                      <p className="text-warm-600">
+                        No lists attached to this person
+                      </p>
+                    </div>
+                  )}
                 </TabsContent>
 
                 {/* History Tab */}
@@ -567,6 +611,13 @@ export function PersonDetailModal({
           )}
         </div>
       ) : null}
+
+      {/* List Detail Modal */}
+      <ListDetailModal
+        listId={listModalId}
+        open={listModalOpen}
+        onOpenChange={closeListModal}
+      />
     </EntityModal>
   );
 }

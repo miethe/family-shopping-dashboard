@@ -14,14 +14,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ExternalLink, Gift as GiftIcon, DollarSign, Calendar, User, Tag, Edit, Trash2 } from "@/components/ui/icons";
+import { ExternalLink, Gift as GiftIcon, DollarSign, Calendar, User, Tag, Edit, Trash2, Heart, Lightbulb, CheckSquare, ShoppingBag } from "@/components/ui/icons";
 import { formatDate } from "@/lib/date-utils";
 import { formatPrice } from "@/lib/utils";
 import { giftApi } from "@/lib/api/endpoints";
 import { useDeleteGift } from "@/hooks/useGifts";
+import { useListsForGift } from "@/hooks/useLists";
 import type { Gift } from "@/types";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { ListDetailModal } from "./ListDetailModal";
 
 interface GiftDetailModalProps {
   giftId: string | null;
@@ -36,12 +38,18 @@ export function GiftDetailModal({
 }: GiftDetailModalProps) {
   const [activeTab, setActiveTab] = React.useState("overview");
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
+  const [showListModal, setShowListModal] = React.useState(false);
 
   const { data: gift, isLoading } = useQuery<Gift>({
     queryKey: ["gifts", giftId],
     queryFn: () => giftApi.get(Number(giftId)),
     enabled: !!giftId && open,
   });
+
+  const { data: listsData, isLoading: isLoadingLists } = useListsForGift(
+    giftId ? Number(giftId) : undefined
+  );
 
   const deleteGift = useDeleteGift();
 
@@ -60,6 +68,11 @@ export function GiftDetailModal({
   const handleEdit = () => {
     if (!giftId) return;
     window.location.href = `/gifts/${giftId}/edit`;
+  };
+
+  const handleListClick = (listId: number) => {
+    setSelectedListId(String(listId));
+    setShowListModal(true);
   };
 
   // Reset tab when modal closes
@@ -246,21 +259,127 @@ export function GiftDetailModal({
 
             {/* Linked Entities Tab */}
             <TabsContent value="linked" className="space-y-4">
-              <div
-                className={cn(
-                  "bg-warm-50 rounded-xl p-6 border border-warm-200",
-                  "text-center"
-                )}
-              >
-                <h3 className="font-semibold text-warm-900 text-lg mb-2">
-                  Linked Entities
-                </h3>
-                <p className="text-warm-600 text-sm mb-4">
-                  View which lists and occasions include this gift
-                </p>
-                <div className="text-warm-500 text-sm italic">
-                  Coming soon: List and occasion associations will be displayed here
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-warm-900 text-lg mb-1">
+                    Lists Containing This Gift
+                  </h3>
+                  <p className="text-warm-600 text-sm mb-4">
+                    This gift appears in the following lists
+                  </p>
                 </div>
+
+                {isLoadingLists ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" />
+                  </div>
+                ) : listsData && listsData.data.length > 0 ? (
+                  <div className="space-y-3">
+                    {listsData.data.map((list) => {
+                      const typeIcon = {
+                        wishlist: Heart,
+                        ideas: Lightbulb,
+                        assigned: CheckSquare,
+                      }[list.type];
+                      const TypeIcon = typeIcon || ShoppingBag;
+
+                      return (
+                        <button
+                          key={list.id}
+                          onClick={() => handleListClick(list.id)}
+                          className={cn(
+                            "w-full text-left",
+                            "bg-white rounded-xl p-4 border border-warm-200",
+                            "hover:border-purple-300 hover:shadow-md",
+                            "transition-all duration-200",
+                            "focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                          )}
+                        >
+                          <div className="flex items-start gap-3">
+                            {/* List Type Icon */}
+                            <div
+                              className={cn(
+                                "rounded-full p-2 mt-1",
+                                list.type === "wishlist" && "bg-rose-100",
+                                list.type === "ideas" && "bg-amber-100",
+                                list.type === "assigned" && "bg-blue-100"
+                              )}
+                            >
+                              <TypeIcon
+                                className={cn(
+                                  "h-4 w-4",
+                                  list.type === "wishlist" && "text-rose-600",
+                                  list.type === "ideas" && "text-amber-600",
+                                  list.type === "assigned" && "text-blue-600"
+                                )}
+                              />
+                            </div>
+
+                            {/* List Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2 mb-1">
+                                <h4 className="font-semibold text-warm-900 text-base">
+                                  {list.name}
+                                </h4>
+                              </div>
+
+                              <div className="flex flex-wrap items-center gap-2 text-sm">
+                                {/* List Type Badge */}
+                                <Badge
+                                  variant="secondary"
+                                  className={cn(
+                                    "text-xs",
+                                    list.type === "wishlist" && "bg-rose-100 text-rose-700 border-rose-200",
+                                    list.type === "ideas" && "bg-amber-100 text-amber-700 border-amber-200",
+                                    list.type === "assigned" && "bg-blue-100 text-blue-700 border-blue-200"
+                                  )}
+                                >
+                                  {list.type.charAt(0).toUpperCase() + list.type.slice(1)}
+                                </Badge>
+
+                                {/* Item Count */}
+                                {list.item_count !== undefined && (
+                                  <span className="text-warm-500 text-xs">
+                                    {list.item_count} {list.item_count === 1 ? "item" : "items"}
+                                  </span>
+                                )}
+
+                                {/* Visibility Badge */}
+                                <Badge variant="outline" className="text-xs text-warm-600">
+                                  {list.visibility.charAt(0).toUpperCase() + list.visibility.slice(1)}
+                                </Badge>
+                              </div>
+                            </div>
+
+                            {/* Arrow Icon */}
+                            <div className="text-warm-400 mt-1">
+                              <ExternalLink className="h-4 w-4" />
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div
+                    className={cn(
+                      "bg-warm-50 rounded-xl p-8 border border-warm-200",
+                      "text-center"
+                    )}
+                  >
+                    <div className="flex flex-col items-center">
+                      <div className="bg-warm-100 rounded-full p-4 mb-4">
+                        <ShoppingBag className="h-8 w-8 text-warm-400" />
+                      </div>
+                      <h4 className="font-semibold text-warm-900 text-base mb-1">
+                        Not in Any Lists
+                      </h4>
+                      <p className="text-warm-600 text-sm">
+                        This gift has not been added to any lists yet
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </TabsContent>
 
@@ -314,6 +433,13 @@ export function GiftDetailModal({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* List Detail Modal */}
+      <ListDetailModal
+        listId={selectedListId}
+        open={showListModal}
+        onOpenChange={setShowListModal}
+      />
     </>
   );
 }

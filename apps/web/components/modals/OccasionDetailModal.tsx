@@ -7,11 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock, Edit, Trash2 } from "@/components/ui/icons";
+import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock, Edit, Trash2, Heart, Lightbulb, CheckSquare } from "@/components/ui/icons";
 import { formatDate, getDaysUntil } from "@/lib/date-utils";
 import { occasionApi } from "@/lib/api/endpoints";
 import { useDeleteOccasion } from "@/hooks/useOccasions";
+import { useListsForOccasion } from "@/hooks/useLists";
 import { AddOccasionModal } from "@/components/occasions/AddOccasionModal";
+import { ListDetailModal } from "./ListDetailModal";
 import type { Occasion } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -52,6 +54,27 @@ const occasionTypeConfig = {
   },
 };
 
+const listTypeConfig = {
+  wishlist: {
+    icon: Heart,
+    label: "Wishlist",
+    bgColor: "bg-rose-100",
+    iconColor: "text-rose-600",
+  },
+  ideas: {
+    icon: Lightbulb,
+    label: "Ideas",
+    bgColor: "bg-amber-100",
+    iconColor: "text-amber-600",
+  },
+  assigned: {
+    icon: CheckSquare,
+    label: "Assigned",
+    bgColor: "bg-blue-100",
+    iconColor: "text-blue-600",
+  },
+};
+
 export function OccasionDetailModal({
   occasionId,
   open,
@@ -61,12 +84,18 @@ export function OccasionDetailModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("overview");
+  const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
 
   const { data: occasion, isLoading } = useQuery<Occasion>({
     queryKey: ["occasions", occasionId],
     queryFn: () => occasionApi.get(Number(occasionId)),
     enabled: !!occasionId && open,
   });
+
+  // Fetch lists attached to this occasion
+  const { data: listsData, isLoading: listsLoading } = useListsForOccasion(
+    occasionId ? Number(occasionId) : undefined
+  );
 
   const deleteMutation = useDeleteOccasion();
 
@@ -76,6 +105,7 @@ export function OccasionDetailModal({
       setShowDeleteConfirm(false);
       setShowEditModal(false);
       setActiveTab("overview");
+      setSelectedListId(null);
     }
   }, [open]);
 
@@ -325,22 +355,79 @@ export function OccasionDetailModal({
 
             {/* Linked Entities Tab */}
             <TabsContent value="linked" className="space-y-4">
-              <div
-                className={cn(
-                  "bg-warm-50 rounded-xl p-6 border border-warm-200",
-                  "text-center"
-                )}
-              >
-                <h3 className="font-semibold text-warm-900 text-lg mb-2">
-                  Linked Entities
-                </h3>
-                <p className="text-warm-600 text-sm mb-4">
-                  View lists for this occasion and people celebrating
-                </p>
-                <div className="text-warm-500 text-sm italic">
-                  Coming soon: Lists and people associations will be displayed here
+              {listsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
                 </div>
-              </div>
+              ) : listsData?.data && listsData.data.length > 0 ? (
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-warm-900 text-sm mb-3">
+                    Lists for this occasion
+                  </h3>
+                  {listsData.data.map((list) => {
+                    const listConfig = listTypeConfig[list.type as keyof typeof listTypeConfig];
+                    const ListIcon = listConfig?.icon;
+
+                    return (
+                      <button
+                        key={list.id}
+                        onClick={() => setSelectedListId(String(list.id))}
+                        className={cn(
+                          "w-full text-left",
+                          "bg-gradient-to-br from-blue-50 to-cyan-50",
+                          "rounded-xl p-4 border border-blue-100",
+                          "hover:shadow-md hover:border-blue-200 transition-all",
+                          "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                          "min-h-[44px]"
+                        )}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            {ListIcon && (
+                              <div
+                                className={cn(
+                                  "flex-shrink-0 rounded-lg p-2",
+                                  listConfig.bgColor
+                                )}
+                              >
+                                <ListIcon className={cn("h-5 w-5", listConfig.iconColor)} />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="default" className="text-xs">
+                                  {listConfig?.label}
+                                </Badge>
+                              </div>
+                              <div className="font-semibold text-warm-900 truncate">
+                                {list.name}
+                              </div>
+                              <div className="text-xs text-warm-600">
+                                {list.item_count || 0} {list.item_count === 1 ? 'item' : 'items'}
+                              </div>
+                            </div>
+                          </div>
+                          <ExternalLink className="h-4 w-4 text-warm-400 flex-shrink-0" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div
+                  className={cn(
+                    "bg-warm-50 rounded-xl p-6 border border-warm-200",
+                    "text-center"
+                  )}
+                >
+                  <h3 className="font-semibold text-warm-900 text-lg mb-2">
+                    No Lists Attached
+                  </h3>
+                  <p className="text-warm-600 text-sm">
+                    No lists have been created for this occasion yet
+                  </p>
+                </div>
+              )}
             </TabsContent>
 
             {/* History Tab */}
@@ -377,6 +464,13 @@ export function OccasionDetailModal({
           onSuccess={handleEditSuccess}
         />
       )}
+
+      {/* List Detail Modal */}
+      <ListDetailModal
+        listId={selectedListId}
+        open={!!selectedListId}
+        onOpenChange={(open) => !open && setSelectedListId(null)}
+      />
     </>
   );
 }
