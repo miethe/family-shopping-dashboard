@@ -27,14 +27,13 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy application code
 COPY . .
 
-# Build args for NEXT_PUBLIC_* vars (baked in at build time, not runtime)
-# These must use EXTERNAL ports since they're accessed by the browser
-ARG NEXT_PUBLIC_API_URL=http://localhost:8030/api/v1
-ARG NEXT_PUBLIC_WS_URL=ws://localhost:8030/ws
+# Build args for NEXT_PUBLIC_* (passed from docker-compose, sourced from .env)
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_WS_URL
 
 # Set as env vars for the build process
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL}
 
 # Build Next.js application
 RUN pnpm build
