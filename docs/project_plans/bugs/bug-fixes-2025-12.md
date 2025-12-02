@@ -45,5 +45,5 @@ Monthly bug fix tracking document for the Family Gifting Dashboard.
 - **Fix**:
   1. Added `mapToApiStatus()` function in KanbanView.tsx to convert frontend column IDs to API status values before API calls
   2. Relaxed backend state machine to allow any-to-any status transitions for flexible Kanban UX
-- **Commit(s)**: `984e12c`
+- **Commit(s)**: `784b755`
 - **Status**: RESOLVED
