@@ -104,3 +104,98 @@ export function useDeleteList() {
     },
   });
 }
+
+/**
+ * Fetch lists filtered by person (recipient)
+ * @param personId - Person ID to filter by
+ */
+export function useListsForPerson(personId: number | undefined) {
+  const query = useQuery({
+    queryKey: ['lists', 'person', personId],
+    queryFn: () => listApi.list({ person_id: personId }),
+    enabled: !!personId,
+    staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently
+  });
+
+  // Real-time sync for person-specific lists
+  useRealtimeSync({
+    topic: personId ? `person:${personId}:lists` : '',
+    queryKey: ['lists', 'person', personId],
+    events: ['ADDED', 'UPDATED', 'DELETED'],
+    enabled: !!personId,
+  });
+
+  return query;
+}
+
+/**
+ * Fetch lists filtered by occasion
+ * @param occasionId - Occasion ID to filter by
+ */
+export function useListsForOccasion(occasionId: number | undefined) {
+  const query = useQuery({
+    queryKey: ['lists', 'occasion', occasionId],
+    queryFn: () => listApi.list({ occasion_id: occasionId }),
+    enabled: !!occasionId,
+    staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently
+  });
+
+  // Real-time sync for occasion-specific lists
+  useRealtimeSync({
+    topic: occasionId ? `occasion:${occasionId}:lists` : '',
+    queryKey: ['lists', 'occasion', occasionId],
+    events: ['ADDED', 'UPDATED', 'DELETED'],
+    enabled: !!occasionId,
+  });
+
+  return query;
+}
+
+/**
+ * Fetch lists that contain a specific gift
+ * @param giftId - Gift ID to search for
+ *
+ * Note: For V1 (2-3 users), this fetches all lists and filters client-side
+ * by checking each list's items for the gift.
+ * Future: Backend should support GET /lists?gift_id={id} for efficiency.
+ */
+export function useListsForGift(giftId: number | undefined) {
+  const query = useQuery({
+    queryKey: ['lists', 'gift', giftId],
+    queryFn: async () => {
+      if (!giftId) return { data: [], next_cursor: null };
+
+      // Fetch all lists (reasonable for 2-3 users in V1)
+      const response = await listApi.list({ limit: 100 });
+
+      // Filter lists that contain this gift
+      // We need to check each list's items, so we'll fetch list details
+      const listsWithGift: GiftList[] = [];
+
+      for (const list of response.data) {
+        // Fetch full list with items
+        const listWithItems = await listApi.get(list.id);
+
+        // Check if any item contains the gift
+        if (listWithItems.items.some((item) => item.gift.id === giftId)) {
+          listsWithGift.push(list);
+        }
+      }
+
+      return { data: listsWithGift, next_cursor: null };
+    },
+    enabled: !!giftId,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+  });
+
+  // Real-time sync for gift-specific lists
+  // When any list changes, we need to refetch to see if it now includes/excludes this gift
+  useRealtimeSync({
+    topic: 'lists',
+    queryKey: ['lists', 'gift', giftId],
+    events: ['ADDED', 'UPDATED', 'DELETED'],
+    enabled: !!giftId,
+  });
+
+  return query;
+}
