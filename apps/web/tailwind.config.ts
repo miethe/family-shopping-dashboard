@@ -231,6 +231,14 @@ const config: Config = {
         shimmer: {
           '100%': { transform: 'translateX(100%)' },
         },
+        'collapsible-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-collapsible-content-height)' },
+        },
+        'collapsible-up': {
+          from: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: '0' },
+        },
       },
 
       animation: {
@@ -239,6 +247,8 @@ const config: Config = {
         'scale-in': 'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         'spring-in': 'springIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
         'shimmer': 'shimmer 2s infinite',
+        'collapsible-down': 'collapsible-down 0.2s ease-out',
+        'collapsible-up': 'collapsible-up 0.2s ease-out',
       },
 
       backdropBlur: {
