@@ -6,13 +6,8 @@ import { usePersons } from '@/hooks/usePersons';
 import { useOccasions } from '@/hooks/useOccasions';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { AddPersonModal } from '@/components/people/AddPersonModal';
+import { PersonCard } from '@/components/people/PersonCard';
 import type { Person, Occasion } from '@/types';
 
 /**
@@ -33,7 +28,6 @@ export default function RecipientsPage() {
   const [cursor, setCursor] = useState<number | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<GroupFilter>('all');
-  const [selectedRecipient, setSelectedRecipient] = useState<Person | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const { data: personsData, isLoading: personsLoading, error: personsError } = usePersons({ cursor });
@@ -115,26 +109,6 @@ export default function RecipientsPage() {
     if (diffDays <= 7) return 'bg-status-warning-500';
     if (diffDays <= 14) return 'bg-status-info-500';
     return 'bg-status-progress-500';
-  };
-
-  // Check if person has upcoming occasion
-  const hasUpcomingOccasion = (person: Person) => {
-    if (!person.birthdate) return false;
-    const today = new Date();
-    const birthdate = new Date(person.birthdate);
-    const nextBirthday = new Date(today.getFullYear(), birthdate.getMonth(), birthdate.getDate());
-    if (nextBirthday < today) {
-      nextBirthday.setFullYear(today.getFullYear() + 1);
-    }
-    const diffDays = Math.ceil((nextBirthday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDays <= 30;
-  };
-
-  // Format date for display
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return null;
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   return (
@@ -298,37 +272,7 @@ export default function RecipientsPage() {
               ) : (
                 <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
                   {filteredPeople.map((person: Person) => (
-                    <div
-                      key={person.id}
-                      onClick={() => setSelectedRecipient(person)}
-                      className="bg-white p-6 rounded-3xl text-center shadow-card hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group"
-                    >
-                      <div className="relative inline-block">
-                        {person.photo_url ? (
-                          <Image
-                            src={person.photo_url}
-                            alt={person.display_name}
-                            width={96}
-                            height={96}
-                            className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-transparent group-hover:border-primary/20 transition-all"
-                            unoptimized
-                          />
-                        ) : (
-                          <div className="w-24 h-24 rounded-full mx-auto bg-slate-200 flex items-center justify-center text-3xl font-bold text-slate-600 border-4 border-transparent group-hover:border-primary/20 transition-all">
-                            {person.display_name.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        {hasUpcomingOccasion(person) && (
-                          <div className="absolute bottom-0 right-0 w-5 h-5 bg-primary border-2 border-white rounded-full"></div>
-                        )}
-                      </div>
-                      <h3 className="mt-4 font-bold text-slate-800 text-lg">{person.display_name}</h3>
-                      {person.relationship && (
-                        <span className="inline-block mt-2 px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-full capitalize">
-                          {getGroup(person.relationship)}
-                        </span>
-                      )}
-                    </div>
+                    <PersonCard key={person.id} person={person} />
                   ))}
                 </div>
               )}
@@ -394,132 +338,6 @@ export default function RecipientsPage() {
           </div>
         </div>
       </div>
-
-      {/* Recipient Details Modal */}
-      <Dialog open={!!selectedRecipient} onOpenChange={() => setSelectedRecipient(null)}>
-        <DialogContent className="max-w-5xl p-0 rounded-3xl">
-          {selectedRecipient && (
-            <div className="relative">
-              {/* Header with Background Color */}
-              <div className="bg-background-light p-8 rounded-t-3xl text-center relative z-0">
-                <div className="relative inline-block -mb-16">
-                  {selectedRecipient.photo_url ? (
-                    <Image
-                      src={selectedRecipient.photo_url}
-                      alt={selectedRecipient.display_name}
-                      width={128}
-                      height={128}
-                      className="w-32 h-32 rounded-full border-8 border-white shadow-xl object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="w-32 h-32 rounded-full border-8 border-white shadow-xl bg-slate-200 flex items-center justify-center text-5xl font-bold text-slate-600">
-                      {selectedRecipient.display_name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="bg-white pt-20 px-8 pb-10 rounded-b-3xl -mt-8 relative z-10">
-                <div className="text-center mb-8">
-                  <DialogTitle className="text-3xl font-bold text-slate-900">
-                    {selectedRecipient.display_name}
-                  </DialogTitle>
-                  {selectedRecipient.relationship && (
-                    <span className="inline-block mt-2 px-4 py-1.5 bg-blue-50 text-blue-600 text-sm font-bold rounded-full capitalize">
-                      {getGroup(selectedRecipient.relationship)}
-                    </span>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-slate-800">Personal Info</h3>
-                    <div className="bg-slate-50 p-6 rounded-2xl space-y-3">
-                      {selectedRecipient.birthdate && (
-                        <div className="flex items-center gap-3">
-                          <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.706 2.706 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zM3 10h18V6a2 2 0 00-2-2H5a2 2 0 00-2 2v4z" />
-                          </svg>
-                          <div>
-                            <span className="font-bold text-slate-700">Birthday:</span>{' '}
-                            <span className="text-slate-600">{formatDate(selectedRecipient.birthdate)}</span>
-                          </div>
-                        </div>
-                      )}
-                      {selectedRecipient.relationship && (
-                        <div className="flex items-center gap-3">
-                          <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                          <div>
-                            <span className="font-bold text-slate-700">Relationship:</span>{' '}
-                            <span className="text-slate-600">{selectedRecipient.relationship}</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {selectedRecipient.sizes && Object.keys(selectedRecipient.sizes).length > 0 && (
-                      <div className="bg-slate-50 p-6 rounded-2xl">
-                        <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
-                          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                          </svg>
-                          Sizes
-                        </h4>
-                        <div className="space-y-2 text-sm text-slate-600">
-                          {Object.entries(selectedRecipient.sizes).map(([key, value]) => (
-                            <div key={key} className="flex justify-between">
-                              <span className="capitalize">{key}</span>
-                              <span className="font-bold">{value}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {selectedRecipient.interests && selectedRecipient.interests.length > 0 && (
-                      <div className="bg-slate-50 p-6 rounded-2xl">
-                        <h4 className="font-bold text-slate-800 mb-3">Interests</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedRecipient.interests.map((interest, idx) => (
-                            <span
-                              key={idx}
-                              className="px-3 py-1 bg-white text-slate-700 text-xs font-semibold rounded-full border border-slate-200"
-                            >
-                              {interest}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-slate-800">Gifting History</h3>
-                    <div className="space-y-4">
-                      {/* Placeholder gifting history - could be enhanced with actual gift data */}
-                      <div className="text-center py-8 text-slate-500 text-sm">
-                        <p>No gifting history yet</p>
-                        <p className="text-xs mt-1">Gifts will appear here once added</p>
-                      </div>
-                    </div>
-
-                    {selectedRecipient.notes && (
-                      <div className="bg-slate-50 p-6 rounded-2xl">
-                        <h4 className="font-bold text-slate-800 mb-3">Notes</h4>
-                        <p className="text-sm text-slate-600">{selectedRecipient.notes}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* Add Person Modal */}
       <AddPersonModal
