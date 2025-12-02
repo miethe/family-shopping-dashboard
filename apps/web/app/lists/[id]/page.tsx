@@ -21,6 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import { Icon, IconNames } from '@/components/ui/icon';
 import { KanbanView, TableView, AddListItemModal } from '@/components/lists';
+import { GiftDetailModal } from '@/components/modals';
 import { PageHeader } from '@/components/layout';
 import {
   FilterIcon,
@@ -28,7 +29,7 @@ import {
   PlusIcon,
   SparklesIcon,
 } from '@/components/layout/icons';
-import type { ListItemStatus } from '@/types';
+import type { ListItemStatus, ListItemWithGift } from '@/types';
 import { cn } from '@/lib/utils';
 
 type ViewMode = 'kanban' | 'list';
@@ -89,7 +90,7 @@ export default function ListDetailPage({ params }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
   const [defaultStatus, setDefaultStatus] = useState<ListItemStatus>('idea');
-  const [selectedItem, setSelectedItem] = useState<any>(null); // TODO: Type this properly when modal is implemented
+  const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null);
 
   // Fetch list data
   const { data: listData, isLoading: listLoading, error: listError } = useList(listId);
@@ -103,11 +104,11 @@ export default function ListDetailPage({ params }: Props) {
     setIsAddItemModalOpen(true);
   };
 
-  // Handler for clicking on an item in table view
-  const handleItemClick = (item: any) => {
-    setSelectedItem(item);
-    // TODO: Open item detail modal when implemented
-    console.log('Item clicked:', item);
+  // Handler for clicking on an item (works for both table and kanban views)
+  const handleItemClick = (item: ListItemWithGift) => {
+    if (item.gift?.id) {
+      setSelectedGiftId(item.gift.id);
+    }
   };
 
   // Show loading state
@@ -211,7 +212,12 @@ export default function ListDetailPage({ params }: Props) {
                 <Skeleton className="h-96" />
               </div>
             ) : (
-              <KanbanView items={items || []} listId={listId} onAddItem={handleAddItem} />
+              <KanbanView
+                items={items || []}
+                listId={listId}
+                onAddItem={handleAddItem}
+                onItemClick={handleItemClick}
+              />
             )
           ) : itemsLoading ? (
             <div className="h-full bg-white dark:bg-slate-800/50 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800">
@@ -229,6 +235,13 @@ export default function ListDetailPage({ params }: Props) {
         onClose={() => setIsAddItemModalOpen(false)}
         listId={listId}
         defaultStatus={defaultStatus}
+      />
+
+      {/* Gift Detail Modal */}
+      <GiftDetailModal
+        giftId={selectedGiftId?.toString() ?? ''}
+        open={!!selectedGiftId}
+        onOpenChange={(open) => !open && setSelectedGiftId(null)}
       />
     </div>
   );

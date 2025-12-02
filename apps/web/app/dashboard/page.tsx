@@ -14,7 +14,7 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-cream p-4 animate-fade-in">
+      <div className="min-h-screen p-4 animate-fade-in">
         <div className="text-red-600 p-4 bg-red-50 rounded-2xlarge mt-4 border border-red-100">
           Error loading dashboard: {error instanceof Error ? error.message : 'Unknown error'}
         </div>
@@ -23,7 +23,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream p-4 md:p-8 pb-20 md:pb-6 relative overflow-x-hidden overflow-y-auto">
+    <div className="min-h-screen p-4 md:p-8 pb-20 md:pb-6 relative overflow-x-hidden overflow-y-auto">
       {/* Decorative Background Blobs - Reduced size on mobile */}
       <div className="absolute top-20 right-10 w-64 h-64 md:w-96 md:h-96 bg-salmon/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-32 left-10 w-56 h-56 md:w-80 md:h-80 bg-sage/15 rounded-full blur-3xl pointer-events-none" />

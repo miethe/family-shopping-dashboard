@@ -41,7 +41,7 @@ interface AppLayoutProps {
  */
 export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className="flex min-h-screen bg-background-light dark:bg-background-dark text-text-main dark:text-text-main-dark transition-colors duration-300">
+    <div className="flex min-h-screen bg-cream dark:bg-background-dark text-text-main dark:text-text-main-dark transition-colors duration-300">
       {/* ACCESSIBILITY: Skip to main content link for keyboard navigation */}
       <a
         href="#main-content"

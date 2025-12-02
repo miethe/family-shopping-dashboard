@@ -18,7 +18,7 @@ const config: Config = {
     extend: {
       colors: {
         // Background colors for light/dark modes
-        'background-light': '#FBF9F6',
+        'background-light': '#F5F1E8',
         'background-dark': '#1a1a2e',
 
         // Text colors for light/dark modes
@@ -39,7 +39,7 @@ const config: Config = {
 
         // Warm text
         warm: {
-          50: '#FBF9F6',
+          50: '#F5F1E8',
           100: '#F2EEE6',
           200: '#E6E0D6',
           300: '#D1C8BC',

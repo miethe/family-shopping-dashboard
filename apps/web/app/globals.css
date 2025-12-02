@@ -12,7 +12,7 @@
 
 :root {
   /* Colors - Backgrounds */
-  --color-bg-base: #FBF9F6;
+  --color-bg-base: #F5F1E8;
   --color-bg-subtle: #F2EEE6;
   --color-bg-elevated: #FFFFFF;
   --color-surface-primary: #FFFFFF;
@@ -21,7 +21,7 @@
   --color-surface-translucent: rgba(255, 255, 255, 0.8);
 
   /* Design System V2 - Additional Background Colors */
-  --color-background-light: #FBF9F6;
+  --color-background-light: #F5F1E8;
   --color-background-dark: #1a1a2e;
 
   /* Colors - Text */

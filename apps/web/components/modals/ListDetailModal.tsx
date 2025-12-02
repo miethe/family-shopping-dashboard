@@ -358,76 +358,79 @@ export function ListDetailModal({
                 Gift Catalog
               </h3>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {/* Add New Gift Card */}
-                <button
-                  onClick={handleAddItemClick}
-                  className={cn(
-                    "aspect-square rounded-2xl border-2 border-dashed border-warm-300",
-                    "flex flex-col items-center justify-center gap-2",
-                    "hover:border-blue-500 hover:bg-blue-50/50 transition-all duration-200",
-                    "group min-h-[44px]"
-                  )}
-                >
-                  <div className="w-12 h-12 rounded-full bg-warm-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
-                    <Plus className="h-6 w-6 text-warm-400 group-hover:text-blue-500" />
-                  </div>
-                  <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
-                    Add New Gift
-                  </span>
-                </button>
-
-                {/* Filtered Gift Cards */}
-                {filteredItems.map((item) => (
+              {/* Scrollable container with smaller cards */}
+              <div className="max-h-[400px] overflow-y-auto pr-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                  {/* Add New Gift Card - NOW FIRST */}
                   <button
-                    key={item.id}
-                    onClick={() => handleGiftCardClick(item.gift_id)}
+                    onClick={handleAddItemClick}
                     className={cn(
-                      "text-left group cursor-pointer",
-                      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-2xl"
+                      "aspect-square rounded-xl border-2 border-dashed border-warm-300",
+                      "flex flex-col items-center justify-center gap-1.5",
+                      "hover:border-blue-500 hover:bg-blue-50/50 transition-all duration-200",
+                      "group min-h-[44px]"
                     )}
                   >
-                    {/* Gift Image */}
-                    <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-warm-50 to-warm-100 mb-2 relative">
-                      <GiftImage
-                        src={item.gift.image_url}
-                        alt={item.gift.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        fallbackClassName="aspect-square"
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      />
-                      {/* Status Badge Overlay */}
-                      <div className="absolute top-2 right-2">
-                        <Badge
-                          className={cn(
-                            "text-xs font-semibold shadow-sm border",
-                            statusColors[item.status]
-                          )}
-                        >
-                          {item.status === 'idea' ? 'Idea' :
-                           item.status === 'purchased' ? 'Purchased' :
-                           item.status === 'received' ? 'Gifted' :
-                           item.status}
-                        </Badge>
-                      </div>
+                    <div className="w-8 h-8 rounded-full bg-warm-100 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                      <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
                     </div>
-
-                    {/* Gift Info */}
-                    <h4 className="font-semibold text-warm-900 text-sm line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">
-                      {item.gift.name}
-                    </h4>
-
-                    {/* Price and Added By */}
-                    <div className="flex items-center justify-between gap-2">
-                      {item.gift.price !== null && item.gift.price !== undefined && (
-                        <span className="text-sm font-bold text-warm-700">
-                          {formatPrice(item.gift.price)}
-                        </span>
-                      )}
-                    </div>
+                    <span className="text-xs font-medium text-warm-600 group-hover:text-blue-600 px-1 text-center">
+                      Add New
+                    </span>
                   </button>
-                ))}
+
+                  {/* Filtered Gift Cards */}
+                  {filteredItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => handleGiftCardClick(item.gift_id)}
+                      className={cn(
+                        "text-left group cursor-pointer",
+                        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-xl"
+                      )}
+                    >
+                      {/* Gift Image - Smaller */}
+                      <div className="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-warm-50 to-warm-100 mb-1.5 relative">
+                        <GiftImage
+                          src={item.gift.image_url}
+                          alt={item.gift.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          fallbackClassName="aspect-square"
+                          sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                        />
+                        {/* Status Badge Overlay - Smaller */}
+                        <div className="absolute top-1 right-1">
+                          <Badge
+                            className={cn(
+                              "text-[10px] font-semibold shadow-sm border px-1.5 py-0.5",
+                              statusColors[item.status]
+                            )}
+                          >
+                            {item.status === 'idea' ? 'Idea' :
+                             item.status === 'purchased' ? 'Purchased' :
+                             item.status === 'received' ? 'Gifted' :
+                             item.status}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      {/* Gift Info - Smaller text */}
+                      <h4 className="font-semibold text-warm-900 text-xs line-clamp-2 mb-0.5 group-hover:text-blue-600 transition-colors">
+                        {item.gift.name}
+                      </h4>
+
+                      {/* Price - Smaller */}
+                      <div className="flex items-center justify-between gap-1">
+                        {item.gift.price !== null && item.gift.price !== undefined && (
+                          <span className="text-xs font-bold text-warm-700">
+                            {formatPrice(item.gift.price)}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Empty State */}

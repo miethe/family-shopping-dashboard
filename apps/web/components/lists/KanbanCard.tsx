@@ -23,9 +23,10 @@ interface KanbanCardProps {
   status: ListItemStatus;
   onDragStart: (item: ListItemWithGift) => void;
   onDragEnd: () => void;
+  onClick?: (item: ListItemWithGift) => void;
 }
 
-export function KanbanCard({ item, status, onDragStart, onDragEnd }: KanbanCardProps) {
+export function KanbanCard({ item, status, onDragStart, onDragEnd, onClick }: KanbanCardProps) {
   const [isDragging, setIsDragging] = useState(false);
 
   // Handle case where gift might not be loaded
@@ -81,8 +82,14 @@ export function KanbanCard({ item, status, onDragStart, onDragEnd }: KanbanCardP
       draggable={true}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onClick={(e) => {
+        if (onClick && !isDragging) {
+          e.stopPropagation();
+          onClick(item);
+        }
+      }}
       className={cn(
-        'bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-card cursor-move group',
+        'bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-card cursor-pointer group',
         'hover:shadow-lg hover:-translate-y-1 transition-all duration-300',
         'border border-transparent hover:border-slate-200 dark:hover:border-slate-600',
         'touch-manipulation', // Better touch handling on mobile

@@ -6,7 +6,7 @@
 
 'use client';
 
-import { Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/ui';
+import { Avatar, AvatarImage, AvatarFallback, getInitials, Icon } from '@/components/ui';
 import { useRecentActivity } from '@/hooks/useActivity';
 import { formatTimeAgo } from '@/lib/date-utils';
 import type { ActivityAction } from '@/types';
@@ -47,9 +47,7 @@ export function RecentActivity() {
       <div className="bg-white/60 backdrop-blur-md rounded-[2.5rem] p-6 md:p-8 h-full shadow-sm relative overflow-hidden">
         <h3 className="text-xl font-bold text-charcoal mb-8">Recent Activity</h3>
         <div className="text-center py-8">
-          <span className="material-symbols-rounded text-4xl text-warm-400 mb-2">
-            error_outline
-          </span>
+          <Icon name="error_outline" size="2xl" className="text-warm-400 mb-2" />
           <p className="text-charcoal/60 text-sm">Failed to load activity feed</p>
         </div>
       </div>
@@ -63,9 +61,7 @@ export function RecentActivity() {
       <div className="bg-white/60 backdrop-blur-md rounded-[2.5rem] p-6 md:p-8 h-full shadow-sm relative overflow-hidden">
         <h3 className="text-xl font-bold text-charcoal mb-8">Recent Activity</h3>
         <div className="text-center py-8">
-          <span className="material-symbols-rounded text-4xl text-warm-300 mb-2">
-            notifications_none
-          </span>
+          <Icon name="notifications_none" size="2xl" className="text-warm-300 mb-2" />
           <p className="text-charcoal/60 text-sm">No recent activity</p>
         </div>
       </div>

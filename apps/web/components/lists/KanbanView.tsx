@@ -22,6 +22,7 @@ interface KanbanViewProps {
   items: ListItemWithGift[];
   listId: number;
   onAddItem?: (status: ListItemStatus) => void;
+  onItemClick?: (item: ListItemWithGift) => void;
 }
 
 // Define the four columns for the Kanban board
@@ -54,7 +55,7 @@ function groupItemsForKanban(items: ListItemWithGift[]): Record<ListItemStatus, 
   return grouped;
 }
 
-export function KanbanView({ items, listId, onAddItem }: KanbanViewProps) {
+export function KanbanView({ items, listId, onAddItem, onItemClick }: KanbanViewProps) {
   // Local state for optimistic updates
   const [optimisticItems, setOptimisticItems] = useState<ListItemWithGift[]>(items);
   const [draggedItem, setDraggedItem] = useState<ListItemWithGift | null>(null);
@@ -144,6 +145,7 @@ export function KanbanView({ items, listId, onAddItem }: KanbanViewProps) {
           onDragEnd={handleDragEnd}
           onDrop={handleDrop}
           isDragOver={draggedItem !== null && draggedItem.status !== status}
+          onItemClick={onItemClick}
         />
       ))}
     </div>

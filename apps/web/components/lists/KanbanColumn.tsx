@@ -21,6 +21,7 @@ interface KanbanColumnProps {
   onDragEnd: () => void;
   onDrop: (status: ListItemStatus) => void;
   isDragOver?: boolean;
+  onItemClick?: (item: ListItemWithGift) => void;
 }
 
 // Column headers and colors mapping (v2 design)
@@ -69,6 +70,7 @@ export function KanbanColumn({
   onDragEnd,
   onDrop,
   isDragOver = false,
+  onItemClick,
 }: KanbanColumnProps) {
   const config = columnConfig[status];
   const [isHovering, setIsHovering] = useState(false);
@@ -86,18 +88,19 @@ export function KanbanColumn({
    * Handle drag leave - remove hover state
    * Only remove hover if we're actually leaving the column (not just entering a child element)
    */
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    // Check if we're leaving the column container entirely
-    // by checking if the related target is still within the column
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = e.clientX;
-    const y = e.clientY;
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    // Don't preventDefault on dragLeave - it can interfere with drop events
+    // Check if the related target (where we're going) is still a child of this column
+    const relatedTarget = e.relatedTarget as Node | null;
+    const currentTarget = e.currentTarget;
 
-    // Only clear hover state if cursor is outside column bounds
-    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
-      setIsHovering(false);
+    // If we're moving to a child element, don't clear hover state
+    if (relatedTarget && currentTarget.contains(relatedTarget)) {
+      return;
     }
+
+    // Only clear hover state if we're truly leaving the column
+    setIsHovering(false);
   };
 
   /**
@@ -168,6 +171,7 @@ export function KanbanColumn({
               status={status}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
+              onClick={onItemClick}
             />
           ))
         )}
