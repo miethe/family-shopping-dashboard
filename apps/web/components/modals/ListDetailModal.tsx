@@ -145,7 +145,7 @@ export function ListDetailModal({
   const VisIcon = visConfig?.icon;
 
   const totalValue = list?.items?.reduce((sum, item) => {
-    return sum + (item.gift.price || 0);
+    return sum + (item.gift?.price || 0);
   }, 0);
 
   const handleDelete = async () => {
@@ -468,8 +468,8 @@ export function ListDetailModal({
                           {/* Gift Image - Smaller */}
                           <div className="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-warm-50 to-warm-100 mb-1.5 relative">
                             <GiftImage
-                              src={item.gift.image_url}
-                              alt={item.gift.name}
+                              src={item.gift?.image_url}
+                              alt={item.gift?.name || 'Gift'}
                               fill
                               className="object-cover group-hover:scale-105 transition-transform duration-300"
                               fallbackClassName="aspect-square"
@@ -493,14 +493,14 @@ export function ListDetailModal({
 
                           {/* Gift Info - Smaller text */}
                           <h4 className="font-semibold text-warm-900 text-xs line-clamp-2 mb-0.5 group-hover:text-blue-600 transition-colors">
-                            {item.gift.name}
+                            {item.gift?.name || 'Unknown Gift'}
                           </h4>
 
                           {/* Price - Smaller */}
                           <div className="flex items-center justify-between gap-1">
-                            {item.gift.price !== null && item.gift.price !== undefined && (
+                            {item.gift?.price !== null && item.gift?.price !== undefined && (
                               <span className="text-xs font-bold text-warm-700">
-                                {formatPrice(item.gift.price)}
+                                {formatPrice(item.gift?.price)}
                               </span>
                             )}
                           </div>
