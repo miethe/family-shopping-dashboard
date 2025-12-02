@@ -187,3 +187,124 @@ Monthly bug tracking for December 2025.
   - Added `e.stopPropagation()` and `!isDragging` check to prevent click during drag
 - **Commit(s)**: 5bed9e7
 - **Status**: RESOLVED
+
+---
+
+### User Modal Hero Section Cut-Off
+
+**Issue**: When viewing a User (Person) modal, the "Hero" section with avatar was cut-off at the bottom, making the avatar not fully visible
+
+- **Location**: `apps/web/components/modals/PersonDetailModal.tsx:259-260`
+- **Root Cause**: Hero section had insufficient vertical padding (py-8) and no minimum height constraint, causing avatar (80px + ring) to be clipped on smaller viewports
+- **Fix**:
+  - Increased Hero vertical padding from `py-8` to `py-12`
+  - Added `min-h-[240px]` constraint to guarantee space for avatar + text + badge
+  - Changed modal size from `lg` to `xl` for better content display
+  - Added horizontal padding `px-6` to prevent edge clipping
+- **Commit(s)**: 01ae2fb
+- **Status**: RESOLVED
+
+---
+
+### Recipient Cards Missing Key Information
+
+**Issue**: PersonCard on /people page only showed name, relationship, and birthday indicator - missing age, birthday date, gift count, and attached lists
+
+- **Location**: `apps/web/components/people/PersonCard.tsx`
+- **Root Cause**: Initial implementation was minimal - only basic info displayed, no data fetching for related entities
+- **Fix**:
+  - Added `calculateAge()` and `formatBirthday()` helper functions
+  - Display age as "X years" next to birthday (🎂 Jan 15 • 25 years)
+  - Added gift count with X/Y format and link to `/gifts?recipient={id}`
+  - Show attached lists as badges with +N indicator for overflow
+  - Clicking list badge opens ListDetailModal
+  - Highlight cards with no gifts (orange accent) to prompt users to add
+- **Commit(s)**: 555275b
+- **Status**: RESOLVED
+
+---
+
+### Lists Cannot Be Attached to Recipients/Occasions
+
+**Issue**: No UI to attach lists to recipients or occasions during list creation/editing, even though backend supported it
+
+- **Location**: `apps/web/components/lists/AddListModal.tsx`, `apps/web/components/modals/ListDetailModal.tsx`
+- **Root Cause**: Backend had `person_id` and `occasion_id` fields but frontend forms didn't expose them
+- **Fix**:
+  - AddListModal: Added "For Recipient" and "For Occasion" dropdowns
+  - Pre-populate dropdowns in edit mode with existing values
+  - Pass `person_id`/`occasion_id` to API on create/update
+  - ListDetailModal: Display attached recipient with View Details button
+  - Display attached occasion with date, color-coded cards
+- **Commit(s)**: 9a6f11f
+- **Status**: RESOLVED
+
+---
+
+### /Gifts Page Missing Advanced Filtering
+
+**Issue**: /gifts page only had basic text search - no way to filter by recipient, status, list, or occasion
+
+- **Location**: `services/api/app/repositories/gift.py`, `services/api/app/api/gifts.py`, `apps/web/app/gifts/page.tsx`
+- **Root Cause**: Backend only implemented simple search, no join queries through ListItem→List for relationship-based filtering
+- **Fix**:
+  - Backend: Added `get_filtered()` repository method with joins through ListItem→List
+  - Support filtering by `person_ids`, `statuses`, `list_ids`, `occasion_ids`
+  - Use DISTINCT to prevent duplicate gifts in multiple lists
+  - Implement sorting: recent, price_asc, price_desc
+  - Frontend: Created GiftFilters component using FilterBar/FilterChip design system
+  - Multi-select chips for Recipient, Status, List, Occasion
+  - Updated API client with proper array parameter serialization
+- **Commit(s)**: 23cf12d
+- **Status**: RESOLVED
+
+---
+
+### Gifts Cannot Be Easily Attached to Recipients/Lists
+
+**Issue**: Gift creation flow didn't show meaningful context about lists - just generic "wishlist list" text instead of showing recipient/occasion association
+
+- **Location**: `apps/web/components/gifts/UrlGiftForm.tsx`, `apps/web/components/gifts/ManualGiftForm.tsx`, `apps/web/app/gifts/[id]/page.tsx`
+- **Root Cause**: List selection only showed list type, not the associated recipient/occasion context
+- **Fix**:
+  - Enhanced list selection with `getListContext()` helper showing "for [Recipient] (Occasion)"
+  - Created GiftEditModal for editing gifts and managing list associations
+  - Updated GiftUsage component to show all lists containing a gift with status badges
+  - Integrated edit modal into gift detail page
+- **Commit(s)**: b791cf9
+- **Status**: RESOLVED
+
+---
+
+### Entity Modals Missing Standardized Tabbed Design
+
+**Issue**: Only GiftDetailModal had tabs - PersonDetailModal, ListDetailModal, OccasionDetailModal lacked consistent tabbed organization
+
+- **Location**: `apps/web/components/modals/PersonDetailModal.tsx`, `apps/web/components/modals/ListDetailModal.tsx`, `apps/web/components/modals/OccasionDetailModal.tsx`
+- **Root Cause**: Initial implementations were flat layouts without tabbed structure
+- **Fix**:
+  - PersonDetailModal: Added tabs (Overview, Linked Entities, History)
+  - ListDetailModal: Added tabs (Overview, Items, Linked Entities, History)
+  - OccasionDetailModal: Added tabs (Overview, Linked Entities, History)
+  - All tabs follow GiftDetailModal pattern with consistent styling
+  - Tab state resets on modal close
+- **Commit(s)**: b791cf9
+- **Status**: RESOLVED
+
+---
+
+### Occasions Cannot Be Edited or Deleted
+
+**Issue**: OccasionDetailModal had no edit or delete functionality - view only with no way to modify or remove occasions
+
+- **Location**: `apps/web/components/modals/OccasionDetailModal.tsx`, `apps/web/components/occasions/AddOccasionModal.tsx`
+- **Root Cause**: Initial implementation was read-only, AddOccasionModal only supported create mode
+- **Fix**:
+  - OccasionDetailModal: Added Edit button opening AddOccasionModal in edit mode
+  - Added Delete button with two-step confirmation dialog
+  - Footer structure follows ListDetailModal pattern
+  - AddOccasionModal: Support 'create' and 'edit' modes via props
+  - Pre-populate form fields when editing existing occasion
+  - Dynamic button text and modal title based on mode
+- **Commit(s)**: 42e88bd
+- **Status**: RESOLVED
