@@ -35,7 +35,7 @@
 
 import { useEffect, useCallback, useRef } from 'react';
 import { useQueryClient, QueryKey } from '@tanstack/react-query';
-import { useWebSocket } from './useWebSocket';
+import { useWebSocketContext } from '@/lib/websocket/WebSocketProvider';
 import type { WSEvent, WSEventType } from '@/lib/websocket/types';
 
 export interface UseRealtimeSyncOptions {
@@ -100,7 +100,7 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
   } = options;
 
   const queryClient = useQueryClient();
-  const { subscribe, state } = useWebSocket();
+  const { subscribe, state } = useWebSocketContext();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
@@ -209,7 +209,7 @@ export function usePollingFallback(options: UsePollingFallbackOptions): void {
   const { queryKey, intervalMs = 10000, enabled = true } = options;
 
   const queryClient = useQueryClient();
-  const { state } = useWebSocket();
+  const { state } = useWebSocketContext();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {

@@ -328,3 +328,18 @@ Monthly bug tracking for December 2025.
 **Follow-up Fix**: Initial fix was missing `/api/v1` path suffix in the URL. API routes are mounted at `/api/v1/auth/login`, not `/auth/login`.
 
 **Key Insight**: Docker port mapping is `EXTERNAL:INTERNAL`. Browser-accessed URLs (`NEXT_PUBLIC_*`) use EXTERNAL ports. Container-to-container communication uses INTERNAL ports via service names.
+
+---
+
+### WebSocket Connection Explosion on Modal Open
+
+**Issue**: Opening a list modal from /lists or /gifts page caused many WebSocket connections to open, hang, and close. First occurrence after app start crashed the site (required refresh). Navigating between /lists and /gifts triggered same crash.
+
+- **Location**: `apps/web/hooks/useRealtimeSync.ts:38,103,212`
+- **Root Cause**: `useRealtimeSync` hook imported and called `useWebSocket()` directly instead of `useWebSocketContext()`. This caused every component using `useRealtimeSync` (via `useLists`, `useGifts`, `usePersons`, `useOccasions`, etc.) to create its own WebSocket connection rather than sharing the singleton from `WebSocketProvider`. When AddListModal opened (using `usePersons` + `useOccasions`), 4+ simultaneous connections were created, overwhelming the browser.
+- **Fix**:
+  - Changed import from `useWebSocket` to `useWebSocketContext` from `@/lib/websocket/WebSocketProvider`
+  - Updated line 103: `useWebSocket()` → `useWebSocketContext()` in `useRealtimeSync()`
+  - Updated line 212: `useWebSocket()` → `useWebSocketContext()` in `usePollingFallback()`
+- **Commit(s)**: 3a5bc27
+- **Status**: RESOLVED
