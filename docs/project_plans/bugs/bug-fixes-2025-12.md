@@ -112,3 +112,78 @@ Monthly bug tracking for December 2025.
   - Repository: Added nested `selectinload(ListItem.gift)` to eager load gifts
 - **Commit(s)**: 48599a4
 - **Status**: RESOLVED
+
+---
+
+### Material Symbols Icon Text in Empty State
+
+**Issue**: RecentActivity component displayed "notifications_none" as plain text instead of an icon in the empty state
+
+- **Location**: `apps/web/components/dashboard/RecentActivity.tsx:66-68`
+- **Root Cause**: Component used `material-symbols-rounded` class which was not defined in CSS. Only `material-symbols-outlined` class was configured with the correct font-family.
+- **Fix**: Replaced raw `<span>` elements with the existing `Icon` component from `@/components/ui/icon` which properly applies the `material-symbols-outlined` class
+- **Commit(s)**: 5bed9e7
+- **Status**: RESOLVED
+
+---
+
+### Dashboard Background Color Inconsistency
+
+**Issue**: Dashboard page had off-white background (`bg-cream`) within the pane but white padding around it from the layout, creating a disjointed appearance
+
+- **Location**: `apps/web/app/dashboard/page.tsx:26`, `apps/web/components/layout/AppLayout.tsx:44`, `apps/web/app/globals.css`
+- **Root Cause**: Dashboard used `bg-cream` (#F5F1E8) but AppLayout used `bg-background-light` (#FBF9F6) - two different off-white colors
+- **Fix**:
+  - Unified all backgrounds to `cream` (#F5F1E8)
+  - Updated AppLayout to use `bg-cream` so all pages inherit consistent background
+  - Removed explicit `bg-cream` from dashboard page (now inherited)
+  - Updated CSS variables and Tailwind config to use #F5F1E8 consistently
+- **Commit(s)**: 5bed9e7
+- **Status**: RESOLVED
+
+---
+
+### Gift Catalog UI Issues in List Modal
+
+**Issue**: Gift Catalog section in list modal had multiple UI problems: cards too large, no vertical scrolling, "Add New Gift" not first
+
+- **Location**: `apps/web/components/modals/ListDetailModal.tsx:354-467`
+- **Root Cause**: Initial design didn't account for many gifts - used 2-3 column grid with large cards and no scroll container
+- **Fix**:
+  - Increased grid columns from 2-3 to 3-5 (responsive) for smaller cards
+  - Reduced card text sizes (text-sm → text-xs)
+  - Added `max-h-[400px] overflow-y-auto` for vertical scrolling
+  - Moved "Add New Gift" card to render first before `filteredItems.map()`
+- **Commit(s)**: 5bed9e7
+- **Status**: RESOLVED
+
+---
+
+### Kanban Empty Column Drop Not Working
+
+**Issue**: Could not drag gifts to empty columns in Kanban view - only columns with 1+ existing gifts accepted drops
+
+- **Location**: `apps/web/components/lists/KanbanColumn.tsx:89-101`
+- **Root Cause**: `handleDragLeave` used cursor position boundary checking (`e.clientX/Y` vs `getBoundingClientRect()`) which incorrectly cleared hover state when moving between parent and child elements. Also called `e.preventDefault()` which interfered with drag events.
+- **Fix**:
+  - Removed `e.preventDefault()` from `handleDragLeave`
+  - Changed from cursor boundary checking to `relatedTarget` + `contains()` DOM containment check
+  - Only clears hover when truly leaving the column, not when moving to child elements
+- **Commit(s)**: 5bed9e7
+- **Status**: RESOLVED
+
+---
+
+### Gifts Not Clickable in List Detail Views
+
+**Issue**: Gift items in list detail page (/lists/{id}) were not clickable - no way to open gift details from Kanban or List view
+
+- **Location**: `apps/web/components/lists/KanbanCard.tsx`, `apps/web/components/lists/KanbanView.tsx`, `apps/web/app/lists/[id]/page.tsx`
+- **Root Cause**: KanbanCard only had drag handlers, no onClick. TableView already had onClick working. GiftDetailModal existed but wasn't wired up.
+- **Fix**:
+  - Added `onClick?: (item: ListItemWithGift) => void` prop to KanbanCard and KanbanColumn
+  - Passed `onItemClick` prop through KanbanView to columns and cards
+  - Updated list detail page to track `selectedGiftId` state and render `GiftDetailModal`
+  - Added `e.stopPropagation()` and `!isDragging` check to prevent click during drag
+- **Commit(s)**: 5bed9e7
+- **Status**: RESOLVED
