@@ -311,7 +311,7 @@ async def get_gift(
     return gift
 
 
-@router.put(
+@router.patch(
     "/{gift_id}",
     response_model=GiftResponse,
     status_code=status.HTTP_200_OK,

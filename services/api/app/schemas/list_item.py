@@ -74,3 +74,9 @@ class ListItemWithAssignee(ListItemResponse):
         None,
         description="User assigned to purchase this gift",
     )
+
+
+# Resolve forward references at module load time
+from app.schemas.user import UserResponse  # noqa: E402
+
+ListItemWithAssignee.model_rebuild()

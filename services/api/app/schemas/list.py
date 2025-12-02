@@ -87,3 +87,9 @@ class ListWithItems(ListResponse):
         default_factory=list,
         description="List items with gift details",
     )
+
+
+# Resolve forward references at module load time
+from app.schemas.list_item import ListItemWithGift  # noqa: E402
+
+ListWithItems.model_rebuild()
