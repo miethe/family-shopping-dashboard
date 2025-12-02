@@ -398,5 +398,5 @@ Monthly bug tracking for December 2025.
   - Gated `useGifts` in `AddListItemModal` to run only when the modal is open
   - Gated `usePersons`/`useOccasions` in `AddListModal` to run only when the modal is open
   - Result: Only the one open modal holds the live WebSocket subscriptions instead of every hidden modal on the page
-- **Commit(s)**: 78e2b6a
+- **Commit(s)**: 77d88b9
 - **Status**: RESOLVED
