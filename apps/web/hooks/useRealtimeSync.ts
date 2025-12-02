@@ -38,6 +38,8 @@ import { useQueryClient, QueryKey } from '@tanstack/react-query';
 import { useWebSocketContext } from '@/lib/websocket/WebSocketProvider';
 import type { WSEvent, WSEventType } from '@/lib/websocket/types';
 
+const DEFAULT_EVENTS: WSEventType[] = ['ADDED', 'UPDATED', 'DELETED', 'STATUS_CHANGED'];
+
 export interface UseRealtimeSyncOptions {
   /**
    * WebSocket topic to subscribe to
@@ -91,7 +93,7 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
   const {
     topic,
     queryKey,
-    events = ['ADDED', 'UPDATED', 'DELETED', 'STATUS_CHANGED'],
+    events = DEFAULT_EVENTS,
     onEvent,
     debounceMs = 0,
     enabled = true,
@@ -102,6 +104,17 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
   const queryClient = useQueryClient();
   const { subscribe, state } = useWebSocketContext();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const queryKeyRef = useRef<QueryKey>(queryKey);
+  const eventsRef = useRef<WSEventType[]>(events);
+
+  // Keep refs in sync without retriggering subscriptions on referentially new values
+  useEffect(() => {
+    queryKeyRef.current = queryKey;
+  }, [queryKey]);
+
+  useEffect(() => {
+    eventsRef.current = events;
+  }, [events]);
 
   /**
    * Handle incoming WebSocket event
@@ -109,7 +122,7 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
   const handleEvent = useCallback(
     (event: WSEvent) => {
       // Filter by event type
-      if (!events.includes(event.event)) {
+      if (!eventsRef.current.includes(event.event)) {
         return;
       }
 
@@ -121,7 +134,7 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
 
       // Default: invalidate query with debouncing
       const invalidate = () => {
-        queryClient.invalidateQueries({ queryKey });
+        queryClient.invalidateQueries({ queryKey: queryKeyRef.current });
       };
 
       if (debounceMs > 0) {
@@ -137,7 +150,7 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
         invalidate();
       }
     },
-    [events, onEvent, queryClient, queryKey, debounceMs]
+    [onEvent, queryClient, debounceMs]
   );
 
   /**
@@ -146,7 +159,7 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
    * infinite re-subscription loops when WebSocket state changes.
    */
   useEffect(() => {
-    if (!enabled) {
+    if (!enabled || !topic) {
       return;
     }
 
