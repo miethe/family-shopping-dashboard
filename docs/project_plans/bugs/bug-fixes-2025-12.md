@@ -76,3 +76,20 @@ Monthly bug tracking for December 2025.
   - Replaced all Link components to `/new` routes with modal trigger buttons
 - **Commit(s)**: 8598f05
 - **Status**: RESOLVED
+
+---
+
+### Material Symbols Icons Not Rendering
+
+**Issue**: Material Symbols icons displayed as text (icon names like "home", "card_giftcard") instead of actual icon glyphs
+
+- **Location**: `apps/web/app/globals.css:12`, `apps/web/app/layout.tsx`
+- **Root Cause**:
+  1. CSS `@import` after `@tailwind` directives doesn't load reliably in Next.js
+  2. Missing `font-family: 'Material Symbols Outlined'` in the CSS class
+- **Fix**:
+  - Moved font loading from CSS `@import` to HTML `<link>` tags in layout.tsx head
+  - Added preconnect links to Google Fonts for performance
+  - Added `font-family` declaration to `.material-symbols-outlined` class
+- **Commit(s)**: e30b76a
+- **Status**: RESOLVED
