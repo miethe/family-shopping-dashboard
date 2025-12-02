@@ -54,7 +54,7 @@ export function GiftUsage({ giftId }: GiftUsageProps) {
   };
 
   // Helper to get status badge variant
-  const getStatusVariant = (status: string): 'default' | 'secondary' | 'success' | 'warning' => {
+  const getStatusVariant = (status: string): 'default' | 'success' | 'warning' | 'info' => {
     switch (status) {
       case 'purchased':
         return 'success';
@@ -64,7 +64,7 @@ export function GiftUsage({ giftId }: GiftUsageProps) {
       case 'received':
         return 'success';
       default:
-        return 'secondary';
+        return 'info';
     }
   };
 
