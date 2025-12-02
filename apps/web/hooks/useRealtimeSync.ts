@@ -142,6 +142,8 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
 
   /**
    * Subscribe to WebSocket topic
+   * NOTE: `state` is intentionally NOT in the dependency array to prevent
+   * infinite re-subscription loops when WebSocket state changes.
    */
   useEffect(() => {
     if (!enabled) {
@@ -149,11 +151,6 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
     }
 
     const unsubscribe = subscribe(topic, handleEvent);
-
-    // Call onSubscribed callback
-    if (onSubscribed && state === 'connected') {
-      onSubscribed();
-    }
 
     return () => {
       unsubscribe();
@@ -169,7 +166,17 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
         onUnsubscribed();
       }
     };
-  }, [enabled, topic, subscribe, handleEvent, state, onSubscribed, onUnsubscribed]);
+  }, [enabled, topic, subscribe, handleEvent, onUnsubscribed]);
+
+  /**
+   * Fire onSubscribed callback when WebSocket connects
+   * Separate effect to avoid re-subscription on state changes
+   */
+  useEffect(() => {
+    if (enabled && state === 'connected' && onSubscribed) {
+      onSubscribed();
+    }
+  }, [enabled, state, onSubscribed]);
 }
 
 /**

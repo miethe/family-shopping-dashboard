@@ -343,3 +343,21 @@ Monthly bug tracking for December 2025.
   - Updated line 212: `useWebSocket()` → `useWebSocketContext()` in `usePollingFallback()`
 - **Commit(s)**: 3a5bc27
 - **Status**: RESOLVED
+
+---
+
+### Browser Tab Crash on Page Navigation (/lists ↔ /gifts)
+
+**Issue**: Browser tab crashed when first loading /gifts or /lists page, then alternated - whichever page was loaded last would work, but navigating to the other page crashed. This pattern persisted across web app restarts.
+
+- **Location**: `apps/web/hooks/useRealtimeSync.ts:172`
+- **Root Cause**: The `state` variable from WebSocket context was included in the useEffect dependency array. When WebSocket state changed (connecting → connected), the effect re-ran, unsubscribing and immediately re-subscribing. This cascaded across ALL components using the hook. Combined with React Strict Mode (which doubles effects), this created exponential subscription growth leading to memory exhaustion and browser crash.
+- **Why it persisted across restarts**: The WebSocketProvider is a singleton in the root layout. Subscriptions from one page accumulated in memory, and navigating to another page added MORE subscriptions without the first set being properly cleared. The subscription count grew until browser memory was exhausted.
+- **Fix**:
+  - Removed `state` from the subscription useEffect dependency array
+  - Moved `onSubscribed` callback to a separate effect that only fires the callback (doesn't re-subscribe)
+  - Added comment explaining why `state` must NOT be in dependencies
+- **Commit(s)**: 129cc8f
+- **Status**: RESOLVED
+
+**Note**: Duplicate WebSocket/API requests in development are expected due to `reactStrictMode: true` in next.config.ts. This is not a bug.
