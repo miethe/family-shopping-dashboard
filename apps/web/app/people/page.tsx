@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AddPersonModal } from '@/components/people/AddPersonModal';
 import { PersonCard } from '@/components/people/PersonCard';
+import { OccasionDetailModal, useEntityModal } from '@/components/modals';
 import type { Person, Occasion } from '@/types';
 
 /**
@@ -32,6 +33,7 @@ export default function RecipientsPage() {
 
   const { data: personsData, isLoading: personsLoading, error: personsError } = usePersons({ cursor });
   const { data: occasionsData, isLoading: occasionsLoading } = useOccasions({ filter: 'upcoming' });
+  const { open, entityId, openModal, closeModal } = useEntityModal('occasion');
 
   // Map relationship to group (normalize to lowercase for matching)
   const getGroup = (relationship?: string): GroupFilter => {
@@ -142,8 +144,9 @@ export default function RecipientsPage() {
               <h2 className="text-lg font-bold text-slate-800">Upcoming Occasions</h2>
               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                 {occasionsData.items.slice(0, 5).map((occasion: Occasion) => (
-                  <div
+                  <button
                     key={occasion.id}
+                    onClick={() => openModal(String(occasion.id))}
                     className="flex-shrink-0 w-64 bg-white p-5 rounded-3xl shadow-card text-center relative overflow-hidden group hover:-translate-y-1 transition-transform cursor-pointer"
                   >
                     <div className={`absolute top-0 left-0 w-full h-1 ${getOccasionColor(occasion.date)}`}></div>
@@ -161,7 +164,7 @@ export default function RecipientsPage() {
                         {occasion.name.charAt(0)}
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -345,6 +348,15 @@ export default function RecipientsPage() {
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={() => {
           // React Query will automatically refetch the persons list
+        }}
+      />
+
+      {/* Occasion Detail Modal */}
+      <OccasionDetailModal
+        occasionId={entityId}
+        open={open}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) closeModal();
         }}
       />
     </div>
