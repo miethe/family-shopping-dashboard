@@ -34,7 +34,7 @@ export default function ListsPage() {
   const { data: listsData, isLoading: listsLoading, error } = useLists({ type: apiFilter });
 
   // Fetch occasions for grouping
-  const { data: occasionsData, isLoading: occasionsLoading } = useOccasions();
+  const { data: occasionsData, isLoading: occasionsLoading } = useOccasions(undefined, { disableRealtime: true });
 
   // Group lists by occasion
   const groupedLists = useMemo(() => {
