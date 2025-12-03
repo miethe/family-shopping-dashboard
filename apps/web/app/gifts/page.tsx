@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useGifts } from '@/hooks/useGifts';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -20,8 +21,10 @@ import {
  *
  * Browse and search gift catalog with filtering and sorting.
  * Mobile-first responsive design with loading states.
+ * Supports URL query params for initial filter state (e.g., ?status=idea)
  */
 export default function GiftsPage() {
+  const searchParams = useSearchParams();
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('recent');
   const [groupBy, setGroupBy] = useState<GroupOption>('none');
@@ -32,6 +35,17 @@ export default function GiftsPage() {
     list_ids: [],
     occasion_ids: [],
   });
+
+  // Initialize filters from URL query params on mount
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    if (statusParam) {
+      setFilters((prev) => ({
+        ...prev,
+        statuses: [statusParam],
+      }));
+    }
+  }, [searchParams]);
 
   const { data, isLoading, error, refetch } = useGifts({
     search: search || undefined,
