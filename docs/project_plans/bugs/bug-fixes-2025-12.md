@@ -136,5 +136,11 @@ Monthly bug fix tracking document for the Family Gifting Dashboard.
   1. **QuickAddModal**: Added `{ enabled: isOpen }` to useLists - only subscribes when modal is open
   2. **People page**: Added `{ disableRealtime: true }` to useOccasions - only needs static occasion data
   3. **Lists page**: Added `{ disableRealtime: true }` to useOccasions - only needs occasion data for grouping
-- **Commit(s)**: `fa79df1`, `df0abf7`, `ef7d2f9`
+- **Fix (Phase 3 - Commit `f31847e`)**:
+  1. **Specialized hooks**: Added `enabled`/`disableRealtime` options to `useListsForGift`, `useListsForPerson`, `useListsForOccasion` - these hooks didn't accept external `enabled` option, subscribing whenever ID present even when modal closed
+  2. **GiftDetailModal**: Pass `{ enabled: open }` to useListsForGift
+  3. **PersonDetailModal**: Pass `{ enabled: open }` to useListsForPerson
+  4. **OccasionDetailModal**: Pass `{ enabled: open }` to useListsForOccasion
+  5. **/lists/new page**: Added `{ disableRealtime: true }` to usePersons and useOccasions
+- **Commit(s)**: `fa79df1`, `df0abf7`, `ef7d2f9`, `f31847e`
 - **Status**: RESOLVED
