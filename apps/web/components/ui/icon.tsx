@@ -86,6 +86,8 @@ export const IconNames = {
   // UI
   arrowForward: 'arrow_forward',
   arrowBack: 'arrow_back',
+  arrowUp: 'arrow_upward',
+  arrowDown: 'arrow_downward',
   chevronDown: 'expand_more',
   chevronUp: 'expand_less',
   openNew: 'open_in_new',

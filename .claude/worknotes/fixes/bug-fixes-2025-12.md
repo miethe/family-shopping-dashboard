@@ -400,3 +400,23 @@ Monthly bug tracking for December 2025.
   - Result: Only the one open modal holds the live WebSocket subscriptions instead of every hidden modal on the page
 - **Commit(s)**: 77d88b9
 - **Status**: RESOLVED
+
+---
+
+### Gift Page Filter Bar Redesign - Inline Toolbar with Grouping
+
+**Issue**: The /gifts page had separate GiftSearch and GiftFilters components stacked vertically, taking excessive space. Filter bar was collapsible but inconvenient. No way to group gifts by status.
+
+- **Location**: `apps/web/app/gifts/page.tsx`, `apps/web/components/gifts/GiftFilters.tsx`, `apps/web/components/gifts/GiftSearch.tsx`
+- **Root Cause**: Original design separated search and filters into distinct components without considering unified toolbar UX
+- **Fix**:
+  - Created `GiftToolbar` component - unified glassmorphism bar with search, filter dropdowns, sort, and grouping
+  - Search input shortened (max-w-[240px]) to fit inline with filters
+  - Filters converted from collapsible chip groups to compact dropdown pills with selection counts
+  - Added grouping feature: Grid View (default), Group by Status, Group by Recipient
+  - Created `GiftGroupedView` component for status-based grouping with collapsible sections
+  - Each section shows status icon, label, count badge, and responsive gift grid
+  - Mobile-first responsive: search on top row, filters wrap on mobile
+  - Follows Soft Modernity design: glassmorphism, warm colors, 44px touch targets
+- **Commit(s)**: 228fda8
+- **Status**: RESOLVED

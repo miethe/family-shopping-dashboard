@@ -5,9 +5,17 @@
  */
 
 export { GiftCard, type GiftCardProps } from './GiftCard';
-export { GiftSearch, type GiftSearchProps, type SortOption } from './GiftSearch';
-export { GiftFilters, type GiftFiltersProps, type GiftFilterValues } from './GiftFilters';
+export { GiftSearch, type GiftSearchProps } from './GiftSearch';
+export { GiftFilters, type GiftFiltersProps } from './GiftFilters';
+export {
+  GiftToolbar,
+  type GiftToolbarProps,
+  type GroupOption,
+  type SortOption,
+  type GiftFilterValues,
+} from './GiftToolbar';
 export { GiftGrid, type GiftGridProps } from './GiftGrid';
+export { GiftGroupedView, type GiftGroupedViewProps } from './GiftGroupedView';
 export { UrlGiftForm } from './UrlGiftForm';
 export { ManualGiftForm } from './ManualGiftForm';
 export { GiftDetail, type GiftDetailProps } from './GiftDetail';

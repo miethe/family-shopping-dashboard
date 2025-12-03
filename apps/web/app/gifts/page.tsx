@@ -4,14 +4,15 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useGifts } from '@/hooks/useGifts';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Button, Skeleton, Badge } from '@/components/ui';
+import { Button, Skeleton } from '@/components/ui';
 import {
   GiftCard,
-  GiftSearch,
-  GiftFilters,
+  GiftToolbar,
+  GiftGroupedView,
   AddGiftModal,
   type SortOption,
   type GiftFilterValues,
+  type GroupOption,
 } from '@/components/gifts';
 
 /**
@@ -23,6 +24,7 @@ import {
 export default function GiftsPage() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('recent');
+  const [groupBy, setGroupBy] = useState<GroupOption>('none');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [filters, setFilters] = useState<GiftFilterValues>({
     person_ids: [],
@@ -40,13 +42,6 @@ export default function GiftsPage() {
     occasion_ids: filters.occasion_ids.length > 0 ? filters.occasion_ids : undefined,
   });
 
-  // Calculate active filter count for display
-  const activeFilterCount =
-    filters.person_ids.length +
-    filters.statuses.length +
-    filters.list_ids.length +
-    filters.occasion_ids.length;
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -57,15 +52,16 @@ export default function GiftsPage() {
         }
       />
 
-      <GiftSearch
+      <GiftToolbar
         search={search}
         onSearchChange={setSearch}
+        filters={filters}
+        onFiltersChange={setFilters}
         sort={sort}
         onSortChange={setSort}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
       />
-
-      {/* Filters */}
-      <GiftFilters filters={filters} onFiltersChange={setFilters} />
 
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -96,12 +92,18 @@ export default function GiftsPage() {
             <Button>Add your first gift</Button>
           </Link>
         </div>
-      ) : (
+      ) : groupBy === 'none' ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {data.items.map((gift) => (
             <GiftCard key={gift.id} gift={gift} />
           ))}
         </div>
+      ) : (
+        <GiftGroupedView
+          gifts={data.items}
+          groupBy={groupBy}
+          emptyMessage="No gifts match your search."
+        />
       )}
 
       <AddGiftModal
