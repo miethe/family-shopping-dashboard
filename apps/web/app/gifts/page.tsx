@@ -15,6 +15,7 @@ import {
   type GiftFilterValues,
   type GroupOption,
 } from '@/components/gifts';
+import { GiftDetailModal, useEntityModal } from '@/components/modals';
 
 /**
  * Gifts Page
@@ -35,6 +36,9 @@ export default function GiftsPage() {
     list_ids: [],
     occasion_ids: [],
   });
+
+  // Centralized gift detail modal state
+  const { open: detailOpen, entityId: detailGiftId, openModal: openDetail, closeModal: closeDetail } = useEntityModal('gift');
 
   // Initialize filters from URL query params on mount
   useEffect(() => {
@@ -109,7 +113,7 @@ export default function GiftsPage() {
       ) : groupBy === 'none' ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {data.items.map((gift) => (
-            <GiftCard key={gift.id} gift={gift} />
+            <GiftCard key={gift.id} gift={gift} onOpenDetail={openDetail} />
           ))}
         </div>
       ) : (
@@ -117,6 +121,7 @@ export default function GiftsPage() {
           gifts={data.items}
           groupBy={groupBy}
           emptyMessage="No gifts match your search."
+          onOpenDetail={openDetail}
         />
       )}
 
@@ -124,6 +129,15 @@ export default function GiftsPage() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={() => refetch()}
+      />
+
+      {/* Centralized gift detail modal - prevents multiple instances from triggering API calls */}
+      <GiftDetailModal
+        giftId={detailGiftId}
+        open={detailOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) closeDetail();
+        }}
       />
     </div>
   );

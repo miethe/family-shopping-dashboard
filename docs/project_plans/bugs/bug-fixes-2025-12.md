@@ -93,5 +93,17 @@ Monthly bug fix tracking document for the Family Gifting Dashboard.
 - **Location**: `services/api/app/repositories/gift.py:254`
 - **Root Cause**: The `get_filtered()` method used `select(distinct(self.model.id), self.model)` which applies DISTINCT across all columns including the `extra_data` JSON column. PostgreSQL cannot compare JSON types for DISTINCT operations.
 - **Fix**: Refactored to use a two-step subquery approach: (1) build a subquery selecting only distinct gift IDs with all filters/joins, (2) select full Gift models where ID is in the subquery results. This avoids putting the JSON column in the DISTINCT comparison while preserving all filtering, pagination, and sorting logic.
-- **Commit(s)**: `a55ff66`
+- **Commit(s)**: `b120708`
+- **Status**: RESOLVED
+
+---
+
+### Gift Modal Infinite API Calls / Site Crash
+
+**Issue**: Clicking a gift to open the modal causes the site to hang and crash with repeated API calls (all returning 200 OK)
+
+- **Location**: `apps/web/components/gifts/GiftCard.tsx`, `apps/web/app/gifts/page.tsx`
+- **Root Cause**: Each `GiftCard` component rendered its own `GiftDetailModal` instance. With N gifts on the page, there were N modals each with their own `useListsForGift` hook (which makes N+1 API calls) and `useRealtimeSync` subscriptions. When any gift was clicked, the modal's entityId was set before `open` became true, causing even closed modals to trigger API fetches and WebSocket subscriptions.
+- **Fix**: Lifted modal state to page level. Now a single `GiftDetailModal` is rendered at the page level with centralized state from `useEntityModal('gift')`. Each `GiftCard` receives an `onOpenDetail` callback prop instead of managing its own modal. This ensures only ONE modal instance exists and only ONE set of API calls happens when clicking a gift.
+- **Commit(s)**: `83c3930`
 - **Status**: RESOLVED

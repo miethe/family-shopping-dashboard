@@ -32,6 +32,7 @@ export interface GiftGroupedViewProps {
   groupBy?: 'status' | 'recipient';
   emptyMessage?: string;
   hideEmptySections?: boolean;
+  onOpenDetail?: (giftId: string) => void;
 }
 
 // Status configuration with icons and colors
@@ -126,6 +127,7 @@ export function GiftGroupedView({
   groupBy = 'status',
   emptyMessage = 'No gifts found',
   hideEmptySections = true,
+  onOpenDetail,
 }: GiftGroupedViewProps) {
   // Group gifts by status
   const groupedGifts = useMemo(() => {
@@ -252,7 +254,7 @@ export function GiftGroupedView({
                   )}
                 >
                   {sectionGifts.map(gift => (
-                    <GiftCard key={gift.id} gift={gift} />
+                    <GiftCard key={gift.id} gift={gift} onOpenDetail={onOpenDetail} />
                   ))}
                 </div>
               </CollapsibleContent>
