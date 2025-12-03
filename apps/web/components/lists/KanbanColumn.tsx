@@ -34,26 +34,15 @@ const columnConfig: Record<
     bgColor: 'bg-yellow-100',
     textColor: 'text-yellow-800',
   },
-  to_buy: {
-    title: 'To Buy',
-    bgColor: 'bg-red-100',
-    textColor: 'text-red-800',
+  selected: {
+    title: 'Selected',
+    bgColor: 'bg-blue-100',
+    textColor: 'text-blue-800',
   },
   purchased: {
     title: 'Purchased',
     bgColor: 'bg-green-100',
     textColor: 'text-green-800',
-  },
-  gifted: {
-    title: 'Gifted',
-    bgColor: 'bg-purple-100',
-    textColor: 'text-purple-800',
-  },
-  // Legacy statuses for backward compatibility
-  selected: {
-    title: 'Shortlisted',
-    bgColor: 'bg-blue-100',
-    textColor: 'text-blue-800',
   },
   received: {
     title: 'Received',

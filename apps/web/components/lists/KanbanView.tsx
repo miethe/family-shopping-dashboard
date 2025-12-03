@@ -26,17 +26,14 @@ interface KanbanViewProps {
 }
 
 // Define the four columns for the Kanban board
-const kanbanColumns: ListItemStatus[] = ['idea', 'to_buy', 'purchased', 'gifted'];
+const kanbanColumns: ListItemStatus[] = ['idea', 'selected', 'purchased', 'received'];
 
 /**
  * Map frontend column status to API status value
  * Frontend uses user-friendly names, API uses original enum values
  */
 function mapToApiStatus(frontendStatus: ListItemStatus): string {
-  const statusMap: Record<string, string> = {
-    to_buy: 'selected',
-    gifted: 'received',
-  };
+  const statusMap: Record<string, string> = {};
   return statusMap[frontendStatus] || frontendStatus;
 }
 
@@ -46,20 +43,13 @@ function mapToApiStatus(frontendStatus: ListItemStatus): string {
 function groupItemsForKanban(items: ListItemWithGift[]): Record<ListItemStatus, ListItemWithGift[]> {
   const grouped: Record<ListItemStatus, ListItemWithGift[]> = {
     idea: [],
-    to_buy: [],
-    purchased: [],
-    gifted: [],
     selected: [],
+    purchased: [],
     received: [],
   };
 
   items.forEach((item) => {
-    // Map legacy statuses to new columns if needed
-    if (item.status === 'selected') {
-      grouped.to_buy.push(item);
-    } else if (item.status === 'received') {
-      grouped.gifted.push(item);
-    } else if (grouped[item.status]) {
+    if (grouped[item.status]) {
       grouped[item.status].push(item);
     }
   });

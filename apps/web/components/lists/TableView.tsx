@@ -39,12 +39,6 @@ const STATUS_CONFIG: Record<
     icon: IconNames.check,
     label: 'Selected',
   },
-  to_buy: {
-    color: 'bg-red-100 text-red-800',
-    border: 'border-red-200',
-    icon: IconNames.cart,
-    label: 'To Buy',
-  },
   purchased: {
     color: 'bg-green-100 text-green-800',
     border: 'border-green-200',
@@ -56,12 +50,6 @@ const STATUS_CONFIG: Record<
     border: 'border-emerald-200',
     icon: IconNames.check,
     label: 'Received',
-  },
-  gifted: {
-    color: 'bg-purple-100 text-purple-800',
-    border: 'border-purple-200',
-    icon: IconNames.volunteer,
-    label: 'Gifted',
   },
 };
 

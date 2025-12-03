@@ -123,7 +123,7 @@ export default function ListDetailPage({ params }: Props) {
 
   // Calculate summary stats
   const itemCount = items?.length || 0;
-  const purchasedCount = items?.filter(item => item.status === 'purchased' || item.status === 'gifted').length || 0;
+  const purchasedCount = items?.filter(item => item.status === 'purchased' || item.status === 'received').length || 0;
   const totalEstimate = items?.reduce((sum, item) => sum + (item.gift?.price || 0), 0) || 0;
 
   // Format list type badge

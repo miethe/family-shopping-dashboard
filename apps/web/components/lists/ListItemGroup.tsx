@@ -37,40 +37,32 @@ interface ListItemGroupProps {
 // Status icons - order must match ListItemStatus type
 const statusIcons: Record<ListItemStatus, ComponentType<{ className?: string }>> = {
   idea: LightbulbIcon,
-  to_buy: ShoppingCartIcon,
-  purchased: ShoppingCartIcon,
-  gifted: GiftIcon,
   selected: CheckCircleIcon,
+  purchased: ShoppingCartIcon,
   received: GiftIcon,
 };
 
 // Status colors for header
 const statusColors: Record<ListItemStatus, string> = {
   idea: 'text-yellow-600',
-  to_buy: 'text-red-600',
-  purchased: 'text-green-600',
-  gifted: 'text-purple-600',
   selected: 'text-blue-600',
+  purchased: 'text-green-600',
   received: 'text-gray-600',
 };
 
 // Status labels
 const statusLabels: Record<ListItemStatus, string> = {
   idea: 'Ideas',
-  to_buy: 'To Buy',
-  purchased: 'Purchased',
-  gifted: 'Gifted',
   selected: 'Selected',
+  purchased: 'Purchased',
   received: 'Received',
 };
 
 // Status descriptions for tooltips
 const statusDescriptions: Record<ListItemStatus, string> = {
   idea: 'Gift ideas being considered',
-  to_buy: 'Items ready to buy',
-  purchased: 'Items that have been bought',
-  gifted: 'Items that have been given',
   selected: 'Items chosen to purchase',
+  purchased: 'Items that have been bought',
   received: 'Items that have been received',
 };
 

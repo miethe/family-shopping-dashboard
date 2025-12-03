@@ -142,6 +142,7 @@ export interface GiftUpdate {
   price?: number;
   image_url?: string;
   source?: string;
+  extra_data?: Record<string, any>;
 }
 
 export interface GiftSummary {

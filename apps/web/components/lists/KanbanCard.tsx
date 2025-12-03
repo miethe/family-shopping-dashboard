@@ -140,10 +140,8 @@ export function KanbanCard({ item, status, onDragStart, onDragEnd, onClick }: Ka
             className={cn(
               'w-2 h-2 rounded-full',
               status === 'idea' && 'bg-yellow-400',
-              status === 'to_buy' && 'bg-red-400',
-              status === 'purchased' && 'bg-green-400',
-              status === 'gifted' && 'bg-purple-400',
               status === 'selected' && 'bg-blue-400',
+              status === 'purchased' && 'bg-green-400',
               status === 'received' && 'bg-gray-400'
             )}
           ></span>

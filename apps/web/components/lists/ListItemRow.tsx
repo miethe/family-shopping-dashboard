@@ -24,10 +24,8 @@ interface ListItemRowProps {
 const statusVariants: Record<ListItemStatus, 'warning' | 'default' | 'success' | 'error'> = {
   idea: 'warning',
   selected: 'default',
-  to_buy: 'error',
   purchased: 'success',
-  received: 'default',
-  gifted: 'success',
+  received: 'success',
 };
 
 export function ListItemRow({ item, onStatusChange }: ListItemRowProps) {
