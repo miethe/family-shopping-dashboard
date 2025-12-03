@@ -10,15 +10,22 @@ import { listApi, ListListParams } from '@/lib/api/endpoints';
 import type { GiftList, ListCreate, ListUpdate } from '@/types';
 import { useRealtimeSync } from './useRealtimeSync';
 
+interface UseListsOptions {
+  enabled?: boolean;
+}
+
 /**
  * Fetch paginated list of gift lists with optional filters
  * @param params - Optional cursor, limit, type, person_id, occasion_id
  */
-export function useLists(params?: ListListParams) {
+export function useLists(params?: ListListParams, options: UseListsOptions = {}) {
+  const { enabled = true } = options;
+
   const query = useQuery({
     queryKey: ['lists', params],
     queryFn: () => listApi.list(params),
     staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently, real-time sync
+    enabled,
   });
 
   // Real-time sync for list metadata changes
@@ -27,6 +34,7 @@ export function useLists(params?: ListListParams) {
     topic: 'lists',
     queryKey: ['lists', params],
     events: ['ADDED', 'UPDATED', 'DELETED'],
+    enabled,
   });
 
   return query;
