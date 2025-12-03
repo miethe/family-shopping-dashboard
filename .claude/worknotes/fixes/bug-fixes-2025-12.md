@@ -51,7 +51,7 @@ Monthly bug tracking for December 2025.
 - **Fix**:
   - Lazily render each modal only when `isOpen` is true, preventing background queries/subscriptions while closed
   - Keeps existing behaviors intact while cutting idle network/WebSocket load
-- **Commit(s)**: TBD (current PR)
+- **Commit(s)**: c73e10a
 - **Status**: RESOLVED
 
 ---
