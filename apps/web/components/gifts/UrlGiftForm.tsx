@@ -17,7 +17,9 @@ import { useCreateListItem } from '@/hooks/useListItems';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
+import type { ListItemStatus } from '@/types';
 
 export interface UrlGiftFormProps {
   defaultListId?: number;
@@ -26,6 +28,7 @@ export interface UrlGiftFormProps {
 
 export function UrlGiftForm({ defaultListId, onSuccess }: UrlGiftFormProps) {
   const [url, setUrl] = useState('');
+  const [status, setStatus] = useState<ListItemStatus>('idea');
   const [selectedListIds, setSelectedListIds] = useState<number[]>(
     defaultListId ? [defaultListId] : []
   );
@@ -74,13 +77,13 @@ export function UrlGiftForm({ defaultListId, onSuccess }: UrlGiftFormProps) {
 
     mutate(url.trim(), {
       onSuccess: (gift) => {
-        // Create list items for each selected list
+        // Create list items for each selected list with the selected status
         selectedListIds.forEach((listId) => {
           createListItem({
             listId,
             data: {
               gift_id: gift.id,
-              status: 'idea',
+              status: status,
             },
           });
         });
@@ -115,6 +118,13 @@ export function UrlGiftForm({ defaultListId, onSuccess }: UrlGiftFormProps) {
     });
   };
 
+  const statusOptions = [
+    { value: 'idea', label: 'Idea' },
+    { value: 'selected', label: 'Selected' },
+    { value: 'purchased', label: 'Purchased' },
+    { value: 'received', label: 'Received' },
+  ];
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-4">
@@ -127,6 +137,14 @@ export function UrlGiftForm({ defaultListId, onSuccess }: UrlGiftFormProps) {
           required
           helperText="We'll try to automatically extract the title, image, and price."
           error={error ? (error as any).message : undefined}
+        />
+
+        <Select
+          label="Status"
+          value={status}
+          onChange={(value) => setStatus(value as ListItemStatus)}
+          options={statusOptions}
+          helperText="Current status of this gift idea"
         />
 
         {/* List Selection */}

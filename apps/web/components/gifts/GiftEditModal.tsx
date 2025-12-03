@@ -18,8 +18,9 @@ import { EntityModal } from '@/components/modals/EntityModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import type { Gift, GiftUpdate } from '@/types';
+import type { Gift, GiftUpdate, ListItemStatus } from '@/types';
 
 export interface GiftEditModalProps {
   gift: Gift;
@@ -38,6 +39,7 @@ export function GiftEditModal({
   const [url, setUrl] = useState(gift.url || '');
   const [price, setPrice] = useState(gift.price?.toString() || '');
   const [imageUrl, setImageUrl] = useState(gift.image_url || '');
+  const [status, setStatus] = useState<ListItemStatus>('idea');
   const [selectedListIds, setSelectedListIds] = useState<number[]>([]);
 
   const { mutate: updateGift, isPending: isUpdating } = useUpdateGift(gift.id);
@@ -101,13 +103,13 @@ export function GiftEditModal({
 
     updateGift(updateData, {
       onSuccess: (updatedGift) => {
-        // Add gift to newly selected lists
+        // Add gift to newly selected lists with the selected status
         selectedListIds.forEach((listId) => {
           createListItem({
             listId,
             data: {
               gift_id: gift.id,
-              status: 'idea',
+              status: status,
             },
           });
         });
@@ -130,6 +132,13 @@ export function GiftEditModal({
       },
     });
   };
+
+  const statusOptions = [
+    { value: 'idea', label: 'Idea' },
+    { value: 'selected', label: 'Selected' },
+    { value: 'purchased', label: 'Purchased' },
+    { value: 'received', label: 'Received' },
+  ];
 
   return (
     <EntityModal
@@ -175,6 +184,14 @@ export function GiftEditModal({
           onChange={(e) => setImageUrl(e.target.value)}
           placeholder="https://..."
           helperText="Direct link to product image"
+        />
+
+        <Select
+          label="Status"
+          value={status}
+          onChange={(value) => setStatus(value as ListItemStatus)}
+          options={statusOptions}
+          helperText="Status when adding to new lists"
         />
 
         {/* List Selection */}
