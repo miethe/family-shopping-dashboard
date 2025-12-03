@@ -14,6 +14,7 @@ import { useRealtimeSync } from './useRealtimeSync';
 
 interface UseOccasionsOptions {
   enabled?: boolean;
+  disableRealtime?: boolean;
 }
 
 /**
@@ -21,7 +22,7 @@ interface UseOccasionsOptions {
  * @param params - Optional cursor, limit, and filter (upcoming/past)
  */
 export function useOccasions(params?: OccasionListParams, options: UseOccasionsOptions = {}) {
-  const { enabled = true } = options;
+  const { enabled = true, disableRealtime = false } = options;
 
   const query = useQuery({
     queryKey: ['occasions', params],
@@ -35,7 +36,7 @@ export function useOccasions(params?: OccasionListParams, options: UseOccasionsO
     topic: 'occasions',
     queryKey: ['occasions', params],
     events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled,
+    enabled: enabled && !disableRealtime,
   });
 
   return query;

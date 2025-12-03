@@ -193,9 +193,11 @@ export function GiftToolbar({
   activeFilterCount: providedActiveCount,
 }: GiftToolbarProps) {
   // Load filter options
-  const { data: personsData, isLoading: personsLoading } = usePersons();
-  const { data: listsData, isLoading: listsLoading } = useLists();
-  const { data: occasionsData, isLoading: occasionsLoading } = useOccasions();
+  // Disable real-time sync for toolbar data to prevent WebSocket subscription storm
+  // These rarely change during a session and can be refetched manually if needed
+  const { data: personsData, isLoading: personsLoading } = usePersons(undefined, { disableRealtime: true });
+  const { data: listsData, isLoading: listsLoading } = useLists(undefined, { disableRealtime: true });
+  const { data: occasionsData, isLoading: occasionsLoading } = useOccasions(undefined, { disableRealtime: true });
 
   // Calculate active filter count
   const activeCount = providedActiveCount ?? (

@@ -12,6 +12,7 @@ import { useRealtimeSync } from './useRealtimeSync';
 
 interface UseListsOptions {
   enabled?: boolean;
+  disableRealtime?: boolean;
 }
 
 /**
@@ -19,7 +20,7 @@ interface UseListsOptions {
  * @param params - Optional cursor, limit, type, person_id, occasion_id
  */
 export function useLists(params?: ListListParams, options: UseListsOptions = {}) {
-  const { enabled = true } = options;
+  const { enabled = true, disableRealtime = false } = options;
 
   const query = useQuery({
     queryKey: ['lists', params],
@@ -34,7 +35,7 @@ export function useLists(params?: ListListParams, options: UseListsOptions = {})
     topic: 'lists',
     queryKey: ['lists', params],
     events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled,
+    enabled: enabled && !disableRealtime,
   });
 
   return query;

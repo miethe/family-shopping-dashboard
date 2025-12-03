@@ -510,19 +510,23 @@ export function GiftDetailModal({
         </DialogContent>
       </Dialog>
 
-      {/* List Detail Modal */}
-      <ListDetailModal
-        listId={selectedListId}
-        open={!!selectedListId}
-        onOpenChange={(open) => !open && setSelectedListId(null)}
-      />
+      {/* List Detail Modal - Only render when needed to avoid subscription storm */}
+      {selectedListId && (
+        <ListDetailModal
+          listId={selectedListId}
+          open={true}
+          onOpenChange={(open) => !open && setSelectedListId(null)}
+        />
+      )}
 
-      {/* Add List Modal */}
-      <AddListModal
-        isOpen={showAddListModal}
-        onClose={() => setShowAddListModal(false)}
-        mode="create"
-      />
+      {/* Add List Modal - Only render when needed to avoid subscription storm */}
+      {showAddListModal && (
+        <AddListModal
+          isOpen={true}
+          onClose={() => setShowAddListModal(false)}
+          mode="create"
+        />
+      )}
     </>
   );
 }

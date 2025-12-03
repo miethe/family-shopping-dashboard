@@ -13,6 +13,7 @@ import { useRealtimeSync } from './useRealtimeSync';
 
 interface UsePersonsOptions {
   enabled?: boolean;
+  disableRealtime?: boolean;
 }
 
 /**
@@ -20,7 +21,7 @@ interface UsePersonsOptions {
  * @param params - Optional cursor and limit for pagination
  */
 export function usePersons(params?: PersonListParams, options: UsePersonsOptions = {}) {
-  const { enabled = true } = options;
+  const { enabled = true, disableRealtime = false } = options;
 
   const query = useQuery({
     queryKey: ['persons', params],
@@ -33,7 +34,7 @@ export function usePersons(params?: PersonListParams, options: UsePersonsOptions
     topic: 'persons',
     queryKey: ['persons', params],
     events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled,
+    enabled: enabled && !disableRealtime,
   });
 
   return query;
