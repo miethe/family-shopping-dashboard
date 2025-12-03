@@ -38,6 +38,24 @@ Monthly bug tracking for December 2025.
 
 ---
 
+### Gifts Page Crash When Navigating Away
+
+**Issue**: Visiting `/gifts` then navigating to another query-heavy page caused the app to hang and fail to load the next page/endpoints. Pages without queries (e.g., `/assignments`) were fine until a query page was visited again.
+
+- **Location**:
+  - `apps/web/components/gifts/AddGiftModal.tsx`
+  - `apps/web/components/gifts/GiftEditModal.tsx`
+  - `apps/web/components/modals/AddToListModal.tsx`
+  - `apps/web/components/quick-add/QuickAddModal.tsx`
+- **Root Cause**: These modals were mounted at all times even when closed. Each modal eagerly fetched lists/persons/occasions (and registered WebSocket subscriptions via those hooks). On `/gifts`, the combination of page-level queries plus multiple always-mounted modals created a surge of concurrent API calls and subscriptions; navigating away left the UI thread overloaded and the next page stalled.
+- **Fix**:
+  - Lazily render each modal only when `isOpen` is true, preventing background queries/subscriptions while closed
+  - Keeps existing behaviors intact while cutting idle network/WebSocket load
+- **Commit(s)**: TBD (current PR)
+- **Status**: RESOLVED
+
+---
+
 ### Kanban Drag Size Bug
 
 **Issue**: When dragging a gift card between statuses on the Kanban board (`/lists/{id}`), the item became very large until placed

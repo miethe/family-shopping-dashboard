@@ -59,6 +59,10 @@ export function AddToListModal({
   idea,
   onSuccess,
 }: AddToListModalProps) {
+  if (!isOpen) {
+    return null;
+  }
+
   const { toast } = useToast();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedListId, setSelectedListId] = useState<number | null>(null);

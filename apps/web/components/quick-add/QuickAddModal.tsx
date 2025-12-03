@@ -33,6 +33,10 @@ interface QuickAddModalProps {
  * - Keyboard accessible (Escape to close)
  */
 export function QuickAddModal({ isOpen, onClose }: QuickAddModalProps) {
+  if (!isOpen) {
+    return null;
+  }
+
   const [giftName, setGiftName] = useState('');
   const [selectedListId, setSelectedListId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

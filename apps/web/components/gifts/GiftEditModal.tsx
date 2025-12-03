@@ -35,6 +35,10 @@ export function GiftEditModal({
   onClose,
   onSuccess,
 }: GiftEditModalProps) {
+  if (!isOpen) {
+    return null;
+  }
+
   const [name, setName] = useState(gift.name);
   const [url, setUrl] = useState(gift.url || '');
   const [price, setPrice] = useState(gift.price?.toString() || '');
