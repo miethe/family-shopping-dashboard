@@ -28,7 +28,7 @@ import { listApi } from "@/lib/api/endpoints";
 import { useDeleteList } from "@/hooks/useLists";
 import { AddListModal } from "@/components/lists/AddListModal";
 import { AddListItemModal } from "@/components/lists/AddListItemModal";
-import { AddPersonModal } from "@/components/persons/AddPersonModal";
+import { AddPersonModal } from "@/components/people/AddPersonModal";
 import { AddOccasionModal } from "@/components/occasions/AddOccasionModal";
 import { GiftDetailModal } from "./GiftDetailModal";
 import { PersonDetailModal } from "./PersonDetailModal";
@@ -85,11 +85,9 @@ const statusFilters: { value: StatusFilter; label: string }[] = [
 // Status badge colors mapping
 const statusColors: Record<ListItemStatus, string> = {
   idea: 'bg-amber-100 text-amber-800 border-amber-200',
-  to_buy: 'bg-rose-100 text-rose-800 border-rose-200',
   selected: 'bg-blue-100 text-blue-800 border-blue-200',
   purchased: 'bg-emerald-100 text-emerald-800 border-emerald-200',
   received: 'bg-purple-100 text-purple-800 border-purple-200',
-  gifted: 'bg-purple-100 text-purple-800 border-purple-200',
 };
 
 export function ListDetailModal({
@@ -787,7 +785,6 @@ export function ListDetailModal({
       <AddPersonModal
         isOpen={showAddPersonModal}
         onClose={() => setShowAddPersonModal(false)}
-        mode="create"
       />
 
       {/* Add Occasion Modal */}

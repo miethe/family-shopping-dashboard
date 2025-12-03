@@ -2,9 +2,10 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/components/ui/icons';
 
-type GiftStatus = 'idea' | 'shortlisted' | 'buying' | 'ordered' | 'purchased' | 'delivered' | 'gifted' | 'urgent';
+// Backend ListItemStatus values: idea, selected, purchased, received
+type GiftStatus = 'idea' | 'selected' | 'purchased' | 'received';
 
 interface StatusSelectorProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   status: GiftStatus;
@@ -25,26 +26,12 @@ const statusConfig: Record<GiftStatus, { bg: string; text: string; border: strin
     dot: 'bg-status-idea-600',
     label: 'Idea',
   },
-  shortlisted: {
-    bg: 'bg-status-idea-100',
-    text: 'text-status-idea-900',
-    border: 'border-status-idea-300',
-    dot: 'bg-status-idea-600',
-    label: 'Shortlisted',
-  },
-  buying: {
+  selected: {
     bg: 'bg-status-progress-100',
     text: 'text-status-progress-900',
     border: 'border-status-progress-300',
     dot: 'bg-status-progress-600',
-    label: 'Buying',
-  },
-  ordered: {
-    bg: 'bg-status-progress-100',
-    text: 'text-status-progress-900',
-    border: 'border-status-progress-300',
-    dot: 'bg-status-progress-600',
-    label: 'Ordered',
+    label: 'Selected',
   },
   purchased: {
     bg: 'bg-status-success-100',
@@ -53,26 +40,12 @@ const statusConfig: Record<GiftStatus, { bg: string; text: string; border: strin
     dot: 'bg-status-success-600',
     label: 'Purchased',
   },
-  delivered: {
+  received: {
     bg: 'bg-status-success-100',
     text: 'text-status-success-900',
     border: 'border-status-success-300',
     dot: 'bg-status-success-600',
-    label: 'Delivered',
-  },
-  gifted: {
-    bg: 'bg-status-success-100',
-    text: 'text-status-success-900',
-    border: 'border-status-success-300',
-    dot: 'bg-status-success-600',
-    label: 'Gifted',
-  },
-  urgent: {
-    bg: 'bg-status-warning-100',
-    text: 'text-status-warning-900',
-    border: 'border-status-warning-300',
-    dot: 'bg-status-warning-600',
-    label: 'Urgent',
+    label: 'Received',
   },
 };
 
