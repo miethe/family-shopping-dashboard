@@ -177,19 +177,16 @@ export function useListsForGift(giftId: number | undefined) {
       // Fetch all lists (reasonable for 2-3 users in V1)
       const response = await listApi.list({ limit: 100 });
 
+      // Fetch all list details in parallel (not sequential)
+      const listsWithItems = await Promise.all(
+        response.items.map((list) => listApi.get(list.id))
+      );
+
       // Filter lists that contain this gift
-      // We need to check each list's items, so we'll fetch list details
-      const listsWithGift: GiftList[] = [];
-
-      for (const list of response.items) {
-        // Fetch full list with items
-        const listWithItems = await listApi.get(list.id);
-
-        // Check if any item contains the gift
-        if (listWithItems.items.some((item) => item.gift.id === giftId)) {
-          listsWithGift.push(list);
-        }
-      }
+      const listsWithGift = response.items.filter((list, index) => {
+        const listWithItems = listsWithItems[index];
+        return listWithItems.items.some((item) => item.gift.id === giftId);
+      });
 
       return { data: listsWithGift, next_cursor: null };
     },
