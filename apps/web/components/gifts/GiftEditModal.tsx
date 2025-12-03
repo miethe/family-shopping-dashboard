@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useUpdateGift } from '@/hooks/useGift';
 import { useLists } from '@/hooks/useLists';
 import { usePersons } from '@/hooks/usePersons';
