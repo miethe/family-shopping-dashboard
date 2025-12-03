@@ -63,6 +63,10 @@ export {
   type StatusPillProps,
 } from './status-pill';
 export {
+  StatusSelector,
+  type StatusSelectorProps,
+} from './status-selector';
+export {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
