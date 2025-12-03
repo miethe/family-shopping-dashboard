@@ -197,7 +197,7 @@ export interface ListSummary {
 // List Item Types
 // ============================================================================
 
-export type ListItemStatus = 'idea' | 'to_buy' | 'purchased' | 'gifted' | 'selected' | 'received';
+export type ListItemStatus = 'idea' | 'selected' | 'purchased' | 'received';
 
 export interface ListItem extends TimestampFields {
   id: number;
