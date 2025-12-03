@@ -114,15 +114,26 @@ export function useDeleteList() {
   });
 }
 
+interface UseListsForPersonOptions {
+  enabled?: boolean;
+  disableRealtime?: boolean;
+}
+
 /**
  * Fetch lists filtered by person (recipient)
  * @param personId - Person ID to filter by
+ * @param options - Query options (enabled, disableRealtime)
  */
-export function useListsForPerson(personId: number | undefined) {
+export function useListsForPerson(
+  personId: number | undefined,
+  options: UseListsForPersonOptions = {}
+) {
+  const { enabled = true, disableRealtime = false } = options;
+
   const query = useQuery({
     queryKey: ['lists', 'person', personId],
     queryFn: () => listApi.list({ person_id: personId }),
-    enabled: !!personId,
+    enabled: enabled && !!personId,
     staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently
   });
 
@@ -131,21 +142,32 @@ export function useListsForPerson(personId: number | undefined) {
     topic: personId ? `person:${personId}:lists` : '',
     queryKey: ['lists', 'person', personId],
     events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled: !!personId,
+    enabled: enabled && !!personId && !disableRealtime,
   });
 
   return query;
 }
 
+interface UseListsForOccasionOptions {
+  enabled?: boolean;
+  disableRealtime?: boolean;
+}
+
 /**
  * Fetch lists filtered by occasion
  * @param occasionId - Occasion ID to filter by
+ * @param options - Query options (enabled, disableRealtime)
  */
-export function useListsForOccasion(occasionId: number | undefined) {
+export function useListsForOccasion(
+  occasionId: number | undefined,
+  options: UseListsForOccasionOptions = {}
+) {
+  const { enabled = true, disableRealtime = false } = options;
+
   const query = useQuery({
     queryKey: ['lists', 'occasion', occasionId],
     queryFn: () => listApi.list({ occasion_id: occasionId }),
-    enabled: !!occasionId,
+    enabled: enabled && !!occasionId,
     staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently
   });
 
@@ -154,21 +176,32 @@ export function useListsForOccasion(occasionId: number | undefined) {
     topic: occasionId ? `occasion:${occasionId}:lists` : '',
     queryKey: ['lists', 'occasion', occasionId],
     events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled: !!occasionId,
+    enabled: enabled && !!occasionId && !disableRealtime,
   });
 
   return query;
 }
 
+interface UseListsForGiftOptions {
+  enabled?: boolean;
+  disableRealtime?: boolean;
+}
+
 /**
  * Fetch lists that contain a specific gift
  * @param giftId - Gift ID to search for
+ * @param options - Query options (enabled, disableRealtime)
  *
  * Note: For V1 (2-3 users), this fetches all lists and filters client-side
  * by checking each list's items for the gift.
  * Future: Backend should support GET /lists?gift_id={id} for efficiency.
  */
-export function useListsForGift(giftId: number | undefined) {
+export function useListsForGift(
+  giftId: number | undefined,
+  options: UseListsForGiftOptions = {}
+) {
+  const { enabled = true, disableRealtime = false } = options;
+
   const query = useQuery({
     queryKey: ['lists', 'gift', giftId],
     queryFn: async () => {
@@ -190,7 +223,7 @@ export function useListsForGift(giftId: number | undefined) {
 
       return { data: listsWithGift, next_cursor: null };
     },
-    enabled: !!giftId,
+    enabled: enabled && !!giftId,
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 
@@ -200,7 +233,7 @@ export function useListsForGift(giftId: number | undefined) {
     topic: 'lists',
     queryKey: ['lists', 'gift', giftId],
     events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled: !!giftId,
+    enabled: enabled && !!giftId && !disableRealtime,
   });
 
   return query;

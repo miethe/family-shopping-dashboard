@@ -96,7 +96,8 @@ export function OccasionDetailModal({
 
   // Fetch lists attached to this occasion
   const { data: listsData, isLoading: listsLoading } = useListsForOccasion(
-    occasionId ? Number(occasionId) : undefined
+    occasionId ? Number(occasionId) : undefined,
+    { enabled: open }
   );
 
   const deleteMutation = useDeleteOccasion();

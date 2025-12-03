@@ -20,8 +20,8 @@ import type { ListCreate, ListType, ListVisibility } from '@/types';
 export default function NewListPage() {
   const router = useRouter();
   const createMutation = useCreateList();
-  const { data: personsData } = usePersons();
-  const { data: occasionsData } = useOccasions();
+  const { data: personsData } = usePersons(undefined, { disableRealtime: true });
+  const { data: occasionsData } = useOccasions(undefined, { disableRealtime: true });
 
   const [formData, setFormData] = useState<ListCreate>({
     name: '',

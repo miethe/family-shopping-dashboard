@@ -53,7 +53,8 @@ export function GiftDetailModal({
   });
 
   const { data: listsData, isLoading: isLoadingLists } = useListsForGift(
-    giftId ? Number(giftId) : undefined
+    giftId ? Number(giftId) : undefined,
+    { enabled: open }
   );
 
   const deleteGift = useDeleteGift();

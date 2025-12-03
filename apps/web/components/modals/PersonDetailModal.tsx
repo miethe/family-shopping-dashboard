@@ -59,7 +59,7 @@ export function PersonDetailModal({
   const {
     data: listsResponse,
     isLoading: listsLoading
-  } = useListsForPerson(personId ? Number(personId) : undefined);
+  } = useListsForPerson(personId ? Number(personId) : undefined, { enabled: open });
 
   const lists = listsResponse?.items || [];
 
