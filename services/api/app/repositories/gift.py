@@ -206,8 +206,9 @@ class GiftRepository(BaseRepository[Gift]):
         Get filtered list of gifts with cursor-based pagination.
 
         Filters gifts by recipient (person), status, list, and occasion through
-        the Gift → ListItem → List relationship chain. Uses DISTINCT to avoid
-        duplicate gifts when filtering by list relationships.
+        the Gift → ListItem → List relationship chain. Uses a subquery approach
+        to avoid duplicate gifts when filtering by list relationships while
+        preventing PostgreSQL JSON column DISTINCT errors.
 
         Args:
             cursor: ID of last item from previous page (None for first page)
@@ -247,19 +248,18 @@ class GiftRepository(BaseRepository[Gift]):
             - OR logic within filter groups (person_id=1 OR person_id=2)
             - Uses database indexes: ix_list_items_status, ix_lists_person_id,
               ix_lists_occasion_id for optimal query performance
-            - DISTINCT prevents duplicate gifts when they appear in multiple
-              lists that match the filter criteria
+            - Subquery approach prevents duplicate gifts and avoids JSON DISTINCT errors
         """
-        # Start with base query - use distinct to avoid duplicates
-        stmt = select(distinct(self.model.id), self.model).select_from(self.model)
+        # Step 1: Build subquery for distinct gift IDs with all filters
+        id_subquery = select(distinct(self.model.id)).select_from(self.model)
 
         # Track if we need to join ListItem and List tables
         need_list_item_join = bool(statuses or list_ids or person_ids or occasion_ids)
 
         # Join through ListItem to List if filtering by list-related fields
         if need_list_item_join:
-            stmt = stmt.join(ListItem, self.model.id == ListItem.gift_id)
-            stmt = stmt.join(List, ListItem.list_id == List.id)
+            id_subquery = id_subquery.join(ListItem, self.model.id == ListItem.gift_id)
+            id_subquery = id_subquery.join(List, ListItem.list_id == List.id)
 
         # Apply filters (AND logic across groups)
         filters = []
@@ -284,9 +284,15 @@ class GiftRepository(BaseRepository[Gift]):
         if occasion_ids:
             filters.append(List.occasion_id.in_(occasion_ids))
 
-        # Apply all filters
+        # Apply all filters to subquery
         if filters:
-            stmt = stmt.where(*filters)
+            id_subquery = id_subquery.where(*filters)
+
+        # Convert to subquery
+        id_subquery = id_subquery.subquery()
+
+        # Step 2: Select full Gift models where ID is in the subquery
+        stmt = select(self.model).where(self.model.id.in_(select(id_subquery.c.id)))
 
         # Apply cursor pagination
         if cursor is not None:
@@ -312,7 +318,7 @@ class GiftRepository(BaseRepository[Gift]):
 
         # Execute query
         result = await self.session.execute(stmt)
-        gifts = [row[1] for row in result.all()]  # Extract Gift objects from (id, Gift) tuples
+        gifts = list(result.scalars().all())
 
         # Check if there are more results
         has_more = len(gifts) > limit

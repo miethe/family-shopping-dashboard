@@ -83,3 +83,15 @@ Monthly bug fix tracking document for the Family Gifting Dashboard.
 - **Fix**: Aligned all status references to use backend-valid values: `idea`, `selected`, `purchased`, `received`
 - **Commit(s)**: `d1b062d`
 - **Status**: RESOLVED
+
+---
+
+### Gift Modal Crash: PostgreSQL JSON DISTINCT Error
+
+**Issue**: Clicking a gift to open the modal crashes the site with API error: `could not identify an equality operator for type json`
+
+- **Location**: `services/api/app/repositories/gift.py:254`
+- **Root Cause**: The `get_filtered()` method used `select(distinct(self.model.id), self.model)` which applies DISTINCT across all columns including the `extra_data` JSON column. PostgreSQL cannot compare JSON types for DISTINCT operations.
+- **Fix**: Refactored to use a two-step subquery approach: (1) build a subquery selecting only distinct gift IDs with all filters/joins, (2) select full Gift models where ID is in the subquery results. This avoids putting the JSON column in the DISTINCT comparison while preserving all filtering, pagination, and sorting logic.
+- **Commit(s)**: `a55ff66`
+- **Status**: RESOLVED
