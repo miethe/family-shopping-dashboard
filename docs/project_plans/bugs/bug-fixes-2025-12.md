@@ -47,3 +47,39 @@ Monthly bug fix tracking document for the Family Gifting Dashboard.
   2. Relaxed backend state machine to allow any-to-any status transitions for flexible Kanban UX
 - **Commit(s)**: `784b755`
 - **Status**: RESOLVED
+
+---
+
+### Build Error: AddPersonModal Import Path
+
+**Issue**: Build fails with `Module not found: Can't resolve '@/components/persons/AddPersonModal'`
+
+- **Location**: `apps/web/components/modals/ListDetailModal.tsx`
+- **Root Cause**: Import path used `persons` but the directory is named `people`
+- **Fix**: Changed import from `@/components/persons/AddPersonModal` to `@/components/people/AddPersonModal`
+- **Commit(s)**: `6a3ea9a`
+- **Status**: RESOLVED
+
+---
+
+### Build Error: lucide-react Import in StatusSelector
+
+**Issue**: Build fails with `Module not found: Can't resolve 'lucide-react'`
+
+- **Location**: `apps/web/components/ui/status-selector.tsx`
+- **Root Cause**: Project uses custom icons from `@/components/ui/icons`, not direct lucide-react imports
+- **Fix**: Changed import to use project's icon system, added Check and ChevronDown icons to icons.tsx
+- **Commit(s)**: `6a3ea9a`
+- **Status**: RESOLVED
+
+---
+
+### Type Errors: Invalid ListItemStatus Values
+
+**Issue**: Multiple TypeScript errors across list components using invalid status values (`to_buy`, `gifted`)
+
+- **Location**: KanbanView, KanbanCard, KanbanColumn, ListItemGroup, ListItemRow, ListSummary, TableView, list detail page
+- **Root Cause**: Frontend components used display-friendly status names (`to_buy`, `gifted`) that don't exist in the backend enum
+- **Fix**: Aligned all status references to use backend-valid values: `idea`, `selected`, `purchased`, `received`
+- **Commit(s)**: `d1b062d`
+- **Status**: RESOLVED
