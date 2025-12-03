@@ -7,12 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock, Edit, Trash2, Heart, Lightbulb, CheckSquare } from "@/components/ui/icons";
+import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock, Edit, Trash2, Heart, Lightbulb, CheckSquare, Plus } from "@/components/ui/icons";
 import { formatDate, getDaysUntil } from "@/lib/date-utils";
 import { occasionApi } from "@/lib/api/endpoints";
 import { useDeleteOccasion } from "@/hooks/useOccasions";
 import { useListsForOccasion } from "@/hooks/useLists";
 import { AddOccasionModal } from "@/components/occasions/AddOccasionModal";
+import { AddListModal } from "@/components/lists/AddListModal";
 import { ListDetailModal } from "./ListDetailModal";
 import type { Occasion } from "@/types";
 import { cn } from "@/lib/utils";
@@ -83,6 +84,7 @@ export function OccasionDetailModal({
   const { toast } = useToast();
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
+  const [showAddListModal, setShowAddListModal] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("overview");
   const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
 
@@ -104,6 +106,7 @@ export function OccasionDetailModal({
     if (!open) {
       setShowDeleteConfirm(false);
       setShowEditModal(false);
+      setShowAddListModal(false);
       setActiveTab("overview");
       setSelectedListId(null);
     }
@@ -364,6 +367,29 @@ export function OccasionDetailModal({
                   <h3 className="font-semibold text-warm-900 text-sm mb-3">
                     Lists for this occasion
                   </h3>
+
+                  {/* Add New List Card */}
+                  <button
+                    onClick={() => setShowAddListModal(true)}
+                    className={cn(
+                      "w-full text-left",
+                      "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                      "hover:border-blue-500 hover:bg-blue-50/50",
+                      "transition-all duration-200",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                      "min-h-[44px]"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                        <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                      </div>
+                      <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                        Add New List
+                      </span>
+                    </div>
+                  </button>
+
                   {listsData.items.map((list) => {
                     const listConfig = listTypeConfig[list.type as keyof typeof listTypeConfig];
                     const ListIcon = listConfig?.icon;
@@ -414,18 +440,42 @@ export function OccasionDetailModal({
                   })}
                 </div>
               ) : (
-                <div
-                  className={cn(
-                    "bg-warm-50 rounded-xl p-6 border border-warm-200",
-                    "text-center"
-                  )}
-                >
-                  <h3 className="font-semibold text-warm-900 text-lg mb-2">
-                    No Lists Attached
-                  </h3>
-                  <p className="text-warm-600 text-sm">
-                    No lists have been created for this occasion yet
-                  </p>
+                <div className="space-y-3">
+                  {/* Add New List Card */}
+                  <button
+                    onClick={() => setShowAddListModal(true)}
+                    className={cn(
+                      "w-full text-left",
+                      "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                      "hover:border-blue-500 hover:bg-blue-50/50",
+                      "transition-all duration-200",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                      "min-h-[44px]"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                        <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                      </div>
+                      <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                        Add New List
+                      </span>
+                    </div>
+                  </button>
+
+                  <div
+                    className={cn(
+                      "bg-warm-50 rounded-xl p-6 border border-warm-200",
+                      "text-center"
+                    )}
+                  >
+                    <h3 className="font-semibold text-warm-900 text-lg mb-2">
+                      No Lists Attached
+                    </h3>
+                    <p className="text-warm-600 text-sm">
+                      No lists have been created for this occasion yet
+                    </p>
+                  </div>
                 </div>
               )}
             </TabsContent>
@@ -470,6 +520,13 @@ export function OccasionDetailModal({
         listId={selectedListId}
         open={!!selectedListId}
         onOpenChange={(open) => !open && setSelectedListId(null)}
+      />
+
+      {/* Add List Modal */}
+      <AddListModal
+        isOpen={showAddListModal}
+        onClose={() => setShowAddListModal(false)}
+        mode="create"
       />
     </>
   );

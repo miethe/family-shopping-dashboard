@@ -28,8 +28,11 @@ import { listApi } from "@/lib/api/endpoints";
 import { useDeleteList } from "@/hooks/useLists";
 import { AddListModal } from "@/components/lists/AddListModal";
 import { AddListItemModal } from "@/components/lists/AddListItemModal";
+import { AddPersonModal } from "@/components/persons/AddPersonModal";
+import { AddOccasionModal } from "@/components/occasions/AddOccasionModal";
 import { GiftDetailModal } from "./GiftDetailModal";
 import { PersonDetailModal } from "./PersonDetailModal";
+import { OccasionDetailModal } from "./OccasionDetailModal";
 import { GiftImage } from "@/components/common/GiftImage";
 import { usePerson } from "@/hooks/usePersons";
 import { useOccasion } from "@/hooks/useOccasions";
@@ -98,8 +101,11 @@ export function ListDetailModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [showAddItemModal, setShowAddItemModal] = React.useState(false);
+  const [showAddPersonModal, setShowAddPersonModal] = React.useState(false);
+  const [showAddOccasionModal, setShowAddOccasionModal] = React.useState(false);
   const [selectedGiftId, setSelectedGiftId] = React.useState<string | null>(null);
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
+  const [selectedOccasionId, setSelectedOccasionId] = React.useState<string | null>(null);
   const [statusFilter, setStatusFilter] = React.useState<StatusFilter>('all');
   const [activeTab, setActiveTab] = React.useState("overview");
 
@@ -128,8 +134,11 @@ export function ListDetailModal({
       setShowDeleteConfirm(false);
       setShowEditModal(false);
       setShowAddItemModal(false);
+      setShowAddPersonModal(false);
+      setShowAddOccasionModal(false);
       setSelectedGiftId(null);
       setSelectedPersonId(null);
+      setSelectedOccasionId(null);
       setStatusFilter('all');
       setActiveTab("overview");
     }
@@ -547,48 +556,107 @@ export function ListDetailModal({
               </TabsContent>
 
               {/* Linked Entities Tab */}
-              <TabsContent value="linked" className="space-y-4">
-                {(attachedPerson || attachedOccasion) ? (
-                  <div className="space-y-3">
-                    {attachedPerson && (
-                      <div
-                        className={cn(
-                          "bg-blue-50 rounded-xl p-4 border border-blue-100"
-                        )}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-xs font-medium text-blue-600 mb-1">
-                              For Recipient
-                            </div>
-                            <div className="text-sm font-semibold text-warm-900">
-                              {attachedPerson.display_name}
-                            </div>
-                            {attachedPerson.relationship && (
-                              <div className="text-xs text-warm-600">
-                                {attachedPerson.relationship}
-                              </div>
-                            )}
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedPersonId(String(attachedPerson.id))}
-                            className="min-h-[44px]"
-                          >
-                            View Details
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+              <TabsContent value="linked" className="space-y-6">
+                {/* People Section */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-warm-900 text-sm mb-3">
+                    Recipients
+                  </h3>
 
-                    {attachedOccasion && (
-                      <div
-                        className={cn(
-                          "bg-purple-50 rounded-xl p-4 border border-purple-100"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
+                  {/* Add New Person Card */}
+                  <button
+                    onClick={() => setShowAddPersonModal(true)}
+                    className={cn(
+                      "w-full text-left",
+                      "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                      "hover:border-blue-500 hover:bg-blue-50/50",
+                      "transition-all duration-200",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                      "min-h-[44px]"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                        <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                      </div>
+                      <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                        Add Person
+                      </span>
+                    </div>
+                  </button>
+
+                  {attachedPerson && (
+                    <button
+                      onClick={() => setSelectedPersonId(String(attachedPerson.id))}
+                      className={cn(
+                        "w-full text-left",
+                        "bg-blue-50 rounded-xl p-4 border border-blue-100",
+                        "hover:border-blue-300 hover:shadow-md",
+                        "transition-all duration-200",
+                        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-xs font-medium text-blue-600 mb-1">
+                            For Recipient
+                          </div>
+                          <div className="text-sm font-semibold text-warm-900">
+                            {attachedPerson.display_name}
+                          </div>
+                          {attachedPerson.relationship && (
+                            <div className="text-xs text-warm-600">
+                              {attachedPerson.relationship}
+                            </div>
+                          )}
+                        </div>
+                        <ExternalLink className="h-4 w-4 text-warm-400" />
+                      </div>
+                    </button>
+                  )}
+                </div>
+
+                {/* Occasions Section */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-warm-900 text-sm mb-3">
+                    Occasions
+                  </h3>
+
+                  {/* Add New Occasion Card */}
+                  <button
+                    onClick={() => setShowAddOccasionModal(true)}
+                    className={cn(
+                      "w-full text-left",
+                      "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                      "hover:border-blue-500 hover:bg-blue-50/50",
+                      "transition-all duration-200",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                      "min-h-[44px]"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                        <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                      </div>
+                      <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                        Add Occasion
+                      </span>
+                    </div>
+                  </button>
+
+                  {attachedOccasion && (
+                    <button
+                      onClick={() => setSelectedOccasionId(String(attachedOccasion.id))}
+                      className={cn(
+                        "w-full text-left",
+                        "bg-purple-50 rounded-xl p-4 border border-purple-100",
+                        "hover:border-purple-300 hover:shadow-md",
+                        "transition-all duration-200",
+                        "focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                      )}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 flex-1">
                           <Calendar className="h-5 w-5 text-purple-600 flex-shrink-0" />
                           <div>
                             <div className="text-xs font-medium text-purple-600 mb-1">
@@ -602,27 +670,51 @@ export function ListDetailModal({
                             </div>
                           </div>
                         </div>
+                        <ExternalLink className="h-4 w-4 text-warm-400 flex-shrink-0" />
                       </div>
-                    )}
-                  </div>
-                ) : (
-                  <div
+                    </button>
+                  )}
+                </div>
+
+                {/* Gifts Section */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-warm-900 text-sm mb-3">
+                    Gifts in This List
+                  </h3>
+
+                  {/* Add New Gift Card */}
+                  <button
+                    onClick={handleAddItemClick}
                     className={cn(
-                      "bg-warm-50 rounded-xl p-6 border border-warm-200",
-                      "text-center"
+                      "w-full text-left",
+                      "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                      "hover:border-blue-500 hover:bg-blue-50/50",
+                      "transition-all duration-200",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                      "min-h-[44px]"
                     )}
                   >
-                    <h3 className="font-semibold text-warm-900 text-lg mb-2">
-                      Linked Entities
-                    </h3>
-                    <p className="text-warm-600 text-sm mb-4">
-                      No recipient or occasion attached to this list
-                    </p>
-                    <div className="text-warm-500 text-sm italic">
-                      Edit the list to attach a person or occasion
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                        <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                      </div>
+                      <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                        Add Gift
+                      </span>
                     </div>
-                  </div>
-                )}
+                  </button>
+
+                  {list?.items && list.items.length > 0 && (
+                    <div className="bg-warm-50 rounded-xl p-4 border border-warm-200">
+                      <p className="text-sm text-warm-700">
+                        This list contains <span className="font-semibold">{list.items.length}</span> {list.items.length === 1 ? 'gift' : 'gifts'}
+                      </p>
+                      <p className="text-xs text-warm-600 mt-1">
+                        Switch to the Items tab to view and manage gifts
+                      </p>
+                    </div>
+                  )}
+                </div>
               </TabsContent>
 
               {/* History Tab */}
@@ -682,6 +774,27 @@ export function ListDetailModal({
         personId={selectedPersonId}
         open={!!selectedPersonId}
         onOpenChange={(open) => !open && setSelectedPersonId(null)}
+      />
+
+      {/* Occasion Detail Modal */}
+      <OccasionDetailModal
+        occasionId={selectedOccasionId}
+        open={!!selectedOccasionId}
+        onOpenChange={(open) => !open && setSelectedOccasionId(null)}
+      />
+
+      {/* Add Person Modal */}
+      <AddPersonModal
+        isOpen={showAddPersonModal}
+        onClose={() => setShowAddPersonModal(false)}
+        mode="create"
+      />
+
+      {/* Add Occasion Modal */}
+      <AddOccasionModal
+        isOpen={showAddOccasionModal}
+        onClose={() => setShowAddOccasionModal(false)}
+        mode="create"
       />
     </>
   );

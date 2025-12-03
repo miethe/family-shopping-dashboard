@@ -11,11 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { Cake, Calendar, CheckSquare, Edit, ExternalLink, Heart, Sparkles, Trash2, X } from "@/components/ui/icons";
+import { Cake, Calendar, CheckSquare, Edit, ExternalLink, Heart, Sparkles, Trash2, X, Plus } from "@/components/ui/icons";
 import { formatDate, getAge, getNextBirthday } from "@/lib/date-utils";
 import { personApi } from "@/lib/api/endpoints";
 import { useUpdatePerson, useDeletePerson } from "@/hooks/usePersons";
 import { useListsForPerson } from "@/hooks/useLists";
+import { AddListModal } from "@/components/lists/AddListModal";
 import type { Person, PersonUpdate, GiftList } from "@/types";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
@@ -34,6 +35,7 @@ export function PersonDetailModal({
   const { toast } = useToast();
   const [isEditing, setIsEditing] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [showAddListModal, setShowAddListModal] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("overview");
 
   const { data: person, isLoading } = useQuery<Person>({
@@ -85,6 +87,7 @@ export function PersonDetailModal({
     if (!open) {
       setIsEditing(false);
       setShowDeleteConfirm(false);
+      setShowAddListModal(false);
       setActiveTab("overview");
     }
   }, [open]);
@@ -445,6 +448,32 @@ export function PersonDetailModal({
                     </div>
                   ) : lists.length > 0 ? (
                     <div className="space-y-3">
+                      <h3 className="font-semibold text-warm-900 text-sm mb-3">
+                        Lists for this person
+                      </h3>
+
+                      {/* Add New List Card */}
+                      <button
+                        onClick={() => setShowAddListModal(true)}
+                        className={cn(
+                          "w-full text-left",
+                          "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                          "hover:border-blue-500 hover:bg-blue-50/50",
+                          "transition-all duration-200",
+                          "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                          "min-h-[44px]"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                            <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                          </div>
+                          <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                            Add New List
+                          </span>
+                        </div>
+                      </button>
+
                       {lists.map((list: GiftList) => (
                         <Card
                           key={list.id}
@@ -469,15 +498,39 @@ export function PersonDetailModal({
                       ))}
                     </div>
                   ) : (
-                    <div
-                      className={cn(
-                        "bg-warm-50 rounded-xl p-12 border border-warm-200",
-                        "text-center"
-                      )}
-                    >
-                      <p className="text-warm-600">
-                        No lists attached to this person
-                      </p>
+                    <div className="space-y-3">
+                      {/* Add New List Card */}
+                      <button
+                        onClick={() => setShowAddListModal(true)}
+                        className={cn(
+                          "w-full text-left",
+                          "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                          "hover:border-blue-500 hover:bg-blue-50/50",
+                          "transition-all duration-200",
+                          "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                          "min-h-[44px]"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                            <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                          </div>
+                          <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                            Add New List
+                          </span>
+                        </div>
+                      </button>
+
+                      <div
+                        className={cn(
+                          "bg-warm-50 rounded-xl p-12 border border-warm-200",
+                          "text-center"
+                        )}
+                      >
+                        <p className="text-warm-600">
+                          No lists attached to this person
+                        </p>
+                      </div>
                     </div>
                   )}
                 </TabsContent>
@@ -617,6 +670,13 @@ export function PersonDetailModal({
         listId={listModalId}
         open={listModalOpen}
         onOpenChange={closeListModal}
+      />
+
+      {/* Add List Modal */}
+      <AddListModal
+        isOpen={showAddListModal}
+        onClose={() => setShowAddListModal(false)}
+        mode="create"
       />
     </EntityModal>
   );

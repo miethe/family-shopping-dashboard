@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { EntityModal } from "./EntityModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StatusSelector } from "@/components/ui/status-selector";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -14,13 +15,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ExternalLink, Gift as GiftIcon, DollarSign, Calendar, User, Tag, Edit, Trash2, Heart, Lightbulb, CheckSquare, ShoppingBag } from "@/components/ui/icons";
+import { ExternalLink, Gift as GiftIcon, DollarSign, Calendar, User, Tag, Edit, Trash2, Heart, Lightbulb, CheckSquare, ShoppingBag, Plus } from "@/components/ui/icons";
 import { formatDate } from "@/lib/date-utils";
 import { formatPrice } from "@/lib/utils";
 import { giftApi } from "@/lib/api/endpoints";
-import { useDeleteGift } from "@/hooks/useGifts";
+import { useDeleteGift, useUpdateGift } from "@/hooks/useGifts";
 import { useListsForGift } from "@/hooks/useLists";
 import type { Gift } from "@/types";
+import type { GiftStatus } from "@/components/ui/status-pill";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ListDetailModal } from "./ListDetailModal";
@@ -31,6 +33,9 @@ interface GiftDetailModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Import AddListModal if not already imported
+import { AddListModal } from "@/components/lists/AddListModal";
+
 export function GiftDetailModal({
   giftId,
   open,
@@ -39,6 +44,7 @@ export function GiftDetailModal({
   const [activeTab, setActiveTab] = React.useState("overview");
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
+  const [showAddListModal, setShowAddListModal] = React.useState(false);
 
   const { data: gift, isLoading } = useQuery<Gift>({
     queryKey: ["gifts", giftId],
@@ -51,6 +57,19 @@ export function GiftDetailModal({
   );
 
   const deleteGift = useDeleteGift();
+  const updateGiftMutation = useUpdateGift(giftId ? Number(giftId) : 0);
+
+  const handleStatusChange = (newStatus: GiftStatus) => {
+    if (!giftId) return;
+
+    // Optimistically update the status
+    updateGiftMutation.mutate({
+      extra_data: {
+        ...gift?.extra_data,
+        status: newStatus,
+      },
+    });
+  };
 
   const handleDelete = async () => {
     if (!giftId) return;
@@ -201,6 +220,19 @@ export function GiftDetailModal({
                     </div>
                   )}
 
+                  {/* Status Selector */}
+                  {gift.extra_data?.status && (
+                    <div>
+                      <p className="text-sm text-warm-600 mb-2">Status</p>
+                      <StatusSelector
+                        status={gift.extra_data.status as GiftStatus}
+                        onChange={handleStatusChange}
+                        size="md"
+                        disabled={updateGiftMutation.isPending}
+                      />
+                    </div>
+                  )}
+
                   {/* Source */}
                   {gift.source && (
                     <div className="flex items-center gap-2">
@@ -273,6 +305,28 @@ export function GiftDetailModal({
                   </div>
                 ) : listsData && listsData.data.length > 0 ? (
                   <div className="space-y-3">
+                    {/* Add New List Card */}
+                    <button
+                      onClick={() => setShowAddListModal(true)}
+                      className={cn(
+                        "w-full text-left",
+                        "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                        "hover:border-blue-500 hover:bg-blue-50/50",
+                        "transition-all duration-200",
+                        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                        "min-h-[44px]"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                          <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                        </div>
+                        <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                          Add to New List
+                        </span>
+                      </div>
+                    </button>
+
                     {listsData.data.map((list) => {
                       const typeIcon = {
                         wishlist: Heart,
@@ -359,22 +413,46 @@ export function GiftDetailModal({
                     })}
                   </div>
                 ) : (
-                  <div
-                    className={cn(
-                      "bg-warm-50 rounded-xl p-8 border border-warm-200",
-                      "text-center"
-                    )}
-                  >
-                    <div className="flex flex-col items-center">
-                      <div className="bg-warm-100 rounded-full p-4 mb-4">
-                        <ShoppingBag className="h-8 w-8 text-warm-400" />
+                  <div className="space-y-3">
+                    {/* Add New List Card */}
+                    <button
+                      onClick={() => setShowAddListModal(true)}
+                      className={cn(
+                        "w-full text-left",
+                        "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                        "hover:border-blue-500 hover:bg-blue-50/50",
+                        "transition-all duration-200",
+                        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                        "min-h-[44px]"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                          <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                        </div>
+                        <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                          Add to New List
+                        </span>
                       </div>
-                      <h4 className="font-semibold text-warm-900 text-base mb-1">
-                        Not in Any Lists
-                      </h4>
-                      <p className="text-warm-600 text-sm">
-                        This gift has not been added to any lists yet
-                      </p>
+                    </button>
+
+                    <div
+                      className={cn(
+                        "bg-warm-50 rounded-xl p-8 border border-warm-200",
+                        "text-center"
+                      )}
+                    >
+                      <div className="flex flex-col items-center">
+                        <div className="bg-warm-100 rounded-full p-4 mb-4">
+                          <ShoppingBag className="h-8 w-8 text-warm-400" />
+                        </div>
+                        <h4 className="font-semibold text-warm-900 text-base mb-1">
+                          Not in Any Lists
+                        </h4>
+                        <p className="text-warm-600 text-sm">
+                          This gift has not been added to any lists yet
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -437,6 +515,13 @@ export function GiftDetailModal({
         listId={selectedListId}
         open={!!selectedListId}
         onOpenChange={(open) => !open && setSelectedListId(null)}
+      />
+
+      {/* Add List Modal */}
+      <AddListModal
+        isOpen={showAddListModal}
+        onClose={() => setShowAddListModal(false)}
+        mode="create"
       />
     </>
   );
