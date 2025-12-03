@@ -107,3 +107,25 @@ Monthly bug fix tracking document for the Family Gifting Dashboard.
 - **Fix**: Lifted modal state to page level. Now a single `GiftDetailModal` is rendered at the page level with centralized state from `useEntityModal('gift')`. Each `GiftCard` receives an `onOpenDetail` callback prop instead of managing its own modal. This ensures only ONE modal instance exists and only ONE set of API calls happens when clicking a gift.
 - **Commit(s)**: `83c3930`
 - **Status**: RESOLVED
+
+---
+
+### Gifts Page Navigation Hang (WebSocket Subscription Storm)
+
+**Issue**: Navigating to /gifts page and then to any page with API queries causes the app to hang and fail to load. The site crashes even if navigating to a non-query page first, then to a query page.
+
+- **Location**:
+  - `apps/web/components/gifts/GiftToolbar.tsx:196-198`
+  - `apps/web/components/modals/GiftDetailModal.tsx:514-525`
+  - `apps/web/hooks/useLists.ts:170-209`
+- **Root Cause**: Three interconnected issues:
+  1. **GiftToolbar eager subscriptions**: The toolbar called `usePersons()`, `useLists()`, and `useOccasions()` unconditionally without the `enabled` option, creating 3 permanent WebSocket subscriptions on page mount.
+  2. **Nested modal eager rendering**: `GiftDetailModal` rendered `ListDetailModal` and `AddListModal` unconditionally, potentially triggering their hooks even when hidden.
+  3. **N+1 query pattern**: `useListsForGift` made sequential API calls (1 + N waterfall) instead of parallel calls.
+- **Fix**:
+  1. Added `disableRealtime?: boolean` option to `usePersons`, `useLists`, `useOccasions` hooks
+  2. Updated GiftToolbar to use `{ disableRealtime: true }` for filter data (rarely changes during session)
+  3. Changed GiftDetailModal to conditionally render nested modals only when needed
+  4. Parallelized `useListsForGift` API calls using `Promise.all`
+- **Commit(s)**: `fa79df1`, `df0abf7`
+- **Status**: RESOLVED
