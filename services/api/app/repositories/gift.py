@@ -251,7 +251,8 @@ class GiftRepository(BaseRepository[Gift]):
             - Subquery approach prevents duplicate gifts and avoids JSON DISTINCT errors
         """
         # Step 1: Build subquery for distinct gift IDs with all filters
-        id_subquery = select(distinct(self.model.id)).select_from(self.model)
+        # Label the column explicitly so we can reference it after subquery()
+        id_subquery = select(distinct(self.model.id).label("gift_id")).select_from(self.model)
 
         # Track if we need to join ListItem and List tables
         need_list_item_join = bool(statuses or list_ids or person_ids or occasion_ids)
@@ -292,7 +293,7 @@ class GiftRepository(BaseRepository[Gift]):
         id_subquery = id_subquery.subquery()
 
         # Step 2: Select full Gift models where ID is in the subquery
-        stmt = select(self.model).where(self.model.id.in_(select(id_subquery.c.id)))
+        stmt = select(self.model).where(self.model.id.in_(select(id_subquery.c.gift_id)))
 
         # Apply cursor pagination
         if cursor is not None:
