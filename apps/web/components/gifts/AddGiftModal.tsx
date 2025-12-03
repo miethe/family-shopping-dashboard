@@ -27,16 +27,16 @@ export function AddGiftModal({
   onSuccess,
   defaultListId,
 }: AddGiftModalProps) {
-  if (!isOpen) {
-    return null;
-  }
-
   const [activeTab, setActiveTab] = useState<'url' | 'manual'>('url');
 
   const handleSuccess = () => {
     onSuccess?.();
     onClose();
   };
+
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <EntityModal

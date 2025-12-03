@@ -35,10 +35,6 @@ export function GiftEditModal({
   onClose,
   onSuccess,
 }: GiftEditModalProps) {
-  if (!isOpen) {
-    return null;
-  }
-
   const [name, setName] = useState(gift.name);
   const [url, setUrl] = useState(gift.url || '');
   const [price, setPrice] = useState(gift.price?.toString() || '');
@@ -48,12 +44,12 @@ export function GiftEditModal({
 
   const { mutate: updateGift, isPending: isUpdating } = useUpdateGift(gift.id);
   const { mutate: createListItem } = useCreateListItem();
-  const { data: listsResponse } = useLists();
-  const { data: personsResponse } = usePersons();
-  const { data: occasionsResponse } = useOccasions();
+  const { data: listsResponse } = useLists(undefined, { enabled: isOpen });
+  const { data: personsResponse } = usePersons(undefined, { enabled: isOpen });
+  const { data: occasionsResponse } = useOccasions(undefined, { enabled: isOpen });
   const { toast } = useToast();
 
-  const lists = listsResponse?.items ?? [];
+  const lists = useMemo(() => listsResponse?.items ?? [], [listsResponse?.items]);
   const persons = personsResponse?.items ?? [];
   const occasions = occasionsResponse?.items ?? [];
 
