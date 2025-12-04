@@ -596,3 +596,20 @@ Monthly bug tracking for December 2025.
   5. **/lists/new page**: Added `{ disableRealtime: true }` to usePersons and useOccasions
 - **Commit(s)**: `fa79df1`, `df0abf7`, `ef7d2f9`, `f31847e`
 - **Status**: RESOLVED
+
+---
+
+### Gifts Page Navigation Crash - Missing Suspense Boundary
+
+**Issue**: Navigating FROM /gifts TO /occasions, /people, or /lists using sidebar buttons caused immediate site crash/hang. Direct URL navigation worked fine.
+
+- **Location**: `apps/web/app/gifts/page.tsx:28`
+- **Root Cause**: The `/gifts` page used `useSearchParams()` without wrapping the component in a Suspense boundary. In Next.js 15, `useSearchParams()` requires a Suspense boundary to prevent hydration corruption during client-side navigation. Without it, React cannot properly handle the async nature of search params, causing hydration mismatches that corrupt the React tree when navigating away via client-side routing (sidebar links). Direct URL navigation worked because it triggered full server-side renders, bypassing the corrupted hydration state.
+- **Why previous fixes didn't resolve this**: Prior fixes addressed WebSocket subscription storms which were a valid issue at the time. After the websocket-simplification refactor removed WS from `useLists`, `usePersons`, and `useOccasions` hooks, this different root cause (missing Suspense) was exposed.
+- **Fix**:
+  1. Added `Suspense` import from React
+  2. Created `GiftsSkeleton` loading component matching page structure
+  3. Extracted page content into `GiftsPageContent` component (contains `useSearchParams`)
+  4. Wrapped with `<Suspense fallback={<GiftsSkeleton />}>`
+- **Commit(s)**: `775d41d`
+- **Status**: RESOLVED
