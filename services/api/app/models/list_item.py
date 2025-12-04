@@ -1,9 +1,10 @@
 """ListItem model - junction table connecting Gifts to Lists with status tracking."""
 
+from decimal import Decimal
 from enum import Enum
 from typing import Optional
 
-from sqlalchemy import ForeignKey, Index, String, Text, UniqueConstraint
+from sqlalchemy import ForeignKey, Index, Integer, Numeric, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
@@ -35,6 +36,9 @@ class ListItem(BaseModel):
         status: Current lifecycle status (idea/selected/purchased/received)
         assigned_to: Foreign key to User who will/did purchase (nullable)
         notes: Optional text notes about this list item
+        price: List-specific price copied from Gift at creation (nullable, for budget tracking)
+        discount_price: Optional sale/discount price (nullable)
+        quantity: Number of items (default 1)
         created_at: Timestamp of creation (inherited from BaseModel)
         updated_at: Timestamp of last update (inherited from BaseModel)
     """
@@ -64,6 +68,25 @@ class ListItem(BaseModel):
     notes: Mapped[Optional[str]] = mapped_column(
         Text,
         nullable=True,
+    )
+
+    # Pricing fields for budget tracking
+    price: Mapped[Optional[Decimal]] = mapped_column(
+        Numeric(10, 2),  # DECIMAL(10,2) for currency precision
+        nullable=True,
+        comment="List-specific price (copied from Gift at creation)",
+    )
+    discount_price: Mapped[Optional[Decimal]] = mapped_column(
+        Numeric(10, 2),  # DECIMAL(10,2) for currency precision
+        nullable=True,
+        comment="Optional sale/discount price",
+    )
+    quantity: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=1,
+        server_default="1",
+        comment="Quantity of items (default 1)",
     )
 
     # Relationships (using string references to avoid circular imports)
@@ -97,9 +120,32 @@ class ListItem(BaseModel):
         {"comment": "Junction table linking gifts to lists with status tracking"},
     )
 
+    @property
+    def effective_price(self) -> Optional[Decimal]:
+        """
+        Calculate the effective price for budget calculations.
+
+        Returns:
+            discount_price if set, otherwise price, otherwise None
+        """
+        return self.discount_price if self.discount_price is not None else self.price
+
+    @property
+    def total_cost(self) -> Optional[Decimal]:
+        """
+        Calculate total cost (effective_price * quantity).
+
+        Returns:
+            Total cost or None if price is not set
+        """
+        if self.effective_price is not None:
+            return self.effective_price * self.quantity
+        return None
+
     def __repr__(self) -> str:
         """String representation of ListItem."""
         return (
             f"<ListItem(id={self.id}, gift_id={self.gift_id}, "
-            f"list_id={self.list_id}, status={self.status.value})>"
+            f"list_id={self.list_id}, status={self.status.value}, "
+            f"quantity={self.quantity}, total=${self.total_cost or 0})>"
         )

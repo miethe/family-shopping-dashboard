@@ -1,10 +1,11 @@
 """Occasion model for gifting events (birthdays, holidays, etc.)."""
 
 from datetime import date
+from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Date, Index, String, Text
+from sqlalchemy import Date, Index, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -32,6 +33,7 @@ class Occasion(BaseModel):
         type: Type of occasion (birthday, holiday, other)
         date: Date when the occasion occurs
         description: Optional description of the occasion
+        budget_total: Optional total budget for the occasion
         created_at: Timestamp of creation (inherited from BaseModel)
         updated_at: Timestamp of last update (inherited from BaseModel)
     """
@@ -58,6 +60,11 @@ class Occasion(BaseModel):
 
     description: Mapped[str | None] = mapped_column(
         Text,
+        nullable=True,
+    )
+
+    budget_total: Mapped[Decimal | None] = mapped_column(
+        Numeric(10, 2),
         nullable=True,
     )
 

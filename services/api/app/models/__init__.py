@@ -2,6 +2,7 @@
 
 from app.models.base import BaseModel, TimestampMixin
 from app.models.comment import Comment, CommentParentType
+from app.models.entity_budget import EntityBudget
 from app.models.gift import Gift
 from app.models.list import List, ListType, ListVisibility
 from app.models.list_item import ListItem, ListItemStatus
@@ -24,6 +25,7 @@ __all__ = [
     "ListItem",
     "Tag",
     "Comment",
+    "EntityBudget",
     # Association tables
     "gift_tags",
     # Enums

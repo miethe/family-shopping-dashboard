@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
@@ -37,6 +38,21 @@ class ListItemCreate(BaseModel):
         None,
         description="Optional notes about this list item",
     )
+    price: Decimal | None = Field(
+        None,
+        description="List-specific price (copied from Gift if not provided)",
+        ge=0,
+    )
+    discount_price: Decimal | None = Field(
+        None,
+        description="Optional sale/discount price",
+        ge=0,
+    )
+    quantity: int = Field(
+        default=1,
+        description="Quantity of items (default 1)",
+        ge=1,
+    )
 
 
 class ListItemUpdate(BaseModel):
@@ -45,6 +61,9 @@ class ListItemUpdate(BaseModel):
     status: ListItemStatus | None = None
     assigned_to: int | None = None
     notes: str | None = None
+    price: Decimal | None = Field(None, ge=0)
+    discount_price: Decimal | None = Field(None, ge=0)
+    quantity: int | None = Field(None, ge=1)
 
 
 class ListItemResponse(TimestampSchema):
@@ -56,6 +75,21 @@ class ListItemResponse(TimestampSchema):
     status: ListItemStatus
     assigned_to: int | None
     notes: str | None
+    price: Decimal | None
+    discount_price: Decimal | None
+    quantity: int
+
+    @property
+    def effective_price(self) -> Decimal | None:
+        """Calculate effective price (discount_price if set, otherwise price)."""
+        return self.discount_price if self.discount_price is not None else self.price
+
+    @property
+    def total_cost(self) -> Decimal | None:
+        """Calculate total cost (effective_price * quantity)."""
+        if self.effective_price is not None:
+            return self.effective_price * self.quantity
+        return None
 
 
 class ListItemWithGift(ListItemResponse):
