@@ -234,7 +234,7 @@ export default function ListsPage() {
                 const isActive = list.visibility === 'family' || list.visibility === 'public';
 
                 return (
-                  <Link key={list.id} href={`/lists/${list.id}`}>
+                  <Link key={list.id} href={`/lists/${list.id}`} className="block">
                     <div className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-lg transition-all cursor-pointer">
                       <div className="flex items-start justify-between mb-4">
                         {/* Icon */}
