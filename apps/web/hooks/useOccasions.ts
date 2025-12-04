@@ -3,18 +3,15 @@
  *
  * React Query hooks for Occasion entity CRUD operations.
  * Provides list, get, create, update, delete functionality with cache management.
- * Includes real-time sync via WebSocket.
  * Supports upcoming/past filtering and cursor-based pagination.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { occasionApi, OccasionListParams } from '@/lib/api/endpoints';
 import type { Occasion, OccasionCreate, OccasionUpdate } from '@/types';
-import { useRealtimeSync } from './useRealtimeSync';
 
 interface UseOccasionsOptions {
   enabled?: boolean;
-  disableRealtime?: boolean;
 }
 
 /**
@@ -22,21 +19,14 @@ interface UseOccasionsOptions {
  * @param params - Optional cursor, limit, and filter (upcoming/past)
  */
 export function useOccasions(params?: OccasionListParams, options: UseOccasionsOptions = {}) {
-  const { enabled = true, disableRealtime = false } = options;
+  const { enabled = true } = options;
 
   const query = useQuery({
     queryKey: ['occasions', params],
     queryFn: () => occasionApi.list(params),
     staleTime: 1000 * 60 * 10, // 10 minutes - occasions change infrequently
+    refetchOnWindowFocus: true,
     enabled,
-  });
-
-  // Real-time sync for occasion list changes
-  useRealtimeSync({
-    topic: 'occasions',
-    queryKey: ['occasions', params],
-    events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled: enabled && !disableRealtime,
   });
 
   return query;
@@ -52,14 +42,7 @@ export function useOccasion(id: number) {
     queryFn: () => occasionApi.get(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 10, // 10 minutes - occasion details rarely change
-  });
-
-  // Real-time sync for specific occasion changes
-  useRealtimeSync({
-    topic: id ? `occasion:${id}` : '',
-    queryKey: ['occasions', id],
-    events: ['UPDATED', 'DELETED'],
-    enabled: !!id,
+    refetchOnWindowFocus: true,
   });
 
   return query;

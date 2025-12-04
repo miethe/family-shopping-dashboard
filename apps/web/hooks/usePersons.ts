@@ -3,17 +3,14 @@
  *
  * React Query hooks for Person entity CRUD operations.
  * Provides list, create, update, delete functionality with cache management.
- * Includes real-time sync via WebSocket.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { personApi, PersonListParams } from '@/lib/api/endpoints';
 import type { Person, PersonCreate, PersonUpdate } from '@/types';
-import { useRealtimeSync } from './useRealtimeSync';
 
 interface UsePersonsOptions {
   enabled?: boolean;
-  disableRealtime?: boolean;
 }
 
 /**
@@ -21,20 +18,14 @@ interface UsePersonsOptions {
  * @param params - Optional cursor and limit for pagination
  */
 export function usePersons(params?: PersonListParams, options: UsePersonsOptions = {}) {
-  const { enabled = true, disableRealtime = false } = options;
+  const { enabled = true } = options;
 
   const query = useQuery({
     queryKey: ['persons', params],
     queryFn: () => personApi.list(params),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: true,
     enabled,
-  });
-
-  // Real-time sync for person list changes
-  useRealtimeSync({
-    topic: 'persons',
-    queryKey: ['persons', params],
-    events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled: enabled && !disableRealtime,
   });
 
   return query;
@@ -48,14 +39,8 @@ export function usePerson(id: number) {
   const query = useQuery({
     queryKey: ['persons', id],
     queryFn: () => personApi.get(id),
-    enabled: !!id,
-  });
-
-  // Real-time sync for specific person changes
-  useRealtimeSync({
-    topic: id ? `person:${id}` : '',
-    queryKey: ['persons', id],
-    events: ['UPDATED', 'DELETED'],
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: true,
     enabled: !!id,
   });
 

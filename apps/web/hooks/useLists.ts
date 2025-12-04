@@ -8,11 +8,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { listApi, ListListParams } from '@/lib/api/endpoints';
 import type { GiftList, ListCreate, ListUpdate } from '@/types';
-import { useRealtimeSync } from './useRealtimeSync';
 
 interface UseListsOptions {
   enabled?: boolean;
-  disableRealtime?: boolean;
 }
 
 /**
@@ -20,22 +18,14 @@ interface UseListsOptions {
  * @param params - Optional cursor, limit, type, person_id, occasion_id
  */
 export function useLists(params?: ListListParams, options: UseListsOptions = {}) {
-  const { enabled = true, disableRealtime = false } = options;
+  const { enabled = true } = options;
 
   const query = useQuery({
     queryKey: ['lists', params],
     queryFn: () => listApi.list(params),
-    staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently, real-time sync
+    staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently
+    refetchOnWindowFocus: true,
     enabled,
-  });
-
-  // Real-time sync for list metadata changes
-  // Subscribe to a general lists topic for new lists, deletions, etc.
-  useRealtimeSync({
-    topic: 'lists',
-    queryKey: ['lists', params],
-    events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled: enabled && !disableRealtime,
   });
 
   return query;
@@ -51,14 +41,7 @@ export function useList(id: number) {
     queryFn: () => listApi.get(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 10, // 10 minutes - list metadata rarely changes
-  });
-
-  // Real-time sync for specific list changes
-  useRealtimeSync({
-    topic: id ? `list:${id}` : '',
-    queryKey: ['lists', id],
-    events: ['UPDATED', 'DELETED'],
-    enabled: !!id,
+    refetchOnWindowFocus: true,
   });
 
   return query;
@@ -116,33 +99,25 @@ export function useDeleteList() {
 
 interface UseListsForPersonOptions {
   enabled?: boolean;
-  disableRealtime?: boolean;
 }
 
 /**
  * Fetch lists filtered by person (recipient)
  * @param personId - Person ID to filter by
- * @param options - Query options (enabled, disableRealtime)
+ * @param options - Query options (enabled)
  */
 export function useListsForPerson(
   personId: number | undefined,
   options: UseListsForPersonOptions = {}
 ) {
-  const { enabled = true, disableRealtime = false } = options;
+  const { enabled = true } = options;
 
   const query = useQuery({
     queryKey: ['lists', 'person', personId],
     queryFn: () => listApi.list({ person_id: personId }),
     enabled: enabled && !!personId,
     staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently
-  });
-
-  // Real-time sync for person-specific lists
-  useRealtimeSync({
-    topic: personId ? `person:${personId}:lists` : '',
-    queryKey: ['lists', 'person', personId],
-    events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled: enabled && !!personId && !disableRealtime,
+    refetchOnWindowFocus: true,
   });
 
   return query;
@@ -150,33 +125,25 @@ export function useListsForPerson(
 
 interface UseListsForOccasionOptions {
   enabled?: boolean;
-  disableRealtime?: boolean;
 }
 
 /**
  * Fetch lists filtered by occasion
  * @param occasionId - Occasion ID to filter by
- * @param options - Query options (enabled, disableRealtime)
+ * @param options - Query options (enabled)
  */
 export function useListsForOccasion(
   occasionId: number | undefined,
   options: UseListsForOccasionOptions = {}
 ) {
-  const { enabled = true, disableRealtime = false } = options;
+  const { enabled = true } = options;
 
   const query = useQuery({
     queryKey: ['lists', 'occasion', occasionId],
     queryFn: () => listApi.list({ occasion_id: occasionId }),
     enabled: enabled && !!occasionId,
     staleTime: 1000 * 60 * 10, // 10 minutes - lists change infrequently
-  });
-
-  // Real-time sync for occasion-specific lists
-  useRealtimeSync({
-    topic: occasionId ? `occasion:${occasionId}:lists` : '',
-    queryKey: ['lists', 'occasion', occasionId],
-    events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled: enabled && !!occasionId && !disableRealtime,
+    refetchOnWindowFocus: true,
   });
 
   return query;
@@ -184,13 +151,12 @@ export function useListsForOccasion(
 
 interface UseListsForGiftOptions {
   enabled?: boolean;
-  disableRealtime?: boolean;
 }
 
 /**
  * Fetch lists that contain a specific gift
  * @param giftId - Gift ID to search for
- * @param options - Query options (enabled, disableRealtime)
+ * @param options - Query options (enabled)
  *
  * Note: For V1 (2-3 users), this fetches all lists and filters client-side
  * by checking each list's items for the gift.
@@ -200,7 +166,7 @@ export function useListsForGift(
   giftId: number | undefined,
   options: UseListsForGiftOptions = {}
 ) {
-  const { enabled = true, disableRealtime = false } = options;
+  const { enabled = true } = options;
 
   const query = useQuery({
     queryKey: ['lists', 'gift', giftId],
@@ -225,15 +191,7 @@ export function useListsForGift(
     },
     enabled: enabled && !!giftId,
     staleTime: 1000 * 60 * 10, // 10 minutes
-  });
-
-  // Real-time sync for gift-specific lists
-  // When any list changes, we need to refetch to see if it now includes/excludes this gift
-  useRealtimeSync({
-    topic: 'lists',
-    queryKey: ['lists', 'gift', giftId],
-    events: ['ADDED', 'UPDATED', 'DELETED'],
-    enabled: enabled && !!giftId && !disableRealtime,
+    refetchOnWindowFocus: true,
   });
 
   return query;

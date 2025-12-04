@@ -3,13 +3,11 @@
  *
  * React Query hooks for Gift entity CRUD operations with cache management.
  * Provides gift fetching, create, update, delete, and URL-based creation functionality.
- * Includes real-time sync via WebSocket.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { giftApi, GiftListParams } from '@/lib/api/endpoints';
 import type { Gift, GiftCreate, GiftUpdate } from '@/types';
-import { useRealtimeSync } from './useRealtimeSync';
 
 interface UseGiftsOptions {
   enabled?: boolean;
@@ -26,14 +24,7 @@ export function useGifts(params?: GiftListParams, options: UseGiftsOptions = {})
     queryKey: ['gifts', params],
     queryFn: () => giftApi.list(params),
     staleTime: 1000 * 60 * 5, // 5 minutes - moderate updates, search-heavy
-    enabled,
-  });
-
-  // Real-time sync for gift list changes
-  useRealtimeSync({
-    topic: 'gifts',
-    queryKey: ['gifts', params],
-    events: ['ADDED', 'UPDATED', 'DELETED'],
+    refetchOnWindowFocus: true,
     enabled,
   });
 
@@ -50,14 +41,7 @@ export function useGift(id: number) {
     queryFn: () => giftApi.get(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 5, // 5 minutes - detail pages benefit from caching
-  });
-
-  // Real-time sync for specific gift changes
-  useRealtimeSync({
-    topic: id ? `gift:${id}` : '',
-    queryKey: ['gifts', id],
-    events: ['UPDATED', 'DELETED'],
-    enabled: !!id,
+    refetchOnWindowFocus: true,
   });
 
   return query;
