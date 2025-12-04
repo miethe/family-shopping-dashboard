@@ -43,6 +43,7 @@ export function DesktopNav() {
             <Link
               key={item.href}
               href={item.href as any}
+              prefetch={false}
               className={cn(
                 'p-3 rounded-2xl transition-all duration-300 group relative',
                 isActive

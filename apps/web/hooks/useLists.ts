@@ -176,6 +176,16 @@ export function useListsForGift(
       // Fetch all lists (reasonable for 2-3 users in V1)
       const response = await listApi.list({ limit: 100 });
 
+      // Guard against excessive fan-out and aid debugging
+      const totalLists = response.items.length;
+      if (totalLists > 50) {
+        console.warn(
+          '[useListsForGift] Skipping gift filter because list count is high',
+          { giftId, totalLists }
+        );
+        return { data: [], next_cursor: null };
+      }
+
       // Fetch all list details in parallel (not sequential)
       const listsWithItems = await Promise.all(
         response.items.map((list) => listApi.get(list.id))
@@ -185,6 +195,12 @@ export function useListsForGift(
       const listsWithGift = response.items.filter((list, index) => {
         const listWithItems = listsWithItems[index];
         return listWithItems.items.some((item) => item.gift.id === giftId);
+      });
+
+      console.debug('[useListsForGift] Filtered lists for gift', {
+        giftId,
+        totalLists,
+        matched: listsWithGift.length,
       });
 
       return { data: listsWithGift, next_cursor: null };
