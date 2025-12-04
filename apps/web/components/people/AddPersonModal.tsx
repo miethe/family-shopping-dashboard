@@ -1,19 +1,19 @@
 /**
  * Add Person Modal Component
  *
- * Modal dialog for creating a new person. Wraps PersonForm in an EntityModal
- * with person-themed styling and handles form submission flow.
+ * Modal dialog for creating and editing persons. Supports both create and edit modes.
+ * Follows the pattern from AddOccasionModal with mode switching and form pre-population.
  */
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EntityModal } from '@/components/modals/EntityModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useCreatePerson } from '@/hooks/usePersons';
-import type { PersonCreate } from '@/types';
+import { useCreatePerson, useUpdatePerson } from '@/hooks/usePersons';
+import type { Person, PersonCreate, PersonUpdate } from '@/types';
 
 const RELATIONSHIP_OPTIONS = [
   'Parent',
@@ -30,10 +30,18 @@ const SIZE_CATEGORIES = ['shirt', 'pants', 'shoes', 'dress', 'jacket'] as const;
 interface AddPersonModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (person: Person) => void;
+  mode?: 'create' | 'edit';
+  personToEdit?: Person | null;
 }
 
-export function AddPersonModal({ isOpen, onClose, onSuccess }: AddPersonModalProps) {
+export function AddPersonModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  mode = 'create',
+  personToEdit
+}: AddPersonModalProps) {
   const [displayName, setDisplayName] = useState('');
   const [relationship, setRelationship] = useState('');
   const [birthdate, setBirthdate] = useState('');
@@ -46,8 +54,29 @@ export function AddPersonModal({ isOpen, onClose, onSuccess }: AddPersonModalPro
   const [sizeKey, setSizeKey] = useState('');
   const [sizeValue, setSizeValue] = useState('');
 
-  const { mutate, isPending } = useCreatePerson();
+  const createMutation = useCreatePerson();
+  const updateMutation = useUpdatePerson(personToEdit?.id || 0);
   const { toast } = useToast();
+
+  const isEditMode = mode === 'edit';
+  const isPending = isEditMode ? updateMutation.isPending : createMutation.isPending;
+
+  // Pre-populate form when editing
+  useEffect(() => {
+    if (isEditMode && personToEdit && isOpen) {
+      setDisplayName(personToEdit.display_name);
+      setRelationship(personToEdit.relationship || '');
+      setBirthdate(personToEdit.birthdate || '');
+      setNotes(personToEdit.notes || '');
+      setConstraints(personToEdit.constraints || '');
+      setPhotoUrl(personToEdit.photo_url || '');
+      setInterests(personToEdit.interests || []);
+      setSizes(personToEdit.sizes || {});
+    } else if (!isOpen) {
+      // Reset form when modal closes
+      resetForm();
+    }
+  }, [isEditMode, personToEdit, isOpen]);
 
   const handleAddInterest = () => {
     if (interestInput.trim() && !interests.includes(interestInput.trim())) {
@@ -92,36 +121,73 @@ export function AddPersonModal({ isOpen, onClose, onSuccess }: AddPersonModalPro
 
     if (!displayName.trim()) return;
 
-    const personData: PersonCreate = {
-      display_name: displayName.trim(),
-      relationship: relationship || undefined,
-      birthdate: birthdate || undefined,
-      notes: notes.trim() || undefined,
-      constraints: constraints.trim() || undefined,
-      photo_url: photoUrl.trim() || undefined,
-      interests: interests.length > 0 ? interests : undefined,
-      sizes: Object.keys(sizes).length > 0 ? sizes : undefined,
-    };
+    if (isEditMode && personToEdit) {
+      // Update person
+      const updateData: PersonUpdate = {
+        display_name: displayName.trim(),
+        relationship: relationship || undefined,
+        birthdate: birthdate || undefined,
+        notes: notes.trim() || undefined,
+        constraints: constraints.trim() || undefined,
+        photo_url: photoUrl.trim() || undefined,
+        interests: interests.length > 0 ? interests : undefined,
+        sizes: Object.keys(sizes).length > 0 ? sizes : undefined,
+      };
 
-    mutate(personData, {
-      onSuccess: (person) => {
-        toast({
-          title: 'Person created!',
-          description: `${person.display_name} has been added.`,
-          variant: 'success',
-        });
-        resetForm();
-        onClose();
-        onSuccess?.();
-      },
-      onError: (err: any) => {
-        toast({
-          title: 'Failed to create person',
-          description: err.message || 'An error occurred while creating the person.',
-          variant: 'error',
-        });
-      },
-    });
+      updateMutation.mutate(updateData, {
+        onSuccess: (person) => {
+          toast({
+            title: 'Person updated!',
+            description: `${person.display_name} has been updated.`,
+            variant: 'success',
+          });
+
+          // Call callbacks
+          onSuccess?.(person);
+          onClose();
+        },
+        onError: (err: any) => {
+          toast({
+            title: 'Failed to update person',
+            description: err.message || 'An error occurred while updating the person.',
+            variant: 'error',
+          });
+        },
+      });
+    } else {
+      // Create new person
+      const personData: PersonCreate = {
+        display_name: displayName.trim(),
+        relationship: relationship || undefined,
+        birthdate: birthdate || undefined,
+        notes: notes.trim() || undefined,
+        constraints: constraints.trim() || undefined,
+        photo_url: photoUrl.trim() || undefined,
+        interests: interests.length > 0 ? interests : undefined,
+        sizes: Object.keys(sizes).length > 0 ? sizes : undefined,
+      };
+
+      createMutation.mutate(personData, {
+        onSuccess: (person) => {
+          toast({
+            title: 'Person created!',
+            description: `${person.display_name} has been added.`,
+            variant: 'success',
+          });
+
+          // Call callbacks
+          onSuccess?.(person);
+          onClose();
+        },
+        onError: (err: any) => {
+          toast({
+            title: 'Failed to create person',
+            description: err.message || 'An error occurred while creating the person.',
+            variant: 'error',
+          });
+        },
+      });
+    }
   };
 
   const handleClose = () => {
@@ -136,7 +202,7 @@ export function AddPersonModal({ isOpen, onClose, onSuccess }: AddPersonModalPro
       open={isOpen}
       onOpenChange={handleClose}
       entityType="person"
-      title="Add Person"
+      title={isEditMode ? "Edit Person" : "Add Person"}
       size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -366,7 +432,9 @@ export function AddPersonModal({ isOpen, onClose, onSuccess }: AddPersonModalPro
             disabled={isPending || !displayName.trim()}
             className="min-h-[44px] min-w-[120px]"
           >
-            {isPending ? 'Adding...' : 'Add Person'}
+            {isPending
+              ? (isEditMode ? 'Saving...' : 'Adding...')
+              : (isEditMode ? 'Save Changes' : 'Add Person')}
           </Button>
         </div>
       </form>
