@@ -1,10 +1,11 @@
 """List repository with complex filters and eager loading."""
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.list import List, ListType, ListVisibility
+from app.models.list_item import ListItem
 from app.repositories.base import BaseRepository
 
 
@@ -43,6 +44,79 @@ class ListRepository(BaseRepository[List]):
         """
         super().__init__(session, List)
 
+    async def get_multi(
+        self,
+        cursor: int | None = None,
+        limit: int = 50,
+        order_by: str = "id",
+        descending: bool = False,
+    ) -> tuple[list[tuple[List, int]], bool, int | None]:
+        """
+        Get multiple lists with item counts using cursor-based pagination.
+
+        Overrides BaseRepository.get_multi to include item counts.
+
+        Args:
+            cursor: ID of last item from previous page (None for first page)
+            limit: Maximum number of items to return (default: 50)
+            order_by: Field name to order by (default: "id")
+            descending: If True, order descending (default: False)
+
+        Returns:
+            Tuple of (items, has_more, next_cursor):
+            - items: List of tuples (List instance, item_count)
+            - has_more: True if more items exist after this page
+            - next_cursor: ID to use for next page (None if no more items)
+
+        Example:
+            ```python
+            lists, has_more, next_cursor = await repo.get_multi(limit=20)
+            for list_obj, item_count in lists:
+                print(f"{list_obj.name}: {item_count} items")
+            ```
+        """
+        # Build query with item counts
+        stmt = (
+            select(
+                List,
+                func.count(ListItem.id).label("item_count")
+            )
+            .outerjoin(ListItem, List.id == ListItem.list_id)
+            .group_by(List.id)
+        )
+
+        # Apply cursor filtering if provided
+        if cursor is not None:
+            order_column = getattr(List, order_by)
+            if descending:
+                stmt = stmt.where(order_column < cursor)
+            else:
+                stmt = stmt.where(order_column > cursor)
+
+        # Apply ordering
+        order_column = getattr(List, order_by)
+        from sqlalchemy import asc, desc
+        stmt = stmt.order_by(desc(order_column) if descending else asc(order_column))
+
+        # Fetch limit+1 to check if more items exist
+        stmt = stmt.limit(limit + 1)
+
+        # Execute query
+        result = await self.session.execute(stmt)
+        items = list(result.all())
+
+        # Check if more items exist
+        has_more = len(items) > limit
+
+        # Return only the requested limit
+        if has_more:
+            items = items[:limit]
+
+        # Determine next cursor
+        next_cursor = items[-1][0].id if items and has_more else None
+
+        return items, has_more, next_cursor
+
     async def get_by_user(self, user_id: int) -> list[List]:
         """
         Get all lists owned by a specific user.
@@ -64,9 +138,9 @@ class ListRepository(BaseRepository[List]):
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_by_person(self, person_id: int) -> list[List]:
+    async def get_by_person(self, person_id: int) -> list[tuple[List, int]]:
         """
-        Get all lists associated with a specific person.
+        Get all lists associated with a specific person with item counts.
 
         This returns lists that are "for" a person (e.g., gift ideas for them,
         their wishlists).
@@ -75,41 +149,57 @@ class ListRepository(BaseRepository[List]):
             person_id: ID of the person
 
         Returns:
-            List of List instances for this person
+            List of tuples (List instance, item_count) for this person
 
         Example:
             ```python
             person_lists = await repo.get_by_person(person_id=456)
-            # Returns wishlists and idea lists for this person
+            for list_obj, item_count in person_lists:
+                print(f"{list_obj.name}: {item_count} items")
             ```
         """
         stmt = (
-            select(List).where(List.person_id == person_id).order_by(List.created_at.desc())
+            select(
+                List,
+                func.count(ListItem.id).label("item_count")
+            )
+            .outerjoin(ListItem, List.id == ListItem.list_id)
+            .where(List.person_id == person_id)
+            .group_by(List.id)
+            .order_by(List.created_at.desc())
         )
         result = await self.session.execute(stmt)
-        return list(result.scalars().all())
+        return list(result.all())
 
-    async def get_by_occasion(self, occasion_id: int) -> list[List]:
+    async def get_by_occasion(self, occasion_id: int) -> list[tuple[List, int]]:
         """
-        Get all lists associated with a specific occasion.
+        Get all lists associated with a specific occasion with item counts.
 
         Args:
             occasion_id: ID of the occasion (e.g., Christmas 2024)
 
         Returns:
-            List of List instances for this occasion
+            List of tuples (List instance, item_count) for this occasion
 
         Example:
             ```python
             christmas_lists = await repo.get_by_occasion(occasion_id=789)
-            # Returns all lists tagged for Christmas 2024
+            for list_obj, item_count in christmas_lists:
+                print(f"{list_obj.name}: {item_count} items")
             ```
         """
         stmt = (
-            select(List).where(List.occasion_id == occasion_id).order_by(List.created_at.desc())
+            select(
+                List,
+                func.count(ListItem.id).label("item_count")
+            )
+            .outerjoin(ListItem, List.id == ListItem.list_id)
+            .where(List.occasion_id == occasion_id)
+            .group_by(List.id)
+            .order_by(List.created_at.desc())
         )
         result = await self.session.execute(stmt)
-        return list(result.scalars().all())
+        return list(result.all())
 
     async def get_with_gifts(self, list_id: int) -> List | None:
         """
@@ -139,11 +229,14 @@ class ListRepository(BaseRepository[List]):
             This uses selectinload to avoid N+1 query problems.
             All related list_items are loaded in a single additional query.
         """
+        from app.models.list_item import ListItem
+        from app.models.gift import Gift
+
         stmt = (
             select(List)
             .where(List.id == list_id)
             .options(
-                selectinload(List.list_items),  # Eager load all list items
+                selectinload(List.list_items).selectinload(ListItem.gift),  # Eager load list items with gifts
                 selectinload(List.user),  # Eager load owner
                 selectinload(List.person),  # Eager load person (if set)
                 selectinload(List.occasion),  # Eager load occasion (if set)

@@ -11,11 +11,11 @@
 
 'use client';
 
-import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CalendarIcon, CakeIcon, HeartIcon, SparklesIcon } from '@/components/layout/icons';
 import { cn } from '@/lib/utils';
+import { OccasionDetailModal, useEntityModal } from '@/components/modals';
 import type { Occasion } from '@/types';
 
 interface OccasionCardProps {
@@ -74,56 +74,70 @@ export function OccasionCard({ occasion }: OccasionCardProps) {
   const daysUntil = getDaysUntil(occasion.date);
   const isPast = daysUntil < 0;
   const isToday = daysUntil === 0;
+  const { open, entityId, openModal, closeModal } = useEntityModal('occasion');
 
   return (
-    <Link href={`/occasions/${occasion.id}`} className="block">
-      <Card variant="interactive" padding="default">
-        <div className="flex items-center gap-4">
-          {/* Type Icon */}
-          <div
-            className={cn(
-              'w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0',
-              typeColors[occasion.type] || typeColors.other
-            )}
-          >
-            <OccasionIcon type={occasion.type} className="w-6 h-6" />
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-gray-900 truncate">{occasion.name}</h3>
-              <Badge variant={typeBadgeVariant[occasion.type] || 'default'} size="sm">
-                {occasion.type}
-              </Badge>
+    <>
+      <button
+        onClick={() => openModal(String(occasion.id))}
+        className="w-full text-left"
+      >
+        <Card variant="interactive" padding="default">
+          <div className="flex items-center gap-4">
+            {/* Type Icon */}
+            <div
+              className={cn(
+                'w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0',
+                typeColors[occasion.type] || typeColors.other
+              )}
+            >
+              <OccasionIcon type={occasion.type} className="w-6 h-6" />
             </div>
-            <p className="text-gray-500 text-sm">{formatDate(occasion.date)}</p>
-          </div>
 
-          {/* Days Badge */}
-          <div className="text-right flex-shrink-0">
-            {isToday ? (
-              <div className="text-center">
-                <span className="text-lg font-bold text-blue-600">Today</span>
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-semibold text-gray-900 truncate">{occasion.name}</h3>
+                <Badge variant={typeBadgeVariant[occasion.type] || 'default'} size="sm">
+                  {occasion.type}
+                </Badge>
               </div>
-            ) : (
-              <div className="text-center">
-                <span
-                  className={cn(
-                    'text-lg font-bold',
-                    isPast ? 'text-gray-400' : 'text-blue-600'
-                  )}
-                >
-                  {Math.abs(daysUntil)}
-                </span>
-                <p className="text-xs text-gray-500">
-                  {isPast ? 'days ago' : 'days left'}
-                </p>
-              </div>
-            )}
+              <p className="text-gray-500 text-sm">{formatDate(occasion.date)}</p>
+            </div>
+
+            {/* Days Badge */}
+            <div className="text-right flex-shrink-0">
+              {isToday ? (
+                <div className="text-center">
+                  <span className="text-lg font-bold text-blue-600">Today</span>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <span
+                    className={cn(
+                      'text-lg font-bold',
+                      isPast ? 'text-gray-400' : 'text-blue-600'
+                    )}
+                  >
+                    {Math.abs(daysUntil)}
+                  </span>
+                  <p className="text-xs text-gray-500">
+                    {isPast ? 'days ago' : 'days left'}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </Card>
-    </Link>
+        </Card>
+      </button>
+
+      <OccasionDetailModal
+        occasionId={entityId}
+        open={open}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) closeModal();
+        }}
+      />
+    </>
   );
 }

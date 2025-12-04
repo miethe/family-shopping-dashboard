@@ -9,15 +9,26 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { personApi, PersonListParams } from '@/lib/api/endpoints';
 import type { Person, PersonCreate, PersonUpdate } from '@/types';
 
+interface UsePersonsOptions {
+  enabled?: boolean;
+}
+
 /**
  * Fetch paginated list of persons
  * @param params - Optional cursor and limit for pagination
  */
-export function usePersons(params?: PersonListParams) {
-  return useQuery({
+export function usePersons(params?: PersonListParams, options: UsePersonsOptions = {}) {
+  const { enabled = true } = options;
+
+  const query = useQuery({
     queryKey: ['persons', params],
     queryFn: () => personApi.list(params),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: true,
+    enabled,
   });
+
+  return query;
 }
 
 /**
@@ -25,11 +36,15 @@ export function usePersons(params?: PersonListParams) {
  * @param id - Person ID
  */
 export function usePerson(id: number) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['persons', id],
     queryFn: () => personApi.get(id),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: true,
     enabled: !!id,
   });
+
+  return query;
 }
 
 /**

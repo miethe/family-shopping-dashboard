@@ -1,6 +1,7 @@
 import type { LoginResponse, User, TokenResponse, LoginCredentials, RegisterCredentials, RegisterResponse } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+// Fallback uses external port (8030) for Docker dev environment
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8030/api/v1';
 
 /**
  * Login with email and password

@@ -12,7 +12,7 @@
 
 'use client';
 
-import { useWebSocket } from '@/hooks/useWebSocket';
+import { useWebSocketContext } from '@/lib/websocket/WebSocketProvider';
 import type { WSConnectionState } from '@/lib/websocket/types';
 
 interface ConnectionIndicatorProps {
@@ -63,7 +63,7 @@ export function ConnectionIndicator({
   hideWhenConnected = false,
   className = '',
 }: ConnectionIndicatorProps) {
-  const { state, connect } = useWebSocket();
+  const { state, connect } = useWebSocketContext();
   const config = STATE_CONFIG[state];
 
   // Hide when connected if requested
@@ -100,7 +100,7 @@ export function ConnectionIndicator({
  * Compact connection indicator (icon only)
  */
 export function ConnectionIndicatorCompact({ className = '' }: { className?: string }) {
-  const { state } = useWebSocket();
+  const { state } = useWebSocketContext();
   const config = STATE_CONFIG[state];
 
   return (

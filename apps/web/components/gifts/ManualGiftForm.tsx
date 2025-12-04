@@ -11,22 +11,27 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCreateGift } from '@/hooks/useGifts';
 import { useLists } from '@/hooks/useLists';
+import { usePersons } from '@/hooks/usePersons';
+import { useOccasions } from '@/hooks/useOccasions';
 import { useCreateListItem } from '@/hooks/useListItems';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import type { GiftCreate } from '@/types';
+import type { GiftCreate, ListItemStatus } from '@/types';
 
 export interface ManualGiftFormProps {
   defaultListId?: number;
+  onSuccess?: () => void;
 }
 
-export function ManualGiftForm({ defaultListId }: ManualGiftFormProps) {
+export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps) {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [price, setPrice] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [status, setStatus] = useState<ListItemStatus>('idea');
   const [selectedListIds, setSelectedListIds] = useState<number[]>(
     defaultListId ? [defaultListId] : []
   );
@@ -34,10 +39,31 @@ export function ManualGiftForm({ defaultListId }: ManualGiftFormProps) {
   const { mutate, isPending } = useCreateGift();
   const { mutate: createListItem } = useCreateListItem();
   const { data: listsResponse } = useLists();
+  const { data: personsResponse } = usePersons();
+  const { data: occasionsResponse } = useOccasions();
   const { toast } = useToast();
   const router = useRouter();
 
   const lists = listsResponse?.items ?? [];
+  const persons = personsResponse?.items ?? [];
+  const occasions = occasionsResponse?.items ?? [];
+
+  // Helper to get list context description
+  const getListContext = (list: typeof lists[0]) => {
+    const parts: string[] = [];
+
+    if (list.person_id) {
+      const person = persons.find((p) => p.id === list.person_id);
+      if (person) parts.push(`for ${person.display_name}`);
+    }
+
+    if (list.occasion_id) {
+      const occasion = occasions.find((o) => o.id === list.occasion_id);
+      if (occasion) parts.push(`(${occasion.name})`);
+    }
+
+    return parts.length > 0 ? parts.join(' ') : `${list.type} list`;
+  };
 
   const toggleListSelection = (listId: number) => {
     setSelectedListIds((prev) =>
@@ -61,13 +87,13 @@ export function ManualGiftForm({ defaultListId }: ManualGiftFormProps) {
 
     mutate(giftData, {
       onSuccess: (gift) => {
-        // Create list items for each selected list
+        // Create list items for each selected list with the selected status
         selectedListIds.forEach((listId) => {
           createListItem({
             listId,
             data: {
               gift_id: gift.id,
-              status: 'idea',
+              status: status,
             },
           });
         });
@@ -80,11 +106,16 @@ export function ManualGiftForm({ defaultListId }: ManualGiftFormProps) {
           variant: 'success',
         });
 
-        // Navigate to first selected list or gift detail
-        if (selectedListIds.length > 0) {
-          router.push(`/lists/${selectedListIds[0]}`);
+        // Call onSuccess callback if provided, otherwise navigate
+        if (onSuccess) {
+          onSuccess();
         } else {
-          router.push(`/gifts/${gift.id}`);
+          // Navigate to first selected list or gift detail
+          if (selectedListIds.length > 0) {
+            router.push(`/lists/${selectedListIds[0]}`);
+          } else {
+            router.push(`/gifts/${gift.id}`);
+          }
         }
       },
       onError: (err: any) => {
@@ -96,6 +127,13 @@ export function ManualGiftForm({ defaultListId }: ManualGiftFormProps) {
       },
     });
   };
+
+  const statusOptions = [
+    { value: 'idea', label: 'Idea' },
+    { value: 'selected', label: 'Selected' },
+    { value: 'purchased', label: 'Purchased' },
+    { value: 'received', label: 'Received' },
+  ];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -136,6 +174,14 @@ export function ManualGiftForm({ defaultListId }: ManualGiftFormProps) {
         helperText="Direct link to product image"
       />
 
+      <Select
+        label="Status"
+        value={status}
+        onChange={(value) => setStatus(value as ListItemStatus)}
+        options={statusOptions}
+        helperText="Current status of this gift idea"
+      />
+
       {/* List Selection */}
       <div className="space-y-3">
         <label className="block text-xs font-semibold text-warm-800 uppercase tracking-wide">
@@ -154,11 +200,7 @@ export function ManualGiftForm({ defaultListId }: ManualGiftFormProps) {
                 checked={selectedListIds.includes(list.id)}
                 onChange={() => toggleListSelection(list.id)}
                 label={list.name}
-                helperText={
-                  list.occasion_id || list.person_id
-                    ? `${list.type} list`
-                    : undefined
-                }
+                helperText={getListContext(list)}
               />
             ))}
           </div>

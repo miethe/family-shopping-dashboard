@@ -2,6 +2,8 @@
 
 Real-time communication infrastructure for the Family Gifting Dashboard.
 
+**Note**: WebSockets are currently used **ONLY for the Kanban board (list items)** real-time sync. Other data (gifts, lists, persons, occasions) uses React Query's caching and staleTime mechanisms for simplicity (2-3 user single-tenant app).
+
 ---
 
 ## Quick Start
@@ -25,31 +27,31 @@ export default function RootLayout({ children }) {
 }
 ```
 
-### 2. Use in Component
+### 2. Use in Component (List Items / Kanban)
 
 ```tsx
-// app/gifts/page.tsx
+// app/lists/[id]/page.tsx
 'use client';
 
-import { useGifts } from '@/hooks/useGifts';
+import { useListItems } from '@/hooks/useListItems';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 
-export default function GiftsPage() {
-  const queryKey = ['gifts', 'family-123'];
+export default function ListDetailPage({ params }: { params: { id: string } }) {
+  const queryKey = ['list-items', params.id];
 
   // Fetch data
-  const { data: gifts } = useQuery({
+  const { data: items } = useQuery({
     queryKey,
-    queryFn: () => apiClient.get('/gifts?list_id=family-123'),
+    queryFn: () => apiClient.get(`/list-items?list_id=${params.id}`),
   });
 
-  // Real-time sync
+  // Real-time sync (Kanban board only)
   useRealtimeSync({
-    topic: 'gift-list:family-123',
+    topic: `list-items:${params.id}`,
     queryKey,
   });
 
-  return <div>{/* ... */}</div>;
+  return <div>{/* Kanban board */}</div>;
 }
 ```
 
@@ -399,7 +401,8 @@ useRealtimeSync({
 ## Examples
 
 See working examples:
-- **hooks/useGiftsRealtime.ts** - Gift list with real-time sync
+- **hooks/useListItems.ts** - List items (Kanban) with real-time sync via WebSocket
+- **hooks/useGifts.ts** - Gifts using React Query staleTime (no WebSocket)
 - **FE-A-005-WEBSOCKET-COMPLETE.md** - Complete implementation guide
 
 ---

@@ -6,6 +6,7 @@ from sqlalchemy import Index, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
+    from app.models.activity import ActivityLog
     from app.models.comment import Comment
     from app.models.list import List
     from app.models.list_item import ListItem
@@ -60,6 +61,13 @@ class User(BaseModel):
         "ListItem",
         back_populates="assignee",
         lazy="selectin",
+    )
+
+    activity_logs: Mapped[list["ActivityLog"]] = relationship(
+        "ActivityLog",
+        back_populates="actor",
+        lazy="selectin",
+        cascade="all, delete-orphan",
     )
 
     __table_args__ = (

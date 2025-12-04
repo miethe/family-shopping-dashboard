@@ -57,14 +57,15 @@ const DialogContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close
         className={cn(
-          'absolute right-4 top-4 rounded-sm opacity-70',
-          'ring-offset-white transition-opacity',
-          'hover:opacity-100',
+          'absolute right-4 top-4 rounded-sm',
+          // ACCESSIBILITY FIX: Improved contrast from opacity-70 to direct color with sufficient contrast
+          'text-gray-600 hover:text-gray-900',
+          'ring-offset-white transition-colors',
           'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
           'disabled:pointer-events-none',
           'min-h-[44px] min-w-[44px] flex items-center justify-center'
         )}
-        aria-label="Close"
+        aria-label="Close dialog"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -76,6 +77,7 @@ const DialogContent = React.forwardRef<
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
         >
           <line x1="18" y1="6" x2="6" y2="18" />
           <line x1="6" y1="6" x2="18" y2="18" />

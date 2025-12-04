@@ -2,74 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design System V2 - Font Imports */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;600;700&display=swap');
+
+/* Material Symbols Outlined Font - now loaded in layout.tsx */
 
 :root {
   /* Colors - Backgrounds */
-  --color-bg-base: #FAF8F5;
-  --color-bg-subtle: #F5F2ED;
+  --color-bg-base: #F5F1E8;
+  --color-bg-subtle: #F2EEE6;
   --color-bg-elevated: #FFFFFF;
   --color-surface-primary: #FFFFFF;
-  --color-surface-secondary: #F5F2ED;
-  --color-surface-tertiary: #EBE7E0;
-  --color-surface-translucent: rgba(250, 248, 245, 0.8);
+  --color-surface-secondary: rgba(255, 255, 255, 0.6);
+  --color-surface-tertiary: rgba(242, 238, 230, 0.5);
+  --color-surface-translucent: rgba(255, 255, 255, 0.8);
+
+  /* Design System V2 - Additional Background Colors */
+  --color-background-light: #F5F1E8;
+  --color-background-dark: #1a1a2e;
 
   /* Colors - Text */
   --color-text-primary: #2D2520;
-  --color-text-secondary: #5C534D;
-  --color-text-tertiary: #8A827C;
-  --color-text-disabled: #C4BDB7;
+  --color-text-secondary: #635A50;
+  --color-text-tertiary: #9E9285;
+  --color-text-disabled: #D1C8BC;
   --color-text-inverse: #FFFFFF;
 
   /* Colors - Primary Coral */
-  --color-primary-50: #FEF3F1;
-  --color-primary-100: #FDE5E0;
-  --color-primary-200: #FBC9BC;
-  --color-primary-300: #F5A894;
-  --color-primary-400: #EE8F76;
-  --color-primary-500: #E8846B;
-  --color-primary-600: #D66A51;
-  --color-primary-700: #B95440;
-  --color-primary-800: #9A4234;
-  --color-primary-900: #7D352B;
+  --color-primary-50: #FFF0ED;
+  --color-primary-100: #FFE1DB;
+  --color-primary-200: #FFC2B8;
+  --color-primary-300: #FFA394;
+  --color-primary-400: #FF8570;
+  --color-primary-500: #FF664D;
+  --color-primary-600: #E64D33;
+  --color-primary-700: #CC3A21;
+  --color-primary-800: #B32D17;
+  --color-primary-900: #8C1F0D;
 
   /* Spacing */
-  --spacing-1: 0.25rem;  /* 4px */
-  --spacing-2: 0.5rem;   /* 8px */
-  --spacing-3: 0.75rem;  /* 12px */
-  --spacing-4: 1rem;     /* 16px */
-  --spacing-5: 1.25rem;  /* 20px */
-  --spacing-6: 1.5rem;   /* 24px */
-  --spacing-8: 2rem;     /* 32px */
+  --spacing-1: 0.25rem;
+  /* 4px */
+  --spacing-2: 0.5rem;
+  /* 8px */
+  --spacing-3: 0.75rem;
+  /* 12px */
+  --spacing-4: 1rem;
+  /* 16px */
+  --spacing-5: 1.25rem;
+  /* 20px */
+  --spacing-6: 1.5rem;
+  /* 24px */
+  --spacing-8: 2rem;
+  /* 32px */
 
-  /* Shadows */
-  --shadow-subtle: 0 1px 2px rgba(45, 37, 32, 0.04), 0 0 0 1px rgba(45, 37, 32, 0.02);
-  --shadow-low: 0 2px 8px rgba(45, 37, 32, 0.06), 0 0 0 1px rgba(45, 37, 32, 0.03);
-  --shadow-medium: 0 4px 16px rgba(45, 37, 32, 0.08), 0 1px 4px rgba(45, 37, 32, 0.04);
-  --shadow-high: 0 8px 32px rgba(45, 37, 32, 0.12), 0 2px 8px rgba(45, 37, 32, 0.06);
-  --shadow-extra-high: 0 16px 48px rgba(45, 37, 32, 0.16), 0 4px 16px rgba(45, 37, 32, 0.08);
+  /* Shadows - Refined for depth */
+  --shadow-subtle: 0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-low: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-medium: 0 8px 24px -4px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-high: 0 16px 48px -8px rgba(0, 0, 0, 0.16), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 
   /* Radii */
-  --radius-small: 0.5rem;    /* 8px */
-  --radius-medium: 0.75rem;  /* 12px */
-  --radius-large: 1rem;      /* 16px */
-  --radius-xlarge: 1.25rem;  /* 20px */
-  --radius-2xlarge: 1.5rem;  /* 24px */
-  --radius-3xlarge: 2rem;    /* 32px */
+  --radius-small: 0.625rem;
+  /* 10px */
+  --radius-medium: 0.875rem;
+  /* 14px */
+  --radius-large: 1.25rem;
+  /* 20px */
+  --radius-xlarge: 1.75rem;
+  /* 28px */
+  --radius-2xlarge: 2.25rem;
+  /* 36px */
+  --radius-3xlarge: 3rem;
+  /* 48px */
 
   /* Typography */
   --font-family-base: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, 'Nunito', sans-serif;
-  --font-size-display-large: 3rem;       /* 48px */
-  --font-size-heading-1: 1.5rem;         /* 24px */
-  --font-size-body-large: 1rem;          /* 16px */
+  --font-size-display-large: 3.5rem;
+  --font-size-heading-1: 1.75rem;
+  --font-size-body-large: 1.0625rem;
+
+  /* Animation Durations (from Design Tokens) */
+  --duration-fast: 150ms;
+  --duration-default: 200ms;
+  --duration-slow: 300ms;
+  --duration-page: 400ms;
+
+  /* Easing Functions (from Design Tokens) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg-base: #0a0a0a;
-    --color-text-primary: #FFFFFF;
-  }
-}
+
 
 * {
   box-sizing: border-box;
@@ -86,9 +116,40 @@ body {
 
 body {
   color: var(--color-text-primary);
-  background: var(--color-bg-base);
+  background-color: var(--color-bg-base);
+  /* Ensure solid fallback */
   font-family: var(--font-family-base);
   line-height: 1.5;
+  /* Subtle mesh gradient background */
+  background-image:
+    radial-gradient(at 0% 0%, rgba(255, 102, 77, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(255, 102, 77, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(255, 102, 77, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(255, 102, 77, 0.05) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* ============================================
+   Material Symbols Outlined Base Styling
+   ============================================ */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  font-size: 24px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }
 
 /* Safe area utilities */
@@ -126,8 +187,11 @@ body {
   min-width: 44px;
 }
 
-/* Reduced motion support */
+/* ============================================
+   ACCESSIBILITY: Reduced Motion Support
+   ============================================ */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -143,16 +207,43 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-base);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border-medium);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-strong);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   Custom Scrollbar for Kanban
+   ============================================ */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* Focus ring styling */
@@ -162,93 +253,96 @@ body {
 }
 
 /* ============================================
-   Micro-interaction Utilities
+   ANIMATION SYSTEM
+   Enhanced with comprehensive animations
    ============================================ */
-@layer utilities {
-  /* Press effect - subtle scale down on active */
-  .press-effect {
-    @apply transition-transform duration-150 ease-out active:scale-[0.98];
-  }
-
-  /* Lift effect - elevation increase on hover */
-  .lift-effect {
-    @apply transition-all duration-200 ease-out hover:shadow-medium hover:-translate-y-0.5;
-  }
-
-  /* Pulse animation for attention */
-  .attention-pulse {
-    animation: attention-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  /* Subtle bounce for success feedback */
-  .success-bounce {
-    animation: success-bounce 0.5s ease-out;
-  }
-
-  /* Shimmer loading effect */
-  .shimmer {
-    background: linear-gradient(
-      90deg,
-      var(--color-bg-subtle) 0%,
-      var(--color-bg-base) 50%,
-      var(--color-bg-subtle) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-
-  /* Hover card lift */
-  .hover-lift {
-    @apply transition-all duration-300 ease-out;
-  }
-  .hover-lift:hover {
-    @apply shadow-high -translate-y-1;
-  }
-
-  /* Interactive scale */
-  .interactive-scale {
-    @apply transition-transform duration-200 ease-out;
-  }
-  .interactive-scale:hover {
-    @apply scale-[1.02];
-  }
-  .interactive-scale:active {
-    @apply scale-[0.98];
-  }
-}
 
 /* ============================================
-   Micro-interaction Keyframes
+   PAGE TRANSITION ANIMATIONS
+   For route changes and page mounts
    ============================================ */
-@keyframes attention-pulse {
-  0%, 100% {
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
     opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.02);
+    transform: translateY(0);
   }
 }
 
-@keyframes success-bounce {
-  0% { transform: scale(1); }
-  25% { transform: scale(1.05); }
-  50% { transform: scale(0.98); }
-  100% { transform: scale(1); }
+@keyframes fadeInFast {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ============================================
-   Status Pill Animations
+   CARD & ELEMENT ANIMATIONS
+   For cards, panels, and content blocks
    ============================================ */
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-/* Scale-in animation for entrance */
-@keyframes scale-in {
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ============================================
+   MODAL & DIALOG ANIMATIONS
+   For modals, dialogs, and overlays
+   ============================================ */
+@keyframes scaleIn {
   0% {
     opacity: 0;
     transform: scale(0.95);
@@ -259,24 +353,410 @@ body {
   }
 }
 
-.animate-scale-in {
-  animation: scale-in 300ms ease-out;
-}
-
-/* Status change flash animation */
-@keyframes status-flash {
+@keyframes scaleOut {
   0% {
     opacity: 1;
+    transform: scale(1);
   }
-  50% {
-    opacity: 0.5;
-    background-color: white;
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes modalBackdropIn {
+  0% {
+    opacity: 0;
   }
   100% {
     opacity: 1;
   }
 }
 
-.status-flash {
-  animation: status-flash 0.3s ease-out;
+/* ============================================
+   BUTTON & INTERACTIVE ANIMATIONS
+   For buttons and interactive elements
+   ============================================ */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes buttonPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   STATUS & FEEDBACK ANIMATIONS
+   For status changes and user feedback
+   ============================================ */
+@keyframes attention-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes success-bounce {
+  0% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.05);
+  }
+
+  50% {
+    transform: scale(0.98);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes status-flash {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+    background-color: white;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   LOADING & SKELETON ANIMATIONS
+   For loading states
+   ============================================ */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ============================================
+   STAGGER ANIMATION HELPERS
+   For staggered entry animations
+   ============================================ */
+@keyframes staggerFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   Ready-to-use animation classes
+   ============================================ */
+@layer utilities {
+
+  /* ========================================
+     PAGE TRANSITIONS
+     ======================================== */
+  .animate-fade-in {
+    animation: fadeIn var(--duration-page) var(--ease-out);
+  }
+
+  .animate-fade-in-fast {
+    animation: fadeInFast var(--duration-default) var(--ease-out);
+  }
+
+  .animate-fade-out {
+    animation: fadeOut var(--duration-default) var(--ease-in);
+  }
+
+  /* ========================================
+     CARD & ELEMENT ANIMATIONS
+     ======================================== */
+  .animate-slide-up {
+    animation: slideUp var(--duration-slow) var(--ease-out);
+  }
+
+  .animate-slide-down {
+    animation: slideDown var(--duration-slow) var(--ease-out);
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft var(--duration-slow) var(--ease-out);
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight var(--duration-slow) var(--ease-out);
+  }
+
+  /* ========================================
+     MODAL & DIALOG ANIMATIONS
+     ======================================== */
+  .animate-scale-in {
+    animation: scaleIn var(--duration-slow) var(--ease-out);
+  }
+
+  .animate-scale-out {
+    animation: scaleOut var(--duration-slow) var(--ease-in);
+  }
+
+  .animate-modal-backdrop {
+    animation: modalBackdropIn var(--duration-default) var(--ease-out);
+  }
+
+  /* ========================================
+     BUTTON & INTERACTIVE EFFECTS
+     ======================================== */
+  /* Press effect - subtle scale down on active */
+  .press-effect {
+    @apply transition-transform duration-150 ease-out active:scale-[0.98];
+  }
+
+  /* Lift effect - elevation increase on hover */
+  .lift-effect {
+    @apply transition-all duration-300 ease-out hover:shadow-medium hover:-translate-y-1;
+  }
+
+  .ripple-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ripple-effect::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .ripple-effect:active::after {
+    animation: ripple 0.6s ease-out;
+  }
+
+  /* ========================================
+     STATUS & FEEDBACK
+     ======================================== */
+  .attention-pulse {
+    animation: attention-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .success-bounce {
+    animation: success-bounce 0.5s ease-out;
+  }
+
+  .status-flash {
+    animation: status-flash 0.3s ease-out;
+  }
+
+  /* ========================================
+     LOADING STATES
+     ======================================== */
+  .shimmer {
+    background: linear-gradient(90deg,
+        var(--color-bg-subtle) 0%,
+        var(--color-bg-base) 50%,
+        var(--color-bg-subtle) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* ========================================
+     GLASSMORPHISM UTILITIES
+     ======================================== */
+  .glass-panel {
+    @apply bg-white/60 backdrop-blur-md border border-white/40 shadow-glass;
+  }
+
+  .glass-panel-dark {
+    @apply bg-black/40 backdrop-blur-md border border-white/10 shadow-glass;
+  }
+
+  /* ========================================
+     STAGGERED ANIMATIONS
+     Use with delay utilities
+     ======================================== */
+  .animate-stagger {
+    animation: staggerFadeIn var(--duration-slow) var(--ease-out);
+  }
+
+  .stagger-delay-1 {
+    animation-delay: 50ms;
+  }
+
+  .stagger-delay-2 {
+    animation-delay: 100ms;
+  }
+
+  .stagger-delay-3 {
+    animation-delay: 150ms;
+  }
+
+  .stagger-delay-4 {
+    animation-delay: 200ms;
+  }
+
+  .stagger-delay-5 {
+    animation-delay: 250ms;
+  }
+
+  /* ========================================
+     HOVER TRANSITIONS
+     Smooth transitions for interactive elements
+     ======================================== */
+  .transition-base {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .transition-fast {
+    @apply transition-all duration-150 ease-out;
+  }
+
+  .transition-slow {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  /* ========================================
+     TRANSFORM ORIGIN UTILITIES
+     For better animation control
+     ======================================== */
+  .origin-center {
+    transform-origin: center center;
+  }
+
+  .origin-top {
+    transform-origin: top center;
+  }
+
+  .origin-bottom {
+    transform-origin: bottom center;
+  }
+
+  /* ========================================
+     WILL-CHANGE OPTIMIZATION
+     Use sparingly for performance-critical animations
+     ======================================== */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  /* ========================================
+     GPU ACCELERATION
+     Force GPU rendering for smoother animations
+     ======================================== */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+}
+
+/* ============================================
+   COMPONENT-SPECIFIC ANIMATIONS
+   Override defaults with component needs
+   ============================================ */
+
+/* Ensure cards animate smoothly on mount */
+.card-enter {
+  animation: slideUp var(--duration-slow) var(--ease-out);
+}
+
+/* Modal/Dialog entrance */
+.modal-enter {
+  animation: scaleIn var(--duration-slow) var(--ease-out);
+}
+
+.modal-backdrop-enter {
+  animation: modalBackdropIn var(--duration-default) var(--ease-out);
+}
+
+/* Button states - prevent layout shift */
+button,
+.button {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Prevent animation flicker on page load */
+.no-animate-on-load {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATION
+   Ensure 60fps animations
+   ============================================ */
+
+/* Only animate transform and opacity for best performance */
+@media (prefers-reduced-motion: no-preference) {
+  .performance-optimized {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
 }

@@ -1,5 +1,5 @@
 ---
-description: Execute phase development following MP implementation plan and tracking patterns
+description: Execute phase development with YAML-driven orchestration and artifact-tracking integration
 argument-hint: <phase-number> [--plan=path/to/plan.md]
 allowed-tools: Read, Grep, Glob, Edit, MultiEdit, Write,
   Bash(git:*), Bash(gh:*), Bash(pnpm:*), Bash(pytest:*),
@@ -8,7 +8,9 @@ allowed-tools: Read, Grep, Glob, Edit, MultiEdit, Write,
 
 # /dev:execute-phase
 
-You are Claude Code executing Phase `$ARGUMENTS` following MeatyPrompts implementation standards and the layered architecture: **routers → services → repositories → DB**.
+You are Claude Code executing Phase `$ARGUMENTS` following the project implementation standards and the layered architecture: **routers → services → repositories → DB**.
+
+This command leverages the **artifact-tracking skill** for YAML-driven orchestration, enabling token-efficient batch delegation and parallel task execution.
 
 ---
 
@@ -16,227 +18,86 @@ You are Claude Code executing Phase `$ARGUMENTS` following MeatyPrompts implemen
 
 Remember that all documentation work MUST be delegated to the documentation-writer subagent. You MUST NOT write documentation yourself.
 
-### Phase 0: Initialize Context & Tracking
+You should NOT create any reports, summaries, etc of work done; only track progress/worknotes via the artifact-tracking skill.
 
-Extract PRD name as `{PRD_NAME}` from attached plan or PRD and phase number from `$ARGUMENTS` and set up tracking infrastructure:
-
-```bash
-# Parse arguments
-phase_num="${1}"
-plan_path="${2}"
-
-# Default plan path if not provided
-if [ -z "$plan_path" ]; then
-  plan_path="docs/project_plans/impl_tracking/${PRD_NAME}/phase-${phase_num}-*-implementation-plan.md"
-  plan_path=$(ls $plan_path 2>/dev/null | head -1)
-fi
-
-if [ ! -f "$plan_path" ]; then
-  echo "ERROR: Implementation plan not found at $plan_path"
-  echo "Specify plan with: /dev:execute-phase ${phase_num} --plan=<path>"
-  exit 1
-fi
-
-# Set up tracking directories
-mkdir -p docs/project_plans/impl_tracking/${PRD_NAME}/{progress,context}
-
-progress_file="docs/project_plans/impl_tracking/${PRD_NAME}/progress/phase-${phase_num}-progress.md"
-context_file="docs/project_plans/impl_tracking/${PRD_NAME}/context/phase-${phase_num}-context.md"
-
-echo "📋 Phase ${phase_num} Execution Started"
-echo "Plan: $plan_path"
-echo "Progress: $progress_file"
-echo "Context: $context_file"
-```
+You MAY keep very brief observation notes within a running log in `.claude/worknotes/observations/observation-log-{YYYY-MM}.md` regarding any key points that might arise during implementation, generally unrelated to the PRD tasks themselves. This log is project-wide, not PRD specific
 
 **Read the implementation plan thoroughly.** This is your execution blueprint. Note:
 - **DO NOT** load the linked PRD into context unless specific clarification is needed
 - The plan should contain all necessary details
 - Reference PRD only for ambiguous requirements
 
-### Phase 1: Initialize Progress & Context Documents
+Note: The artifact-tracker subagent is available via the artifact-tracking skill to query and update progress tracking and context artifacts.
 
-#### 1.1 Create Progress Tracker
+### Phase 1: Initialize Context & Tracking
 
-Create `${progress_file}` if it doesn't exist, or resume from existing state:
+Extract PRD name as `{PRD_NAME}` from attached plan or PRD and phase number from `$ARGUMENTS` and validate tracking infrastructure exists within:
 
-```markdown
-# Phase ${phase_num} Progress Tracker
+`.claude/progress/{PRD_NAME}/phase-{PHASE_NUM}-progress.md`
 
-**Plan:** ${plan_path}
-**Started:** ${timestamp}
-**Last Updated:** ${timestamp}
-**Status:** In Progress
+If not, utilize artifact-tracking skill to create necessary progress and context artifacts.
 
----
+### Phase 2: Execute Using Orchestration Quick Reference
 
-## Completion Status
+Work through the plan using the pre-computed parallelization strategy in the progress file.
 
-### Success Criteria
-- [ ] [Copy from plan - Performance/Accessibility/Testing requirements]
-- [ ] [Update checkboxes as tasks complete]
+#### 2.1 Read Progress File YAML Only (Token Efficient)
 
-### Development Checklist
-- [ ] [Task 1 from implementation plan]
-- [ ] [Task 2 from implementation plan]
-- [ ] [Task 3 from implementation plan]
+**DO NOT** read the entire progress file yourself; your delegates can read the relevant sections during implementation. Instead, extract only the YAML frontmatter:
 
----
-
-## Work Log
-
-### ${date} - Session ${n}
-
-**Completed:**
-- Task X: Brief description
-- Task Y: Brief description
-
-**Subagents Used:**
-- @backend-typescript-architect - API design
-- @ui-engineer - Component implementation
-- @debugger - Fixed issue with X
-
-**Commits:**
-- abc1234 feat(web): implement X following MP architecture
-- def5678 test(web): add tests for X with coverage
-
-**Blockers/Issues:**
-- None
-
-**Next Steps:**
-- Continue with Task Z
-- Validate completion of milestone M
-
----
-
-## Decisions Log
-
-- **[${timestamp}]** Chose approach X over Y because Z
-- **[${timestamp}]** Modified plan to account for constraint C
-
----
-
-## Files Changed
-
-### Created
-- /path/to/new/file1.tsx - Brief purpose
-
-### Modified
-- /path/to/existing/file1.ts - What changed
-
-### Deleted
-- /path/to/obsolete/file.ts - Why removed
+```bash
+# Extract YAML frontmatter (first ~100 lines, ~2KB vs ~25KB for full file)
+head -100 ${progress_file} | sed -n '/^---$/,/^---$/p'
 ```
 
-#### 1.2 Create Working Context Document
+From YAML, identify:
+- Current `tasks` array with `assigned_to`, `dependencies`, `status`
+- `parallelization` section with batch groupings
+- Tasks ready to execute (all dependencies have `status: completed`)
 
-Create `${context_file}` with implementation-specific context (aim for <2000 tokens):
+#### 2.2 Delegate in Batches
 
-```markdown
-# Phase ${phase_num} Working Context
+**Use the ready-to-copy Task() commands from "Orchestration Quick Reference" section.**
 
-**Purpose:** Token-efficient context for resuming work across AI turns
+Instead of manually constructing delegation, scroll to the "Orchestration Quick Reference" section and copy the Task() commands for the current batch.
 
----
+**Batch Execution Strategy:**
 
-## Current State
+1. **Batch 1** (No dependencies):
+   - Execute ALL tasks in `parallelization.batch_1` in parallel
+   - Use a single message with multiple Task() tool calls
+   - Example:
+     ```
+     Task("ui-engineer-enhanced", "TASK-1.1: Implement X component...")
+     Task("python-pro", "TASK-1.2: Add API endpoint for X...")
+     ```
 
-**Branch:** ${branch_name}
-**Last Commit:** ${commit_hash}
-**Current Task:** [What you're working on now]
+2. **Wait** for Batch 1 to complete
 
----
+3. **Batch 2** (Dependencies from Batch 1):
+   - Execute tasks whose dependencies are now met
+   - Continue batch-by-batch
 
-## Key Decisions
+4. **Update Task Status** after each task completes:
+   ```
+   Task("artifact-tracker", "Update ${PRD_NAME} phase ${phase_num}: Mark TASK-1.1 as completed with commit abc1234")
+   ```
 
-- **Architecture:** [Key architectural choices made]
-- **Patterns:** [MP patterns being followed]
-- **Trade-offs:** [Important trade-offs made]
-
----
-
-## Important Learnings
-
-- **Gotcha 1:** [Brief description + how to avoid]
-- **Gotcha 2:** [Brief description + how to avoid]
-
----
-
-## Quick Reference
-
-### Environment Setup
-\`\`\`bash
-# API
-export PYTHONPATH="$PWD/services/api"
-
-# Web
-pnpm --filter "./apps/web" dev
-
-# Tests
-pnpm --filter "./apps/web" test -- --testPathPattern="pattern"
-\`\`\`
-
-### Key Files
-- Schema: services/api/app/schemas/X.py
-- Repository: services/api/app/repositories/X.py
-- Service: services/api/app/services/X.py
-- Router: services/api/app/api/v1/endpoints/X.py
-- UI: apps/web/src/components/X.tsx
-
----
-
-## Phase Scope (From Plan)
-
-[Copy executive summary from plan - 2-3 sentences max]
-
-**Success Metric:** [Copy key metric from plan]
-```
-
-### Phase 2: Execute Implementation Plan
-
-Work through the plan's development checklist **sequentially**. For each major task:
-
-#### 2.1 Identify Required Expertise
-
-Determine which subagent(s) to use based on task type:
-
-| Task Type | Subagent |
-|-----------|----------|
-| Orchestrate Work/Key Architecture Decisions | lead-architect |
-| ALL Documentation | documentation-writer |
-| API/Backend work | python-pro |
-| UI/Component Design | ui-designer |
-| UI/React components | ui-engineer |
-| Frontend analysis | frontend-architect |
-| Frontend development | frontend-developer |
-| Fixing issues | debugger |
-| Code quality review | code-reviewer |
-| Task Validation | task-completion-validator |
-| Testing | Direct implementation (or test-engineer if complex) |
-
-#### 2.2 Execute Task with Subagent
-
-Delegate to appropriate subagent with clear context:
+**Task Delegation Template:**
 
 ```
-@{subagent-name}
+@{agent-from-assigned_to}
 
-Phase ${phase_num}, Task: {task_name}
+Phase ${phase_num}, {task_id}: {task_title}
 
-Requirements:
-- [Specific requirement from plan]
-- [Specific requirement from plan]
+{task_description}
 
-MP Patterns to Follow:
+Project Patterns to Follow:
 - Layered architecture: routers → services → repositories → DB
 - ErrorResponse envelopes for errors
 - Cursor pagination for lists
 - Telemetry spans and structured JSON logs
 - DTOs separate from ORM models
-
-Files to modify:
-- {file_path_1}
-- {file_path_2}
 
 Success criteria:
 - [What defines completion]
@@ -251,25 +112,25 @@ After each major task, validate with the task-completion-validator:
 ```
 @task-completion-validator
 
-Phase ${phase_num}, Task: {task_name}
+Phase ${phase_num}, Task: {task_id}
 
 Expected outcomes:
-- [Outcome 1 from plan]
-- [Outcome 2 from plan]
+- [Outcome 1 from task description]
+- [Outcome 2 from task description]
 
 Files changed:
 - {list files}
 
 Please validate:
 1. All acceptance criteria met
-2. MP architecture patterns followed
+2. Project architecture patterns followed
 3. Tests exist and pass
 4. No regression introduced
 ```
 
 **Validation checklist per task:**
 - [ ] Acceptance criteria met
-- [ ] Code follows MP layered architecture
+- [ ] Code follows Project layered architecture
 - [ ] Tests exist and pass
 - [ ] TypeScript/Python types correct
 - [ ] Error handling implemented
@@ -285,38 +146,91 @@ After each completed task (or logical unit of work), commit:
 git add {files}
 
 # Commit with conventional commits format
-git commit -m "feat(web): implement {feature} following MP architecture
+git commit -m "feat(web): implement {feature} following Project architecture
 
 - Added {component/service/etc}
 - Wired telemetry spans
 - Added tests with {coverage}%
 
-Refs: Phase ${phase_num}, Task {task_name}"
+Refs: Phase ${phase_num}, {task_id}"
 ```
 
 **Commit message guidelines:**
 - Use conventional commits: `feat|fix|test|docs|refactor|perf|chore`
-- Reference phase and task
+- Reference phase and task ID
 - Keep focused (1 task per commit preferred)
 - Include what was tested
 
 #### 2.5 Update Progress Document
 
-After **every** completed task, update progress tracker:
+After **every** completed task, update via artifact-tracker:
 
-```markdown
-### ${date} - Session ${n}
-
-**Completed:**
-- ✅ Task X: Implemented Y with Z pattern
-
-**Commits:**
-- abc1234 feat(web): implement X
-
-**Next:** Task Y
+```
+Task("artifact-tracker", "Update ${PRD_NAME} phase ${phase_num}:
+- Mark {task_id} as completed
+- Add commit {commit_hash}
+- Log: Implemented {brief_description}")
 ```
 
-Update relevant checklists by changing `- [ ]` to `- [x]`.
+The artifact-tracker will:
+- Update task status in YAML
+- Update completion percentage
+- Add work log entry
+- Track files changed
+- Update parallelization batch status
+
+---
+
+## Orchestration Efficiency Guidelines
+
+### Token-Efficient Delegation
+
+**DO:**
+- Read only YAML frontmatter for task metadata (~2KB)
+- Copy Task() commands from "Orchestration Quick Reference"
+- Use artifact-tracker for status updates
+- Execute batches in parallel (single message with multiple Task calls)
+
+**DO NOT:**
+- Read entire progress file for delegation (~25KB)
+- Re-analyze task dependencies (already computed by lead-architect)
+- Manually construct Task() commands (use Quick Reference)
+- Execute parallel tasks sequentially (wastes time)
+
+### Parallelization Strategy
+
+The progress file YAML includes pre-computed `parallelization` section:
+
+```yaml
+parallelization:
+  batch_1: ["TASK-1.1", "TASK-1.2", "TASK-1.3"]  # No dependencies
+  batch_2: ["TASK-2.1", "TASK-2.2"]              # Depends on batch_1
+  batch_3: ["TASK-3.1"]                          # Depends on batch_2
+  critical_path: ["TASK-1.1", "TASK-2.1", "TASK-3.1"]
+  estimated_total_time: "12h"
+```
+
+**Execution Pattern:**
+1. Execute all tasks in `batch_1` in **parallel** (single message)
+2. **Wait** for batch to complete
+3. Execute all tasks in `batch_2` in **parallel**
+4. Continue sequentially through batches, tasks within batches in parallel
+
+### Required Task Fields
+
+Every task in progress files MUST have:
+- `assigned_to`: Array of agent names for delegation
+- `dependencies`: Array of task IDs that must complete first (empty `[]` if none)
+- `estimated_time`: Time estimate (e.g., "2h", "4h", "1d")
+- `status`: Current status (pending, in_progress, completed, blocked)
+
+**If these fields are missing**, delegate to lead-architect to annotate first:
+
+```
+Task("lead-architect", "Annotate progress file ${progress_file} with missing orchestration fields (assigned_to, dependencies, estimated_time)")
+```
+
+---
 
 ### Phase 3: Continuous Testing
 
@@ -374,7 +288,7 @@ pnpm --filter "./packages/ui" storybook
 
 ### Phase 4: Milestone Validation
 
-At each major milestone (typically after completing a section in the plan):
+At each major milestone (typically after completing a batch):
 
 #### 4.1 Run Full Validation
 
@@ -411,19 +325,18 @@ echo "✅ Validation complete"
 ```
 @task-completion-validator
 
-Phase ${phase_num} Milestone: {milestone_name}
+Phase ${phase_num} Milestone: Batch {batch_num} Complete
 
 Completed tasks:
-- [Task 1]
-- [Task 2]
-- [Task 3]
+- {task_id_1}
+- {task_id_2}
 
 Expected outcomes from plan:
 - [Outcome 1]
 - [Outcome 2]
 
 Please validate:
-1. All milestone tasks complete
+1. All batch tasks complete
 2. Success criteria met
 3. No regressions
 4. Tests comprehensive
@@ -432,7 +345,7 @@ Please validate:
 
 #### 4.3 Update Context Document
 
-Update `${context_file}` with learnings from milestone:
+Update `.claude/worknotes/${PRD_NAME}/context.md` with learnings from milestone:
 
 ```markdown
 ## Important Learnings
@@ -520,13 +433,22 @@ echo "✅ All quality gates passed"
 
 #### 5.4 Final Progress Update
 
-Update progress tracker with final status:
+Update progress tracker with final status via artifact-tracker from artifact-tracking skill:
 
-```markdown
-**Status:** ✅ Complete
+```
+Task("artifact-tracker", "Finalize ${PRD_NAME} phase ${phase_num}:
+- Mark phase as completed
+- Update completion to 100%
+- Generate phase completion summary")
+```
 
-**Completion Date:** ${date}
+Expected final state:
 
+```yaml
+---
+status: completed
+completion: 100%
+completed_at: ${timestamp}
 ---
 
 ## Phase Completion Summary
@@ -568,14 +490,13 @@ If ANY task fails or blocks:
 
 ### 1. Document the Issue
 
-Update progress tracker immediately:
+Update progress tracker via artifact-tracker:
 
-```markdown
-**Blockers/Issues:**
-- **[${timestamp}]** Task X blocked by Y
-  - Error: {error message}
-  - Attempted: {what you tried}
-  - Status: {blocked|investigating|resolved}
+```
+Task("artifact-tracker", "Update ${PRD_NAME} phase ${phase_num}:
+- Mark {task_id} as blocked
+- Log blocker: {description}
+- Add to blockers section")
 ```
 
 ### 2. Attempt Recovery
@@ -612,11 +533,15 @@ pnpm build
 
 ### 3. If Unrecoverable
 
-```markdown
-**Status:** ⚠️ Blocked
+Update progress file:
+
+```yaml
+---
+status: blocked
+---
 
 **Blocker Details:**
-- Task: {task_name}
+- Task: {task_id}
 - Issue: {description}
 - Attempted Solutions: {list}
 - Needs: {what's needed to unblock}
@@ -630,9 +555,9 @@ Stop execution and report to user with:
 
 ---
 
-## MP Architecture Compliance Checklist
+## Project Architecture Compliance Checklist
 
-Ensure every implementation follows MP patterns:
+Ensure every implementation follows Project patterns:
 
 ### Backend Implementation
 - [ ] **Layered architecture:** router → service → repository → DB
@@ -676,7 +601,7 @@ Phase is **ONLY** complete when:
 3. ✅ **All tests** passing (backend + frontend + e2e)
 4. ✅ **Quality gates** passed (types, lint, build)
 5. ✅ **Documentation** updated (code comments, ADRs if needed)
-6. ✅ **Progress tracker** shows complete status
+6. ✅ **Progress tracker** shows `status: completed`
 7. ✅ **Context document** updated with learnings
 8. ✅ **All commits** pushed to branch
 9. ✅ **Validation** completed by task-completion-validator
@@ -693,26 +618,32 @@ Provide clear, structured status updates throughout:
 ```
 📋 Phase ${phase_num} Execution Update
 
-Current Task: {task_name}
-Status: {in_progress|completed|blocked}
+**Orchestration Status:**
+- Batch 1: ✅ Complete (3/3 tasks)
+- Batch 2: 🔄 In Progress (1/2 tasks)
+- Batch 3: ⏳ Pending (2 tasks)
+- Critical Path: 60% complete
 
-Progress:
-- ✅ Task A
-- ✅ Task B
-- 🔄 Task C (current)
-- ⏳ Task D (pending)
+**Current Batch (2):**
+- ✅ TASK-2.1 → ui-engineer-enhanced
+- 🔄 TASK-2.2 → python-pro (in progress)
 
-Recent Commits:
-- abc1234 feat(web): implement X
+**Completed This Session:**
+- TASK-1.1: Implemented X component
+- TASK-1.2: Added API endpoint for Y
 
-Subagents Used:
-- @backend-typescript-architect (API design)
-- @ui-engineer (Component implementation)
+**Blocked:**
+- None
 
-Next Steps:
-- Complete Task C
-- Validate with task-completion-validator
-- Begin Task D
+**Recent Commits:**
+- abc1234 feat(web): implement X component
+- def5678 feat(api): add Y endpoint
+
+**Next Actions:**
+- Wait for TASK-2.2 completion
+- Launch Batch 3: TASK-3.1, TASK-3.2
+
+**Progress:** 60% (6/10 tasks complete)
 ```
 
 ---
@@ -724,7 +655,7 @@ Next Steps:
 /dev:execute-phase 4
 
 # Execute phase 1 with explicit plan path
-/dev:execute-phase 1 --plan=docs/project_plans/impl_tracking/web-v2/phase-1-foundation-implementation-plan.md
+/dev:execute-phase 1 docs/project_plans/impl_tracking/web-v2/phase-1-foundation-implementation-plan.md
 
 # Resume phase 2 (will pick up from progress tracker)
 /dev:execute-phase 2
@@ -732,4 +663,15 @@ Next Steps:
 
 ---
 
-Remember: **Follow the plan, validate continuously, commit frequently, and track everything.**
+## Integration with Artifact-Tracking Skill
+
+This command integrates with the **artifact-tracking skill** for:
+
+1. **Orchestration**: Load the progress file YAML to identify tasks, dependencies, and parallelization to delegate work efficiently
+2. **Status Updates**: `artifact-tracker` updates task status, completion, and work logs
+
+**Skill Reference:** `.claude/skills/artifact-tracking/SKILL.md`
+
+---
+
+Remember: **Follow the orchestration plan, delegate in batches, validate continuously, commit frequently, and track everything efficiently.**

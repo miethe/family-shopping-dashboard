@@ -1,12 +1,13 @@
 """Gift repository with search and relationship loading capabilities."""
 
-from sqlalchemy import select
+from sqlalchemy import select, distinct, func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.gift import Gift
 from app.models.tag import Tag, gift_tags
 from app.models.list_item import ListItem
+from app.models.list import List
 from app.repositories.base import BaseRepository
 
 
@@ -189,3 +190,143 @@ class GiftRepository(BaseRepository[Gift]):
 
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_filtered(
+        self,
+        cursor: int | None = None,
+        limit: int = 50,
+        search: str | None = None,
+        person_ids: list[int] | None = None,
+        statuses: list[str] | None = None,
+        list_ids: list[int] | None = None,
+        occasion_ids: list[int] | None = None,
+        sort_by: str = "recent",
+    ) -> tuple[list[Gift], bool, int | None]:
+        """
+        Get filtered list of gifts with cursor-based pagination.
+
+        Filters gifts by recipient (person), status, list, and occasion through
+        the Gift → ListItem → List relationship chain. Uses a subquery approach
+        to avoid duplicate gifts when filtering by list relationships while
+        preventing PostgreSQL JSON column DISTINCT errors.
+
+        Args:
+            cursor: ID of last item from previous page (None for first page)
+            limit: Maximum number of items to return (default: 50)
+            search: Case-insensitive substring search on gift name
+            person_ids: Filter by recipient person IDs (OR logic within group)
+            statuses: Filter by list item statuses (OR logic within group)
+            list_ids: Filter by list IDs (OR logic within group)
+            occasion_ids: Filter by occasion IDs (OR logic within group)
+            sort_by: Sort order ('recent', 'price_asc', 'price_desc')
+
+        Returns:
+            Tuple of (items, has_more, next_cursor):
+            - items: List of Gift instances (up to `limit` items)
+            - has_more: True if more items exist after this page
+            - next_cursor: ID to use for next page (None if no more items)
+
+        Example:
+            ```python
+            # Find gifts for person 5, with status 'purchased' or 'selected'
+            gifts, has_more, cursor = await repo.get_filtered(
+                person_ids=[5],
+                statuses=['purchased', 'selected'],
+                limit=20
+            )
+
+            # Search gifts containing "lego" sorted by price
+            gifts, has_more, cursor = await repo.get_filtered(
+                search="lego",
+                sort_by="price_asc"
+            )
+            ```
+
+        Note:
+            - Empty list = no filter, None = no filter (both treated the same)
+            - AND logic across filter groups (person AND status AND list)
+            - OR logic within filter groups (person_id=1 OR person_id=2)
+            - Uses database indexes: ix_list_items_status, ix_lists_person_id,
+              ix_lists_occasion_id for optimal query performance
+            - Subquery approach prevents duplicate gifts and avoids JSON DISTINCT errors
+        """
+        # Step 1: Build subquery for distinct gift IDs with all filters
+        # Label the column explicitly so we can reference it after subquery()
+        id_subquery = select(distinct(self.model.id).label("gift_id")).select_from(self.model)
+
+        # Track if we need to join ListItem and List tables
+        need_list_item_join = bool(statuses or list_ids or person_ids or occasion_ids)
+
+        # Join through ListItem to List if filtering by list-related fields
+        if need_list_item_join:
+            id_subquery = id_subquery.join(ListItem, self.model.id == ListItem.gift_id)
+            id_subquery = id_subquery.join(List, ListItem.list_id == List.id)
+
+        # Apply filters (AND logic across groups)
+        filters = []
+
+        # Search by name (case-insensitive)
+        if search:
+            filters.append(func.lower(self.model.name).contains(func.lower(search)))
+
+        # Filter by person (recipient) - OR logic within group
+        if person_ids:
+            filters.append(List.person_id.in_(person_ids))
+
+        # Filter by list item status - OR logic within group
+        if statuses:
+            filters.append(ListItem.status.in_(statuses))
+
+        # Filter by list ID - OR logic within group
+        if list_ids:
+            filters.append(ListItem.list_id.in_(list_ids))
+
+        # Filter by occasion - OR logic within group
+        if occasion_ids:
+            filters.append(List.occasion_id.in_(occasion_ids))
+
+        # Apply all filters to subquery
+        if filters:
+            id_subquery = id_subquery.where(*filters)
+
+        # Convert to subquery
+        id_subquery = id_subquery.subquery()
+
+        # Step 2: Select full Gift models where ID is in the subquery
+        stmt = select(self.model).where(self.model.id.in_(select(id_subquery.c.gift_id)))
+
+        # Apply cursor pagination
+        if cursor is not None:
+            if sort_by == "price_asc":
+                # For ascending price, get items where price > cursor_price OR (price = cursor_price AND id > cursor_id)
+                # For simplicity with cursor pagination, we use ID-based cursor
+                stmt = stmt.where(self.model.id > cursor)
+            elif sort_by == "price_desc":
+                stmt = stmt.where(self.model.id > cursor)
+            else:  # recent (default)
+                stmt = stmt.where(self.model.id > cursor)
+
+        # Apply sorting
+        if sort_by == "price_asc":
+            stmt = stmt.order_by(self.model.price.asc().nulls_last(), self.model.id.asc())
+        elif sort_by == "price_desc":
+            stmt = stmt.order_by(self.model.price.desc().nulls_last(), self.model.id.asc())
+        else:  # recent (default - newest first)
+            stmt = stmt.order_by(self.model.id.desc())
+
+        # Fetch limit + 1 to determine if there are more results
+        stmt = stmt.limit(limit + 1)
+
+        # Execute query
+        result = await self.session.execute(stmt)
+        gifts = list(result.scalars().all())
+
+        # Check if there are more results
+        has_more = len(gifts) > limit
+        if has_more:
+            gifts = gifts[:limit]  # Trim to requested limit
+
+        # Determine next cursor
+        next_cursor = gifts[-1].id if (gifts and has_more) else None
+
+        return gifts, has_more, next_cursor

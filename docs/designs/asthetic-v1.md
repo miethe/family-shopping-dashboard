@@ -1,13 +1,12 @@
-Based on the functional requirements in the North Star and V1 PRDs, here is a design style update positioning the "Family Gifting Dashboard" as a premier, Apple-featured application in 2026.
-
-***
-
 # Design Directive: "Family Gifting" – The 2026 Aesthetic Update
 
-### Executive Summary
+## Executive Summary
+
 This design directive updates the user experience to match the profile of a "Top App of 2026." The aesthetic is a highly polished evolution of the "modern web app, mobile-first" requirement, leaning heavily into "alignment to Apple ecosystem" design patterns.
 
 The look is inviting, calm, and trustworthy, designed to reduce the cognitive load of holiday planning. It balances the "family-friendly" requirement with a sophisticated, minimalist execution typical of leading high-growth consumer apps.
+
+## Design Principles
 
 ### 1. Core Design Philosophy: "Soft Modernity"
 

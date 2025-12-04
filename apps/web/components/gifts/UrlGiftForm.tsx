@@ -11,18 +11,24 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGiftFromUrl } from '@/hooks/useGifts';
 import { useLists } from '@/hooks/useLists';
+import { usePersons } from '@/hooks/usePersons';
+import { useOccasions } from '@/hooks/useOccasions';
 import { useCreateListItem } from '@/hooks/useListItems';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
+import type { ListItemStatus } from '@/types';
 
 export interface UrlGiftFormProps {
   defaultListId?: number;
+  onSuccess?: () => void;
 }
 
-export function UrlGiftForm({ defaultListId }: UrlGiftFormProps) {
+export function UrlGiftForm({ defaultListId, onSuccess }: UrlGiftFormProps) {
   const [url, setUrl] = useState('');
+  const [status, setStatus] = useState<ListItemStatus>('idea');
   const [selectedListIds, setSelectedListIds] = useState<number[]>(
     defaultListId ? [defaultListId] : []
   );
@@ -30,10 +36,31 @@ export function UrlGiftForm({ defaultListId }: UrlGiftFormProps) {
   const { mutate, isPending, error } = useGiftFromUrl();
   const { mutate: createListItem } = useCreateListItem();
   const { data: listsResponse } = useLists();
+  const { data: personsResponse } = usePersons();
+  const { data: occasionsResponse } = useOccasions();
   const { toast } = useToast();
   const router = useRouter();
 
   const lists = listsResponse?.items ?? [];
+  const persons = personsResponse?.items ?? [];
+  const occasions = occasionsResponse?.items ?? [];
+
+  // Helper to get list context description
+  const getListContext = (list: typeof lists[0]) => {
+    const parts: string[] = [];
+
+    if (list.person_id) {
+      const person = persons.find((p) => p.id === list.person_id);
+      if (person) parts.push(`for ${person.display_name}`);
+    }
+
+    if (list.occasion_id) {
+      const occasion = occasions.find((o) => o.id === list.occasion_id);
+      if (occasion) parts.push(`(${occasion.name})`);
+    }
+
+    return parts.length > 0 ? parts.join(' ') : `${list.type} list`;
+  };
 
   const toggleListSelection = (listId: number) => {
     setSelectedListIds((prev) =>
@@ -50,13 +77,13 @@ export function UrlGiftForm({ defaultListId }: UrlGiftFormProps) {
 
     mutate(url.trim(), {
       onSuccess: (gift) => {
-        // Create list items for each selected list
+        // Create list items for each selected list with the selected status
         selectedListIds.forEach((listId) => {
           createListItem({
             listId,
             data: {
               gift_id: gift.id,
-              status: 'idea',
+              status: status,
             },
           });
         });
@@ -69,11 +96,16 @@ export function UrlGiftForm({ defaultListId }: UrlGiftFormProps) {
           variant: 'success',
         });
 
-        // Navigate to first selected list or gift detail
-        if (selectedListIds.length > 0) {
-          router.push(`/lists/${selectedListIds[0]}`);
+        // Call onSuccess callback if provided, otherwise navigate
+        if (onSuccess) {
+          onSuccess();
         } else {
-          router.push(`/gifts/${gift.id}`);
+          // Navigate to first selected list or gift detail
+          if (selectedListIds.length > 0) {
+            router.push(`/lists/${selectedListIds[0]}`);
+          } else {
+            router.push(`/gifts/${gift.id}`);
+          }
         }
       },
       onError: (err: any) => {
@@ -85,6 +117,13 @@ export function UrlGiftForm({ defaultListId }: UrlGiftFormProps) {
       },
     });
   };
+
+  const statusOptions = [
+    { value: 'idea', label: 'Idea' },
+    { value: 'selected', label: 'Selected' },
+    { value: 'purchased', label: 'Purchased' },
+    { value: 'received', label: 'Received' },
+  ];
 
   return (
     <form onSubmit={handleSubmit}>
@@ -98,6 +137,14 @@ export function UrlGiftForm({ defaultListId }: UrlGiftFormProps) {
           required
           helperText="We'll try to automatically extract the title, image, and price."
           error={error ? (error as any).message : undefined}
+        />
+
+        <Select
+          label="Status"
+          value={status}
+          onChange={(value) => setStatus(value as ListItemStatus)}
+          options={statusOptions}
+          helperText="Current status of this gift idea"
         />
 
         {/* List Selection */}
@@ -118,11 +165,7 @@ export function UrlGiftForm({ defaultListId }: UrlGiftFormProps) {
                   checked={selectedListIds.includes(list.id)}
                   onChange={() => toggleListSelection(list.id)}
                   label={list.name}
-                  helperText={
-                    list.occasion_id || list.person_id
-                      ? `${list.type} list`
-                      : undefined
-                  }
+                  helperText={getListContext(list)}
                 />
               ))}
             </div>

@@ -11,7 +11,8 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
@@ -47,7 +48,9 @@ export function AddListItemModal({
   const queryClient = useQueryClient();
   const createItemMutation = useCreateListItem();
   const createGiftMutation = useCreateGift();
-  const { data: giftsResponse, isLoading: isLoadingGifts } = useGifts();
+  const { data: giftsResponse, isLoading: isLoadingGifts } = useGifts(undefined, {
+    enabled: isOpen,
+  });
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabMode>('existing');
@@ -66,6 +69,13 @@ export function AddListItemModal({
   const [status, setStatus] = useState<ListItemStatus>(defaultStatus);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  // Sync status when modal opens with new defaultStatus
+  useEffect(() => {
+    if (isOpen) {
+      setStatus(defaultStatus);
+    }
+  }, [isOpen, defaultStatus]);
 
   // Filter gifts based on search query
   const filteredGifts = useMemo(() => {
@@ -281,10 +291,13 @@ export function AddListItemModal({
                         }`}
                       >
                         {gift.image_url && (
-                          <img
+                          <Image
                             src={gift.image_url}
                             alt={gift.name}
+                            width={48}
+                            height={48}
                             className="w-12 h-12 object-cover rounded"
+                            unoptimized
                           />
                         )}
                         <div className="flex-1 min-w-0">

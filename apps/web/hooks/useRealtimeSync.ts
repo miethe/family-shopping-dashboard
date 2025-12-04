@@ -35,8 +35,10 @@
 
 import { useEffect, useCallback, useRef } from 'react';
 import { useQueryClient, QueryKey } from '@tanstack/react-query';
-import { useWebSocket } from './useWebSocket';
+import { useWebSocketContext } from '@/lib/websocket/WebSocketProvider';
 import type { WSEvent, WSEventType } from '@/lib/websocket/types';
+
+const DEFAULT_EVENTS: WSEventType[] = ['ADDED', 'UPDATED', 'DELETED', 'STATUS_CHANGED'];
 
 export interface UseRealtimeSyncOptions {
   /**
@@ -91,7 +93,7 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
   const {
     topic,
     queryKey,
-    events = ['ADDED', 'UPDATED', 'DELETED', 'STATUS_CHANGED'],
+    events = DEFAULT_EVENTS,
     onEvent,
     debounceMs = 0,
     enabled = true,
@@ -100,8 +102,19 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
   } = options;
 
   const queryClient = useQueryClient();
-  const { subscribe, state } = useWebSocket();
+  const { subscribe, state } = useWebSocketContext();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const queryKeyRef = useRef<QueryKey>(queryKey);
+  const eventsRef = useRef<WSEventType[]>(events);
+
+  // Keep refs in sync without retriggering subscriptions on referentially new values
+  useEffect(() => {
+    queryKeyRef.current = queryKey;
+  }, [queryKey]);
+
+  useEffect(() => {
+    eventsRef.current = events;
+  }, [events]);
 
   /**
    * Handle incoming WebSocket event
@@ -109,7 +122,7 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
   const handleEvent = useCallback(
     (event: WSEvent) => {
       // Filter by event type
-      if (!events.includes(event.event)) {
+      if (!eventsRef.current.includes(event.event)) {
         return;
       }
 
@@ -121,7 +134,7 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
 
       // Default: invalidate query with debouncing
       const invalidate = () => {
-        queryClient.invalidateQueries({ queryKey });
+        queryClient.invalidateQueries({ queryKey: queryKeyRef.current });
       };
 
       if (debounceMs > 0) {
@@ -137,23 +150,20 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
         invalidate();
       }
     },
-    [events, onEvent, queryClient, queryKey, debounceMs]
+    [onEvent, queryClient, debounceMs]
   );
 
   /**
    * Subscribe to WebSocket topic
+   * NOTE: `state` is intentionally NOT in the dependency array to prevent
+   * infinite re-subscription loops when WebSocket state changes.
    */
   useEffect(() => {
-    if (!enabled) {
+    if (!enabled || !topic) {
       return;
     }
 
     const unsubscribe = subscribe(topic, handleEvent);
-
-    // Call onSubscribed callback
-    if (onSubscribed && state === 'connected') {
-      onSubscribed();
-    }
 
     return () => {
       unsubscribe();
@@ -169,7 +179,17 @@ export function useRealtimeSync(options: UseRealtimeSyncOptions): void {
         onUnsubscribed();
       }
     };
-  }, [enabled, topic, subscribe, handleEvent, state, onSubscribed, onUnsubscribed]);
+  }, [enabled, topic, subscribe, handleEvent, onUnsubscribed]);
+
+  /**
+   * Fire onSubscribed callback when WebSocket connects
+   * Separate effect to avoid re-subscription on state changes
+   */
+  useEffect(() => {
+    if (enabled && state === 'connected' && onSubscribed) {
+      onSubscribed();
+    }
+  }, [enabled, state, onSubscribed]);
 }
 
 /**
@@ -209,7 +229,7 @@ export function usePollingFallback(options: UsePollingFallbackOptions): void {
   const { queryKey, intervalMs = 10000, enabled = true } = options;
 
   const queryClient = useQueryClient();
-  const { state } = useWebSocket();
+  const { state } = useWebSocketContext();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {

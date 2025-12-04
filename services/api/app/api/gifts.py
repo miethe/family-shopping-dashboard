@@ -16,21 +16,44 @@ router = APIRouter(prefix="/gifts", tags=["gifts"])
     "",
     response_model=PaginatedResponse[GiftResponse],
     status_code=status.HTTP_200_OK,
-    summary="List all gifts with pagination",
-    description="Get paginated list of all gifts using cursor-based pagination",
+    summary="List and filter gifts with pagination",
+    description="Get paginated list of gifts with optional filtering by recipient, status, list, occasion, and search",
 )
 async def list_gifts(
     cursor: int | None = Query(None, description="Cursor for pagination (ID of last item)"),
     limit: int = Query(50, ge=1, le=100, description="Maximum items to return"),
+    search: str | None = Query(None, min_length=2, description="Search query for gift name (case-insensitive)"),
+    person_ids: list[int] | None = Query(None, description="Filter by recipient person IDs (OR logic)"),
+    statuses: list[str] | None = Query(None, description="Filter by list item statuses (OR logic)"),
+    list_ids: list[int] | None = Query(None, description="Filter by list IDs (OR logic)"),
+    occasion_ids: list[int] | None = Query(None, description="Filter by occasion IDs (OR logic)"),
+    sort: str = Query("recent", description="Sort order: 'recent' (default), 'price_asc', 'price_desc'"),
     current_user_id: int = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> PaginatedResponse[GiftResponse]:
     """
-    Get paginated list of gifts.
+    Get paginated and filtered list of gifts.
+
+    Supports filtering by:
+    - Search: Case-insensitive substring match on gift name
+    - Person: Filter by recipient person IDs
+    - Status: Filter by list item statuses (idea/selected/purchased/received)
+    - List: Filter by specific list IDs
+    - Occasion: Filter by occasion IDs
+
+    Filters use AND logic across groups and OR logic within groups.
+    For example: person_ids=[1,2] AND statuses=['purchased'] means
+    "gifts for person 1 OR 2 that have status 'purchased'".
 
     Args:
         cursor: ID of last item from previous page (None for first page)
         limit: Maximum number of items to return (1-100, default: 50)
+        search: Search query for gift name (minimum 2 characters)
+        person_ids: Filter by recipient person IDs
+        statuses: Filter by list item statuses
+        list_ids: Filter by list IDs
+        occasion_ids: Filter by occasion IDs
+        sort: Sort order ('recent', 'price_asc', 'price_desc')
         current_user_id: Authenticated user ID (from JWT)
         db: Database session (injected)
 
@@ -39,7 +62,7 @@ async def list_gifts(
 
     Example:
         ```json
-        GET /gifts?limit=20
+        GET /gifts?person_ids=5&statuses=purchased&statuses=selected&limit=20
         Headers: Authorization: Bearer eyJhbGc...
 
         Response 200:
@@ -61,9 +84,25 @@ async def list_gifts(
             "next_cursor": 42
         }
         ```
+
+    Example queries:
+        - All gifts: GET /gifts
+        - Search: GET /gifts?search=lego
+        - Filter by person: GET /gifts?person_ids=5
+        - Filter by status: GET /gifts?statuses=purchased&statuses=selected
+        - Multiple filters: GET /gifts?person_ids=5&statuses=purchased&sort=price_asc
     """
     service = GiftService(db)
-    gifts, has_more, next_cursor = await service.list(cursor=cursor, limit=limit)
+    gifts, has_more, next_cursor = await service.list(
+        cursor=cursor,
+        limit=limit,
+        search=search,
+        person_ids=person_ids,
+        statuses=statuses,
+        list_ids=list_ids,
+        occasion_ids=occasion_ids,
+        sort_by=sort,
+    )
 
     return PaginatedResponse(items=gifts, has_more=has_more, next_cursor=next_cursor)
 
@@ -72,8 +111,8 @@ async def list_gifts(
     "/search",
     response_model=PaginatedResponse[GiftResponse],
     status_code=status.HTTP_200_OK,
-    summary="Search gifts by name",
-    description="Search gifts using case-insensitive substring matching on gift names",
+    summary="Search gifts by name (legacy endpoint)",
+    description="Search gifts using case-insensitive substring matching. Use GET /gifts?search=query for new code.",
 )
 async def search_gifts(
     q: str = Query(..., min_length=2, description="Search query (minimum 2 characters)"),
@@ -83,10 +122,14 @@ async def search_gifts(
     db: AsyncSession = Depends(get_db),
 ) -> PaginatedResponse[GiftResponse]:
     """
-    Search gifts by name.
+    Search gifts by name (legacy endpoint).
+
+    This endpoint is maintained for backwards compatibility.
+    New code should use GET /gifts?search=query instead, which supports
+    additional filtering options.
 
     Performs case-insensitive substring matching on gift names.
-    Returns results ordered by name and limited by cursor-based pagination.
+    Returns results ordered by relevance with cursor-based pagination.
 
     Args:
         q: Search query string (minimum 2 characters)
@@ -138,12 +181,17 @@ async def search_gifts(
         - Search is case-insensitive
         - Uses substring matching (finds "lego" anywhere in name)
         - Returns empty list if no matches found
+        - For filtering by person/status/list/occasion, use GET /gifts endpoint
     """
     service = GiftService(db)
-    gifts = await service.search(q, limit=limit)
+    # Use unified list method with search parameter
+    gifts, has_more, next_cursor = await service.list(
+        cursor=cursor,
+        limit=limit,
+        search=q,
+    )
 
-    # Convert search results to paginated response (search returns list, not paginated)
-    return PaginatedResponse(items=gifts, has_more=False, next_cursor=None)
+    return PaginatedResponse(items=gifts, has_more=has_more, next_cursor=next_cursor)
 
 
 @router.post(
@@ -263,7 +311,7 @@ async def get_gift(
     return gift
 
 
-@router.put(
+@router.patch(
     "/{gift_id}",
     response_model=GiftResponse,
     status_code=status.HTTP_200_OK,

@@ -111,7 +111,7 @@ export function OccasionLists({ occasionId }: OccasionListsProps) {
                       </Badge>
                     </div>
                     <p className="text-sm text-gray-500">
-                      {list.visibility} • {(list as any).item_count || 0} items
+                      {list.visibility} • {list.item_count || 0} items
                     </p>
                   </div>
 

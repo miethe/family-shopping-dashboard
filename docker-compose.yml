@@ -9,8 +9,9 @@ services:
       POSTGRES_DB: family_gifting
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    # ports: external:internal (sourced from .env)
     ports:
-      - "5432:5432"
+      - "${POSTGRES_EXTERNAL_PORT:-5442}:5432"
     volumes:
       - /Users/miethe/dev/homelab/development/pg:/var/lib/postgresql/data
     healthcheck:
@@ -28,12 +29,14 @@ services:
       dockerfile: Dockerfile
     container_name: gifting-api
     environment:
-      # Database
+      # Database - uses internal port (container-to-container via service name)
       DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/family_gifting
 
       # API Configuration
+      # API_PORT: internal port the server listens on (left side of ports mapping)
       API_PORT: 8000
-      CORS_ORIGINS: http://localhost:3000,http://web:3000
+      # CORS_ORIGINS: localhost uses external port (browser access), service name uses internal port
+      CORS_ORIGINS: http://localhost:3030,http://web:3000
 
       # Security (CHANGE IN PRODUCTION!)
       JWT_SECRET_KEY: dev-secret-key-change-in-production
@@ -42,8 +45,9 @@ services:
 
       # Python
       PYTHONUNBUFFERED: 1
+    # ports: external:internal (sourced from .env)
     ports:
-      - "8000:8000"
+      - "${API_EXTERNAL_PORT:-8030}:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -56,16 +60,16 @@ services:
     build:
       context: ./apps/web
       dockerfile: Dockerfile
+      # Build args sourced from .env (baked into JS bundle at build time)
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+        - NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL}
     container_name: gifting-web
     environment:
-      # API Connection
-      NEXT_PUBLIC_API_URL: http://localhost:8000
-      NEXT_PUBLIC_WS_URL: ws://localhost:8000
-
-      # Node
       NODE_ENV: production
+    # ports: external:internal (sourced from .env)
     ports:
-      - "3000:3000"
+      - "${WEB_EXTERNAL_PORT:-3030}:3000"
     depends_on:
       - api
     networks:

@@ -11,6 +11,12 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   LightbulbIcon,
   CheckCircleIcon,
   ShoppingCartIcon,
@@ -28,7 +34,7 @@ interface ListItemGroupProps {
   onAddItem?: (status: ListItemStatus) => void;
 }
 
-// Status icons
+// Status icons - order must match ListItemStatus type
 const statusIcons: Record<ListItemStatus, ComponentType<{ className?: string }>> = {
   idea: LightbulbIcon,
   selected: CheckCircleIcon,
@@ -52,6 +58,14 @@ const statusLabels: Record<ListItemStatus, string> = {
   received: 'Received',
 };
 
+// Status descriptions for tooltips
+const statusDescriptions: Record<ListItemStatus, string> = {
+  idea: 'Gift ideas being considered',
+  selected: 'Items chosen to purchase',
+  purchased: 'Items that have been bought',
+  received: 'Items that have been received',
+};
+
 export function ListItemGroup({ status, items, onItemStatusChange, onAddItem }: ListItemGroupProps) {
   const StatusIcon = statusIcons[status];
 
@@ -59,15 +73,24 @@ export function ListItemGroup({ status, items, onItemStatusChange, onAddItem }: 
     <Card variant="default" padding="none">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <StatusIcon className={`w-5 h-5 ${statusColors[status]}`} />
-          <h3 className="font-semibold text-gray-900 capitalize">
-            {statusLabels[status]}
-          </h3>
-          <Badge variant="default" size="sm">
-            {items.length}
-          </Badge>
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2 cursor-help">
+                <StatusIcon className={`w-5 h-5 ${statusColors[status]}`} />
+                <h3 className="font-semibold text-gray-900 capitalize">
+                  {statusLabels[status]}
+                </h3>
+                <Badge variant="default" size="sm">
+                  {items.length}
+                </Badge>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{statusDescriptions[status]}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {/* Items List or Empty State */}

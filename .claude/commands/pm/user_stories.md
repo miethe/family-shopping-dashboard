@@ -26,7 +26,7 @@ IMPLEMENTATION PLAN FORMAT REQUIREMENTS:
 1. **Epic Headers**: Format as "## Epic: {EPIC_ID} - {Title}" (e.g., "## Epic: MP-MODEL-DB-001 - Database Schema & Infrastructure Foundation")
 2. **Story Tables**: Must have "Story ID" as the first column header
 3. **Table Structure**: Include columns: Story ID, Task Name, Description, Acceptance Criteria, Estimate, Dependencies
-4. **File Location**: Save to `/docs/project_plans/implementation_plans/{plan_name}.md`
+4. **File Location**: Save to `/docs/project_plans/{PRD_NAME}/{plan_name}.md`
 
 EPIC AND STORY ID ORGANIZATION:
 

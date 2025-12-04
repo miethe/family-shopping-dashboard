@@ -9,15 +9,26 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { giftApi, GiftListParams } from '@/lib/api/endpoints';
 import type { Gift, GiftCreate, GiftUpdate } from '@/types';
 
+interface UseGiftsOptions {
+  enabled?: boolean;
+}
+
 /**
  * Fetch paginated list of gifts with optional filters
  * @param params - Optional cursor, limit, search, tags filters
  */
-export function useGifts(params?: GiftListParams) {
-  return useQuery({
+export function useGifts(params?: GiftListParams, options: UseGiftsOptions = {}) {
+  const { enabled = true } = options;
+
+  const query = useQuery({
     queryKey: ['gifts', params],
     queryFn: () => giftApi.list(params),
+    staleTime: 1000 * 60 * 5, // 5 minutes - moderate updates, search-heavy
+    refetchOnWindowFocus: true,
+    enabled,
   });
+
+  return query;
 }
 
 /**
@@ -25,11 +36,15 @@ export function useGifts(params?: GiftListParams) {
  * @param id - Gift ID
  */
 export function useGift(id: number) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['gifts', id],
     queryFn: () => giftApi.get(id),
     enabled: !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes - detail pages benefit from caching
+    refetchOnWindowFocus: true,
   });
+
+  return query;
 }
 
 /**

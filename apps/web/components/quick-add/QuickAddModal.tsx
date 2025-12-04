@@ -37,7 +37,7 @@ export function QuickAddModal({ isOpen, onClose }: QuickAddModalProps) {
   const [selectedListId, setSelectedListId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: listsData } = useLists({ type: 'ideas' });
+  const { data: listsData } = useLists({ type: 'ideas' }, { enabled: isOpen });
   const createGift = useCreateGift();
   const createListItem = useCreateListItem();
   const { toast } = useToast();
@@ -87,6 +87,10 @@ export function QuickAddModal({ isOpen, onClose }: QuickAddModalProps) {
       onClose();
     }
   };
+
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>

@@ -2,21 +2,28 @@
 
 from datetime import datetime, timezone
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.list_item import ListItemStatus
 from app.repositories.list_item import ListItemRepository
-from app.schemas.list_item import ListItemCreate, ListItemResponse, ListItemUpdate
+from app.schemas.gift import GiftSummary
+from app.schemas.list_item import (
+    ListItemCreate,
+    ListItemResponse,
+    ListItemUpdate,
+    ListItemWithGift,
+)
 from app.schemas.ws import WSEvent
 from app.services.ws_manager import manager
 
 
-# Valid status transitions
+# Valid status transitions - allows flexible Kanban drag-and-drop
 VALID_TRANSITIONS: dict[ListItemStatus, set[ListItemStatus]] = {
-    ListItemStatus.idea: {ListItemStatus.selected},
-    ListItemStatus.selected: {ListItemStatus.purchased, ListItemStatus.idea},
-    ListItemStatus.purchased: {ListItemStatus.received, ListItemStatus.idea},
-    ListItemStatus.received: {ListItemStatus.idea},
+    ListItemStatus.idea: {ListItemStatus.selected, ListItemStatus.purchased, ListItemStatus.received},
+    ListItemStatus.selected: {ListItemStatus.idea, ListItemStatus.purchased, ListItemStatus.received},
+    ListItemStatus.purchased: {ListItemStatus.idea, ListItemStatus.selected, ListItemStatus.received},
+    ListItemStatus.received: {ListItemStatus.idea, ListItemStatus.selected, ListItemStatus.purchased},
 }
 
 
@@ -136,7 +143,14 @@ class ListItemService:
         create_data = data.model_dump()
 
         # Create in database
-        list_item = await self.repo.create(create_data)
+        try:
+            list_item = await self.repo.create(create_data)
+        except IntegrityError as e:
+            await self.session.rollback()
+            # Check if it's the duplicate constraint
+            if "uq_list_items_gift_list" in str(e):
+                raise ValueError("This gift is already in the list") from e
+            raise  # Re-raise if it's a different constraint
 
         # Convert ORM model to DTO
         response = ListItemResponse(
@@ -195,31 +209,32 @@ class ListItemService:
             updated_at=list_item.updated_at,
         )
 
-    async def get_for_list(self, list_id: int) -> list[ListItemResponse]:
+    async def get_for_list(self, list_id: int) -> list[ListItemWithGift]:
         """
-        Get all items in a specific list.
+        Get all items in a specific list with gift details.
 
         Returns items ordered by creation date (newest first).
+        Includes full gift information for each list item.
 
         Args:
             list_id: Foreign key of the list
 
         Returns:
-            List of ListItemResponse DTOs (may be empty)
+            List of ListItemWithGift DTOs (may be empty)
 
         Example:
             ```python
             items = await service.get_for_list(list_id=123)
             print(f"Found {len(items)} items in list")
             for item in items:
-                print(f"- Gift {item.gift_id}: {item.status}")
+                print(f"- {item.gift.name}: {item.status}")
             ```
         """
         list_items = await self.repo.get_by_list(list_id)
 
-        # Convert ORM models to DTOs
+        # Convert ORM models to DTOs with gift details
         return [
-            ListItemResponse(
+            ListItemWithGift(
                 id=item.id,
                 gift_id=item.gift_id,
                 list_id=item.list_id,
@@ -228,6 +243,12 @@ class ListItemService:
                 notes=item.notes,
                 created_at=item.created_at,
                 updated_at=item.updated_at,
+                gift=GiftSummary(
+                    id=item.gift.id,
+                    name=item.gift.name,
+                    price=item.gift.price,
+                    image_url=item.gift.image_url,
+                ),
             )
             for item in list_items
         ]
@@ -238,11 +259,9 @@ class ListItemService:
         """
         Update the status of a list item with state machine validation.
 
-        Validates status transitions according to state machine rules:
-        - IDEA → SELECTED
-        - SELECTED → PURCHASED or IDEA (reset)
-        - PURCHASED → RECEIVED or IDEA (reset)
-        - RECEIVED → IDEA (reset)
+        Validates status transitions according to state machine rules.
+        Any status can transition to any other status, enabling flexible
+        Kanban drag-and-drop functionality.
 
         Broadcasts STATUS_CHANGED event to subscribed WebSocket clients.
 
@@ -278,7 +297,7 @@ class ListItemService:
             ```
 
         Note:
-            Any status can transition back to IDEA (reset).
+            All status transitions are allowed for flexible Kanban workflow.
             Broadcasts STATUS_CHANGED event after successful update.
         """
         # Get current item to check current status
@@ -426,7 +445,7 @@ class ListItemService:
 
         Note:
             - Only updates fields that are not None in the DTO
-            - If status is provided, validates transition using state machine
+            - If status is provided, validates transition using state machine (all transitions allowed)
             - Returns None if item not found
             - Broadcasts UPDATED event after successful update (or STATUS_CHANGED if status changed)
         """

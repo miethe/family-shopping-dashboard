@@ -8,7 +8,8 @@
 
 import { APIError, APIErrorResponse, RequestOptions } from './types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+// Fallback uses external port (8030) for Docker dev environment
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8030/api/v1';
 
 /**
  * Get JWT token from localStorage
@@ -62,7 +63,14 @@ export class ApiClient {
     if (options.params) {
       Object.entries(options.params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          url.searchParams.append(key, String(value));
+          // Handle array parameters - append each value separately
+          if (Array.isArray(value)) {
+            value.forEach((item) => {
+              url.searchParams.append(key, String(item));
+            });
+          } else {
+            url.searchParams.append(key, String(value));
+          }
         }
       });
     }

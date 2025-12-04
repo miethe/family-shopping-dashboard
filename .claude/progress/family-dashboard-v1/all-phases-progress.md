@@ -100,7 +100,7 @@ risks:
 
 # Family Gifting Dashboard V1 - All Phases Progress
 
-**PRD**: `docs/project_plans/init/family-dashboard-v1.md`
+**PRD**: `docs/project_plans/family-dashboard-v1/family-dashboard-v1.md`
 **Implementation Plan**: `docs/project_plans/implementation_plans/family-dashboard-v1-implementation.md`
 **Status**: Complete
 **Progress**: 100% (95/95 story points)

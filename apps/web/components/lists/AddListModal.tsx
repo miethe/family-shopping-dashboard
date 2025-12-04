@@ -1,13 +1,14 @@
 /**
  * AddListModal Component
  *
- * Modal dialog for creating a new list with optional pre-filled context (occasion_id or person_id).
+ * Modal dialog for creating or editing a list with optional pre-filled context (occasion_id or person_id).
+ * Supports both create and edit modes.
  * Follows mobile-first patterns with 44px touch targets and real-time integration.
  */
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
@@ -17,8 +18,11 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useCreateList } from '@/hooks/useLists';
-import type { GiftList, ListCreate, ListType, ListVisibility } from '@/types';
+import { useCreateList, useUpdateList } from '@/hooks/useLists';
+import { usePersons } from '@/hooks/usePersons';
+import { useOccasions } from '@/hooks/useOccasions';
+import { useToast } from '@/components/ui/use-toast';
+import type { GiftList, ListCreate, ListUpdate, ListType, ListVisibility } from '@/types';
 
 export interface AddListModalProps {
   isOpen: boolean;
@@ -26,6 +30,9 @@ export interface AddListModalProps {
   occasionId?: number;
   personId?: number;
   onSuccess?: (list: GiftList) => void;
+  // Edit mode props
+  listToEdit?: GiftList | null;
+  mode?: 'create' | 'edit';
 }
 
 export function AddListModal({
@@ -34,9 +41,19 @@ export function AddListModal({
   occasionId,
   personId,
   onSuccess,
+  listToEdit,
+  mode = 'create',
 }: AddListModalProps) {
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const createMutation = useCreateList();
+  const updateMutation = useUpdateList(listToEdit?.id || 0);
+
+  // Fetch persons and occasions for dropdowns
+  const { data: personsData } = usePersons(undefined, { enabled: isOpen });
+  const { data: occasionsData } = useOccasions(undefined, { enabled: isOpen });
+
+  const isEditMode = mode === 'edit' && !!listToEdit;
 
   const [formData, setFormData] = useState<ListCreate>({
     name: '',
@@ -47,6 +64,28 @@ export function AddListModal({
   });
 
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize form data when in edit mode
+  useEffect(() => {
+    if (isEditMode && listToEdit) {
+      setFormData({
+        name: listToEdit.name,
+        type: listToEdit.type,
+        visibility: listToEdit.visibility,
+        occasion_id: listToEdit.occasion_id,
+        person_id: listToEdit.person_id,
+      });
+    } else if (!isEditMode) {
+      // Reset to create mode defaults
+      setFormData({
+        name: '',
+        type: 'wishlist',
+        visibility: 'family',
+        occasion_id: occasionId,
+        person_id: personId,
+      });
+    }
+  }, [isEditMode, listToEdit, occasionId, personId]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, name: e.target.value }));
@@ -61,6 +100,22 @@ export function AddListModal({
     setFormData((prev) => ({ ...prev, visibility: e.target.value as ListVisibility }));
   };
 
+  const handlePersonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      person_id: value === '' ? undefined : Number(value)
+    }));
+  };
+
+  const handleOccasionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      occasion_id: value === '' ? undefined : Number(value)
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
@@ -71,31 +126,56 @@ export function AddListModal({
     }
 
     try {
-      const newList = await createMutation.mutateAsync(formData);
+      if (isEditMode) {
+        // Update existing list
+        const updateData: ListUpdate = {
+          name: formData.name,
+          type: formData.type,
+          visibility: formData.visibility,
+          person_id: formData.person_id,
+          occasion_id: formData.occasion_id,
+        };
+
+        const updatedList = await updateMutation.mutateAsync(updateData);
+
+        toast({
+          title: 'Success',
+          description: 'List updated successfully',
+        });
+
+        // Call success callback if provided
+        onSuccess?.(updatedList);
+      } else {
+        // Create new list
+        const newList = await createMutation.mutateAsync(formData);
+
+        toast({
+          title: 'Success',
+          description: 'List created successfully',
+        });
+
+        // Call success callback if provided
+        onSuccess?.(newList);
+      }
 
       // Invalidate queries to refetch
       queryClient.invalidateQueries({ queryKey: ['lists'] });
 
-      // Call success callback if provided
-      onSuccess?.(newList);
-
       // Close modal and reset form
-      onClose();
-      setFormData({
-        name: '',
-        type: 'wishlist',
-        visibility: 'family',
-        occasion_id: occasionId,
-        person_id: personId,
-      });
+      handleClose();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to create list';
+      const message = err instanceof Error ? err.message : `Failed to ${isEditMode ? 'update' : 'create'} list`;
       setError(message);
+      toast({
+        title: 'Error',
+        description: message,
+        variant: 'error',
+      });
     }
   };
 
   const handleClose = () => {
-    if (!createMutation.isPending) {
+    if (!createMutation.isPending && !updateMutation.isPending) {
       setError(null);
       setFormData({
         name: '',
@@ -108,11 +188,13 @@ export function AddListModal({
     }
   };
 
+  const isPending = createMutation.isPending || updateMutation.isPending;
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create List</DialogTitle>
+          <DialogTitle>{isEditMode ? 'Edit List' : 'Create List'}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -170,23 +252,67 @@ export function AddListModal({
             </select>
           </div>
 
+          <div>
+            <label htmlFor="person" className="block text-sm font-medium text-gray-700 mb-1">
+              For Recipient (Optional)
+            </label>
+            <select
+              id="person"
+              value={formData.person_id || ''}
+              onChange={handlePersonChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[44px]"
+            >
+              <option value="">No recipient selected</option>
+              {personsData?.items?.map((person) => (
+                <option key={person.id} value={person.id}>
+                  {person.display_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="occasion" className="block text-sm font-medium text-gray-700 mb-1">
+              For Occasion (Optional)
+            </label>
+            <select
+              id="occasion"
+              value={formData.occasion_id || ''}
+              onChange={handleOccasionChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[44px]"
+            >
+              <option value="">No occasion selected</option>
+              {occasionsData?.items?.map((occasion) => (
+                <option key={occasion.id} value={occasion.id}>
+                  {occasion.name} ({new Date(occasion.date).toLocaleDateString()})
+                </option>
+              ))}
+            </select>
+          </div>
+
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
               onClick={handleClose}
-              disabled={createMutation.isPending}
+              disabled={isPending}
               className="flex-1 sm:flex-initial"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              isLoading={createMutation.isPending}
-              disabled={createMutation.isPending}
+              isLoading={isPending}
+              disabled={isPending}
               className="flex-1 sm:flex-initial"
             >
-              {createMutation.isPending ? 'Creating...' : 'Create List'}
+              {isPending
+                ? isEditMode
+                  ? 'Updating...'
+                  : 'Creating...'
+                : isEditMode
+                  ? 'Update List'
+                  : 'Create List'}
             </Button>
           </DialogFooter>
         </form>

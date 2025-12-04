@@ -191,6 +191,16 @@ from app.api import dashboard
 
 app.include_router(dashboard.router, prefix=API_V1_PREFIX)
 
+# Activity routes (recent activity feed)
+from app.api import activity
+
+app.include_router(activity.router, prefix=API_V1_PREFIX)
+
+# Idea Inbox routes (gift ideas not yet in formal lists)
+from app.api import ideas
+
+app.include_router(ideas.router, prefix=API_V1_PREFIX)
+
 # WebSocket routes (real-time updates - no version prefix, WS is protocol-level)
 from app.api import ws
 

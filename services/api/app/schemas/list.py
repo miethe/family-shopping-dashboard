@@ -61,6 +61,10 @@ class ListResponse(TimestampSchema):
     user_id: int
     person_id: int | None
     occasion_id: int | None
+    item_count: int = Field(
+        0,
+        description="Number of items in this list",
+    )
 
 
 class ListSummary(BaseModel):
@@ -83,3 +87,9 @@ class ListWithItems(ListResponse):
         default_factory=list,
         description="List items with gift details",
     )
+
+
+# Resolve forward references at module load time
+from app.schemas.list_item import ListItemWithGift  # noqa: E402
+
+ListWithItems.model_rebuild()

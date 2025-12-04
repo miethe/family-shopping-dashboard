@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import NotFoundError, ValidationError
 from app.schemas.base import PaginatedResponse
-from app.schemas.list import ListCreate, ListResponse, ListUpdate
-from app.schemas.list_item import ListItemCreate, ListItemResponse
+from app.schemas.list import ListCreate, ListResponse, ListUpdate, ListWithItems
+from app.schemas.list_item import ListItemCreate, ListItemResponse, ListItemWithGift
 from app.services.list import ListService
 from app.services.list_item import ListItemService
 
@@ -189,16 +189,16 @@ async def create_list(
 
 @router.get(
     "/{list_id}",
-    response_model=ListResponse,
+    response_model=ListWithItems,
     status_code=status.HTTP_200_OK,
-    summary="Get gift list by ID",
-    description="Retrieve a single gift list by ID",
+    summary="Get gift list by ID with items",
+    description="Retrieve a single gift list by ID with all items and gift details",
 )
 async def get_list(
     list_id: int,
     current_user_id: int = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> ListResponse:
+) -> ListWithItems:
     """
     Get a single gift list by ID.
 
@@ -236,7 +236,7 @@ async def get_list(
         No authorization checks (any user can view any list).
     """
     service = ListService(db)
-    list_obj = await service.get(list_id)
+    list_obj = await service.get_with_items(list_id)
 
     if list_obj is None:
         raise NotFoundError(
@@ -373,16 +373,16 @@ async def delete_list(
 
 @router.get(
     "/{list_id}/items",
-    response_model=list[ListItemResponse],
+    response_model=list[ListItemWithGift],
     status_code=status.HTTP_200_OK,
     summary="Get items in a gift list",
-    description="Get all items (gifts) in a specific list",
+    description="Get all items (gifts) in a specific list with gift details",
 )
 async def get_list_items(
     list_id: int,
     current_user_id: int = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> list[ListItemResponse]:
+) -> list[ListItemWithGift]:
     """
     Get all items in a gift list.
 
@@ -532,7 +532,7 @@ async def add_item_to_list(
     item_service = ListItemService(db)
 
     try:
-        item = await item_service.create(item_data)
+        item = await item_service.create(item_data, current_user_id)
         return item
 
     except ValueError as e:

@@ -180,14 +180,31 @@ class GiftService:
         )
 
     async def list(
-        self, cursor: int | None = None, limit: int = 50
+        self,
+        cursor: int | None = None,
+        limit: int = 50,
+        search: str | None = None,
+        person_ids: list[int] | None = None,
+        statuses: list[str] | None = None,
+        list_ids: list[int] | None = None,
+        occasion_ids: list[int] | None = None,
+        sort_by: str = "recent",
     ) -> tuple[list[GiftResponse], bool, int | None]:
         """
-        Get paginated list of gifts using cursor-based pagination.
+        Get paginated and filtered list of gifts using cursor-based pagination.
+
+        Supports filtering by recipient (person), status, list, occasion, and search.
+        Can be used for both general listing and filtered queries.
 
         Args:
             cursor: ID of last item from previous page (None for first page)
             limit: Maximum number of items to return (default: 50)
+            search: Case-insensitive substring search on gift name
+            person_ids: Filter by recipient person IDs (OR within group)
+            statuses: Filter by list item statuses (OR within group)
+            list_ids: Filter by list IDs (OR within group)
+            occasion_ids: Filter by occasion IDs (OR within group)
+            sort_by: Sort order ('recent', 'price_asc', 'price_desc')
 
         Returns:
             Tuple of (items, has_more, next_cursor):
@@ -197,27 +214,52 @@ class GiftService:
 
         Example:
             ```python
-            # First page
+            # First page - all gifts
             gifts, has_more, next_cursor = await service.list(limit=20)
-            for gift in gifts:
-                print(f"{gift.name} - ${gift.price}")
 
-            # Second page
-            if has_more:
-                gifts, has_more, next_cursor = await service.list(
-                    cursor=next_cursor,
-                    limit=20
-                )
+            # Filter by person and status
+            gifts, has_more, next_cursor = await service.list(
+                person_ids=[5],
+                statuses=['purchased', 'selected'],
+                limit=20
+            )
+
+            # Search and sort by price
+            gifts, has_more, next_cursor = await service.list(
+                search="lego",
+                sort_by="price_asc",
+                limit=20
+            )
             ```
 
         Note:
-            Cursor-based pagination provides better performance than offset
-            pagination for large datasets.
+            - If no filters are provided, returns all gifts
+            - Empty list and None are treated the same (no filter)
+            - AND logic across filter groups, OR within groups
+            - Cursor-based pagination for performance
         """
-        # Get paginated results from repository
-        gifts, has_more, next_cursor = await self.repo.get_multi(
-            cursor=cursor, limit=limit
+        # Determine if we should use filtered query or simple listing
+        has_filters = any(
+            [search, person_ids, statuses, list_ids, occasion_ids, sort_by != "recent"]
         )
+
+        if has_filters:
+            # Use filtered query
+            gifts, has_more, next_cursor = await self.repo.get_filtered(
+                cursor=cursor,
+                limit=limit,
+                search=search,
+                person_ids=person_ids,
+                statuses=statuses,
+                list_ids=list_ids,
+                occasion_ids=occasion_ids,
+                sort_by=sort_by,
+            )
+        else:
+            # Use simple pagination (no filters)
+            gifts, has_more, next_cursor = await self.repo.get_multi(
+                cursor=cursor, limit=limit
+            )
 
         # Convert ORM models to DTOs
         gift_dtos = [

@@ -38,8 +38,22 @@ class TestDashboardService:
             purchased_items=5,
         )
         mock_people = [
-            PersonSummary(id=1, name="Mom", pending_gifts=3),
-            PersonSummary(id=2, name="Dad", pending_gifts=2),
+            PersonSummary(
+                id=1,
+                name="Mom",
+                pending_gifts=3,
+                photo_url="https://example.com/mom.jpg",
+                next_occasion="2025-12-25",
+                gift_counts={"idea": 1, "needed": 2, "purchased": 0},
+            ),
+            PersonSummary(
+                id=2,
+                name="Dad",
+                pending_gifts=2,
+                photo_url=None,
+                next_occasion="2025-12-25",
+                gift_counts={"idea": 0, "needed": 2, "purchased": 1},
+            ),
         ]
 
         dashboard_service._get_primary_occasion = AsyncMock(return_value=mock_occasion)
@@ -140,24 +154,58 @@ class TestDashboardService:
     async def test_get_people_needing_gifts(
         self, dashboard_service: DashboardService
     ) -> None:
-        """Test getting people with pending gifts."""
+        """Test getting people with pending gifts and enriched data."""
         # Arrange
+        from app.models.list_item import ListItemStatus
         from unittest.mock import MagicMock
 
+        # Mock main query results
         mock_row_1 = MagicMock()
         mock_row_1.id = 1
-        mock_row_1.name = "Alice"
+        mock_row_1.display_name = "Alice"
+        mock_row_1.photo_url = "https://example.com/alice.jpg"
         mock_row_1.pending_gifts = 5
 
         mock_row_2 = MagicMock()
         mock_row_2.id = 2
-        mock_row_2.name = "Bob"
+        mock_row_2.display_name = "Bob"
+        mock_row_2.photo_url = None
         mock_row_2.pending_gifts = 3
 
-        mock_execute = AsyncMock()
-        mock_execute.all = MagicMock(return_value=[mock_row_1, mock_row_2])
+        mock_main_execute = AsyncMock()
+        mock_main_execute.all = MagicMock(return_value=[mock_row_1, mock_row_2])
 
-        dashboard_service.session.execute = AsyncMock(return_value=mock_execute)
+        # Mock occasion queries (one per person)
+        mock_occasion_1 = AsyncMock()
+        mock_occasion_1.scalar_one_or_none = MagicMock(
+            return_value=datetime.date(2025, 12, 25)
+        )
+
+        mock_occasion_2 = AsyncMock()
+        mock_occasion_2.scalar_one_or_none = MagicMock(return_value=None)
+
+        # Mock gift counts queries (one per person)
+        # Row tuples: (status, count)
+        mock_counts_1_row = (ListItemStatus.idea, 2)
+        mock_counts_1_row2 = (ListItemStatus.selected, 3)
+
+        mock_counts_1 = AsyncMock()
+        mock_counts_1.all = MagicMock(return_value=[mock_counts_1_row, mock_counts_1_row2])
+
+        mock_counts_2_row = (ListItemStatus.purchased, 1)
+
+        mock_counts_2 = AsyncMock()
+        mock_counts_2.all = MagicMock(return_value=[mock_counts_2_row])
+
+        dashboard_service.session.execute = AsyncMock(
+            side_effect=[
+                mock_main_execute,
+                mock_occasion_1,
+                mock_counts_1,
+                mock_occasion_2,
+                mock_counts_2,
+            ]
+        )
 
         # Act
         result = await dashboard_service._get_people_needing_gifts()
@@ -166,8 +214,19 @@ class TestDashboardService:
         assert len(result) == 2
         assert result[0].name == "Alice"
         assert result[0].pending_gifts == 5
+        assert result[0].photo_url == "https://example.com/alice.jpg"
+        assert result[0].next_occasion == "2025-12-25"
+        assert result[0].gift_counts["idea"] == 2
+        assert result[0].gift_counts["needed"] == 3
+        assert result[0].gift_counts["purchased"] == 0
+
         assert result[1].name == "Bob"
         assert result[1].pending_gifts == 3
+        assert result[1].photo_url is None
+        assert result[1].next_occasion is None
+        assert result[1].gift_counts["idea"] == 0
+        assert result[1].gift_counts["needed"] == 0
+        assert result[1].gift_counts["purchased"] == 1
 
     @pytest.mark.asyncio
     async def test_get_people_needing_gifts_empty(

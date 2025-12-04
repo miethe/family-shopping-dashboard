@@ -1,10 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
-import { Card, StatusPill, Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/ui';
+import { Card, Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/ui';
+import { StatusSelector } from '@/components/ui/status-selector';
 import { GiftIcon } from '@/components/layout/icons';
 import { formatPrice } from '@/lib/utils';
+import { useUpdateGift } from '@/hooks/useGifts';
 import type { Gift } from '@/types';
 import type { GiftStatus } from '@/components/ui/status-pill';
 
@@ -16,6 +17,7 @@ export interface GiftCardProps {
       avatarUrl?: string;
     };
   };
+  onOpenDetail?: (giftId: string) => void;
 }
 
 /**
@@ -24,11 +26,30 @@ export interface GiftCardProps {
  * Displays a gift with image, title, status, price, and assignee.
  * Mobile-optimized with Soft Modernity design system.
  * Uses Card with interactive variant for hover effects.
+ * Includes interactive status selector that stops propagation to prevent modal opening.
+ * Modal state is managed by parent page to prevent multiple instances triggering API calls.
  */
-export function GiftCard({ gift }: GiftCardProps) {
+export function GiftCard({ gift, onOpenDetail }: GiftCardProps) {
+  const updateGiftMutation = useUpdateGift(gift.id);
+
+  const handleStatusChange = (newStatus: GiftStatus) => {
+    // Optimistically update the status
+    updateGiftMutation.mutate({
+      // Only send status in update - we'll need to add this to the Gift type
+      // For now, we'll use extra_data to store status
+      extra_data: {
+        ...gift.extra_data,
+        status: newStatus,
+      },
+    });
+  };
+
   return (
-    <Card variant="interactive" padding="none">
-      <Link href={`/gifts/${gift.id}`} className="block">
+    <button
+      onClick={() => onOpenDetail?.(String(gift.id))}
+      className="w-full text-left"
+    >
+      <Card variant="interactive" padding="none">
         <div className="p-4">
           {/* Image */}
           <div className="aspect-square rounded-large overflow-hidden bg-warm-100 mb-3">
@@ -53,9 +74,15 @@ export function GiftCard({ gift }: GiftCardProps) {
             {gift.name}
           </h3>
 
-          {/* Status Pill */}
+          {/* Status Selector */}
           {gift.status && (
-            <StatusPill status={gift.status} size="sm" className="mb-2" />
+            <StatusSelector
+              status={gift.status}
+              onChange={handleStatusChange}
+              size="sm"
+              className="mb-2"
+              disabled={updateGiftMutation.isPending}
+            />
           )}
 
           {/* Footer: Price + Assignee */}
@@ -80,13 +107,13 @@ export function GiftCard({ gift }: GiftCardProps) {
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-xs text-warm-600">
-                  {gift.assignee.name.split(' ')[0]}
+                  {gift.assignee.name?.split(' ')[0] || 'User'}
                 </span>
               </div>
             )}
           </div>
         </div>
-      </Link>
-    </Card>
+      </Card>
+    </button>
   );
 }
