@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.list_item import ListItemStatus
+from app.models.list_item import ListItem, ListItemStatus
 from app.repositories.list_item import ListItemRepository
 from app.schemas.gift import GiftSummary
 from app.schemas.list_item import (
@@ -55,6 +55,24 @@ class ListItemService:
         """
         self.session = session
         self.repo = ListItemRepository(session)
+
+    def _to_response(self, list_item: ListItem) -> ListItemResponse:
+        """
+        Convert ORM ListItem to API response with pricing fields included.
+        """
+        return ListItemResponse(
+            id=list_item.id,
+            gift_id=list_item.gift_id,
+            list_id=list_item.list_id,
+            status=list_item.status,
+            assigned_to=list_item.assigned_to,
+            notes=list_item.notes,
+            price=list_item.price,
+            discount_price=list_item.discount_price,
+            quantity=list_item.quantity,
+            created_at=list_item.created_at,
+            updated_at=list_item.updated_at,
+        )
 
     async def _broadcast_event(
         self,
@@ -153,16 +171,7 @@ class ListItemService:
             raise  # Re-raise if it's a different constraint
 
         # Convert ORM model to DTO
-        response = ListItemResponse(
-            id=list_item.id,
-            gift_id=list_item.gift_id,
-            list_id=list_item.list_id,
-            status=list_item.status,
-            assigned_to=list_item.assigned_to,
-            notes=list_item.notes,
-            created_at=list_item.created_at,
-            updated_at=list_item.updated_at,
-        )
+        response = self._to_response(list_item)
 
         # Broadcast event to subscribed clients
         await self._broadcast_event(
@@ -198,16 +207,7 @@ class ListItemService:
         if list_item is None:
             return None
 
-        return ListItemResponse(
-            id=list_item.id,
-            gift_id=list_item.gift_id,
-            list_id=list_item.list_id,
-            status=list_item.status,
-            assigned_to=list_item.assigned_to,
-            notes=list_item.notes,
-            created_at=list_item.created_at,
-            updated_at=list_item.updated_at,
-        )
+        return self._to_response(list_item)
 
     async def get_for_list(self, list_id: int) -> list[ListItemWithGift]:
         """
@@ -241,6 +241,9 @@ class ListItemService:
                 status=item.status,
                 assigned_to=item.assigned_to,
                 notes=item.notes,
+                price=item.price,
+                discount_price=item.discount_price,
+                quantity=item.quantity,
                 created_at=item.created_at,
                 updated_at=item.updated_at,
                 gift=GiftSummary(
@@ -322,16 +325,7 @@ class ListItemService:
             return None
 
         # Convert ORM model to DTO
-        response = ListItemResponse(
-            id=updated_item.id,
-            gift_id=updated_item.gift_id,
-            list_id=updated_item.list_id,
-            status=updated_item.status,
-            assigned_to=updated_item.assigned_to,
-            notes=updated_item.notes,
-            created_at=updated_item.created_at,
-            updated_at=updated_item.updated_at,
-        )
+        response = self._to_response(updated_item)
 
         # Broadcast event to subscribed clients
         await self._broadcast_event(
@@ -380,16 +374,7 @@ class ListItemService:
         if updated_item is None:
             return None
 
-        response = ListItemResponse(
-            id=updated_item.id,
-            gift_id=updated_item.gift_id,
-            list_id=updated_item.list_id,
-            status=updated_item.status,
-            assigned_to=updated_item.assigned_to,
-            notes=updated_item.notes,
-            created_at=updated_item.created_at,
-            updated_at=updated_item.updated_at,
-        )
+        response = self._to_response(updated_item)
 
         # Broadcast event to subscribed clients
         await self._broadcast_event(
@@ -478,6 +463,15 @@ class ListItemService:
         if data.notes is not None:
             update_data["notes"] = data.notes
 
+        if data.price is not None:
+            update_data["price"] = data.price
+
+        if data.discount_price is not None:
+            update_data["discount_price"] = data.discount_price
+
+        if data.quantity is not None:
+            update_data["quantity"] = data.quantity
+
         # Update item if there are changes
         if update_data:
             updated_item = await self.repo.update(item_id, update_data)
@@ -489,16 +483,7 @@ class ListItemService:
             item = existing_item
 
         # Convert ORM model to DTO
-        response = ListItemResponse(
-            id=item.id,
-            gift_id=item.gift_id,
-            list_id=item.list_id,
-            status=item.status,
-            assigned_to=item.assigned_to,
-            notes=item.notes,
-            created_at=item.created_at,
-            updated_at=item.updated_at,
-        )
+        response = self._to_response(item)
 
         # Broadcast event to subscribed clients if changes were made
         if update_data:
@@ -552,16 +537,7 @@ class ListItemService:
 
         # Broadcast event after successful deletion
         if success:
-            response = ListItemResponse(
-                id=item_to_delete.id,
-                gift_id=item_to_delete.gift_id,
-                list_id=item_to_delete.list_id,
-                status=item_to_delete.status,
-                assigned_to=item_to_delete.assigned_to,
-                notes=item_to_delete.notes,
-                created_at=item_to_delete.created_at,
-                updated_at=item_to_delete.updated_at,
-            )
+            response = self._to_response(item_to_delete)
             await self._broadcast_event(
                 list_id=item_to_delete.list_id,
                 event_type="DELETED",

@@ -392,6 +392,9 @@ class ListService:
                     status=list_item.status,
                     assigned_to=list_item.assigned_to,
                     notes=list_item.notes,
+                    price=list_item.price,
+                    discount_price=list_item.discount_price,
+                    quantity=list_item.quantity,
                     created_at=list_item.created_at,
                     updated_at=list_item.updated_at,
                     gift=GiftSummary(

@@ -220,6 +220,6 @@ class BaseRepository(Generic[T]):
         if db_obj is None:
             return False
 
-        self.session.delete(db_obj)
+        await self.session.delete(db_obj)
         await self.session.commit()
         return True
