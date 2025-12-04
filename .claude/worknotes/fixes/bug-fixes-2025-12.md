@@ -198,6 +198,61 @@ Monthly bug tracking for December 2025.
 
 **Issue**: Could not drag gifts to empty columns in Kanban view - only columns with 1+ existing gifts accepted drops
 
+---
+
+### List Modal Linked Entities Empty
+
+**Issue**: Linked Entities tab in list modals showed no attached recipient/occasion data even when the list was linked.
+- **Location**: `apps/web/components/modals/ListDetailModal.tsx`
+- **Root Cause**: Add buttons created people/occasions but never updated the list to point at them, so follow-up fetches had no person_id/occasion_id to render.
+- **Fix**: Added `LinkEntityToListModal` with existing/new tabs so selecting or creating a person/occasion immediately updates the list link; wired ListDetailModal to use it.
+- **Commit(s)**: 92d226e
+- **Status**: RESOLVED
+
+---
+
+### Linked Entities Add Actions Lacked Existing/New Options
+
+**Issue**: Linked Entities tabs only allowed creating new lists/recipients/occasions, blocking reuse of existing records and causing inconsistent UX.
+- **Location**: `apps/web/components/modals/PersonDetailModal.tsx`, `apps/web/components/modals/OccasionDetailModal.tsx`
+- **Root Cause**: Add actions were hard-coded to open creation modals without an existing-entity path.
+- **Fix**: Introduced `LinkListsToContextModal` with existing/new tabs and hooked it into person/occasion detail modals so lists can be linked or created in one flow.
+- **Commit(s)**: 92d226e
+- **Status**: RESOLVED
+
+---
+
+### Gifts Could Only Link to One List
+
+**Issue**: Attempts to add a gift to multiple lists hit duplicate constraint errors or lacked UI support to target more than one list.
+- **Location**: `apps/web/components/gifts/LinkGiftToListsModal.tsx`, `apps/web/components/lists/AddListItemModal.tsx:213-305`, `apps/web/types/index.ts`
+- **Root Cause**: No workflow to pick multiple destination lists; additional link attempts reused the same list context, triggering `uq_list_items_gift_list`.
+- **Fix**: Added multi-select linking for gifts (new modal plus secondary list selection in AddListItemModal) so a gift can be linked to multiple lists in one submission while skipping already-linked lists.
+- **Commit(s)**: 92d226e
+- **Status**: RESOLVED
+
+---
+
+### List Items API Missing Pricing Fields
+
+**Issue**: Opening some list modals threw Pydantic validation errors for missing `price`, `discount_price`, and `quantity` on list items.
+- **Location**: `services/api/app/services/list.py:384-409`, `services/api/app/services/list_item.py:59-118`
+- **Root Cause**: DTO mapping dropped pricing/quantity fields when building `ListItemWithGift`/`ListItemResponse`, so the response payload violated the schema.
+- **Fix**: Centralized list item mapping to include pricing fields and applied it across create/update/get flows and the list-with-items assembler.
+- **Commit(s)**: 992fd01
+- **Status**: RESOLVED
+
+---
+
+### Recent Activity Cards Touching
+
+**Issue**: Recent List Activity cards on `/lists` had no spacing, causing cards to run together vertically.
+- **Location**: `apps/web/app/lists/page.tsx:228-240`
+- **Root Cause**: Parent `space-y` classes applied to inline Links; inline elements ignore vertical margins.
+- **Fix**: Rendered each Link as a block element so Tailwind spacing classes apply, restoring vertical padding between cards.
+- **Commit(s)**: b8efaab
+- **Status**: RESOLVED
+
 - **Location**: `apps/web/components/lists/KanbanColumn.tsx:89-101`
 - **Root Cause**: `handleDragLeave` used cursor position boundary checking (`e.clientX/Y` vs `getBoundingClientRect()`) which incorrectly cleared hover state when moving between parent and child elements. Also called `e.preventDefault()` which interfered with drag events.
 - **Fix**:
