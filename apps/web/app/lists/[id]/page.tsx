@@ -133,7 +133,12 @@ export default function ListDetailPage({ params }: Props) {
   // Calculate summary stats
   const itemCount = items?.length || 0;
   const purchasedCount = items?.filter(item => item.status === 'purchased' || item.status === 'received').length || 0;
-  const totalEstimate = items?.reduce((sum, item) => sum + (item.gift?.price || 0), 0) || 0;
+  const totalEstimate =
+    items?.reduce((sum, item) => {
+      const price = item.gift?.price;
+      const numericPrice = typeof price === 'number' ? price : Number(price) || 0;
+      return sum + numericPrice;
+    }, 0) || 0;
 
   // Format list type badge
   const listTypeBadge = listData.type === 'wishlist' ? 'Wish List' :
@@ -143,9 +148,10 @@ export default function ListDetailPage({ params }: Props) {
   const updatedAgo = '2h';
 
   // Budget display
-  const hasBudget = budgetData?.has_budget && budgetData?.budget_total !== null;
-  const budgetTotal = budgetData?.budget_total ?? 0;
-  const isOverBudget = totalEstimate > budgetTotal && hasBudget;
+  const budgetTotalRaw = budgetData?.budget_total;
+  const budgetTotal = budgetTotalRaw != null ? Number(budgetTotalRaw) : 0;
+  const hasBudget = budgetData?.has_budget && budgetData?.budget_total !== null && !Number.isNaN(budgetTotal);
+  const isOverBudget = hasBudget && totalEstimate > budgetTotal;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-background-dark dark:to-warm-900">
