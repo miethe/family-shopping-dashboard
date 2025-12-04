@@ -599,6 +599,20 @@ Monthly bug tracking for December 2025.
 
 ---
 
+### Gifts Navigation Crash - Hidden List Modals Spawning Portals
+
+**Issue**: Visiting `/gifts` then using the sidebar to go to `/occasions`, `/people`, or `/lists` still crashed after earlier fixes because ListDetailModal was mounting a stack of hidden portals and queries.
+
+- **Location**: `apps/web/components/modals/ListDetailModal.tsx`
+- **Root Cause**: Commit `80ecb0a` added always-mounted nested modals (gift/person/occasion detail plus add-person/occasion/list item) inside each ListDetailModal instance. Every list/person card renders a hidden ListDetailModal, so client-side navigation had to mount dozens of Radix portals and person/occasion detail queries even when closed, recreating the navigation crash.
+- **Fix**:
+  1. Gate person/occasion detail queries on `open` to avoid background fetches
+  2. Lazy render all nested modals (GiftDetail, PersonDetail, OccasionDetail, AddPerson, AddOccasion, AddListItem, AddList edit) only when their own `open` flag is true
+- **Commit(s)**: (this commit)
+- **Status**: RESOLVED
+
+---
+
 ### Gifts Page Navigation Crash - Missing Suspense Boundary
 
 **Issue**: Navigating FROM /gifts TO /occasions, /people, or /lists using sidebar buttons caused immediate site crash/hang. Direct URL navigation worked fine.
