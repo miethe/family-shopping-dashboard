@@ -26,8 +26,6 @@ import { listApi } from "@/lib/api/endpoints";
 import { useDeleteList } from "@/hooks/useLists";
 import { AddListModal } from "@/components/lists/AddListModal";
 import { AddListItemModal } from "@/components/lists/AddListItemModal";
-import { AddPersonModal } from "@/components/people/AddPersonModal";
-import { AddOccasionModal } from "@/components/occasions/AddOccasionModal";
 import { GiftDetailModal } from "./GiftDetailModal";
 import { PersonDetailModal } from "./PersonDetailModal";
 import { OccasionDetailModal } from "./OccasionDetailModal";
@@ -36,6 +34,7 @@ import { usePerson } from "@/hooks/usePersons";
 import { useOccasion } from "@/hooks/useOccasions";
 import type { ListWithItems, ListItemStatus } from "@/types";
 import { cn } from "@/lib/utils";
+import { LinkEntityToListModal } from "./LinkEntityToListModal";
 
 interface ListDetailModalProps {
   listId: string | null;
@@ -97,8 +96,8 @@ export function ListDetailModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [showAddItemModal, setShowAddItemModal] = React.useState(false);
-  const [showAddPersonModal, setShowAddPersonModal] = React.useState(false);
-  const [showAddOccasionModal, setShowAddOccasionModal] = React.useState(false);
+  const [showLinkPersonModal, setShowLinkPersonModal] = React.useState(false);
+  const [showLinkOccasionModal, setShowLinkOccasionModal] = React.useState(false);
   const [selectedGiftId, setSelectedGiftId] = React.useState<string | null>(null);
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [selectedOccasionId, setSelectedOccasionId] = React.useState<string | null>(null);
@@ -132,8 +131,8 @@ export function ListDetailModal({
       setShowDeleteConfirm(false);
       setShowEditModal(false);
       setShowAddItemModal(false);
-      setShowAddPersonModal(false);
-      setShowAddOccasionModal(false);
+      setShowLinkPersonModal(false);
+      setShowLinkOccasionModal(false);
       setSelectedGiftId(null);
       setSelectedPersonId(null);
       setSelectedOccasionId(null);
@@ -563,7 +562,7 @@ export function ListDetailModal({
 
                   {/* Add New Person Card */}
                   <button
-                    onClick={() => setShowAddPersonModal(true)}
+                    onClick={() => setShowLinkPersonModal(true)}
                     className={cn(
                       "w-full text-left",
                       "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
@@ -622,7 +621,7 @@ export function ListDetailModal({
 
                   {/* Add New Occasion Card */}
                   <button
-                    onClick={() => setShowAddOccasionModal(true)}
+                    onClick={() => setShowLinkOccasionModal(true)}
                     className={cn(
                       "w-full text-left",
                       "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
@@ -787,20 +786,25 @@ export function ListDetailModal({
         />
       )}
 
-      {/* Add Person Modal */}
-      {showAddPersonModal && (
-        <AddPersonModal
-          isOpen={showAddPersonModal}
-          onClose={() => setShowAddPersonModal(false)}
+      {/* Link Person Modal */}
+      {listId && (
+        <LinkEntityToListModal
+          listId={Number(listId)}
+          entityType="person"
+          isOpen={showLinkPersonModal}
+          onClose={() => setShowLinkPersonModal(false)}
+          onLinked={() => setShowLinkPersonModal(false)}
         />
       )}
 
-      {/* Add Occasion Modal */}
-      {showAddOccasionModal && (
-        <AddOccasionModal
-          isOpen={showAddOccasionModal}
-          onClose={() => setShowAddOccasionModal(false)}
-          mode="create"
+      {/* Link Occasion Modal */}
+      {listId && (
+        <LinkEntityToListModal
+          listId={Number(listId)}
+          entityType="occasion"
+          isOpen={showLinkOccasionModal}
+          onClose={() => setShowLinkOccasionModal(false)}
+          onLinked={() => setShowLinkOccasionModal(false)}
         />
       )}
     </>

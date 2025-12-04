@@ -210,6 +210,9 @@ export interface ListItem extends TimestampFields {
   status: ListItemStatus;
   assigned_to?: number;
   notes?: string;
+  price?: number | null;
+  discount_price?: number | null;
+  quantity: number;
 }
 
 export interface ListItemCreate {
@@ -218,12 +221,18 @@ export interface ListItemCreate {
   status?: ListItemStatus;
   assigned_to?: number;
   notes?: string;
+  price?: number | null;
+  discount_price?: number | null;
+  quantity?: number;
 }
 
 export interface ListItemUpdate {
   status?: ListItemStatus;
   assigned_to?: number;
   notes?: string;
+  price?: number | null;
+  discount_price?: number | null;
+  quantity?: number;
 }
 
 export interface ListItemWithGift extends ListItem {

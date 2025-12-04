@@ -16,10 +16,10 @@ import { formatDate, getAge, getNextBirthday } from "@/lib/date-utils";
 import { personApi } from "@/lib/api/endpoints";
 import { useUpdatePerson, useDeletePerson } from "@/hooks/usePersons";
 import { useListsForPerson } from "@/hooks/useLists";
-import { AddListModal } from "@/components/lists/AddListModal";
 import type { Person, PersonUpdate, GiftList } from "@/types";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
+import { LinkListsToContextModal } from "./LinkListsToContextModal";
 
 interface PersonDetailModalProps {
   personId: string | null;
@@ -35,7 +35,7 @@ export function PersonDetailModal({
   const { toast } = useToast();
   const [isEditing, setIsEditing] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
-  const [showAddListModal, setShowAddListModal] = React.useState(false);
+  const [showLinkListsModal, setShowLinkListsModal] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("overview");
 
   const { data: person, isLoading } = useQuery<Person>({
@@ -87,7 +87,7 @@ export function PersonDetailModal({
     if (!open) {
       setIsEditing(false);
       setShowDeleteConfirm(false);
-      setShowAddListModal(false);
+      setShowLinkListsModal(false);
       setActiveTab("overview");
     }
   }, [open]);
@@ -454,7 +454,7 @@ export function PersonDetailModal({
 
                       {/* Add New List Card */}
                       <button
-                        onClick={() => setShowAddListModal(true)}
+                        onClick={() => setShowLinkListsModal(true)}
                         className={cn(
                           "w-full text-left",
                           "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
@@ -501,7 +501,7 @@ export function PersonDetailModal({
                     <div className="space-y-3">
                       {/* Add New List Card */}
                       <button
-                        onClick={() => setShowAddListModal(true)}
+                        onClick={() => setShowLinkListsModal(true)}
                         className={cn(
                           "w-full text-left",
                           "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
@@ -672,12 +672,15 @@ export function PersonDetailModal({
         onOpenChange={closeListModal}
       />
 
-      {/* Add List Modal */}
-      <AddListModal
-        isOpen={showAddListModal}
-        onClose={() => setShowAddListModal(false)}
-        mode="create"
-      />
+      {personId && (
+        <LinkListsToContextModal
+          contextId={Number(personId)}
+          contextType="person"
+          isOpen={showLinkListsModal}
+          onClose={() => setShowLinkListsModal(false)}
+          existingListIds={lists.map((list) => list.id)}
+        />
+      )}
     </EntityModal>
   );
 }

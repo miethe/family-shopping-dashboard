@@ -13,10 +13,10 @@ import { occasionApi } from "@/lib/api/endpoints";
 import { useDeleteOccasion } from "@/hooks/useOccasions";
 import { useListsForOccasion } from "@/hooks/useLists";
 import { AddOccasionModal } from "@/components/occasions/AddOccasionModal";
-import { AddListModal } from "@/components/lists/AddListModal";
 import { ListDetailModal } from "./ListDetailModal";
 import type { Occasion } from "@/types";
 import { cn } from "@/lib/utils";
+import { LinkListsToContextModal } from "./LinkListsToContextModal";
 
 interface OccasionDetailModalProps {
   occasionId: string | null;
@@ -84,7 +84,7 @@ export function OccasionDetailModal({
   const { toast } = useToast();
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
-  const [showAddListModal, setShowAddListModal] = React.useState(false);
+  const [showLinkListsModal, setShowLinkListsModal] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("overview");
   const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
 
@@ -107,7 +107,7 @@ export function OccasionDetailModal({
     if (!open) {
       setShowDeleteConfirm(false);
       setShowEditModal(false);
-      setShowAddListModal(false);
+      setShowLinkListsModal(false);
       setActiveTab("overview");
       setSelectedListId(null);
     }
@@ -371,7 +371,7 @@ export function OccasionDetailModal({
 
                   {/* Add New List Card */}
                   <button
-                    onClick={() => setShowAddListModal(true)}
+                    onClick={() => setShowLinkListsModal(true)}
                     className={cn(
                       "w-full text-left",
                       "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
@@ -444,7 +444,7 @@ export function OccasionDetailModal({
                 <div className="space-y-3">
                   {/* Add New List Card */}
                   <button
-                    onClick={() => setShowAddListModal(true)}
+                    onClick={() => setShowLinkListsModal(true)}
                     className={cn(
                       "w-full text-left",
                       "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
@@ -523,12 +523,15 @@ export function OccasionDetailModal({
         onOpenChange={(open) => !open && setSelectedListId(null)}
       />
 
-      {/* Add List Modal */}
-      <AddListModal
-        isOpen={showAddListModal}
-        onClose={() => setShowAddListModal(false)}
-        mode="create"
-      />
+      {occasionId && (
+        <LinkListsToContextModal
+          contextId={Number(occasionId)}
+          contextType="occasion"
+          isOpen={showLinkListsModal}
+          onClose={() => setShowLinkListsModal(false)}
+          existingListIds={listsData?.items?.map((list) => list.id) || []}
+        />
+      )}
     </>
   );
 }

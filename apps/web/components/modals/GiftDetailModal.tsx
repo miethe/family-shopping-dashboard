@@ -26,6 +26,7 @@ import type { GiftStatus } from "@/components/ui/status-pill";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ListDetailModal } from "./ListDetailModal";
+import { LinkGiftToListsModal } from "../gifts/LinkGiftToListsModal";
 
 interface GiftDetailModalProps {
   giftId: string | null;
@@ -34,7 +35,6 @@ interface GiftDetailModalProps {
 }
 
 // Import AddListModal if not already imported
-import { AddListModal } from "@/components/lists/AddListModal";
 
 export function GiftDetailModal({
   giftId,
@@ -44,7 +44,7 @@ export function GiftDetailModal({
   const [activeTab, setActiveTab] = React.useState("overview");
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
-  const [showAddListModal, setShowAddListModal] = React.useState(false);
+  const [showLinkListsModal, setShowLinkListsModal] = React.useState(false);
 
   const { data: gift, isLoading } = useQuery<Gift>({
     queryKey: ["gifts", giftId],
@@ -298,6 +298,17 @@ export function GiftDetailModal({
                   <p className="text-warm-600 text-sm mb-4">
                     This gift appears in the following lists
                   </p>
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowLinkListsModal(true)}
+                      className="min-h-[36px]"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add or Link Lists
+                    </Button>
+                  </div>
                 </div>
 
                 {isLoadingLists ? (
@@ -306,28 +317,6 @@ export function GiftDetailModal({
                   </div>
                 ) : listsData && listsData.data.length > 0 ? (
                   <div className="space-y-3">
-                    {/* Add New List Card */}
-                    <button
-                      onClick={() => setShowAddListModal(true)}
-                      className={cn(
-                        "w-full text-left",
-                        "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
-                        "hover:border-blue-500 hover:bg-blue-50/50",
-                        "transition-all duration-200",
-                        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-                        "min-h-[44px]"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
-                          <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
-                        </div>
-                        <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
-                          Add to New List
-                        </span>
-                      </div>
-                    </button>
-
                     {listsData.data.map((list) => {
                       const typeIcon = {
                         wishlist: Heart,
@@ -415,28 +404,6 @@ export function GiftDetailModal({
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {/* Add New List Card */}
-                    <button
-                      onClick={() => setShowAddListModal(true)}
-                      className={cn(
-                        "w-full text-left",
-                        "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
-                        "hover:border-blue-500 hover:bg-blue-50/50",
-                        "transition-all duration-200",
-                        "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-                        "min-h-[44px]"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
-                          <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
-                        </div>
-                        <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
-                          Add to New List
-                        </span>
-                      </div>
-                    </button>
-
                     <div
                       className={cn(
                         "bg-warm-50 rounded-xl p-8 border border-warm-200",
@@ -453,6 +420,15 @@ export function GiftDetailModal({
                         <p className="text-warm-600 text-sm">
                           This gift has not been added to any lists yet
                         </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowLinkListsModal(true)}
+                          className="mt-4"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add to a List
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -521,11 +497,12 @@ export function GiftDetailModal({
       )}
 
       {/* Add List Modal - Only render when needed to avoid subscription storm */}
-      {showAddListModal && (
-        <AddListModal
-          isOpen={true}
-          onClose={() => setShowAddListModal(false)}
-          mode="create"
+      {showLinkListsModal && giftId && (
+        <LinkGiftToListsModal
+          giftId={Number(giftId)}
+          isOpen={showLinkListsModal}
+          onClose={() => setShowLinkListsModal(false)}
+          onLinked={() => setShowLinkListsModal(false)}
         />
       )}
     </>
