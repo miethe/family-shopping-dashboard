@@ -7,10 +7,16 @@ import {
   RecentActivity,
   IdeaInbox,
 } from '@/components/dashboard';
+import { BudgetMeter, BudgetMeterSkeleton } from '@/components/budget';
 import { useDashboard } from '@/hooks/useDashboard';
+import { useBudgetMeter } from '@/hooks/useBudgetMeter';
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useDashboard();
+
+  // Get budget data for upcoming occasion
+  const upcomingOccasionId = data?.primary_occasion?.id;
+  const { data: budgetData, isLoading: budgetLoading } = useBudgetMeter(upcomingOccasionId);
 
   if (error) {
     return (
@@ -57,6 +63,20 @@ export default function DashboardPage() {
                 purchased={data?.total_purchased ?? 0}
                 occasionId={data?.primary_occasion?.id}
               />
+            )}
+
+            {/* Budget Card - Only show if upcoming occasion has budget */}
+            {upcomingOccasionId && budgetData?.has_budget && (
+              <div className="bg-white rounded-2xlarge border border-warm-200 p-6 shadow-sm">
+                <h3 className="text-sm font-semibold text-warm-700 mb-4">
+                  {data?.primary_occasion?.name} Budget
+                </h3>
+                {budgetLoading ? (
+                  <BudgetMeterSkeleton size="sm" />
+                ) : (
+                  <BudgetMeter data={budgetData} size="sm" />
+                )}
+              </div>
             )}
 
             {/* Idea Inbox */}

@@ -3,6 +3,7 @@
  *
  * Displays comprehensive occasion information:
  * - Header with occasion details
+ * - Budget progression meter (if budget set)
  * - Associated gift lists
  * - Edit and delete actions
  */
@@ -12,10 +13,12 @@
 import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useOccasion, useDeleteOccasion } from '@/hooks/useOccasion';
+import { useBudgetMeter, useBudgetWarning } from '@/hooks/useBudgetMeter';
 import { PageHeader } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { OccasionDetail, OccasionLists } from '@/components/occasions';
+import { BudgetMeter, BudgetMeterSkeleton, BudgetWarningCard } from '@/components/budget';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface OccasionDetailPageProps {
@@ -65,6 +68,10 @@ export default function OccasionDetailPage({ params }: OccasionDetailPageProps) 
 
   const { data: occasion, isLoading, error } = useOccasion(occasionId);
   const deleteMutation = useDeleteOccasion(occasionId);
+
+  // Budget data - only fetch if occasion exists
+  const { data: budgetData, isLoading: budgetLoading } = useBudgetMeter(occasionId);
+  const { data: warningData } = useBudgetWarning(occasionId);
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this occasion? All associated lists will remain but will no longer be linked to this occasion.')) {
@@ -153,6 +160,23 @@ export default function OccasionDetailPage({ params }: OccasionDetailPageProps) 
       <div className="px-4 py-6 md:px-6 space-y-6 max-w-4xl mx-auto">
         {/* Occasion Detail Card */}
         <OccasionDetail occasion={occasion} />
+
+        {/* Budget Status Section */}
+        {budgetData?.has_budget && (
+          <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">Budget Status</h3>
+            {budgetLoading ? (
+              <BudgetMeterSkeleton />
+            ) : (
+              <>
+                <BudgetMeter data={budgetData} />
+                {warningData && warningData.level !== 'none' && (
+                  <BudgetWarningCard warning={warningData} className="mt-4" />
+                )}
+              </>
+            )}
+          </section>
+        )}
 
         {/* Associated Lists */}
         <OccasionLists occasionId={occasion.id} />

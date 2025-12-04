@@ -354,3 +354,9 @@ export interface ActivityFeedResponse {
   events: ActivityEvent[];
   total: number;
 }
+
+// ============================================================================
+// Budget Types
+// ============================================================================
+
+export * from './budget';

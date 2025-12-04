@@ -47,6 +47,12 @@ import type {
   CommentEntityType,
   // Activity types
   ActivityFeedResponse,
+  // Budget types
+  BudgetMeterData,
+  BudgetWarning,
+  EntityBudget,
+  SetBudgetRequest,
+  SetEntityBudgetRequest,
 } from '@/types';
 
 // ============================================================================
@@ -278,4 +284,31 @@ export const ideasApi = {
   inbox: (limit = 10) => apiClient.get<IdeaInboxResponse>(`/ideas/inbox?limit=${limit}`),
   addToList: (ideaId: number, data: AddIdeaToListRequest) =>
     apiClient.post<Gift>(`/ideas/${ideaId}/add-to-list`, data),
+};
+
+// ============================================================================
+// Budget API
+// ============================================================================
+
+export const budgetsApi = {
+  getMeter: (occasionId: number) =>
+    apiClient.get<BudgetMeterData>(`/budgets/occasions/${occasionId}/meter`),
+
+  setOccasionBudget: (occasionId: number, data: SetBudgetRequest) =>
+    apiClient.post<BudgetMeterData>(`/budgets/occasions/${occasionId}`, data),
+
+  getWarning: (occasionId: number) =>
+    apiClient.get<BudgetWarning>(`/budgets/occasions/${occasionId}/warning`),
+
+  getEntityBudgets: (occasionId: number) =>
+    apiClient.get<EntityBudget[]>(`/budgets/occasions/${occasionId}/entities`),
+
+  setEntityBudget: (occasionId: number, data: SetEntityBudgetRequest) =>
+    apiClient.post<EntityBudget>(`/budgets/occasions/${occasionId}/entities`, data),
+
+  getEntityBudget: (occasionId: number, entityType: string, entityId: number) =>
+    apiClient.get<EntityBudget>(`/budgets/occasions/${occasionId}/entities/${entityType}/${entityId}`),
+
+  deleteEntityBudget: (occasionId: number, entityType: string, entityId: number) =>
+    apiClient.delete<void>(`/budgets/occasions/${occasionId}/entities/${entityType}/${entityId}`),
 };

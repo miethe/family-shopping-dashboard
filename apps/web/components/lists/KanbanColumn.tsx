@@ -3,12 +3,12 @@
  *
  * Displays a column in the Kanban board with v2 design colors and styling.
  * Four status columns: Idea → To Buy → Purchased → Gifted
- * Includes count badges, empty state placeholders, and drop zone handling.
+ * Includes count badges, price totals, empty state placeholders, and drop zone handling.
  */
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
 import { KanbanCard } from './KanbanCard';
@@ -65,6 +65,13 @@ export function KanbanColumn({
   const [isHovering, setIsHovering] = useState(false);
 
   /**
+   * Calculate total price for items in this column
+   */
+  const columnTotal = useMemo(() => {
+    return items.reduce((sum, item) => sum + (item.gift?.price || 0), 0);
+  }, [items]);
+
+  /**
    * Handle drag over - prevent default to allow drop
    */
   const handleDragOver = (e: React.DragEvent) => {
@@ -109,14 +116,20 @@ export function KanbanColumn({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* Column Header with Count Badge */}
-      <div className="flex items-center justify-between px-2 sticky top-0 bg-white dark:bg-slate-900 py-2 z-10">
-        <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
-          {config.title}
-        </h2>
-        <span className="flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold">
-          {items.length}
-        </span>
+      {/* Column Header with Count Badge and Price Total */}
+      <div className="flex flex-col gap-1 px-2 sticky top-0 bg-white dark:bg-slate-900 py-2 z-10">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
+            {config.title}
+          </h2>
+          <span className="flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold">
+            {items.length}
+          </span>
+        </div>
+        {/* Price Total */}
+        <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+          ${columnTotal.toFixed(2)}
+        </div>
       </div>
 
       {/* Items Container with Drop Zone Highlighting */}

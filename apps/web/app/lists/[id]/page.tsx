@@ -4,6 +4,7 @@
  * Displays a single gift list with view toggle between Kanban board and table view.
  * Features:
  * - Enhanced header with list type badge and summary stats
+ * - Budget comparison if occasion has a budget
  * - View toggle (Board/List)
  * - Four-column Kanban board: Idea → To Buy → Purchased → Gifted
  * - Glassmorphism cards with large rounded corners
@@ -13,10 +14,11 @@
 
 'use client';
 
-import { use, useState } from 'react';
+import { use, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useList } from '@/hooks/useLists';
 import { useListItems } from '@/hooks/useListItems';
+import { useBudgetMeter } from '@/hooks/useBudgetMeter';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import { Icon, IconNames } from '@/components/ui/icon';
@@ -98,6 +100,9 @@ export default function ListDetailPage({ params }: Props) {
   // Fetch list items
   const { data: items, isLoading: itemsLoading } = useListItems(listId);
 
+  // Fetch budget data if list has an occasion
+  const { data: budgetData } = useBudgetMeter(listData?.occasion_id);
+
   // Handler for adding items with a specific status
   const handleAddItem = (status: ListItemStatus) => {
     setDefaultStatus(status);
@@ -133,6 +138,11 @@ export default function ListDetailPage({ params }: Props) {
   // Mock updated time - in real app, calculate from updated_at
   const updatedAgo = '2h';
 
+  // Budget display
+  const hasBudget = budgetData?.has_budget && budgetData?.budget_total !== null;
+  const budgetTotal = budgetData?.budget_total ?? 0;
+  const isOverBudget = totalEstimate > budgetTotal && hasBudget;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-background-dark dark:to-warm-900">
       <div className="max-w-7xl mx-auto h-full flex flex-col pb-20">
@@ -156,7 +166,21 @@ export default function ListDetailPage({ params }: Props) {
                 <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
                 <span>{purchasedCount} purchased</span>
                 <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                <span>${totalEstimate.toFixed(2)} est. total</span>
+                <span className={cn(
+                  'font-semibold',
+                  isOverBudget && 'text-red-600 dark:text-red-400'
+                )}>
+                  ${totalEstimate.toFixed(2)}
+                  {hasBudget && (
+                    <span className={cn(
+                      'font-normal',
+                      isOverBudget ? 'text-red-500 dark:text-red-400' : 'text-slate-400'
+                    )}>
+                      {' / $'}{budgetTotal.toFixed(2)}
+                    </span>
+                  )}
+                  {!hasBudget && ' est. total'}
+                </span>
               </div>
             </div>
 

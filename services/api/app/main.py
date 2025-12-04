@@ -215,3 +215,8 @@ app.include_router(occasions.router, prefix=API_V1_PREFIX)
 from app.api import users
 
 app.include_router(users.router, prefix=API_V1_PREFIX)
+
+# Budget routes (budget tracking and progression meters)
+from app.api import budgets
+
+app.include_router(budgets.router, prefix=API_V1_PREFIX)
