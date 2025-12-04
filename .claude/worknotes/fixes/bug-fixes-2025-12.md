@@ -608,7 +608,7 @@ Monthly bug tracking for December 2025.
 - **Fix**:
   1. Gate person/occasion detail queries on `open` to avoid background fetches
   2. Lazy render all nested modals (GiftDetail, PersonDetail, OccasionDetail, AddPerson, AddOccasion, AddListItem, AddList edit) only when their own `open` flag is true
-- **Commit(s)**: (this commit)
+- **Commit(s)**: `a7b3e66`
 - **Status**: RESOLVED
 
 ---
