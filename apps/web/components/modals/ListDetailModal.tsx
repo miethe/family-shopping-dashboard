@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { EntityModal } from "./EntityModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -17,7 +16,6 @@ import {
   EyeOff,
   Calendar,
   ShoppingBag,
-  Gift as GiftIcon,
   Edit,
   Trash2,
   Plus,
@@ -36,7 +34,7 @@ import { OccasionDetailModal } from "./OccasionDetailModal";
 import { GiftImage } from "@/components/common/GiftImage";
 import { usePerson } from "@/hooks/usePersons";
 import { useOccasion } from "@/hooks/useOccasions";
-import type { ListWithItems, ListItemStatus, ListItemWithGift } from "@/types";
+import type { ListWithItems, ListItemStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface ListDetailModalProps {
@@ -114,8 +112,10 @@ export function ListDetailModal({
   });
 
   // Fetch attached person and occasion details
-  const { data: attachedPerson } = usePerson(list?.person_id || 0);
-  const { data: attachedOccasion } = useOccasion(list?.occasion_id || 0);
+  const personId = open && list?.person_id ? list.person_id : 0;
+  const occasionId = open && list?.occasion_id ? list.occasion_id : 0;
+  const { data: attachedPerson } = usePerson(personId);
+  const { data: attachedOccasion } = useOccasion(occasionId);
 
   const deleteMutation = useDeleteList();
 
@@ -740,7 +740,7 @@ export function ListDetailModal({
       </EntityModal>
 
       {/* Edit Modal */}
-      {list && (
+      {list && showEditModal && (
         <AddListModal
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
@@ -751,7 +751,7 @@ export function ListDetailModal({
       )}
 
       {/* Add Item Modal */}
-      {listId && (
+      {listId && showAddItemModal && (
         <AddListItemModal
           isOpen={showAddItemModal}
           onClose={() => setShowAddItemModal(false)}
@@ -761,38 +761,48 @@ export function ListDetailModal({
       )}
 
       {/* Gift Detail Modal */}
-      <GiftDetailModal
-        giftId={selectedGiftId}
-        open={!!selectedGiftId}
-        onOpenChange={(open) => !open && setSelectedGiftId(null)}
-      />
+      {selectedGiftId && (
+        <GiftDetailModal
+          giftId={selectedGiftId}
+          open={true}
+          onOpenChange={(open) => !open && setSelectedGiftId(null)}
+        />
+      )}
 
       {/* Person Detail Modal */}
-      <PersonDetailModal
-        personId={selectedPersonId}
-        open={!!selectedPersonId}
-        onOpenChange={(open) => !open && setSelectedPersonId(null)}
-      />
+      {selectedPersonId && (
+        <PersonDetailModal
+          personId={selectedPersonId}
+          open={true}
+          onOpenChange={(open) => !open && setSelectedPersonId(null)}
+        />
+      )}
 
       {/* Occasion Detail Modal */}
-      <OccasionDetailModal
-        occasionId={selectedOccasionId}
-        open={!!selectedOccasionId}
-        onOpenChange={(open) => !open && setSelectedOccasionId(null)}
-      />
+      {selectedOccasionId && (
+        <OccasionDetailModal
+          occasionId={selectedOccasionId}
+          open={true}
+          onOpenChange={(open) => !open && setSelectedOccasionId(null)}
+        />
+      )}
 
       {/* Add Person Modal */}
-      <AddPersonModal
-        isOpen={showAddPersonModal}
-        onClose={() => setShowAddPersonModal(false)}
-      />
+      {showAddPersonModal && (
+        <AddPersonModal
+          isOpen={showAddPersonModal}
+          onClose={() => setShowAddPersonModal(false)}
+        />
+      )}
 
       {/* Add Occasion Modal */}
-      <AddOccasionModal
-        isOpen={showAddOccasionModal}
-        onClose={() => setShowAddOccasionModal(false)}
-        mode="create"
-      />
+      {showAddOccasionModal && (
+        <AddOccasionModal
+          isOpen={showAddOccasionModal}
+          onClose={() => setShowAddOccasionModal(false)}
+          mode="create"
+        />
+      )}
     </>
   );
 }

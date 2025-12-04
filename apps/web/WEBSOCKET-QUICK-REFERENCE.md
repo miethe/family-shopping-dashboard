@@ -2,6 +2,8 @@
 
 One-page reference for WebSocket implementation.
 
+**Current Scope**: WebSockets are used **ONLY for Kanban board (list items)** real-time sync. Other features use React Query's caching mechanisms for simplicity.
+
 ---
 
 ## Import Paths
@@ -69,23 +71,42 @@ import type { WSEvent, WSConnectionState, WSEventType } from '@/lib/websocket/ty
 
 ---
 
-## Usage Pattern: Cache Invalidation (Recommended)
+## Usage Pattern 1: React Query Only (Most Features)
 
 ```typescript
-// hooks/useGifts.ts
+// hooks/useGifts.ts - gifts, lists, persons, occasions
 import { useQuery } from '@tanstack/react-query';
-import { useRealtimeSync } from './useRealtimeSync';
 
 export function useGifts(listId: string) {
   const queryKey = ['gifts', listId];
 
-  const query = useQuery({
+  return useQuery({
     queryKey,
     queryFn: () => apiClient.get(`/gifts?list_id=${listId}`),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: true,
+  });
+}
+```
+
+## Usage Pattern 2: WebSocket + Cache Invalidation (Kanban Only)
+
+```typescript
+// hooks/useListItems.ts - Kanban board with WebSocket
+import { useQuery } from '@tanstack/react-query';
+import { useRealtimeSync } from './useRealtimeSync';
+
+export function useListItems(listId: string) {
+  const queryKey = ['list-items', listId];
+
+  const query = useQuery({
+    queryKey,
+    queryFn: () => apiClient.get(`/list-items?list_id=${listId}`),
   });
 
+  // Real-time sync for Kanban board
   useRealtimeSync({
-    topic: `gift-list:${listId}`,
+    topic: `list-items:${listId}`,
     queryKey,
   });
 
@@ -510,7 +531,8 @@ export default function GiftsPage() {
 hooks/
   useWebSocket.ts              Core WebSocket hook
   useRealtimeSync.ts           React Query integration
-  useGiftsRealtime.ts          Example usage
+  useListItems.ts              Kanban board with WebSocket (real example)
+  useGifts.ts                  Gifts using React Query only (real example)
 
 lib/websocket/
   types.ts                     TypeScript types

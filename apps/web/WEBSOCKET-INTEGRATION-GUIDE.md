@@ -2,6 +2,8 @@
 
 Quick guide to integrate WebSocket real-time functionality into the Family Gifting Dashboard.
 
+**Current Status**: WebSockets are **ONLY used for Kanban board (list items)** real-time sync. Other features use React Query's caching mechanisms.
+
 ---
 
 ## Step 1: Add WebSocketProvider to Layout
@@ -73,22 +75,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
 ## Step 3: Update Data Hooks
 
-Add real-time sync to existing hooks:
+### Pattern 1: React Query Only (Most Features)
 
-### Example: useGifts
+For gifts, lists, persons, occasions - use React Query with staleTime:
 
 ```tsx
 // hooks/useGifts.ts
 import { useQuery } from '@tanstack/react-query';
-import { useRealtimeSync } from './useRealtimeSync';
 import { apiClient } from '@/lib/api/client';
 import type { Gift } from '@/lib/api/types';
 
 export function useGifts(listId?: string) {
   const queryKey = listId ? ['gifts', listId] : ['gifts'];
 
-  // REST: Initial load
-  const query = useQuery({
+  return useQuery({
     queryKey,
     queryFn: async () => {
       if (listId) {
@@ -96,45 +96,15 @@ export function useGifts(listId?: string) {
       }
       return apiClient.get<Gift[]>('/gifts');
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: true,
   });
-
-  // WebSocket: Real-time updates
-  useRealtimeSync({
-    topic: listId ? `gift-list:${listId}` : 'gifts',
-    queryKey,
-  });
-
-  return query;
 }
 ```
 
-### Example: useLists
+### Pattern 2: WebSocket (Kanban Board Only)
 
-```tsx
-// hooks/useLists.ts
-import { useQuery } from '@tanstack/react-query';
-import { useRealtimeSync } from './useRealtimeSync';
-import { apiClient } from '@/lib/api/client';
-import type { GiftList } from '@/lib/api/types';
-
-export function useLists() {
-  const queryKey = ['lists'];
-
-  const query = useQuery({
-    queryKey,
-    queryFn: () => apiClient.get<GiftList[]>('/lists'),
-  });
-
-  useRealtimeSync({
-    topic: 'lists',
-    queryKey,
-  });
-
-  return query;
-}
-```
-
-### Example: useListItems
+For list items real-time sync, use WebSocket:
 
 ```tsx
 // hooks/useListItems.ts
@@ -151,6 +121,7 @@ export function useListItems(listId: string) {
     queryFn: () => apiClient.get<ListItem[]>(`/list-items?list_id=${listId}`),
   });
 
+  // WebSocket: Real-time sync for Kanban board
   useRealtimeSync({
     topic: `list-items:${listId}`,
     queryKey,
@@ -409,20 +380,18 @@ NEXT_PUBLIC_WS_URL=wss://api.gifting.home/ws
 ## Next Steps
 
 1. ✅ Add WebSocketProvider to layout
-2. ✅ Update data hooks with useRealtimeSync
-3. ✅ Add ConnectionIndicator to UI
-4. ✅ Test with backend
-5. ⬜ Add to remaining hooks (occasions, persons, etc.)
-6. ⬜ Test offline/reconnection scenarios
-7. ⬜ Performance testing with multiple users
+2. ✅ Use React Query for most features (gifts, lists, persons, occasions)
+3. ✅ Use WebSocket only for Kanban board (list-items)
+4. ✅ Add ConnectionIndicator to UI
+5. ✅ Test with backend
 
 ---
 
 ## References
 
-- **Full Implementation**: `FE-A-005-WEBSOCKET-COMPLETE.md`
-- **WebSocket Docs**: `lib/websocket/README.md`
-- **Example Hook**: `hooks/useGiftsRealtime.ts`
+- **WebSocket System Docs**: `lib/websocket/README.md`
+- **Kanban Example**: `hooks/useListItems.ts` (WebSocket-enabled)
+- **React Query Example**: `hooks/useGifts.ts` (caching only)
 - **Backend WS**: `services/api/app/api/v1/ws.py`
 
 ---

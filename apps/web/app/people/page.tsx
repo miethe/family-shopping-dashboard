@@ -32,7 +32,7 @@ export default function RecipientsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const { data: personsData, isLoading: personsLoading, error: personsError } = usePersons({ cursor });
-  const { data: occasionsData, isLoading: occasionsLoading } = useOccasions({ filter: 'upcoming' }, { disableRealtime: true });
+  const { data: occasionsData, isLoading: occasionsLoading } = useOccasions({ filter: 'upcoming' });
   const { open, entityId, openModal, closeModal } = useEntityModal('occasion');
 
   // Map relationship to group (normalize to lowercase for matching)
