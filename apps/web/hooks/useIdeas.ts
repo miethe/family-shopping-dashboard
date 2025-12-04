@@ -7,7 +7,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
-import { useRealtimeSync } from './useRealtimeSync';
 import type { Gift } from '@/types';
 
 /**
@@ -52,13 +51,8 @@ export function useIdeaInbox(limit = 10) {
     queryKey: ['ideas', 'inbox', limit],
     queryFn: () => apiClient.get<IdeaInboxResponse>(`/ideas/inbox?limit=${limit}`),
     staleTime: 1000 * 60 * 5, // 5 minutes - ideas change occasionally
-  });
-
-  // Real-time sync for new ideas
-  useRealtimeSync({
-    topic: 'ideas:inbox',
-    queryKey: ['ideas', 'inbox', limit],
-    events: ['ADDED', 'UPDATED', 'DELETED'],
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000, // 30 seconds polling for activity feed
   });
 
   return query;
