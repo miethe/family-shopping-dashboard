@@ -90,6 +90,7 @@ export interface Occasion extends TimestampFields {
   type: OccasionType;
   date: string; // ISO date string
   description?: string;
+  budget?: number | null;
 }
 
 export interface OccasionCreate {
@@ -97,6 +98,7 @@ export interface OccasionCreate {
   type: OccasionType;
   date: string; // ISO date string
   description?: string;
+  budget?: number | null;
 }
 
 export interface OccasionUpdate {
@@ -104,6 +106,7 @@ export interface OccasionUpdate {
   type?: OccasionType;
   date?: string;
   description?: string;
+  budget?: number | null;
 }
 
 export interface OccasionSummary {

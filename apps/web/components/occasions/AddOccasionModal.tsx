@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { EntityModal } from '@/components/modals/EntityModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { useCreateOccasion, useUpdateOccasion } from '@/hooks/useOccasions';
 import { useToast } from '@/components/ui/use-toast';
 import type { Occasion, OccasionCreate, OccasionUpdate, OccasionType } from '@/types';
@@ -28,6 +29,7 @@ export function AddOccasionModal({
   const [type, setType] = useState<OccasionType>('birthday');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
+  const [budget, setBudget] = useState<number | null>(null);
 
   const createMutation = useCreateOccasion();
   const updateMutation = useUpdateOccasion(occasionToEdit?.id || 0);
@@ -43,12 +45,14 @@ export function AddOccasionModal({
       setType(occasionToEdit.type);
       setDate(occasionToEdit.date);
       setDescription(occasionToEdit.description || '');
+      setBudget(occasionToEdit.budget ?? null);
     } else if (!isOpen) {
       // Reset form when modal closes
       setName('');
       setType('birthday');
       setDate('');
       setDescription('');
+      setBudget(null);
     }
   }, [isEditMode, occasionToEdit, isOpen]);
 
@@ -66,6 +70,7 @@ export function AddOccasionModal({
         type,
         date,
         description: description.trim() || undefined,
+        budget: budget,
       };
 
       updateMutation.mutate(updateData, {
@@ -95,6 +100,7 @@ export function AddOccasionModal({
         type,
         date,
         description: description.trim() || undefined,
+        budget: budget,
       };
 
       createMutation.mutate(occasionData, {
@@ -126,6 +132,7 @@ export function AddOccasionModal({
     setType('birthday');
     setDate('');
     setDescription('');
+    setBudget(null);
     onClose();
   };
 
@@ -193,6 +200,16 @@ export function AddOccasionModal({
           helperText="When is this occasion?"
           disabled={isPending}
         />
+
+        <div>
+          <CurrencyInput
+            label="Budget"
+            value={budget}
+            onChange={setBudget}
+            placeholder="0.00"
+            helperText="Optional: Set a spending limit for this occasion"
+          />
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-warm-900 mb-2">
