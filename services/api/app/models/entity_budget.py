@@ -75,4 +75,8 @@ class EntityBudget(BaseModel):
 
     def __repr__(self) -> str:
         """String representation of EntityBudget."""
-        return f"<EntityBudget(id={self.id}, occasion_id={self.occasion_id}, entity_type='{self.entity_type}', entity_id={self.entity_id}, budget_amount={self.budget_amount})>"
+        return (
+            f"<EntityBudget(id={self.id}, occasion_id={self.occasion_id}, "
+            f"entity_type='{self.entity_type}', entity_id={self.entity_id}, "
+            f"budget_amount={self.budget_amount})>"
+        )

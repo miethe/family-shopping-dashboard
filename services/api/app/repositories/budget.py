@@ -265,7 +265,7 @@ class BudgetRepository:
         )
 
         result = await self.session.execute(stmt)
-        return result.scalar_one()
+        return result.scalar_one() or Decimal("0.00")
 
     async def get_planned_amount(self, occasion_id: int) -> Decimal:
         """
@@ -308,7 +308,7 @@ class BudgetRepository:
         )
 
         result = await self.session.execute(stmt)
-        return result.scalar_one()
+        return result.scalar_one() or Decimal("0.00")
 
     async def get_total_committed(self, occasion_id: int) -> Decimal:
         """
@@ -354,7 +354,7 @@ class BudgetRepository:
         )
 
         result = await self.session.execute(stmt)
-        return result.scalar_one()
+        return result.scalar_one() or Decimal("0.00")
 
     async def get_remaining_budget(self, occasion_id: int) -> Decimal | None:
         """
