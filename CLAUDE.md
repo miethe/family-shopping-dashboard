@@ -88,26 +88,41 @@ family-gifting-dashboard/
 
 ---
 
-## Real-Time Pattern (Core Feature)
+## Real-Time Pattern (Simplified)
 
-### WebSocket Event Structure
+**WebSocket Scope**: Currently used **ONLY for Kanban board (list items)** real-time sync.
+
+**Other Features**: Gifts, lists, persons, occasions use React Query's caching + staleTime + refetchOnWindowFocus (simplified for 2-3 user single-tenant app).
+
+### WebSocket Event Structure (Kanban Only)
 
 ```typescript
 interface WSEvent {
-  topic: string;              // "gift-list:family-123"
+  topic: string;              // "list-items:family-123"
   event: "ADDED" | "UPDATED" | "DELETED" | "STATUS_CHANGED";
   data: { entity_id: string; payload: unknown; user_id: string };
 }
 ```
 
-### State Sync
+### State Sync Patterns
+
+**Pattern 1: React Query Only (Most Features)**
 
 ```text
-1. Load: React Query (REST)
-2. Subscribe: WebSocket on mount
+1. Load: React Query useQuery (REST)
+2. Cache: staleTime 5 minutes + refetchOnWindowFocus
+3. Mutations: useMutation with optimistic updates
+4. No WebSocket overhead
+```
+
+**Pattern 2: WebSocket + React Query (Kanban Board)**
+
+```text
+1. Load: React Query useQuery (REST)
+2. Subscribe: WebSocket on mount for real-time updates
 3. Event: Invalidate RQ cache → refetch
 4. Unmount: Unsubscribe
-5. Fallback: Poll every 10s if WS down
+5. Infrastructure: Reconnection handled automatically
 ```
 
 ---
