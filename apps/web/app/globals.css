@@ -1,0 +1,762 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design System V2 - Font Imports */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;600;700&display=swap');
+
+/* Material Symbols Outlined Font - now loaded in layout.tsx */
+
+:root {
+  /* Colors - Backgrounds */
+  --color-bg-base: #F5F1E8;
+  --color-bg-subtle: #F2EEE6;
+  --color-bg-elevated: #FFFFFF;
+  --color-surface-primary: #FFFFFF;
+  --color-surface-secondary: rgba(255, 255, 255, 0.6);
+  --color-surface-tertiary: rgba(242, 238, 230, 0.5);
+  --color-surface-translucent: rgba(255, 255, 255, 0.8);
+
+  /* Design System V2 - Additional Background Colors */
+  --color-background-light: #F5F1E8;
+  --color-background-dark: #1a1a2e;
+
+  /* Colors - Text */
+  --color-text-primary: #2D2520;
+  --color-text-secondary: #635A50;
+  --color-text-tertiary: #9E9285;
+  --color-text-disabled: #D1C8BC;
+  --color-text-inverse: #FFFFFF;
+
+  /* Colors - Primary Coral */
+  --color-primary-50: #FFF0ED;
+  --color-primary-100: #FFE1DB;
+  --color-primary-200: #FFC2B8;
+  --color-primary-300: #FFA394;
+  --color-primary-400: #FF8570;
+  --color-primary-500: #FF664D;
+  --color-primary-600: #E64D33;
+  --color-primary-700: #CC3A21;
+  --color-primary-800: #B32D17;
+  --color-primary-900: #8C1F0D;
+
+  /* Spacing */
+  --spacing-1: 0.25rem;
+  /* 4px */
+  --spacing-2: 0.5rem;
+  /* 8px */
+  --spacing-3: 0.75rem;
+  /* 12px */
+  --spacing-4: 1rem;
+  /* 16px */
+  --spacing-5: 1.25rem;
+  /* 20px */
+  --spacing-6: 1.5rem;
+  /* 24px */
+  --spacing-8: 2rem;
+  /* 32px */
+
+  /* Shadows - Refined for depth */
+  --shadow-subtle: 0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-low: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-medium: 0 8px 24px -4px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-high: 0 16px 48px -8px rgba(0, 0, 0, 0.16), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+
+  /* Radii */
+  --radius-small: 0.625rem;
+  /* 10px */
+  --radius-medium: 0.875rem;
+  /* 14px */
+  --radius-large: 1.25rem;
+  /* 20px */
+  --radius-xlarge: 1.75rem;
+  /* 28px */
+  --radius-2xlarge: 2.25rem;
+  /* 36px */
+  --radius-3xlarge: 3rem;
+  /* 48px */
+
+  /* Typography */
+  --font-family-base: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, 'Nunito', sans-serif;
+  --font-size-display-large: 3.5rem;
+  --font-size-heading-1: 1.75rem;
+  --font-size-body-large: 1.0625rem;
+
+  /* Animation Durations (from Design Tokens) */
+  --duration-fast: 150ms;
+  --duration-default: 200ms;
+  --duration-slow: 300ms;
+  --duration-page: 400ms;
+
+  /* Easing Functions (from Design Tokens) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-base);
+  /* Ensure solid fallback */
+  font-family: var(--font-family-base);
+  line-height: 1.5;
+  /* Subtle mesh gradient background */
+  background-image:
+    radial-gradient(at 0% 0%, rgba(255, 102, 77, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(255, 102, 77, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(255, 102, 77, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(255, 102, 77, 0.05) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* ============================================
+   Material Symbols Outlined Base Styling
+   ============================================ */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  font-size: 24px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+/* Safe area utilities */
+.safe-area-inset {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Dynamic viewport height for iOS */
+.h-screen-safe {
+  height: 100dvh;
+}
+
+/* Touch target enforcement */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ============================================
+   ACCESSIBILITY: Reduced Motion Support
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   Custom Scrollbar for Kanban
+   ============================================ */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Focus ring styling */
+:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   ANIMATION SYSTEM
+   Enhanced with comprehensive animations
+   ============================================ */
+
+/* ============================================
+   PAGE TRANSITION ANIMATIONS
+   For route changes and page mounts
+   ============================================ */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInFast {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   CARD & ELEMENT ANIMATIONS
+   For cards, panels, and content blocks
+   ============================================ */
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ============================================
+   MODAL & DIALOG ANIMATIONS
+   For modals, dialogs, and overlays
+   ============================================ */
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes modalBackdropIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   BUTTON & INTERACTIVE ANIMATIONS
+   For buttons and interactive elements
+   ============================================ */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes buttonPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   STATUS & FEEDBACK ANIMATIONS
+   For status changes and user feedback
+   ============================================ */
+@keyframes attention-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes success-bounce {
+  0% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.05);
+  }
+
+  50% {
+    transform: scale(0.98);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes status-flash {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+    background-color: white;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   LOADING & SKELETON ANIMATIONS
+   For loading states
+   ============================================ */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ============================================
+   STAGGER ANIMATION HELPERS
+   For staggered entry animations
+   ============================================ */
+@keyframes staggerFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   Ready-to-use animation classes
+   ============================================ */
+@layer utilities {
+
+  /* ========================================
+     PAGE TRANSITIONS
+     ======================================== */
+  .animate-fade-in {
+    animation: fadeIn var(--duration-page) var(--ease-out);
+  }
+
+  .animate-fade-in-fast {
+    animation: fadeInFast var(--duration-default) var(--ease-out);
+  }
+
+  .animate-fade-out {
+    animation: fadeOut var(--duration-default) var(--ease-in);
+  }
+
+  /* ========================================
+     CARD & ELEMENT ANIMATIONS
+     ======================================== */
+  .animate-slide-up {
+    animation: slideUp var(--duration-slow) var(--ease-out);
+  }
+
+  .animate-slide-down {
+    animation: slideDown var(--duration-slow) var(--ease-out);
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft var(--duration-slow) var(--ease-out);
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight var(--duration-slow) var(--ease-out);
+  }
+
+  /* ========================================
+     MODAL & DIALOG ANIMATIONS
+     ======================================== */
+  .animate-scale-in {
+    animation: scaleIn var(--duration-slow) var(--ease-out);
+  }
+
+  .animate-scale-out {
+    animation: scaleOut var(--duration-slow) var(--ease-in);
+  }
+
+  .animate-modal-backdrop {
+    animation: modalBackdropIn var(--duration-default) var(--ease-out);
+  }
+
+  /* ========================================
+     BUTTON & INTERACTIVE EFFECTS
+     ======================================== */
+  /* Press effect - subtle scale down on active */
+  .press-effect {
+    @apply transition-transform duration-150 ease-out active:scale-[0.98];
+  }
+
+  /* Lift effect - elevation increase on hover */
+  .lift-effect {
+    @apply transition-all duration-300 ease-out hover:shadow-medium hover:-translate-y-1;
+  }
+
+  .ripple-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ripple-effect::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .ripple-effect:active::after {
+    animation: ripple 0.6s ease-out;
+  }
+
+  /* ========================================
+     STATUS & FEEDBACK
+     ======================================== */
+  .attention-pulse {
+    animation: attention-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .success-bounce {
+    animation: success-bounce 0.5s ease-out;
+  }
+
+  .status-flash {
+    animation: status-flash 0.3s ease-out;
+  }
+
+  /* ========================================
+     LOADING STATES
+     ======================================== */
+  .shimmer {
+    background: linear-gradient(90deg,
+        var(--color-bg-subtle) 0%,
+        var(--color-bg-base) 50%,
+        var(--color-bg-subtle) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* ========================================
+     GLASSMORPHISM UTILITIES
+     ======================================== */
+  .glass-panel {
+    @apply bg-white/60 backdrop-blur-md border border-white/40 shadow-glass;
+  }
+
+  .glass-panel-dark {
+    @apply bg-black/40 backdrop-blur-md border border-white/10 shadow-glass;
+  }
+
+  /* ========================================
+     STAGGERED ANIMATIONS
+     Use with delay utilities
+     ======================================== */
+  .animate-stagger {
+    animation: staggerFadeIn var(--duration-slow) var(--ease-out);
+  }
+
+  .stagger-delay-1 {
+    animation-delay: 50ms;
+  }
+
+  .stagger-delay-2 {
+    animation-delay: 100ms;
+  }
+
+  .stagger-delay-3 {
+    animation-delay: 150ms;
+  }
+
+  .stagger-delay-4 {
+    animation-delay: 200ms;
+  }
+
+  .stagger-delay-5 {
+    animation-delay: 250ms;
+  }
+
+  /* ========================================
+     HOVER TRANSITIONS
+     Smooth transitions for interactive elements
+     ======================================== */
+  .transition-base {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .transition-fast {
+    @apply transition-all duration-150 ease-out;
+  }
+
+  .transition-slow {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  /* ========================================
+     TRANSFORM ORIGIN UTILITIES
+     For better animation control
+     ======================================== */
+  .origin-center {
+    transform-origin: center center;
+  }
+
+  .origin-top {
+    transform-origin: top center;
+  }
+
+  .origin-bottom {
+    transform-origin: bottom center;
+  }
+
+  /* ========================================
+     WILL-CHANGE OPTIMIZATION
+     Use sparingly for performance-critical animations
+     ======================================== */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  /* ========================================
+     GPU ACCELERATION
+     Force GPU rendering for smoother animations
+     ======================================== */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+}
+
+/* ============================================
+   COMPONENT-SPECIFIC ANIMATIONS
+   Override defaults with component needs
+   ============================================ */
+
+/* Ensure cards animate smoothly on mount */
+.card-enter {
+  animation: slideUp var(--duration-slow) var(--ease-out);
+}
+
+/* Modal/Dialog entrance */
+.modal-enter {
+  animation: scaleIn var(--duration-slow) var(--ease-out);
+}
+
+.modal-backdrop-enter {
+  animation: modalBackdropIn var(--duration-default) var(--ease-out);
+}
+
+/* Button states - prevent layout shift */
+button,
+.button {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Prevent animation flicker on page load */
+.no-animate-on-load {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATION
+   Ensure 60fps animations
+   ============================================ */
+
+/* Only animate transform and opacity for best performance */
+@media (prefers-reduced-motion: no-preference) {
+  .performance-optimized {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+}

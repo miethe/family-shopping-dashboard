@@ -1,0 +1,261 @@
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './lib/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    screens: {
+      'xs': '375px',   // iPhone SE
+      'sm': '640px',
+      'md': '768px',   // iPad
+      'lg': '1024px',
+      'xl': '1280px',
+    },
+    extend: {
+      colors: {
+        // Background colors for light/dark modes
+        'background-light': '#F5F1E8',
+        'background-dark': '#1a1a2e',
+
+        // Text colors for light/dark modes
+        'text-main': '#1e293b',
+        'text-main-dark': '#f1f5f9',
+
+        // Base backgrounds - Cream aesthetic from inspiration
+        'cream': '#F5F1E8',
+        'charcoal': '#3D405B',
+
+        // Warm backgrounds - Refined for depth
+        'bg-base': '#F5F1E8', // Cream from inspiration
+        'bg-subtle': '#F2EEE6',
+        'bg-elevated': '#FFFFFF',
+        'surface-primary': '#FFFFFF',
+        'surface-secondary': 'rgba(255, 255, 255, 0.6)', // Glassy
+        'surface-tertiary': 'rgba(242, 238, 230, 0.5)',
+
+        // Warm text
+        warm: {
+          50: '#F5F1E8',
+          100: '#F2EEE6',
+          200: '#E6E0D6',
+          300: '#D1C8BC',
+          400: '#BDB3A6',
+          500: '#9E9285',
+          600: '#807569',
+          700: '#635A50',
+          800: '#474039',
+          900: '#2B2622',
+        },
+
+        // Primary Salmon - From inspiration app
+        'salmon': '#E07A5F',
+        'mustard': '#DDBEA9',
+        'sage': '#81B29A',
+
+        // Primary coral - Vibrant & Modern (Updated to E57373)
+        primary: {
+          50: '#FFF0ED',
+          100: '#FFE1DB',
+          200: '#FFC2B8',
+          300: '#FFA394',
+          400: '#FF8570',
+          500: '#E57373', // Main coral color from plan
+          600: '#D32F2F', // primary-dark from plan
+          700: '#CC3A21',
+          800: '#B32D17',
+          900: '#8C1F0D',
+          DEFAULT: '#E57373',
+        },
+
+        // Status colors from inspiration
+        'status-idea': {
+          50: '#F2E8CF',
+          100: '#DDBEA9',
+          500: '#C8A166',
+          700: '#BC8A5F',
+          text: '#7c5e47',
+        },
+        'status-shortlisted': {
+          50: '#F4E3E1',
+          500: '#D08C78',
+          700: '#C07E75',
+          text: '#A65D57',
+        },
+        'status-purchased': {
+          50: '#E8F1E9',
+          100: '#AEC3B0',
+          500: '#84A98C',
+          700: '#81B29A',
+          text: '#3e5240',
+        },
+        'status-success': {
+          50: '#F2FCF4',
+          100: '#DDF5E1',
+          500: '#57C264',
+          700: '#3A8F45',
+        },
+        'status-warning': {
+          50: '#FFF5F2',
+          100: '#FFE0D6',
+          500: '#FF7D57',
+          700: '#CC4E29',
+        },
+        'status-progress': {
+          50: '#F7F5FC',
+          100: '#EBE6F7',
+          500: '#9B82CF',
+          700: '#6B529E',
+        },
+        'status-info': {
+          50: '#F0F7FF',
+          100: '#E0EFFF',
+          200: '#BAD7FF',
+          300: '#7DB8FF',
+          400: '#4A9BFF',
+          500: '#2B7FE6',
+          600: '#1E63CC',
+          700: '#164BB3',
+          800: '#0F3A99',
+          900: '#0A2866',
+        },
+        'status-error': {
+          50: '#FFF2F0',
+          100: '#FFE0DC',
+          200: '#FFC2BA',
+          300: '#FF9E91',
+          400: '#FF7568',
+          500: '#E64D3F',
+          600: '#CC3A2E',
+          700: '#B32D22',
+          800: '#99231A',
+          900: '#661812',
+        },
+
+        // Borders
+        'border-subtle': 'rgba(0, 0, 0, 0.04)',
+        'border-medium': 'rgba(0, 0, 0, 0.08)',
+        'border-strong': 'rgba(0, 0, 0, 0.12)',
+
+        // Glass borders
+        'glass-border': 'rgba(255, 255, 255, 0.4)',
+        'glass-border-strong': 'rgba(255, 255, 255, 0.6)',
+
+        // Overlays
+        'overlay-light': 'rgba(0, 0, 0, 0.02)',
+        'overlay-medium': 'rgba(0, 0, 0, 0.05)',
+        'overlay-strong': 'rgba(0, 0, 0, 0.4)',
+      },
+
+      fontFamily: {
+        display: ['Poppins', 'SF Pro Rounded', 'system-ui', 'sans-serif'],
+        body: ['Quicksand', 'Nunito', 'system-ui', 'sans-serif'],
+        kanban: ['Spline Sans', 'Inter', 'system-ui', 'sans-serif'],
+        sans: [
+          'Quicksand',
+          'SF Pro Rounded',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'system-ui',
+          'Nunito',
+          'sans-serif',
+        ],
+      },
+
+      fontSize: {
+        'display-large': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '800' }],
+        'display-medium': ['2.5rem', { lineHeight: '1.15', letterSpacing: '-0.015em', fontWeight: '800' }],
+        'display-small': ['2rem', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }],
+        'heading-1': ['1.75rem', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }],
+        'heading-2': ['1.5rem', { lineHeight: '1.3', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'heading-3': ['1.25rem', { lineHeight: '1.4', letterSpacing: '-0.005em', fontWeight: '600' }],
+        'body-large': ['1.0625rem', { lineHeight: '1.6', fontWeight: '400' }],
+        'body-medium': ['0.9375rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'body-small': ['0.8125rem', { lineHeight: '1.4', fontWeight: '500' }],
+        'label-large': ['0.9375rem', { lineHeight: '1.4', fontWeight: '600' }],
+        'label-small': ['0.75rem', { lineHeight: '1.3', fontWeight: '600', letterSpacing: '0.01em' }],
+      },
+
+      boxShadow: {
+        'subtle': '0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 0 1px rgba(0, 0, 0, 0.04)',
+        'low': '0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.04)',
+        'medium': '0 8px 24px -4px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.04)',
+        'high': '0 16px 48px -8px rgba(0, 0, 0, 0.16), 0 0 1px rgba(0, 0, 0, 0.04)',
+        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+        'glass-inset': 'inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
+        'glow': '0 0 20px rgba(255, 102, 77, 0.3)',
+        // Colored shadow variants
+        'shadow-primary': '0 8px 24px -4px rgba(229, 115, 115, 0.3)',
+        'shadow-card': '0 2px 12px rgba(0, 0, 0, 0.06)',
+        'shadow-soft': '0 4px 20px rgba(0, 0, 0, 0.04)',
+      },
+
+      borderRadius: {
+        'small': '0.625rem',    // 10px
+        'medium': '0.875rem',   // 14px
+        'large': '1.25rem',     // 20px
+        'xlarge': '1.75rem',    // 28px
+        '2xlarge': '2.25rem',   // 36px
+        '3xlarge': '3rem',      // 48px (rounded-3xl in inspiration maps to this)
+        '4xl': '2rem',          // 32px
+      },
+
+      spacing: {
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+      },
+
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUpFade: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        springIn: {
+          '0%': { transform: 'scale(0.9)' },
+          '50%': { transform: 'scale(1.05)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
+        'collapsible-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-collapsible-content-height)' },
+        },
+        'collapsible-up': {
+          from: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: '0' },
+        },
+      },
+
+      animation: {
+        'fade-in': 'fadeIn 0.4s ease-out',
+        'slide-up-fade': 'slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        'scale-in': 'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        'spring-in': 'springIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        'shimmer': 'shimmer 2s infinite',
+        'collapsible-down': 'collapsible-down 0.2s ease-out',
+        'collapsible-up': 'collapsible-up 0.2s ease-out',
+      },
+
+      backdropBlur: {
+        'xs': '2px',
+      },
+    },
+  },
+  plugins: [],
+}
+export default config

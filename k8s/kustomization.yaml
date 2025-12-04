@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Target namespace for all resources
+namespace: family-gifting
+
+# Resource files to include
+resources:
+  # Namespace
+  - namespace.yaml
+
+  # PostgreSQL
+  - postgres/pvc.yaml
+  - postgres/statefulset.yaml
+  - postgres/service.yaml
+
+  # API
+  - api/configmap.yaml
+  - api/deployment.yaml
+  - api/service.yaml
+
+  # Web
+  - web/configmap.yaml
+  - web/deployment.yaml
+  - web/service.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/part-of: family-gifting
+  app.kubernetes.io/managed-by: kustomize
+
+# Common annotations
+commonAnnotations:
+  app.kubernetes.io/version: "v1.0.0"

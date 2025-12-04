@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: family-gifting
+  labels:
+    app: api
+    component: backend
+data:
+  # CORS configuration
+  CORS_ORIGINS: "http://localhost:3000,http://web.family-gifting.svc.cluster.local,http://web.family-gifting.svc.cluster.local:3000"
+
+  # API server configuration
+  API_PORT: "8000"
+
+  # Application environment
+  ENVIRONMENT: "production"
+
+  # Logging configuration
+  LOG_LEVEL: "info"

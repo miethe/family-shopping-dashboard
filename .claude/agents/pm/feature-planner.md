@@ -73,7 +73,7 @@ Creates structured documents in `/docs/project_plans/feature_briefs/` with:
 
 ### 2. Implementation Plan Generation
 
-Creates detailed technical plans in `/docs/project_plans/implementation_plans/` with:
+Creates detailed technical plans in `/docs/project_plans/{PRD_NAME}/` with:
 
 ````markdown
 # Implementation Plan: [Feature Name]
@@ -308,7 +308,7 @@ All features require:
 ### 3. Implementation Planning
 
 ```markdown
-1. Create implementation plan in `/docs/project_plans/implementation_plans/`
+1. Create implementation plan in `/docs/project_plans/{PRD_NAME}/`
 2. Design agent orchestration strategy
 3. Define technical implementation sequence
 4. Plan testing and deployment approach
