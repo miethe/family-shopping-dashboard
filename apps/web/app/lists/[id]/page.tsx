@@ -16,13 +16,15 @@
 
 import { use, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useList } from '@/hooks/useLists';
 import { useListItems } from '@/hooks/useListItems';
 import { useBudgetMeter } from '@/hooks/useBudgetMeter';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Icon, IconNames } from '@/components/ui/icon';
-import { KanbanView, TableView, AddListItemModal } from '@/components/lists';
+import { KanbanView, TableView, AddListItemModal, AddListModal } from '@/components/lists';
 import { GiftDetailModal } from '@/components/modals';
 import { PageHeader } from '@/components/layout';
 import {
@@ -85,12 +87,14 @@ function ListNotFound() {
 
 export default function ListDetailPage({ params }: Props) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { id } = use(params);
   const listId = parseInt(id, 10);
 
   // View and modal state
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [defaultStatus, setDefaultStatus] = useState<ListItemStatus>('idea');
   const [selectedGiftId, setSelectedGiftId] = useState<number | null>(null);
 
@@ -213,6 +217,11 @@ export default function ListDetailPage({ params }: Props) {
                 </button>
               </div>
 
+              {/* Edit Button */}
+              <Button variant="outline" onClick={() => setIsEditModalOpen(true)}>
+                Edit
+              </Button>
+
               {/* Add Gift Button */}
               <button
                 onClick={() => setIsAddItemModalOpen(true)}
@@ -259,6 +268,17 @@ export default function ListDetailPage({ params }: Props) {
         onClose={() => setIsAddItemModalOpen(false)}
         listId={listId}
         defaultStatus={defaultStatus}
+      />
+
+      {/* Edit List Modal */}
+      <AddListModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        mode="edit"
+        listToEdit={listData}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['list', listId] });
+        }}
       />
 
       {/* Gift Detail Modal */}

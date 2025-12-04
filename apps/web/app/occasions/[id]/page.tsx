@@ -10,14 +10,16 @@
 
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useOccasion, useDeleteOccasion } from '@/hooks/useOccasion';
 import { useBudgetMeter, useBudgetWarning } from '@/hooks/useBudgetMeter';
 import { PageHeader } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { OccasionDetail, OccasionLists } from '@/components/occasions';
+import { AddOccasionModal } from '@/components/occasions/AddOccasionModal';
 import { BudgetMeter, BudgetMeterSkeleton, BudgetWarningCard } from '@/components/budget';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -65,6 +67,8 @@ export default function OccasionDetailPage({ params }: OccasionDetailPageProps) 
   const { id } = use(params);
   const occasionId = parseInt(id, 10);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: occasion, isLoading, error } = useOccasion(occasionId);
   const deleteMutation = useDeleteOccasion(occasionId);
@@ -128,8 +132,7 @@ export default function OccasionDetailPage({ params }: OccasionDetailPageProps) 
   }
 
   const handleEdit = () => {
-    // TODO: Navigate to edit page when it exists
-    console.log('Edit occasion:', occasionId);
+    setIsEditModalOpen(true);
   };
 
   return (
@@ -181,6 +184,17 @@ export default function OccasionDetailPage({ params }: OccasionDetailPageProps) 
         {/* Associated Lists */}
         <OccasionLists occasionId={occasion.id} />
       </div>
+
+      {/* Edit Modal */}
+      <AddOccasionModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        mode="edit"
+        occasionToEdit={occasion}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['occasion', occasionId] });
+        }}
+      />
     </div>
   );
 }

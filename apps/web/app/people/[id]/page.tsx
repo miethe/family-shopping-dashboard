@@ -7,7 +7,7 @@
 
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import { usePerson, useDeletePerson } from '@/hooks/usePersons';
 import { PageHeader } from '@/components/layout';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,8 @@ import {
   PersonHistory,
 } from '@/components/people';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { AddPersonModal } from '@/components/people/AddPersonModal';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -51,6 +53,8 @@ export default function PersonDetailPage({ params }: Props) {
   const { id } = use(params);
   const personId = parseInt(id, 10);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: person, isLoading, error } = usePerson(personId);
   const deleteMutation = useDeletePerson();
@@ -106,7 +110,7 @@ export default function PersonDetailPage({ params }: Props) {
         backHref="/people"
         actions={
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => setIsEditModalOpen(true)}>
               Edit
             </Button>
             <Button
@@ -142,6 +146,16 @@ export default function PersonDetailPage({ params }: Props) {
           <PersonHistory personId={person.id} />
         </TabsContent>
       </Tabs>
+
+      <AddPersonModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        mode="edit"
+        personToEdit={person}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['person', personId] });
+        }}
+      />
     </div>
   );
 }
