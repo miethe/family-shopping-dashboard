@@ -24,6 +24,13 @@ from app.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
 from app.schemas.dashboard import DashboardOccasionSummary, DashboardResponse, PersonSummary
 from app.schemas.user import UserCreate, UserResponse
 from app.schemas.ws import WSClientMessage, WSEvent
+from app.schemas.budget import (
+    BudgetMeterDTO,
+    BudgetWarningDTO,
+    EntityBudgetDTO,
+    SetBudgetRequest,
+    SetEntityBudgetRequest,
+)
 
 __all__ = [
     # Base
@@ -70,4 +77,10 @@ __all__ = [
     # WebSocket
     "WSEvent",
     "WSClientMessage",
+    # Budget
+    "BudgetMeterDTO",
+    "BudgetWarningDTO",
+    "EntityBudgetDTO",
+    "SetBudgetRequest",
+    "SetEntityBudgetRequest",
 ]
