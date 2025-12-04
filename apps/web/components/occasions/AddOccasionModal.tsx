@@ -16,7 +16,7 @@ import type { Occasion, OccasionCreate, OccasionUpdate, OccasionType } from '@/t
 interface AddOccasionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (occasion: Occasion) => void;
   mode?: 'create' | 'edit';
   occasionToEdit?: Occasion;
 }
@@ -141,7 +141,7 @@ export function AddOccasionModal({
         }
 
         // Call callbacks
-        onSuccess?.();
+        onSuccess?.(occasion);
         onClose();
       } catch (err: any) {
         toast({
@@ -181,7 +181,7 @@ export function AddOccasionModal({
         }
 
         // Call callbacks
-        onSuccess?.();
+        onSuccess?.(occasion);
         onClose();
       } catch (err: any) {
         toast({

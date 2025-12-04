@@ -99,6 +99,7 @@ export function GiftImage({
   }
 
   // Fallback to standard img if no dimensions specified
+  // eslint-disable-next-line @next/next/no-img-element
   return (
     <img
       src={src}
