@@ -17,6 +17,7 @@ Components:
 """
 
 from app.repositories.base import BaseRepository
+from app.repositories.budget import BudgetRepository
 from app.repositories.comment import CommentRepository
 from app.repositories.gift import GiftRepository
 from app.repositories.list import ListRepository
@@ -38,4 +39,5 @@ __all__ = [
     "ListItemRepository",
     "TagRepository",
     "CommentRepository",
+    "BudgetRepository",
 ]
