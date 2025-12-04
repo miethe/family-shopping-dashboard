@@ -612,4 +612,27 @@ Monthly bug tracking for December 2025.
   3. Extracted page content into `GiftsPageContent` component (contains `useSearchParams`)
   4. Wrapped with `<Suspense fallback={<GiftsSkeleton />}>`
 - **Commit(s)**: `775d41d`
+- **Status**: RESOLVED (partial - see below for complete fix)
+
+---
+
+### Gifts Page Navigation Crash - Modal Inside Suspense Boundary
+
+**Issue**: Despite the Suspense boundary fix (775d41d), navigating FROM /gifts TO /occasions, /people, or /lists still caused crashes. The crash persisted because the GiftDetailModal (which uses Radix Portal) was rendered INSIDE the Suspense boundary.
+
+- **Location**: `apps/web/app/gifts/page.tsx:175-182`
+- **Root Cause**: The GiftDetailModal was inside the Suspense boundary wrapping `GiftsPageContent`. When navigation occurred:
+  1. The Suspense boundary would start unmounting (due to navigation)
+  2. The GiftDetailModal's Radix Portal was still attached to document.body
+  3. React Query subscriptions in the modal were still active
+  4. This caused a race condition between portal cleanup and page unmounting
+  5. The state collision during this transition crashed the app
+- **Why crash only affected /occasions, /people, /lists**: These pages have more complex initial renders with multiple data sources. The race condition during navigation manifested specifically when mounting these pages while the orphaned portal state was still cleaning up. Simpler pages like /dashboard and /assignments mounted faster, avoiding the race window.
+- **Fix**:
+  1. Moved `useEntityModal('gift')` from inside `GiftsPageContent` to the outer `GiftsPage` component
+  2. Added `GiftsPageContentProps` interface with `onOpenDetail` callback
+  3. Passed `openDetail` as prop to `GiftsPageContent`
+  4. Rendered `GiftDetailModal` OUTSIDE the Suspense boundary in `GiftsPage`
+  5. Added documentation comments explaining why modal must stay outside Suspense
+- **Commit(s)**: `cc2a86c`
 - **Status**: RESOLVED

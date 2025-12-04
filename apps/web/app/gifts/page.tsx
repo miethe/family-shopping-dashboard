@@ -57,6 +57,10 @@ function GiftsSkeleton() {
   );
 }
 
+interface GiftsPageContentProps {
+  onOpenDetail: (id: string) => void;
+}
+
 /**
  * Gifts Page Content
  *
@@ -64,7 +68,7 @@ function GiftsSkeleton() {
  * Mobile-first responsive design with loading states.
  * Supports URL query params for initial filter state (e.g., ?status=idea)
  */
-function GiftsPageContent() {
+function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('recent');
@@ -76,9 +80,6 @@ function GiftsPageContent() {
     list_ids: [],
     occasion_ids: [],
   });
-
-  // Centralized gift detail modal state
-  const { open: detailOpen, entityId: detailGiftId, openModal: openDetail, closeModal: closeDetail } = useEntityModal('gift');
 
   // Initialize filters from URL query params on mount
   useEffect(() => {
@@ -153,7 +154,7 @@ function GiftsPageContent() {
       ) : groupBy === 'none' ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {data.items.map((gift) => (
-            <GiftCard key={gift.id} gift={gift} onOpenDetail={openDetail} />
+            <GiftCard key={gift.id} gift={gift} onOpenDetail={onOpenDetail} />
           ))}
         </div>
       ) : (
@@ -161,7 +162,7 @@ function GiftsPageContent() {
           gifts={data.items}
           groupBy={groupBy}
           emptyMessage="No gifts match your search."
-          onOpenDetail={openDetail}
+          onOpenDetail={onOpenDetail}
         />
       )}
 
@@ -169,15 +170,6 @@ function GiftsPageContent() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={() => refetch()}
-      />
-
-      {/* Centralized gift detail modal - prevents multiple instances from triggering API calls */}
-      <GiftDetailModal
-        giftId={detailGiftId}
-        open={detailOpen}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) closeDetail();
-        }}
       />
     </div>
   );
@@ -187,12 +179,29 @@ function GiftsPageContent() {
  * Gifts Page
  *
  * Wraps GiftsPageContent in Suspense boundary to prevent hydration issues
- * with useSearchParams() in Next.js 15
+ * with useSearchParams() in Next.js 15.
+ *
+ * Modal state is managed at this level (outside Suspense) to prevent crashes
+ * during navigation when the Suspense boundary unmounts while modal cleanup is in progress.
  */
 export default function GiftsPage() {
+  // Centralized gift detail modal state - kept outside Suspense to prevent race conditions
+  const { open: detailOpen, entityId: detailGiftId, openModal: openDetail, closeModal: closeDetail } = useEntityModal('gift');
+
   return (
-    <Suspense fallback={<GiftsSkeleton />}>
-      <GiftsPageContent />
-    </Suspense>
+    <>
+      <Suspense fallback={<GiftsSkeleton />}>
+        <GiftsPageContent onOpenDetail={openDetail} />
+      </Suspense>
+
+      {/* Modal rendered outside Suspense boundary - prevents unmount race condition during navigation */}
+      <GiftDetailModal
+        giftId={detailGiftId}
+        open={detailOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) closeDetail();
+        }}
+      />
+    </>
   );
 }
