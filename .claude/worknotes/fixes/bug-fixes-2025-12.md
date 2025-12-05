@@ -716,3 +716,16 @@ Monthly bug tracking for December 2025.
   5. Added documentation comments explaining why modal must stay outside Suspense
 - **Commit(s)**: `cc2a86c`
 - **Status**: RESOLVED
+
+
+---
+
+### GiftPriority Enum Case Mismatch
+
+**Issue**: App failed with `LookupError: 'medium' is not among the defined enum values. Enum name: gift_priority. Possible values: LOW, MEDIUM, HIGH` during Alembic migration or gift operations.
+
+- **Location**: `services/api/app/models/gift.py:94`
+- **Root Cause**: The SQLAlchemy model used `native_enum=False` which causes SQLAlchemy to validate against Python enum NAMES (LOW, MEDIUM, HIGH) as strings. However, migration `cf29065501d1` created a PostgreSQL ENUM type with lowercase VALUES ('low', 'medium', 'high'). When the app tried to use the enum, SQLAlchemy expected uppercase names but the database had lowercase values.
+- **Fix**: Changed `native_enum=False` to `native_enum=True` to use the existing PostgreSQL ENUM type directly, which has the correct lowercase values.
+- **Commit(s)**: `0bf2fda`
+- **Status**: RESOLVED
