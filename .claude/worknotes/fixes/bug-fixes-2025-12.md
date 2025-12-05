@@ -253,6 +253,17 @@ Monthly bug tracking for December 2025.
 - **Commit(s)**: b8efaab
 - **Status**: RESOLVED
 
+---
+
+### Gift Edit Route 404
+
+**Issue**: Navigating to `/gifts/{id}/edit` returned 404, so "Edit" deep links for gifts were broken.
+- **Location**: `apps/web/app/gifts/[id]/edit/page.tsx`
+- **Root Cause**: No edit route existed in the app directory.
+- **Fix**: Added an edit route that fetches the gift and renders the existing `GiftEditModal` (opening by default) with navigation back to the gift or list on close.
+- **Commit(s)**: 111f449
+- **Status**: RESOLVED
+
 - **Location**: `apps/web/components/lists/KanbanColumn.tsx:89-101`
 - **Root Cause**: `handleDragLeave` used cursor position boundary checking (`e.clientX/Y` vs `getBoundingClientRect()`) which incorrectly cleared hover state when moving between parent and child elements. Also called `e.preventDefault()` which interfered with drag events.
 - **Fix**:
