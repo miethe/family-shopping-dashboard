@@ -14,7 +14,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CalendarIcon, CakeIcon, SparklesIcon } from '@/components/layout/icons';
 import { cn } from '@/lib/utils';
-import type { Occasion } from '@/types';
+import { getDaysUntil, formatDateCustom } from '@/lib/date-utils';
+import type { Occasion, OccasionType } from '@/types';
 
 interface OccasionDetailProps {
   occasion: Occasion;
@@ -24,6 +25,7 @@ interface OccasionDetailProps {
 const typeColors: Record<string, string> = {
   birthday: 'bg-purple-100 text-purple-600',
   holiday: 'bg-red-100 text-red-600',
+  recurring: 'bg-blue-100 text-blue-600',
   other: 'bg-gray-100 text-gray-600',
 };
 
@@ -31,8 +33,23 @@ const typeColors: Record<string, string> = {
 const typeBadgeVariant: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info' | 'primary'> = {
   birthday: 'primary',
   holiday: 'error',
+  recurring: 'primary',
   other: 'default',
 };
+
+// Helper function to format occasion type for display
+function formatOccasionType(type: OccasionType): string {
+  switch (type) {
+    case 'holiday':
+      return 'Holiday';
+    case 'recurring':
+      return 'Recurring';
+    case 'other':
+      return 'Other';
+    default:
+      return type;
+  }
+}
 
 // Type icons
 function OccasionIcon({ type, className }: { type: string; className?: string }) {
@@ -48,28 +65,10 @@ function OccasionIcon({ type, className }: { type: string; className?: string })
   }
 }
 
-// Calculate days until/since occasion
-function getDaysUntil(dateStr: string): number {
-  const date = new Date(dateStr);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
-  const diff = date.getTime() - today.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
-// Format date for display
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
 export function OccasionDetail({ occasion }: OccasionDetailProps) {
-  const daysUntil = getDaysUntil(occasion.date);
+  // Use next_occurrence if available, otherwise use date
+  const displayDate = occasion.next_occurrence || occasion.date;
+  const daysUntil = getDaysUntil(displayDate);
   const isPast = daysUntil < 0;
   const isToday = daysUntil === 0;
 
@@ -91,13 +90,41 @@ export function OccasionDetail({ occasion }: OccasionDetailProps) {
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
                 <Badge variant={typeBadgeVariant[occasion.type] || 'default'} size="sm">
-                  {occasion.type}
+                  {occasion.type === 'recurring' && '🔄 '}
+                  {formatOccasionType(occasion.type)}
                 </Badge>
+                {occasion.subtype && (
+                  <Badge variant="default" size="sm">
+                    {occasion.subtype}
+                  </Badge>
+                )}
+                {!occasion.is_active && (
+                  <Badge variant="warning" size="sm">
+                    Inactive
+                  </Badge>
+                )}
               </div>
               <h2 className="text-xl font-bold text-gray-900 mb-1">{occasion.name}</h2>
-              <p className="text-gray-600">{formatDate(occasion.date)}</p>
+              <p className="text-gray-600">
+                {formatDateCustom(displayDate, {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </p>
+              {/* Show "Next:" label for recurring occasions */}
+              {occasion.type === 'recurring' && occasion.next_occurrence && (
+                <p className="text-sm text-blue-600 mt-1">
+                  Next occurrence: {formatDateCustom(occasion.next_occurrence, {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </p>
+              )}
             </div>
           </div>
 
@@ -113,7 +140,10 @@ export function OccasionDetail({ occasion }: OccasionDetailProps) {
                 <span
                   className={cn(
                     'block text-4xl font-bold',
-                    isPast ? 'text-gray-400' : 'text-primary-600'
+                    isPast ? 'text-gray-400' :
+                    daysUntil <= 7 ? 'text-orange-600' :
+                    daysUntil <= 3 ? 'text-red-600' :
+                    'text-primary-600'
                   )}
                 >
                   {Math.abs(daysUntil)}

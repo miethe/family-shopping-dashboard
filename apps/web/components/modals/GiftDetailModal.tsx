@@ -15,18 +15,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ExternalLink, Gift as GiftIcon, DollarSign, Calendar, User, Tag, Edit, Trash2, Heart, Lightbulb, CheckSquare, ShoppingBag, Plus } from "@/components/ui/icons";
+import { ExternalLink, Gift as GiftIcon, DollarSign, Calendar, User, Tag, Edit, Trash2, Heart, Lightbulb, CheckSquare, ShoppingBag, Plus, CalendarCheck, Store, Pencil } from "@/components/ui/icons";
 import { formatDate } from "@/lib/date-utils";
 import { formatPrice } from "@/lib/utils";
 import { giftApi } from "@/lib/api/endpoints";
 import { useDeleteGift, useUpdateGift } from "@/hooks/useGifts";
 import { useListsForGift } from "@/hooks/useLists";
-import type { Gift } from "@/types";
+import type { Gift, GiftPriority, Person } from "@/types";
 import type { GiftStatus } from "@/components/ui/status-pill";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ListDetailModal } from "./ListDetailModal";
 import { LinkGiftToListsModal } from "../gifts/LinkGiftToListsModal";
+import { PeopleMultiSelect } from "@/components/common/PeopleMultiSelect";
+import { Avatar, AvatarFallback, getInitials } from "@/components/ui/avatar";
+import { usePersons } from "@/hooks/usePersons";
 
 interface GiftDetailModalProps {
   giftId: string | null;
@@ -45,6 +48,8 @@ export function GiftDetailModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
   const [showLinkListsModal, setShowLinkListsModal] = React.useState(false);
+  const [isEditingPeople, setIsEditingPeople] = React.useState(false);
+  const [editingPersonIds, setEditingPersonIds] = React.useState<number[]>([]);
 
   const { data: gift, isLoading } = useQuery<Gift>({
     queryKey: ["gifts", giftId],
@@ -56,6 +61,8 @@ export function GiftDetailModal({
     giftId ? Number(giftId) : undefined,
     { enabled: open }
   );
+
+  const { data: personsData } = usePersons({}, { enabled: open });
 
   const deleteGift = useDeleteGift();
   const updateGiftMutation = useUpdateGift(giftId ? Number(giftId) : 0);
@@ -93,12 +100,63 @@ export function GiftDetailModal({
     setSelectedListId(String(listId));
   };
 
-  // Reset tab when modal closes
+  const handleSavePeople = async () => {
+    if (!giftId) return;
+
+    try {
+      await updateGiftMutation.mutateAsync({
+        person_ids: editingPersonIds,
+      });
+      setIsEditingPeople(false);
+    } catch (error) {
+      console.error("Failed to update linked people:", error);
+    }
+  };
+
+  // Get linked people based on gift's person_ids
+  const linkedPeople = React.useMemo(() => {
+    const allPeople = personsData?.items || [];
+    if (!gift?.person_ids || !allPeople.length) return [];
+    return allPeople.filter((person) => gift.person_ids.includes(person.id));
+  }, [gift?.person_ids, personsData?.items]);
+
+  // Helper function to get priority badge variant
+  const getPriorityVariant = (priority: GiftPriority) => {
+    switch (priority) {
+      case 'high':
+        return 'error' as const;
+      case 'medium':
+        return 'warning' as const;
+      case 'low':
+        return 'info' as const;
+      default:
+        return 'default' as const;
+    }
+  };
+
+  // Compute price display conditions (for TypeScript strict mode)
+  const hasPrice = gift?.price !== null && gift?.price !== undefined;
+  const hasSalePrice = gift?.sale_price !== null && gift?.sale_price !== undefined;
+  const showSalePriceOnly = Boolean(!hasPrice && hasSalePrice);
+  const priceDisplay = hasPrice ? formatPrice(gift?.price) : '';
+  const salePriceDisplay = hasSalePrice ? formatPrice(gift?.sale_price) : '';
+  const giftStatus = typeof gift?.extra_data?.status === 'string' ? gift.extra_data.status : null;
+
+  // Reset tab and editing state when modal closes
   React.useEffect(() => {
     if (!open) {
       setActiveTab("overview");
+      setIsEditingPeople(false);
+      setEditingPersonIds([]);
     }
   }, [open]);
+
+  // Initialize editing person IDs when opening edit mode
+  React.useEffect(() => {
+    if (isEditingPeople && gift?.person_ids) {
+      setEditingPersonIds(gift.person_ids);
+    }
+  }, [isEditingPeople, gift?.person_ids]);
 
   if (!gift && !isLoading) {
     return null;
@@ -153,20 +211,20 @@ export function GiftDetailModal({
           </div>
         ) : gift ? (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full mb-6">
-              <TabsTrigger value="overview" className="flex-1">
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="linked" className="flex-1">
-                Linked Entities
-              </TabsTrigger>
-              <TabsTrigger value="history" className="flex-1">
-                History
-              </TabsTrigger>
-            </TabsList>
+              <TabsList className="w-full mb-6">
+                <TabsTrigger value="overview" className="flex-1">
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="linked" className="flex-1">
+                  Linked Entities
+                </TabsTrigger>
+                <TabsTrigger value="history" className="flex-1">
+                  History
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="space-y-6">
+              {/* Overview Tab */}
+              <TabsContent value="overview" className="space-y-6">
               {/* Hero Section with Image */}
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Image */}
@@ -200,8 +258,28 @@ export function GiftDetailModal({
                     {gift.name}
                   </h2>
 
+                  {/* Priority & Quantity */}
+                  {(gift.priority || gift.quantity > 1) && (
+                    <div className="flex items-center gap-4">
+                      {gift.priority && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-warm-600">Priority:</span>
+                          <Badge variant={getPriorityVariant(gift.priority)}>
+                            {gift.priority.toUpperCase()}
+                          </Badge>
+                        </div>
+                      )}
+                      {gift.quantity > 1 && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-warm-600">Qty:</span>
+                          <span className="font-medium">{gift.quantity}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Price */}
-                  {gift.price !== null && gift.price !== undefined && (
+                  {hasPrice && (
                     <div
                       className={cn(
                         "flex items-center gap-3",
@@ -212,27 +290,65 @@ export function GiftDetailModal({
                       <div className="bg-green-100 rounded-full p-2">
                         <DollarSign className="h-5 w-5 text-green-600" />
                       </div>
-                      <div>
-                        <p className="text-sm text-warm-600 mb-0.5">Price</p>
-                        <p className="text-2xl font-bold text-warm-900">
-                          {formatPrice(gift.price)}
-                        </p>
+                      <div className="flex-1">
+                          <p className="text-sm text-warm-600 mb-0.5">Price</p>
+                          <div className="flex items-center gap-3">
+                            <p className={cn(
+                              "text-2xl font-bold",
+                              hasSalePrice ? "line-through text-warm-600" : "text-warm-900"
+                            )}>
+                              {priceDisplay}
+                            </p>
+                            {hasSalePrice && (
+                              <p className="text-2xl font-bold text-green-600">
+                                {salePriceDisplay}
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       </div>
+                  )}
+
+                  {showSalePriceOnly ? (
+                    <div
+                      className={cn(
+                        "flex items-center gap-3",
+                        "bg-gradient-to-br from-green-50 to-emerald-50",
+                        "rounded-xl p-4 border border-green-200"
+                      )}
+                    >
+                      <div className="bg-green-100 rounded-full p-2">
+                        <DollarSign className="h-5 w-5 text-green-600" />
+                      </div>
+                          <div className="flex-1">
+                            <p className="text-sm text-warm-600 mb-0.5">Price</p>
+                            <p className="text-2xl font-bold text-green-600">
+                              {salePriceDisplay}
+                            </p>
+                          </div>
+                        </div>
+                      ) : null}
+
+                  {/* Purchase Date */}
+                  {gift.purchase_date && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <CalendarCheck className="h-4 w-4 text-warm-500" />
+                      <span>Purchased on {formatDate(gift.purchase_date)}</span>
                     </div>
                   )}
 
                   {/* Status Selector */}
-                  {gift.extra_data?.status && (
+                  {giftStatus ? (
                     <div>
                       <p className="text-sm text-warm-600 mb-2">Status</p>
                       <StatusSelector
-                        status={gift.extra_data.status as GiftStatus}
+                        status={giftStatus as GiftStatus}
                         onChange={handleStatusChange}
                         size="md"
                         disabled={updateGiftMutation.isPending}
                       />
                     </div>
-                  )}
+                  ) : null}
 
                   {/* Source */}
                   {gift.source && (
@@ -243,34 +359,99 @@ export function GiftDetailModal({
                       </Badge>
                     </div>
                   )}
-
-                  {/* Extra Data */}
-                  {gift.extra_data && Object.keys(gift.extra_data).length > 0 && (
-                    <div
-                      className={cn(
-                        "bg-warm-50 rounded-xl p-4 border border-warm-200",
-                        "space-y-2"
-                      )}
-                    >
-                      <h3 className="font-semibold text-warm-900 text-sm mb-2">
-                        Additional Details
-                      </h3>
-                      <div className="space-y-1.5 text-sm">
-                        {Object.entries(gift.extra_data).map(([key, value]) => (
-                          <div key={key} className="flex justify-between">
-                            <span className="text-warm-600 capitalize">
-                              {key.replace(/_/g, " ")}:
-                            </span>
-                            <span className="text-warm-900 font-medium">
-                              {String(value)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
+
+              {/* Description */}
+              {gift.description && (
+                <div className="space-y-2 pt-4 border-t border-warm-200">
+                  <h3 className="text-sm font-semibold text-warm-900">Description</h3>
+                  <p className="text-sm text-warm-700 whitespace-pre-wrap">{gift.description}</p>
+                </div>
+              )}
+
+              {/* Notes */}
+              {gift.notes && (
+                <div className="space-y-2 bg-warm-50/50 rounded-xl p-4 border border-warm-200">
+                  <h3 className="text-sm font-semibold text-warm-900">Notes</h3>
+                  <p className="text-sm text-warm-700 italic whitespace-pre-wrap">{gift.notes}</p>
+                </div>
+              )}
+
+              {/* Stores */}
+              {gift.stores && gift.stores.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-warm-900">Available at</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {gift.stores.map((store) => (
+                      <Badge key={store.id} variant="default" className="gap-1.5">
+                        <Store className="h-3 w-3" />
+                        {store.url ? (
+                          <a
+                            href={store.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline"
+                          >
+                            {store.name}
+                          </a>
+                        ) : (
+                          store.name
+                        )}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Additional URLs */}
+              {gift.additional_urls && gift.additional_urls.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-warm-900">Related Links</h3>
+                  <div className="space-y-1.5">
+                    {gift.additional_urls.map((url, index) => (
+                      <a
+                        key={index}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 hover:underline"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        {new URL(url).hostname}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Extra Data (for any other metadata) */}
+              {gift.extra_data && Object.keys(gift.extra_data).filter(k => k !== 'status').length > 0 && (
+                <div
+                  className={cn(
+                    "bg-warm-50 rounded-xl p-4 border border-warm-200",
+                    "space-y-2"
+                  )}
+                >
+                  <h3 className="font-semibold text-warm-900 text-sm mb-2">
+                    Additional Details
+                  </h3>
+                  <div className="space-y-1.5 text-sm">
+                    {Object.entries(gift.extra_data)
+                      .filter(([key]) => key !== 'status')
+                      .map(([key, value]) => (
+                        <div key={key} className="flex justify-between">
+                          <span className="text-warm-600 capitalize">
+                            {key.replace(/_/g, " ")}:
+                          </span>
+                          <span className="text-warm-900 font-medium">
+                            {String(value)}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
 
               {/* Metadata */}
               <div
@@ -289,8 +470,89 @@ export function GiftDetailModal({
             </TabsContent>
 
             {/* Linked Entities Tab */}
-            <TabsContent value="linked" className="space-y-4">
-              <div className="space-y-4">
+            <TabsContent value="linked" className="space-y-6">
+              {/* People Section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-warm-900 text-lg">
+                      Linked People
+                    </h3>
+                    <p className="text-warm-600 text-sm">
+                      People this gift is for
+                    </p>
+                  </div>
+                  {!isEditingPeople && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsEditingPeople(true)}
+                      className="min-h-[36px]"
+                    >
+                      <Pencil className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                  )}
+                </div>
+
+                {isEditingPeople ? (
+                  <div className="mt-4 p-4 border border-warm-200 rounded-xl bg-warm-50/30">
+                    <PeopleMultiSelect
+                      value={editingPersonIds}
+                      onChange={setEditingPersonIds}
+                    />
+                    <div className="flex justify-end gap-2 mt-4">
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setIsEditingPeople(false);
+                          setEditingPersonIds(gift?.person_ids || []);
+                        }}
+                        disabled={updateGiftMutation.isPending}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleSavePeople}
+                        disabled={updateGiftMutation.isPending}
+                        isLoading={updateGiftMutation.isPending}
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  </div>
+                ) : linkedPeople && linkedPeople.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {linkedPeople.map((person) => (
+                      <Badge key={person.id} variant="default" className="gap-2 pl-1 pr-3 py-1.5">
+                        <Avatar size="xs">
+                          <AvatarFallback className="text-xs">
+                            {getInitials(person.display_name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm">{person.display_name}</span>
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 bg-warm-50 rounded-xl border border-warm-200">
+                    <User className="h-8 w-8 mx-auto mb-2 text-warm-400" />
+                    <p className="text-sm text-warm-600">No people linked to this gift</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsEditingPeople(true)}
+                      className="mt-3"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Link People
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Lists Section */}
+              <div className="space-y-4 pt-4 border-t border-warm-200">
                 <div>
                   <h3 className="font-semibold text-warm-900 text-lg mb-1">
                     Lists Containing This Gift

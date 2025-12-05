@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import { Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/ui';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/layout/icons';
+import { OccasionDetailModal } from '@/components/modals/OccasionDetailModal';
 import type { DashboardOccasionSummary, PersonSummaryDashboard } from '@/types';
 
 interface DashboardHeaderProps {
@@ -18,6 +19,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ occasion, people }: DashboardHeaderProps) {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [isOccasionModalOpen, setIsOccasionModalOpen] = useState(false);
   const maxScroll = Math.max(0, people.length - 4);
 
   const handleScrollLeft = () => {
@@ -42,16 +44,34 @@ export function DashboardHeader({ occasion, people }: DashboardHeaderProps) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-      {/* Occasion Title */}
-      <div>
-        <h1 className="text-4xl md:text-display-small font-extrabold text-charcoal tracking-tight">
-          {occasion?.name || 'Dashboard'}{' '}
-          {occasion && (
-            <span className="text-salmon">{formatDate(occasion.date)}</span>
+    <>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        {/* Occasion Title */}
+        <div>
+          {occasion ? (
+            <button
+              onClick={() => setIsOccasionModalOpen(true)}
+              className="text-left hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-2 -m-2"
+            >
+              <h1 className="text-4xl md:text-display-small font-extrabold text-charcoal tracking-tight">
+                {occasion.name}{' '}
+                <span className="text-salmon">{formatDate(occasion.date)}</span>
+              </h1>
+              <p className="text-sm text-warm-600 mt-1">
+                {occasion.days_until === 0 ? 'Today!' : occasion.days_until === 1 ? '1 day left' : `${occasion.days_until} days left`}
+              </p>
+            </button>
+          ) : (
+            <div>
+              <h1 className="text-4xl md:text-display-small font-extrabold text-charcoal tracking-tight">
+                Dashboard
+              </h1>
+              <p className="text-sm text-warm-600 mt-1">
+                No upcoming occasions in the next 90 days
+              </p>
+            </div>
           )}
-        </h1>
-      </div>
+        </div>
 
       {/* People Carousel */}
       {people.length > 0 && (
@@ -111,6 +131,14 @@ export function DashboardHeader({ occasion, people }: DashboardHeaderProps) {
           )}
         </div>
       )}
-    </div>
+      </div>
+
+      {/* Occasion Detail Modal */}
+      <OccasionDetailModal
+        occasionId={occasion?.id ? String(occasion.id) : null}
+        open={isOccasionModalOpen}
+        onOpenChange={setIsOccasionModalOpen}
+      />
+    </>
   );
 }

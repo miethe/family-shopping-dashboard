@@ -20,6 +20,7 @@ import type { Person, PersonUpdate, GiftList } from "@/types";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { LinkListsToContextModal } from "./LinkListsToContextModal";
+import { GroupMultiSelect } from "@/components/common/GroupMultiSelect";
 
 interface PersonDetailModalProps {
   personId: string | null;
@@ -37,6 +38,8 @@ export function PersonDetailModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [showLinkListsModal, setShowLinkListsModal] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("overview");
+  const [isEditingGroups, setIsEditingGroups] = React.useState(false);
+  const [editingGroupIds, setEditingGroupIds] = React.useState<number[]>([]);
 
   const { data: person, isLoading } = useQuery<Person>({
     queryKey: ["people", personId],
@@ -89,6 +92,7 @@ export function PersonDetailModal({
       setShowDeleteConfirm(false);
       setShowLinkListsModal(false);
       setActiveTab("overview");
+      setIsEditingGroups(false);
     }
   }, [open]);
 
@@ -175,6 +179,33 @@ export function PersonDetailModal({
     const newSizes = { ...(formData.sizes || {}) };
     delete newSizes[key];
     setFormData({ ...formData, sizes: newSizes });
+  };
+
+  const handleEditGroups = () => {
+    const groupIds = person?.groups?.map(g => g.id) || [];
+    setEditingGroupIds(groupIds);
+    setIsEditingGroups(true);
+  };
+
+  const handleSaveGroups = async () => {
+    try {
+      await updateMutation.mutateAsync({
+        group_ids: editingGroupIds
+      });
+
+      toast({
+        title: "Success",
+        description: "Groups updated successfully",
+      });
+
+      setIsEditingGroups(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update groups",
+        variant: "error",
+      });
+    }
   };
 
   return (
@@ -392,6 +423,76 @@ export function PersonDetailModal({
                       </div>
                     </div>
                   )}
+
+                  {/* Groups */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-warm-900">Groups</h3>
+                      {!isEditingGroups && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleEditGroups}
+                          className="min-h-[44px] min-w-[44px]"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+
+                    {!isEditingGroups ? (
+                      person.groups && person.groups.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {person.groups.map(group => (
+                            <Badge
+                              key={group.id}
+                              variant="default"
+                              style={{ borderColor: group.color || undefined }}
+                              className={cn(
+                                "gap-1.5 px-3 py-1.5",
+                                "bg-white border-2"
+                              )}
+                            >
+                              {group.color && (
+                                <span
+                                  className="h-2 w-2 rounded-full flex-shrink-0"
+                                  style={{ backgroundColor: group.color }}
+                                />
+                              )}
+                              <span className="text-sm">{group.name}</span>
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-warm-600">Not assigned to any groups</p>
+                      )
+                    ) : (
+                      <div className="space-y-4 p-4 border-2 border-warm-300 rounded-xl bg-warm-50">
+                        <GroupMultiSelect
+                          value={editingGroupIds}
+                          onChange={setEditingGroupIds}
+                        />
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsEditingGroups(false)}
+                            className="min-h-[44px]"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={handleSaveGroups}
+                            disabled={updateMutation.isPending}
+                            className="min-h-[44px]"
+                          >
+                            {updateMutation.isPending ? 'Saving...' : 'Save'}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Sizes */}
                   {person.sizes && Object.keys(person.sizes).length > 0 && (

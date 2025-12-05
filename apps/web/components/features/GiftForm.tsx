@@ -9,11 +9,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Gift, GiftCreate, GiftUpdate } from '@/types';
+import { Gift, GiftCreate, GiftUpdate, GiftPriority } from '@/types';
 import { useCreateGift, useUpdateGift, useGiftFromUrl } from '@/hooks/useGifts';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
+import { UrlListInput } from '@/components/common/UrlListInput';
+import { StoreMultiSelect } from '@/components/gifts/StoreMultiSelect';
+import { PeopleMultiSelect } from '@/components/common/PeopleMultiSelect';
 import { cn } from '@/lib/utils';
 
 export interface GiftFormProps {
@@ -44,6 +49,15 @@ export function GiftForm({ gift, onSuccess, onCancel }: GiftFormProps) {
     price: gift?.price || undefined,
     image_url: gift?.image_url || '',
     source: gift?.source || '',
+    description: gift?.description || '',
+    notes: gift?.notes || '',
+    priority: gift?.priority || GiftPriority.MEDIUM,
+    quantity: gift?.quantity || 1,
+    sale_price: gift?.sale_price || undefined,
+    purchase_date: gift?.purchase_date || undefined,
+    additional_urls: gift?.additional_urls || [],
+    store_ids: gift?.stores?.map(s => s.id) || [],
+    person_ids: gift?.person_ids || [],
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof GiftCreate, string>>>({});
@@ -145,6 +159,21 @@ export function GiftForm({ gift, onSuccess, onCancel }: GiftFormProps) {
         if (formData.price !== gift.price) updates.price = formData.price;
         if (formData.image_url !== gift.image_url) updates.image_url = formData.image_url || undefined;
         if (formData.source !== gift.source) updates.source = formData.source || undefined;
+        if (formData.description !== gift.description) updates.description = formData.description || undefined;
+        if (formData.notes !== gift.notes) updates.notes = formData.notes || undefined;
+        if (formData.priority !== gift.priority) updates.priority = formData.priority;
+        if (formData.quantity !== gift.quantity) updates.quantity = formData.quantity;
+        if (formData.sale_price !== gift.sale_price) updates.sale_price = formData.sale_price;
+        if (formData.purchase_date !== gift.purchase_date) updates.purchase_date = formData.purchase_date;
+        if (JSON.stringify(formData.additional_urls) !== JSON.stringify(gift.additional_urls)) {
+          updates.additional_urls = formData.additional_urls;
+        }
+        if (JSON.stringify(formData.store_ids) !== JSON.stringify(gift.stores?.map(s => s.id) || [])) {
+          updates.store_ids = formData.store_ids;
+        }
+        if (JSON.stringify(formData.person_ids) !== JSON.stringify(gift.person_ids)) {
+          updates.person_ids = formData.person_ids;
+        }
 
         result = await updateMutation.mutateAsync(updates);
 
@@ -242,7 +271,7 @@ export function GiftForm({ gift, onSuccess, onCancel }: GiftFormProps) {
         type="number"
         step="0.01"
         min="0"
-        value={formData.price !== undefined ? formData.price : ''}
+        value={formData.price !== undefined && formData.price !== null ? formData.price : ''}
         onChange={(e) => {
           const value = e.target.value ? parseFloat(e.target.value) : undefined;
           handleFieldChange('price', value);
@@ -258,7 +287,7 @@ export function GiftForm({ gift, onSuccess, onCancel }: GiftFormProps) {
           label="Image URL"
           placeholder="https://..."
           type="url"
-          value={formData.image_url}
+          value={formData.image_url || ''}
           onChange={(e) => handleFieldChange('image_url', e.target.value)}
           error={errors.image_url}
           helperText="Optional - direct link to product image"
@@ -305,7 +334,7 @@ export function GiftForm({ gift, onSuccess, onCancel }: GiftFormProps) {
         </label>
         <select
           id="source"
-          value={formData.source}
+          value={formData.source || ''}
           onChange={(e) => handleFieldChange('source', e.target.value)}
           disabled={isLoading}
           className={cn(
@@ -326,6 +355,110 @@ export function GiftForm({ gift, onSuccess, onCancel }: GiftFormProps) {
         </select>
         <p className="mt-1.5 text-xs text-warm-600">
           Optional - where to purchase this gift
+        </p>
+      </div>
+
+      {/* Description Textarea */}
+      <Textarea
+        label="Description"
+        placeholder="Describe the gift..."
+        value={formData.description || ''}
+        onChange={(e) => handleFieldChange('description', e.target.value)}
+        rows={3}
+        helperText="Optional - detailed description of the gift"
+        disabled={isLoading}
+      />
+
+      {/* Notes Textarea (internal) */}
+      <Textarea
+        label="Notes (Internal)"
+        placeholder="Private notes about this gift..."
+        value={formData.notes || ''}
+        onChange={(e) => handleFieldChange('notes', e.target.value)}
+        rows={2}
+        helperText="Optional - private notes for your reference only"
+        disabled={isLoading}
+      />
+
+      {/* Priority & Quantity Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Select
+          label="Priority"
+          value={formData.priority || GiftPriority.MEDIUM}
+          onChange={(value) => handleFieldChange('priority', value as GiftPriority)}
+          options={[
+            { value: GiftPriority.LOW, label: 'Low' },
+            { value: GiftPriority.MEDIUM, label: 'Medium' },
+            { value: GiftPriority.HIGH, label: 'High' },
+          ]}
+          disabled={isLoading}
+        />
+        <Input
+          label="Quantity"
+          type="number"
+          min={1}
+          value={formData.quantity || 1}
+          onChange={(e) => handleFieldChange('quantity', parseInt(e.target.value) || 1)}
+          helperText="How many items"
+          disabled={isLoading}
+        />
+      </div>
+
+      {/* Sale Price */}
+      <Input
+        label="Sale Price"
+        placeholder="0.00"
+        type="number"
+        step="0.01"
+        min="0"
+        value={formData.sale_price !== undefined && formData.sale_price !== null ? formData.sale_price : ''}
+        onChange={(e) => {
+          const value = e.target.value ? parseFloat(e.target.value) : undefined;
+          handleFieldChange('sale_price', value);
+        }}
+        helperText="Optional - discounted or sale price"
+        disabled={isLoading}
+      />
+
+      {/* Purchase Date */}
+      <Input
+        label="Purchase Date"
+        type="date"
+        value={formData.purchase_date || ''}
+        onChange={(e) => handleFieldChange('purchase_date', e.target.value || undefined)}
+        helperText="Optional - when the gift was purchased"
+        disabled={isLoading}
+      />
+
+      {/* Additional URLs */}
+      <UrlListInput
+        label="Additional URLs"
+        value={formData.additional_urls || []}
+        onChange={(urls) => setFormData(prev => ({ ...prev, additional_urls: urls }))}
+        helperText="Add more product links or references"
+        disabled={isLoading}
+      />
+
+      {/* Stores Multi-Select */}
+      <StoreMultiSelect
+        label="Stores"
+        value={formData.store_ids || []}
+        onChange={(ids) => setFormData(prev => ({ ...prev, store_ids: ids }))}
+        stores={gift?.stores}
+        helperText="Select stores where this gift can be purchased"
+      />
+
+      {/* People Multi-Select */}
+      <div>
+        <label className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide">
+          For (People)
+        </label>
+        <PeopleMultiSelect
+          value={formData.person_ids || []}
+          onChange={(ids) => setFormData(prev => ({ ...prev, person_ids: ids }))}
+        />
+        <p className="mt-1.5 text-xs text-warm-600">
+          Optional - who is this gift for
         </p>
       </div>
 

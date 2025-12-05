@@ -16,7 +16,8 @@ import { Badge } from '@/components/ui/badge';
 import { CalendarIcon, CakeIcon, HeartIcon, SparklesIcon } from '@/components/layout/icons';
 import { cn } from '@/lib/utils';
 import { OccasionDetailModal, useEntityModal } from '@/components/modals';
-import type { Occasion } from '@/types';
+import { getDaysUntil, formatDateCustom } from '@/lib/date-utils';
+import type { Occasion, OccasionType } from '@/types';
 
 interface OccasionCardProps {
   occasion: Occasion;
@@ -26,6 +27,7 @@ interface OccasionCardProps {
 const typeColors: Record<string, string> = {
   birthday: 'bg-purple-100 text-purple-600',
   holiday: 'bg-red-100 text-red-600',
+  recurring: 'bg-blue-100 text-blue-600',
   other: 'bg-gray-100 text-gray-600',
 };
 
@@ -33,8 +35,23 @@ const typeColors: Record<string, string> = {
 const typeBadgeVariant: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info' | 'primary'> = {
   birthday: 'primary',
   holiday: 'error',
+  recurring: 'primary',
   other: 'default',
 };
+
+// Helper function to format occasion type for display
+function formatOccasionType(type: OccasionType): string {
+  switch (type) {
+    case 'holiday':
+      return 'Holiday';
+    case 'recurring':
+      return 'Recurring';
+    case 'other':
+      return 'Other';
+    default:
+      return type;
+  }
+}
 
 // Type icons
 function OccasionIcon({ type, className }: { type: string; className?: string }) {
@@ -50,28 +67,10 @@ function OccasionIcon({ type, className }: { type: string; className?: string })
   }
 }
 
-// Calculate days until/since occasion
-function getDaysUntil(dateStr: string): number {
-  const date = new Date(dateStr);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
-  const diff = date.getTime() - today.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
-// Format date for display
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
 export function OccasionCard({ occasion }: OccasionCardProps) {
-  const daysUntil = getDaysUntil(occasion.date);
+  // Use next_occurrence if available, otherwise use date
+  const displayDate = occasion.next_occurrence || occasion.date;
+  const daysUntil = getDaysUntil(displayDate);
   const isPast = daysUntil < 0;
   const isToday = daysUntil === 0;
   const { open, entityId, openModal, closeModal } = useEntityModal('occasion');
@@ -83,50 +82,105 @@ export function OccasionCard({ occasion }: OccasionCardProps) {
         className="w-full text-left"
       >
         <Card variant="interactive" padding="default">
-          <div className="flex items-center gap-4">
-            {/* Type Icon */}
-            <div
-              className={cn(
-                'w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0',
-                typeColors[occasion.type] || typeColors.other
-              )}
-            >
-              <OccasionIcon type={occasion.type} className="w-6 h-6" />
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-gray-900 truncate">{occasion.name}</h3>
-                <Badge variant={typeBadgeVariant[occasion.type] || 'default'} size="sm">
-                  {occasion.type}
-                </Badge>
+          <div className="flex flex-col gap-3">
+            {/* Header with Icon and Badges */}
+            <div className="flex items-center gap-4">
+              {/* Type Icon */}
+              <div
+                className={cn(
+                  'w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0',
+                  typeColors[occasion.type] || typeColors.other
+                )}
+              >
+                <OccasionIcon type={occasion.type} className="w-6 h-6" />
               </div>
-              <p className="text-gray-500 text-sm">{formatDate(occasion.date)}</p>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-gray-900 truncate mb-2">{occasion.name}</h3>
+
+                {/* Type/Recurrence badges */}
+                <div className="flex flex-wrap gap-1">
+                  <Badge variant={typeBadgeVariant[occasion.type] || 'default'} size="sm">
+                    {occasion.type === 'recurring' && '🔄 '}
+                    {formatOccasionType(occasion.type)}
+                  </Badge>
+                  {occasion.subtype && (
+                    <Badge variant="default" size="sm">
+                      {occasion.subtype}
+                    </Badge>
+                  )}
+                  {!occasion.is_active && (
+                    <Badge variant="warning" size="sm">
+                      Inactive
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* Days Badge */}
+              <div className="text-right flex-shrink-0">
+                {isToday ? (
+                  <div className="text-center">
+                    <span className="text-lg font-bold text-blue-600">Today</span>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <span
+                      className={cn(
+                        'text-lg font-bold',
+                        isPast ? 'text-gray-400' :
+                        daysUntil <= 7 ? 'text-orange-600' :
+                        daysUntil <= 3 ? 'text-red-600' :
+                        'text-blue-600'
+                      )}
+                    >
+                      {Math.abs(daysUntil)}
+                    </span>
+                    <p className="text-xs text-gray-500">
+                      {isPast ? 'days ago' : 'days left'}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Days Badge */}
-            <div className="text-right flex-shrink-0">
-              {isToday ? (
-                <div className="text-center">
-                  <span className="text-lg font-bold text-blue-600">Today</span>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <span
-                    className={cn(
-                      'text-lg font-bold',
-                      isPast ? 'text-gray-400' : 'text-blue-600'
-                    )}
-                  >
-                    {Math.abs(daysUntil)}
-                  </span>
-                  <p className="text-xs text-gray-500">
-                    {isPast ? 'days ago' : 'days left'}
-                  </p>
-                </div>
+            {/* Date Display */}
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <CalendarIcon className="h-4 w-4" />
+              <span>
+                {formatDateCustom(displayDate, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </span>
+              {daysUntil > 0 && (
+                <span
+                  className={cn(
+                    'font-medium',
+                    daysUntil <= 7 && 'text-orange-600',
+                    daysUntil <= 3 && 'text-red-600'
+                  )}
+                >
+                  {daysUntil === 0 ? '• Today!' :
+                   daysUntil === 1 ? '• Tomorrow' :
+                   `• in ${daysUntil} days`}
+                </span>
               )}
             </div>
+
+            {/* Show "Next:" label for recurring occasions */}
+            {occasion.type === 'recurring' && occasion.next_occurrence && (
+              <div className="text-xs text-gray-500 bg-blue-50 rounded px-2 py-1 border border-blue-100">
+                Next occurrence: {formatDateCustom(occasion.next_occurrence, {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </div>
+            )}
           </div>
         </Card>
       </button>

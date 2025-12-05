@@ -23,3 +23,4 @@ export { GiftUsage, type GiftUsageProps } from './GiftUsage';
 export { GiftDetailSkeleton } from './GiftDetailSkeleton';
 export { AddGiftModal, type AddGiftModalProps } from './AddGiftModal';
 export { GiftEditModal, type GiftEditModalProps } from './GiftEditModal';
+export { StoreMultiSelect, type StoreMultiSelectProps } from './StoreMultiSelect';

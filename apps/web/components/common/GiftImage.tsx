@@ -78,33 +78,17 @@ export function GiftImage({
     onLoad?.();
   };
 
-  // Use Next.js Image component if fill or explicit dimensions provided
-  if (fill || (width && height)) {
-    return (
-      <Image
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        fill={fill}
-        sizes={sizes}
-        priority={priority}
-        className={cn(className, isLoading && 'opacity-0 transition-opacity duration-300')}
-        unoptimized={unoptimized}
-        draggable={draggable}
-        onError={handleError}
-        onLoad={handleLoad}
-      />
-    );
-  }
-
-  // Fallback to standard img if no dimensions specified
-  // eslint-disable-next-line @next/next/no-img-element
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
+      width={fill ? undefined : width ?? height ?? 400}
+      height={fill ? undefined : height ?? width ?? 400}
+      fill={fill || (!width && !height)}
+      sizes={sizes ?? (fill || (!width && !height) ? '100vw' : undefined)}
+      priority={priority}
       className={cn(className, isLoading && 'opacity-0 transition-opacity duration-300')}
+      unoptimized={unoptimized}
       draggable={draggable}
       onError={handleError}
       onLoad={handleLoad}

@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreatePerson, useUpdatePerson } from '@/hooks/usePersons';
+import { GroupMultiSelect } from '@/components/common/GroupMultiSelect';
 import type { Person, PersonCreate, PersonUpdate } from '@/types';
 
 const RELATIONSHIP_OPTIONS = [
@@ -53,6 +54,7 @@ export function AddPersonModal({
   const [sizes, setSizes] = useState<Record<string, string>>({});
   const [sizeKey, setSizeKey] = useState('');
   const [sizeValue, setSizeValue] = useState('');
+  const [groupIds, setGroupIds] = useState<number[]>([]);
 
   const createMutation = useCreatePerson();
   const updateMutation = useUpdatePerson(personToEdit?.id || 0);
@@ -72,6 +74,7 @@ export function AddPersonModal({
       setPhotoUrl(personToEdit.photo_url || '');
       setInterests(personToEdit.interests || []);
       setSizes(personToEdit.sizes || {});
+      setGroupIds(personToEdit.groups?.map(g => g.id) || []);
     } else if (!isOpen) {
       // Reset form when modal closes
       resetForm();
@@ -114,6 +117,7 @@ export function AddPersonModal({
     setSizes({});
     setSizeKey('');
     setSizeValue('');
+    setGroupIds([]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -132,6 +136,7 @@ export function AddPersonModal({
         photo_url: photoUrl.trim() || undefined,
         interests: interests.length > 0 ? interests : undefined,
         sizes: Object.keys(sizes).length > 0 ? sizes : undefined,
+        group_ids: groupIds.length > 0 ? groupIds : undefined,
       };
 
       updateMutation.mutate(updateData, {
@@ -165,6 +170,7 @@ export function AddPersonModal({
         photo_url: photoUrl.trim() || undefined,
         interests: interests.length > 0 ? interests : undefined,
         sizes: Object.keys(sizes).length > 0 ? sizes : undefined,
+        group_ids: groupIds.length > 0 ? groupIds : undefined,
       };
 
       createMutation.mutate(personData, {
@@ -374,6 +380,24 @@ export function AddPersonModal({
             )}
             <p className="mt-1 text-xs text-gray-500">
               Clothing sizes for shopping reference
+            </p>
+          </div>
+        </section>
+
+        {/* Groups Section */}
+        <section className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-900">Groups</h3>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Assign to groups (optional)
+            </label>
+            <GroupMultiSelect
+              value={groupIds}
+              onChange={setGroupIds}
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Organize people into groups (e.g., Family, Friends, Coworkers)
             </p>
           </div>
         </section>

@@ -7,14 +7,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock, Edit, Trash2, Heart, Lightbulb, CheckSquare, Plus } from "@/components/ui/icons";
+import { Cake, Sparkles, Calendar as CalendarIcon, ExternalLink, Clock, Edit, Trash2, Heart, Lightbulb, CheckSquare, Plus, User } from "@/components/ui/icons";
 import { formatDate, getDaysUntil } from "@/lib/date-utils";
 import { occasionApi } from "@/lib/api/endpoints";
 import { useDeleteOccasion } from "@/hooks/useOccasions";
 import { useListsForOccasion } from "@/hooks/useLists";
+import { usePersons } from "@/hooks/usePersons";
 import { AddOccasionModal } from "@/components/occasions/AddOccasionModal";
 import { ListDetailModal } from "./ListDetailModal";
-import type { Occasion } from "@/types";
+import type { Occasion, RecurrenceRule, OccasionType } from "@/types";
 import { cn } from "@/lib/utils";
 import { LinkListsToContextModal } from "./LinkListsToContextModal";
 
@@ -24,7 +25,13 @@ interface OccasionDetailModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const occasionTypeConfig = {
+const occasionTypeConfig: Record<string, {
+  icon: typeof Cake;
+  label: string;
+  bgColor: string;
+  iconColor: string;
+  gradient: string;
+}> = {
   birthday: {
     icon: Cake,
     label: "Birthday",
@@ -38,6 +45,13 @@ const occasionTypeConfig = {
     bgColor: "bg-purple-100",
     iconColor: "text-purple-600",
     gradient: "from-purple-500/20 via-fuchsia-500/20 to-pink-500/20",
+  },
+  recurring: {
+    icon: CalendarIcon,
+    label: "Recurring",
+    bgColor: "bg-green-100",
+    iconColor: "text-green-600",
+    gradient: "from-green-500/20 via-emerald-500/20 to-teal-500/20",
   },
   anniversary: {
     icon: CalendarIcon,
@@ -76,6 +90,51 @@ const listTypeConfig = {
   },
 };
 
+// Helper functions for formatting
+function formatOccasionType(type: OccasionType): string {
+  switch (type) {
+    case 'holiday':
+      return 'Holiday';
+    case 'recurring':
+      return 'Recurring';
+    case 'other':
+      return 'Other';
+    default:
+      return type;
+  }
+}
+
+function formatRecurrenceRule(rule: RecurrenceRule): string {
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  if (rule.day) {
+    return `${months[rule.month - 1]} ${rule.day}`;
+  }
+
+  // Handle weekday patterns
+  const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const weekNums = ['1st', '2nd', '3rd', '4th', 'last'];
+  const weekNum = rule.week_of_month === -1 ? 4 : (rule.week_of_month || 1) - 1;
+
+  return `the ${weekNums[weekNum]} ${weekdays[rule.weekday || 0]} of ${months[rule.month - 1]}`;
+}
+
+function getTypeBadgeVariant(type: OccasionType): 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' {
+  switch (type) {
+    case 'holiday':
+      return 'error';
+    case 'recurring':
+      return 'primary';
+    case 'other':
+      return 'default';
+    default:
+      return 'default';
+  }
+}
+
 export function OccasionDetailModal({
   occasionId,
   open,
@@ -99,6 +158,9 @@ export function OccasionDetailModal({
     occasionId ? Number(occasionId) : undefined,
     { enabled: open }
   );
+
+  // Fetch all persons to display linked ones
+  const { data: personsData } = usePersons(undefined, { enabled: open });
 
   const deleteMutation = useDeleteOccasion();
 
@@ -324,6 +386,98 @@ export function OccasionDetailModal({
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-6">
+              {/* Type & Recurrence Info */}
+              <div
+                className={cn(
+                  "bg-gradient-to-br from-warm-50 to-amber-50",
+                  "rounded-xl p-5 border border-warm-200"
+                )}
+              >
+                <h3 className="font-semibold text-warm-900 mb-3">Type & Status</h3>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={getTypeBadgeVariant(occasion.type)}>
+                    {formatOccasionType(occasion.type)}
+                  </Badge>
+                  {occasion.subtype && (
+                    <Badge variant="default">{occasion.subtype}</Badge>
+                  )}
+                  {!occasion.is_active && (
+                    <Badge variant="warning">Inactive</Badge>
+                  )}
+                  {occasion.is_active && (
+                    <Badge variant="success">Active</Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* Recurrence Pattern */}
+              {occasion.recurrence_rule && (
+                <div
+                  className={cn(
+                    "bg-blue-50 rounded-xl p-5 border border-blue-200"
+                  )}
+                >
+                  <h3 className="font-semibold text-warm-900 mb-2 flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                    Recurrence Pattern
+                  </h3>
+                  <p className="text-warm-700">
+                    Repeats every year on {formatRecurrenceRule(occasion.recurrence_rule)}
+                  </p>
+                </div>
+              )}
+
+              {/* Next Occurrence */}
+              {occasion.next_occurrence && (
+                <div
+                  className={cn(
+                    "bg-gradient-to-br from-green-50 to-emerald-50",
+                    "rounded-xl p-5 border border-green-200"
+                  )}
+                >
+                  <h3 className="font-semibold text-warm-900 mb-3 flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4 text-green-600" />
+                    Next Occurrence
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-medium text-warm-900">
+                      {formatDate(occasion.next_occurrence)}
+                    </span>
+                    <span className="text-sm text-warm-600">
+                      ({getDaysUntil(occasion.next_occurrence)} days away)
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Linked People */}
+              {occasion.person_ids && occasion.person_ids.length > 0 && (
+                <div
+                  className={cn(
+                    "bg-purple-50 rounded-xl p-5 border border-purple-200"
+                  )}
+                >
+                  <h3 className="font-semibold text-warm-900 mb-3 flex items-center gap-2">
+                    <User className="h-4 w-4 text-purple-600" />
+                    Linked People
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {occasion.person_ids.map((personId) => {
+                      const person = personsData?.items?.find((p) => p.id === personId);
+                      return person ? (
+                        <Badge key={personId} variant="primary" size="md">
+                          {person.display_name}
+                        </Badge>
+                      ) : (
+                        <Badge key={personId} variant="default" size="md">
+                          Person #{personId}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Description */}
               {occasion.description && (
                 <div
