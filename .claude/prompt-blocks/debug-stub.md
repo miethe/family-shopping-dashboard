@@ -10,7 +10,7 @@ Analyze the attached bug(s). Create a remediation plan with designs, then implem
 ## Documentation Requirements
 
 **Update the monthly bug-fixes document ONLY** (create if doesn't exist):
-- File: `docs/project_plans/bugs/bug-fixes-{YYYY}-{MM}.md`
+- File: `.claude/worknotes/fixes/bug-fixes-{YYYY}-{MM}.md`
 - Example: `bug-fixes-2025-11.md`
 
 Add one section per bug using this template:
