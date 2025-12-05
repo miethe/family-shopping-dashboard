@@ -1,18 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GiftEditModal } from "@/components/gifts";
 import { useGift } from "@/hooks/useGift";
 import { PageHeader } from "@/components/layout";
 
-interface GiftEditPageProps {
-  params: { id: string };
-}
+type GiftEditPageProps = {
+  params: Promise<{ id: string }>;
+};
 
 export default function GiftEditPage({ params }: GiftEditPageProps) {
   const router = useRouter();
-  const giftId = Number(params.id);
+  const { id } = use(params);
+  const giftId = Number(id);
   const { data: gift, isLoading, error } = useGift(giftId);
   const [open, setOpen] = useState(true);
 
