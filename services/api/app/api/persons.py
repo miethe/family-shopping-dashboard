@@ -16,32 +16,36 @@ router = APIRouter(prefix="/persons", tags=["persons"])
     "",
     response_model=PaginatedResponse[PersonResponse],
     status_code=status.HTTP_200_OK,
-    summary="List all persons with pagination",
-    description="Retrieve paginated list of gift recipients using cursor-based pagination",
+    summary="List all persons with pagination and optional group filtering",
+    description="Retrieve paginated list of gift recipients using cursor-based pagination, optionally filtered by group",
 )
 async def list_persons(
     cursor: int | None = Query(
         None, description="Cursor ID for pagination (ID of last item from previous page)"
     ),
     limit: int = Query(50, ge=1, le=100, description="Number of items per page"),
+    group_id: int | None = Query(
+        None, description="Filter by group ID (None for no filter)"
+    ),
     current_user_id: int = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> PaginatedResponse[PersonResponse]:
     """
-    List all persons with cursor-based pagination.
+    List all persons with cursor-based pagination and optional group filtering.
 
     Returns paginated list of gift recipients. Uses cursor-based pagination for
-    efficient loading of large datasets.
+    efficient loading of large datasets. Can optionally filter by group membership.
 
     Args:
         cursor: Optional cursor ID for pagination (None for first page)
         limit: Number of items to return (1-100, default 50)
+        group_id: Optional group ID to filter by (None for no filter)
         current_user_id: Authenticated user ID (from JWT token, injected)
         db: Database session (injected)
 
     Returns:
         PaginatedResponse containing:
-        - items: List of PersonResponse objects
+        - items: List of PersonResponse objects (with groups field populated)
         - has_more: True if more items exist after this page
         - next_cursor: Cursor ID for next page (None if no more items)
 
@@ -50,7 +54,12 @@ async def list_persons(
 
     Example:
         ```json
+        # Get all persons
         GET /persons?limit=20
+        Headers: Authorization: Bearer eyJhbGc...
+
+        # Get persons in group 1
+        GET /persons?limit=20&group_id=1
         Headers: Authorization: Bearer eyJhbGc...
 
         Response 200:
@@ -58,9 +67,14 @@ async def list_persons(
             "items": [
                 {
                     "id": 1,
-                    "name": "Mom",
+                    "display_name": "Mom",
+                    "relationship": "Mother",
+                    "birthdate": "1970-05-15",
                     "interests": ["Reading", "Gardening"],
                     "sizes": {"shirt": "M", "shoe": "8"},
+                    "groups": [
+                        {"id": 1, "name": "Immediate Family", "color": "#FF5733"}
+                    ],
                     "created_at": "2025-11-26T12:00:00Z",
                     "updated_at": "2025-11-26T12:00:00Z"
                 }
@@ -74,9 +88,12 @@ async def list_persons(
         - Results are sorted by ID in ascending order
         - Cursor pagination is more efficient than offset for large datasets
         - User must be authenticated to list persons
+        - Groups are eagerly loaded for all returned persons
     """
     service = PersonService(db)
-    persons, has_more, next_cursor = await service.list(cursor=cursor, limit=limit)
+    persons, has_more, next_cursor = await service.list(
+        cursor=cursor, limit=limit, group_id=group_id
+    )
 
     return PaginatedResponse(items=persons, has_more=has_more, next_cursor=next_cursor)
 

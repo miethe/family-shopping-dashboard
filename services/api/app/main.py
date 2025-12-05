@@ -220,3 +220,8 @@ app.include_router(users.router, prefix=API_V1_PREFIX)
 from app.api import budgets
 
 app.include_router(budgets.router, prefix=API_V1_PREFIX)
+
+# Store routes (CRUD + search for inline creation)
+from app.api import stores
+
+app.include_router(stores.router, prefix=API_V1_PREFIX)

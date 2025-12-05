@@ -416,6 +416,139 @@ class GiftService:
         """
         return await self.repo.delete(gift_id)
 
+    async def get_linked_people(self, gift_id: int) -> list[int]:
+        """
+        Get person IDs linked to a gift.
+
+        Args:
+            gift_id: Gift ID to get linked people for
+
+        Returns:
+            List of person IDs linked to the gift
+
+        Example:
+            ```python
+            person_ids = await service.get_linked_people(gift_id=42)
+            print(f"Gift is for {len(person_ids)} people")
+            ```
+        """
+        return await self.repo.get_linked_people(gift_id)
+
+    async def attach_people(self, gift_id: int, person_ids: list[int]) -> None:
+        """
+        Attach people to a gift (batch operation).
+
+        Args:
+            gift_id: Gift ID to attach people to
+            person_ids: List of person IDs to attach
+
+        Example:
+            ```python
+            await service.attach_people(gift_id=42, person_ids=[1, 2, 3])
+            ```
+
+        Note:
+            Automatically skips duplicate links.
+        """
+        await self.repo.attach_people(gift_id, person_ids)
+
+    async def detach_person(self, gift_id: int, person_id: int) -> bool:
+        """
+        Detach a person from a gift.
+
+        Args:
+            gift_id: Gift ID to detach person from
+            person_id: Person ID to detach
+
+        Returns:
+            True if link was removed, False if link didn't exist
+
+        Example:
+            ```python
+            deleted = await service.detach_person(gift_id=42, person_id=5)
+            if deleted:
+                print("Person unlinked")
+            ```
+        """
+        return await self.repo.detach_person(gift_id, person_id)
+
+    async def list_by_linked_person(self, person_id: int) -> list[GiftResponse]:
+        """
+        Get all gifts directly linked to a specific person via gift_people table.
+
+        This is different from filtering by list ownership. This method returns
+        gifts that are directly associated with a person as a recipient.
+
+        Args:
+            person_id: Person ID to get linked gifts for
+
+        Returns:
+            List of GiftResponse DTOs for gifts linked to the person
+
+        Example:
+            ```python
+            # Get all gifts for person 5
+            gifts = await service.list_by_linked_person(person_id=5)
+            for gift in gifts:
+                print(f"{gift.name} - ${gift.price}")
+            ```
+
+        Note:
+            - Returns gifts directly linked via gift_people table
+            - Does NOT filter by list ownership
+            - Returns empty list if person has no linked gifts
+        """
+        gifts = await self.repo.get_by_linked_person(person_id)
+        return [self._to_response(gift) for gift in gifts]
+
+    async def list_by_linked_persons(self, person_ids: list[int]) -> list[GiftResponse]:
+        """
+        Get all gifts directly linked to any of the specified persons via gift_people table.
+
+        Args:
+            person_ids: List of person IDs to get linked gifts for
+
+        Returns:
+            List of GiftResponse DTOs for gifts linked to any of the persons
+
+        Example:
+            ```python
+            # Get all gifts for persons 1, 2, or 3
+            gifts = await service.list_by_linked_persons(person_ids=[1, 2, 3])
+            ```
+
+        Note:
+            - Returns gifts linked to ANY of the specified persons (OR logic)
+            - Returns empty list if no person_ids provided or no gifts found
+        """
+        gifts = await self.repo.get_by_linked_persons(person_ids)
+        return [self._to_response(gift) for gift in gifts]
+
+    def _to_response(self, gift: "Gift") -> GiftResponse:
+        """
+        Convert ORM Gift model to GiftResponse DTO.
+
+        Args:
+            gift: Gift ORM model instance
+
+        Returns:
+            GiftResponse DTO
+
+        Note:
+            This is a helper method to centralize ORM → DTO conversion.
+        """
+        return GiftResponse(
+            id=gift.id,
+            name=gift.name,
+            url=gift.url,
+            price=gift.price,
+            image_url=gift.image_url,
+            source=gift.source,
+            extra_data=gift.extra_data,
+            created_at=gift.created_at,
+            updated_at=gift.updated_at,
+        )
+
     async def _parse_url_metadata(self, url: str) -> dict:
         """
         Parse URL for gift metadata (best-effort).

@@ -1,6 +1,6 @@
 """Gift repository with search and relationship loading capabilities."""
 
-from sqlalchemy import select, distinct, func
+from sqlalchemy import select, distinct, func, delete
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,6 +8,7 @@ from app.models.gift import Gift
 from app.models.tag import Tag, gift_tags
 from app.models.list_item import ListItem
 from app.models.list import List
+from app.models.gift_person import GiftPerson
 from app.repositories.base import BaseRepository
 
 
@@ -316,6 +317,271 @@ class GiftRepository(BaseRepository[Gift]):
 
         # Fetch limit + 1 to determine if there are more results
         stmt = stmt.limit(limit + 1)
+
+        # Execute query
+        result = await self.session.execute(stmt)
+        gifts = list(result.scalars().all())
+
+        # Check if there are more results
+        has_more = len(gifts) > limit
+        if has_more:
+            gifts = gifts[:limit]  # Trim to requested limit
+
+        # Determine next cursor
+        next_cursor = gifts[-1].id if (gifts and has_more) else None
+
+        return gifts, has_more, next_cursor
+
+    async def get_linked_people(self, gift_id: int) -> list[int]:
+        """
+        Get person IDs linked to a gift.
+
+        Args:
+            gift_id: Gift ID to get linked people for
+
+        Returns:
+            List of person IDs linked to the gift
+
+        Example:
+            ```python
+            person_ids = await repo.get_linked_people(gift_id=123)
+            print(f"Gift is linked to {len(person_ids)} people")
+            ```
+        """
+        stmt = select(GiftPerson.person_id).where(GiftPerson.gift_id == gift_id)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def attach_people(self, gift_id: int, person_ids: list[int]) -> None:
+        """
+        Attach multiple people to a gift. Skips duplicates.
+
+        Args:
+            gift_id: Gift ID to attach people to
+            person_ids: List of person IDs to attach
+
+        Example:
+            ```python
+            await repo.attach_people(gift_id=123, person_ids=[1, 2, 3])
+            ```
+
+        Note:
+            - Automatically skips existing links (no duplicates)
+            - Commits changes to database
+        """
+        # Get existing person IDs
+        existing = set(await self.get_linked_people(gift_id))
+
+        # Add only new links
+        for person_id in person_ids:
+            if person_id not in existing:
+                link = GiftPerson(gift_id=gift_id, person_id=person_id)
+                self.session.add(link)
+
+        await self.session.commit()
+
+    async def detach_person(self, gift_id: int, person_id: int) -> bool:
+        """
+        Detach a person from a gift.
+
+        Args:
+            gift_id: Gift ID to detach person from
+            person_id: Person ID to detach
+
+        Returns:
+            True if link was removed, False if link didn't exist
+
+        Example:
+            ```python
+            deleted = await repo.detach_person(gift_id=123, person_id=5)
+            if deleted:
+                print("Person unlinked from gift")
+            else:
+                print("Link not found")
+            ```
+        """
+        stmt = delete(GiftPerson).where(
+            GiftPerson.gift_id == gift_id,
+            GiftPerson.person_id == person_id
+        )
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        return result.rowcount > 0
+
+    async def set_people(self, gift_id: int, person_ids: list[int]) -> None:
+        """
+        Replace all linked people with new list.
+
+        Args:
+            gift_id: Gift ID to update people for
+            person_ids: New list of person IDs to link
+
+        Example:
+            ```python
+            # Replace all existing links with new ones
+            await repo.set_people(gift_id=123, person_ids=[1, 2, 3])
+            ```
+
+        Note:
+            - Removes ALL existing links first
+            - Then adds new links
+            - Commits changes to database
+        """
+        # Remove all existing links
+        stmt = delete(GiftPerson).where(GiftPerson.gift_id == gift_id)
+        await self.session.execute(stmt)
+
+        # Add new links
+        for person_id in person_ids:
+            link = GiftPerson(gift_id=gift_id, person_id=person_id)
+            self.session.add(link)
+
+        await self.session.commit()
+
+    async def get_by_linked_person(self, person_id: int) -> list[Gift]:
+        """
+        Get all gifts directly linked to a specific person via gift_people table.
+
+        This is different from get_filtered(person_ids=[...]) which filters by
+        list ownership. This method returns gifts that are directly associated
+        with a person in the gift_people junction table.
+
+        Args:
+            person_id: Person ID to get linked gifts for
+
+        Returns:
+            List of Gift instances directly linked to the person
+
+        Example:
+            ```python
+            # Get all gifts linked to person ID 5
+            gifts = await repo.get_by_linked_person(person_id=5)
+            for gift in gifts:
+                print(f"{gift.name} - ${gift.price}")
+            ```
+
+        Note:
+            - Returns gifts directly linked via gift_people table
+            - Does NOT filter by list ownership
+            - Returns empty list if person has no linked gifts
+            - Results ordered by gift ID (most recent first)
+        """
+        stmt = (
+            select(self.model)
+            .join(GiftPerson, self.model.id == GiftPerson.gift_id)
+            .where(GiftPerson.person_id == person_id)
+            .order_by(self.model.id.desc())
+        )
+
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def get_by_linked_persons(self, person_ids: list[int]) -> list[Gift]:
+        """
+        Get all gifts directly linked to any of the specified persons via gift_people table.
+
+        This is different from get_filtered(person_ids=[...]) which filters by
+        list ownership. This method returns gifts that are directly associated
+        with any of the specified persons in the gift_people junction table.
+
+        Args:
+            person_ids: List of person IDs to get linked gifts for
+
+        Returns:
+            List of Gift instances directly linked to any of the persons
+
+        Example:
+            ```python
+            # Get all gifts linked to persons 1, 2, or 3
+            gifts = await repo.get_by_linked_persons(person_ids=[1, 2, 3])
+            for gift in gifts:
+                print(f"{gift.name} - ${gift.price}")
+            ```
+
+        Note:
+            - Returns gifts linked to ANY of the specified persons (OR logic)
+            - Uses DISTINCT to avoid duplicate gifts
+            - Returns empty list if no person_ids provided or no gifts found
+            - Results ordered by gift ID (most recent first)
+        """
+        if not person_ids:
+            return []
+
+        stmt = (
+            select(self.model)
+            .join(GiftPerson, self.model.id == GiftPerson.gift_id)
+            .where(GiftPerson.person_id.in_(person_ids))
+            .distinct()
+            .order_by(self.model.id.desc())
+        )
+
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def get_multi_with_linked_person_filter(
+        self,
+        cursor: int | None = None,
+        limit: int = 50,
+        linked_person_ids: list[int] | None = None,
+    ) -> tuple[list[Gift], bool, int | None]:
+        """
+        Get gifts with cursor-based pagination and optional filtering by directly linked persons.
+
+        This method provides paginated access to gifts that are directly linked to
+        specific persons via the gift_people table. This is useful for viewing gifts
+        associated with specific recipients.
+
+        Args:
+            cursor: ID of last item from previous page (None for first page)
+            limit: Maximum number of items to return (default: 50)
+            linked_person_ids: Filter by directly linked person IDs (OR logic)
+
+        Returns:
+            Tuple of (items, has_more, next_cursor):
+            - items: List of Gift instances (up to `limit` items)
+            - has_more: True if more items exist after this page
+            - next_cursor: ID to use for next page (None if no more items)
+
+        Example:
+            ```python
+            # First page - gifts linked to person 5
+            gifts, has_more, cursor = await repo.get_multi_with_linked_person_filter(
+                linked_person_ids=[5],
+                limit=20
+            )
+
+            # Next page
+            if has_more:
+                gifts, has_more, cursor = await repo.get_multi_with_linked_person_filter(
+                    cursor=cursor,
+                    linked_person_ids=[5],
+                    limit=20
+                )
+            ```
+
+        Note:
+            - If no linked_person_ids provided, returns all gifts
+            - Uses DISTINCT to avoid duplicate gifts when joining
+            - Cursor-based pagination for performance
+            - Results ordered by gift ID (most recent first)
+        """
+        stmt = select(self.model)
+
+        # Apply linked person filter if provided
+        if linked_person_ids:
+            stmt = (
+                stmt
+                .join(GiftPerson, self.model.id == GiftPerson.gift_id)
+                .where(GiftPerson.person_id.in_(linked_person_ids))
+                .distinct()
+            )
+
+        # Apply cursor pagination
+        if cursor is not None:
+            stmt = stmt.where(self.model.id < cursor)
+
+        # Order by ID descending (most recent first) and limit
+        stmt = stmt.order_by(self.model.id.desc()).limit(limit + 1)
 
         # Execute query
         result = await self.session.execute(stmt)

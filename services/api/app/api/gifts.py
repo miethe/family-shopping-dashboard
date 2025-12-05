@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import NotFoundError
 from app.schemas.base import PaginatedResponse
-from app.schemas.gift import GiftCreate, GiftResponse, GiftUpdate
+from app.schemas.gift import GiftCreate, GiftPeopleLink, GiftResponse, GiftUpdate
 from app.services.gift import GiftService
 
 router = APIRouter(prefix="/gifts", tags=["gifts"])
@@ -424,3 +424,224 @@ async def delete_gift(
             code="GIFT_NOT_FOUND",
             message=f"Gift with ID {gift_id} not found",
         )
+
+
+@router.get(
+    "/{gift_id}/people",
+    response_model=list[int],
+    status_code=status.HTTP_200_OK,
+    summary="Get people linked to a gift",
+    description="Get all person IDs linked to a specific gift",
+)
+async def get_gift_people(
+    gift_id: int,
+    current_user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> list[int]:
+    """
+    Get all person IDs linked to a gift.
+
+    Args:
+        gift_id: Gift ID to get linked people for
+        current_user_id: Authenticated user ID (from JWT)
+        db: Database session (injected)
+
+    Returns:
+        List of person IDs linked to the gift
+
+    Raises:
+        HTTPException: 404 if gift not found
+
+    Example:
+        ```json
+        GET /gifts/42/people
+        Headers: Authorization: Bearer eyJhbGc...
+
+        Response 200:
+        [1, 2, 3]
+        ```
+    """
+    service = GiftService(db)
+    gift = await service.get(gift_id)
+
+    if gift is None:
+        raise NotFoundError(
+            code="GIFT_NOT_FOUND",
+            message=f"Gift with ID {gift_id} not found",
+        )
+
+    return await service.get_linked_people(gift_id)
+
+
+@router.post(
+    "/{gift_id}/people",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Attach people to a gift",
+    description="Attach multiple people to a gift (batch operation, skips duplicates)",
+)
+async def attach_people_to_gift(
+    gift_id: int,
+    data: GiftPeopleLink,
+    current_user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> None:
+    """
+    Attach people to a gift (batch operation).
+
+    Args:
+        gift_id: Gift ID to attach people to
+        data: Request body with person IDs to attach
+        current_user_id: Authenticated user ID (from JWT)
+        db: Database session (injected)
+
+    Returns:
+        No content (204)
+
+    Raises:
+        HTTPException: 404 if gift not found
+
+    Example:
+        ```json
+        POST /gifts/42/people
+        Headers: Authorization: Bearer eyJhbGc...
+        {
+            "person_ids": [1, 2, 3]
+        }
+
+        Response 204 No Content
+        ```
+
+    Note:
+        - Automatically skips duplicate links
+        - Does not fail if some people are already linked
+        - All person IDs must be valid (will fail if any person doesn't exist)
+    """
+    service = GiftService(db)
+    gift = await service.get(gift_id)
+
+    if gift is None:
+        raise NotFoundError(
+            code="GIFT_NOT_FOUND",
+            message=f"Gift with ID {gift_id} not found",
+        )
+
+    await service.attach_people(gift_id, data.person_ids)
+
+
+@router.delete(
+    "/{gift_id}/people/{person_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Detach a person from a gift",
+    description="Remove the link between a gift and a person",
+)
+async def detach_person_from_gift(
+    gift_id: int,
+    person_id: int,
+    current_user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> None:
+    """
+    Detach a person from a gift.
+
+    Args:
+        gift_id: Gift ID to detach person from
+        person_id: Person ID to detach
+        current_user_id: Authenticated user ID (from JWT)
+        db: Database session (injected)
+
+    Returns:
+        No content (204)
+
+    Raises:
+        HTTPException: 404 if link not found (either gift or person doesn't exist,
+                      or they aren't linked)
+
+    Example:
+        ```
+        DELETE /gifts/42/people/5
+        Headers: Authorization: Bearer eyJhbGc...
+
+        Response 204 No Content
+        ```
+
+    Note:
+        - Returns 404 if the link doesn't exist
+        - Returns 204 if the link was successfully removed
+    """
+    service = GiftService(db)
+    deleted = await service.detach_person(gift_id, person_id)
+
+    if not deleted:
+        raise NotFoundError(
+            code="LINK_NOT_FOUND",
+            message=f"No link found between gift {gift_id} and person {person_id}",
+        )
+
+
+@router.get(
+    "/linked-to-person/{person_id}",
+    response_model=list[GiftResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Get gifts directly linked to a person",
+    description="Get all gifts that are directly linked to a specific person via gift_people table",
+)
+async def get_gifts_by_linked_person(
+    person_id: int,
+    current_user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> list[GiftResponse]:
+    """
+    Get all gifts directly linked to a specific person.
+
+    This endpoint returns gifts that are directly associated with a person
+    via the gift_people junction table. This is different from filtering
+    by list ownership (person_ids parameter in GET /gifts).
+
+    Args:
+        person_id: Person ID to get linked gifts for
+        current_user_id: Authenticated user ID (from JWT)
+        db: Database session (injected)
+
+    Returns:
+        List of GiftResponse objects directly linked to the person
+
+    Example:
+        ```json
+        GET /gifts/linked-to-person/5
+        Headers: Authorization: Bearer eyJhbGc...
+
+        Response 200:
+        [
+            {
+                "id": 1,
+                "name": "LEGO Star Wars Set",
+                "url": "https://www.amazon.com/dp/B08H93ZRK9",
+                "price": 79.99,
+                "image_url": "https://example.com/image.jpg",
+                "source": "Amazon wishlist",
+                "extra_data": {},
+                "created_at": "2025-11-26T12:00:00Z",
+                "updated_at": "2025-11-26T12:00:00Z"
+            },
+            {
+                "id": 2,
+                "name": "Coffee Maker",
+                "url": "https://example.com/product",
+                "price": 49.99,
+                "image_url": "https://example.com/coffee.jpg",
+                "source": "URL import",
+                "extra_data": {},
+                "created_at": "2025-11-26T13:00:00Z",
+                "updated_at": "2025-11-26T13:00:00Z"
+            }
+        ]
+        ```
+
+    Note:
+        - Returns gifts directly linked via gift_people table
+        - Does NOT filter by list ownership
+        - Returns empty list if person has no linked gifts
+        - Results ordered by gift ID (most recent first)
+    """
+    service = GiftService(db)
+    return await service.list_by_linked_person(person_id)

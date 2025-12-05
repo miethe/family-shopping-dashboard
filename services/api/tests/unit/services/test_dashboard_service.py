@@ -97,58 +97,82 @@ class TestDashboardService:
     async def test_get_primary_occasion_found(
         self, dashboard_service: DashboardService
     ) -> None:
-        """Test getting primary occasion with item counts."""
+        """Test getting primary occasion within 90 days with item counts."""
         # Arrange
-        from app.models.occasion import Occasion, OccasionType
+        from app.schemas.occasion import OccasionResponse
+        from app.models.occasion import OccasionType
 
         today = datetime.date.today()
         future_date = today + datetime.timedelta(days=30)
 
-        mock_occasion = Occasion(
-            id=1, name="Birthday", type=OccasionType.birthday, date=future_date
+        mock_occasion_dto = OccasionResponse(
+            id=1,
+            name="Birthday",
+            type=OccasionType.RECURRING,
+            date=future_date,
+            description=None,
+            next_occurrence=future_date,
+            is_active=True,
+            person_ids=[],
+            created_at=datetime.datetime.now(),
+            updated_at=datetime.datetime.now(),
         )
 
-        # Mock database queries
-        mock_execute = AsyncMock()
-        mock_execute.scalar_one_or_none = MagicMock(return_value=mock_occasion)
+        # Mock OccasionService.get_upcoming to return the mock occasion
+        from unittest.mock import patch
 
-        mock_total = AsyncMock()
-        mock_total.scalar = MagicMock(return_value=10)
+        with patch(
+            "app.services.occasion.OccasionService"
+        ) as mock_occasion_service_class:
+            mock_service_instance = AsyncMock()
+            mock_service_instance.get_upcoming = AsyncMock(
+                return_value=[mock_occasion_dto]
+            )
+            mock_occasion_service_class.return_value = mock_service_instance
 
-        mock_purchased = AsyncMock()
-        mock_purchased.scalar = MagicMock(return_value=3)
+            # Mock database queries for item counts
+            mock_total = AsyncMock()
+            mock_total.scalar = MagicMock(return_value=10)
 
-        dashboard_service.session.execute = AsyncMock(
-            side_effect=[mock_execute, mock_total, mock_purchased]
-        )
+            mock_purchased = AsyncMock()
+            mock_purchased.scalar = MagicMock(return_value=3)
 
-        # Act
-        result = await dashboard_service._get_primary_occasion()
+            dashboard_service.session.execute = AsyncMock(
+                side_effect=[mock_total, mock_purchased]
+            )
 
-        # Assert
-        assert result is not None
-        assert result.id == 1
-        assert result.name == "Birthday"
-        assert result.days_until == 30
-        assert result.total_items == 10
-        assert result.purchased_items == 3
+            # Act
+            result = await dashboard_service._get_primary_occasion()
+
+            # Assert
+            assert result is not None
+            assert result.id == 1
+            assert result.name == "Birthday"
+            assert result.days_until == 30
+            assert result.total_items == 10
+            assert result.purchased_items == 3
 
     @pytest.mark.asyncio
     async def test_get_primary_occasion_not_found(
         self, dashboard_service: DashboardService
     ) -> None:
-        """Test getting primary occasion when no upcoming occasions exist."""
+        """Test getting primary occasion when no upcoming occasions within 90 days."""
         # Arrange
-        mock_execute = AsyncMock()
-        mock_execute.scalar_one_or_none = MagicMock(return_value=None)
+        from unittest.mock import patch
 
-        dashboard_service.session.execute = AsyncMock(return_value=mock_execute)
+        # Mock OccasionService.get_upcoming to return empty list
+        with patch(
+            "app.services.occasion.OccasionService"
+        ) as mock_occasion_service_class:
+            mock_service_instance = AsyncMock()
+            mock_service_instance.get_upcoming = AsyncMock(return_value=[])
+            mock_occasion_service_class.return_value = mock_service_instance
 
-        # Act
-        result = await dashboard_service._get_primary_occasion()
+            # Act
+            result = await dashboard_service._get_primary_occasion()
 
-        # Assert
-        assert result is None
+            # Assert
+            assert result is None
 
     @pytest.mark.asyncio
     async def test_get_people_needing_gifts(

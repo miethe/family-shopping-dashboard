@@ -85,35 +85,40 @@ class DashboardService:
 
     async def _get_primary_occasion(self) -> DashboardOccasionSummary | None:
         """
-        Get the next upcoming occasion with item statistics.
+        Get the next upcoming occasion within 90 days with item statistics.
 
-        Finds the occasion with the earliest date >= today and calculates
-        total and purchased item counts across all lists for that occasion.
+        Finds the occasion with the earliest next_occurrence within 90 days
+        and calculates total and purchased item counts across all lists for
+        that occasion.
 
         Returns:
-            DashboardOccasionSummary for the next occasion, or None if no
-            upcoming occasions exist.
+            DashboardOccasionSummary for the next occasion within 90 days,
+            or None if no upcoming occasions exist in that timeframe.
+
+        Note:
+            Uses 90-day window to avoid showing occasions too far in the future.
+            Filters by next_occurrence field for recurring occasions.
         """
+        from app.services.occasion import OccasionService
+        from app.repositories.occasion import OccasionRepository
+
         today = datetime.date.today()
 
-        # Get the next upcoming occasion
-        stmt = (
-            select(Occasion)
-            .where(Occasion.date >= today)
-            .order_by(Occasion.date.asc())
-            .limit(1)
-        )
-        result = await self.session.execute(stmt)
-        occasion = result.scalar_one_or_none()
+        # Get upcoming occasions within 90 days using OccasionService
+        occasion_service = OccasionService(self.session)
+        upcoming_occasions = await occasion_service.get_upcoming(within_days=90, limit=1)
 
-        if occasion is None:
+        if not upcoming_occasions:
             return None
+
+        # Get the first (soonest) occasion
+        occasion_dto = upcoming_occasions[0]
 
         # Get item counts for this occasion's lists
         total_items_stmt = (
             select(func.count(ListItem.id))
             .join(List, ListItem.list_id == List.id)
-            .where(List.occasion_id == occasion.id)
+            .where(List.occasion_id == occasion_dto.id)
         )
         total_result = await self.session.execute(total_items_stmt)
         total_items = total_result.scalar() or 0
@@ -121,7 +126,7 @@ class DashboardService:
         purchased_items_stmt = (
             select(func.count(ListItem.id))
             .join(List, ListItem.list_id == List.id)
-            .where(List.occasion_id == occasion.id)
+            .where(List.occasion_id == occasion_dto.id)
             .where(
                 ListItem.status.in_([ListItemStatus.purchased, ListItemStatus.received])
             )
@@ -129,12 +134,14 @@ class DashboardService:
         purchased_result = await self.session.execute(purchased_items_stmt)
         purchased_items = purchased_result.scalar() or 0
 
-        days_until = (occasion.date - today).days
+        # Calculate days until using next_occurrence if available, else use date
+        target_date = occasion_dto.next_occurrence or occasion_dto.date
+        days_until = (target_date - today).days
 
         return DashboardOccasionSummary(
-            id=occasion.id,
-            name=occasion.name,
-            date=occasion.date,
+            id=occasion_dto.id,
+            name=occasion_dto.name,
+            date=occasion_dto.date,
             days_until=days_until,
             total_items=total_items,
             purchased_items=purchased_items,
