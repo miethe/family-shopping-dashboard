@@ -5,8 +5,8 @@ from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import Boolean, Date, Index, Numeric, String, Text
-from sqlalchemy.dialects.postgresql import ENUM, JSONB
+from sqlalchemy import Boolean, Date, Enum as SQLEnum, Index, Numeric, String, Text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
@@ -52,7 +52,12 @@ class Occasion(BaseModel):
     )
 
     type: Mapped[OccasionType] = mapped_column(
-        ENUM(OccasionType, name="occasiontype", create_type=False),
+        SQLEnum(
+            OccasionType,
+            name="occasiontype",
+            native_enum=True,
+            values_callable=lambda e: [m.value for m in e],
+        ),
         nullable=False,
         index=True,
     )

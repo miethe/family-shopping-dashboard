@@ -160,8 +160,8 @@ class PersonRepository(BaseRepository[Person]):
         """
         from sqlalchemy import asc, desc
 
-        # Build base query
-        stmt = select(self.model)
+        # Build base query with eager loading of groups
+        stmt = select(self.model).options(selectinload(self.model.groups))
 
         # Apply group filter if provided
         if group_id is not None:
