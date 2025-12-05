@@ -3,14 +3,15 @@
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import Date, Index, Numeric, String, Text
-from sqlalchemy.dialects.postgresql import ENUM
+from sqlalchemy import Boolean, Date, Index, Numeric, String, Text
+from sqlalchemy.dialects.postgresql import ENUM, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from app.models.list import List
+    from app.models.person import Person
 
 from app.models.base import BaseModel
 
@@ -18,9 +19,9 @@ from app.models.base import BaseModel
 class OccasionType(str, Enum):
     """Enum for occasion types."""
 
-    birthday = "birthday"
-    holiday = "holiday"
-    other = "other"
+    HOLIDAY = "holiday"
+    RECURRING = "recurring"
+    OTHER = "other"
 
 
 class Occasion(BaseModel):
@@ -30,10 +31,14 @@ class Occasion(BaseModel):
     Attributes:
         id: Primary key (inherited from BaseModel)
         name: Name of the occasion (e.g., "Christmas 2024", "Mom's Birthday")
-        type: Type of occasion (birthday, holiday, other)
+        type: Type of occasion (holiday, recurring, other)
         date: Date when the occasion occurs
         description: Optional description of the occasion
         budget_total: Optional total budget for the occasion
+        recurrence_rule: JSONB rule for recurring occasions (e.g., {"month": 12, "day": 25})
+        is_active: Whether the occasion is active
+        next_occurrence: Next occurrence date for recurring occasions
+        subtype: Subtype for recurring occasions (e.g., "birthday", "anniversary")
         created_at: Timestamp of creation (inherited from BaseModel)
         updated_at: Timestamp of last update (inherited from BaseModel)
     """
@@ -68,10 +73,38 @@ class Occasion(BaseModel):
         nullable=True,
     )
 
+    recurrence_rule: Mapped[dict[str, Any] | None] = mapped_column(
+        JSONB,
+        nullable=True,
+    )
+
+    is_active: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False,
+    )
+
+    next_occurrence: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True,
+    )
+
+    subtype: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
     # Relationships
     lists: Mapped[list["List"]] = relationship(
         "List",
         back_populates="occasion",
+        lazy="selectin",
+    )
+
+    persons: Mapped[list["Person"]] = relationship(
+        "Person",
+        secondary="person_occasions",
+        back_populates="occasions",
         lazy="selectin",
     )
 

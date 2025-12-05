@@ -2,15 +2,25 @@
 
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal
+from enum import Enum
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 from app.schemas.base import TimestampSchema
 
 if TYPE_CHECKING:
     from app.schemas.tag import TagResponse
+
+
+class GiftPriority(str, Enum):
+    """Gift priority levels."""
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
 
 
 class GiftCreate(BaseModel):
@@ -44,6 +54,45 @@ class GiftCreate(BaseModel):
         description="Where the gift idea came from",
         examples=["Amazon wishlist", "Mentioned in conversation", "Saw at store"],
     )
+    description: str | None = Field(
+        None,
+        description="Detailed description of the gift",
+    )
+    notes: str | None = Field(
+        None,
+        description="Internal notes about the gift",
+    )
+    priority: GiftPriority = Field(
+        default=GiftPriority.MEDIUM,
+        description="Priority level for this gift",
+    )
+    quantity: int = Field(
+        default=1,
+        ge=1,
+        description="Number of items needed",
+    )
+    sale_price: Decimal | None = Field(
+        None,
+        ge=0,
+        decimal_places=2,
+        description="Sale or discounted price",
+    )
+    purchase_date: date | None = Field(
+        None,
+        description="Date when the gift was purchased",
+    )
+    additional_urls: list[str] = Field(
+        default_factory=list,
+        description="Additional related URLs",
+    )
+    store_ids: list[int] = Field(
+        default_factory=list,
+        description="Optional store IDs to link",
+    )
+    person_ids: list[int] = Field(
+        default_factory=list,
+        description="Optional person IDs to link",
+    )
 
 
 class GiftUpdate(BaseModel):
@@ -54,6 +103,25 @@ class GiftUpdate(BaseModel):
     price: Decimal | None = Field(None, ge=0, decimal_places=2)
     image_url: str | None = None
     source: str | None = None
+    description: str | None = None
+    notes: str | None = None
+    priority: GiftPriority | None = None
+    quantity: int | None = Field(None, ge=1)
+    sale_price: Decimal | None = Field(None, ge=0, decimal_places=2)
+    purchase_date: date | None = None
+    additional_urls: list[str] | None = None
+    store_ids: list[int] | None = None
+    person_ids: list[int] | None = None
+
+
+class StoreMinimal(BaseModel):
+    """Minimal store information for embedding in gift responses."""
+
+    id: int
+    name: str
+    url: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GiftResponse(TimestampSchema):
@@ -65,11 +133,30 @@ class GiftResponse(TimestampSchema):
     price: Decimal | None
     image_url: str | None
     source: str | None
+    description: str | None = None
+    notes: str | None = None
+    priority: GiftPriority = GiftPriority.MEDIUM
+    quantity: int = 1
+    sale_price: Decimal | None = None
+    purchase_date: date | None = None
+    additional_urls: list[str] = Field(default_factory=list)
     extra_data: dict = Field(default_factory=dict)
+    stores: list[StoreMinimal] = Field(
+        default_factory=list,
+        description="Stores where this gift is available",
+    )
+    person_ids: list[int] = Field(
+        default_factory=list,
+        description="Person IDs linked to this gift",
+    )
 
     @field_serializer('price')
     def serialize_price(self, price: Decimal | None) -> float | None:
         return float(price) if price is not None else None
+
+    @field_serializer('sale_price')
+    def serialize_sale_price(self, sale_price: Decimal | None) -> float | None:
+        return float(sale_price) if sale_price is not None else None
 
 
 class GiftSummary(BaseModel):
@@ -79,10 +166,17 @@ class GiftSummary(BaseModel):
     name: str
     price: Decimal | None
     image_url: str | None
+    priority: GiftPriority = GiftPriority.MEDIUM
+    quantity: int = 1
+    sale_price: Decimal | None = None
 
     @field_serializer('price')
     def serialize_price(self, price: Decimal | None) -> float | None:
         return float(price) if price is not None else None
+
+    @field_serializer('sale_price')
+    def serialize_sale_price(self, sale_price: Decimal | None) -> float | None:
+        return float(sale_price) if sale_price is not None else None
 
 
 class GiftWithTags(GiftResponse):
@@ -91,4 +185,15 @@ class GiftWithTags(GiftResponse):
     tags: list["TagResponse"] = Field(
         default_factory=list,
         description="Tags associated with this gift",
+    )
+
+
+class GiftPeopleLink(BaseModel):
+    """DTO for attaching people to a gift."""
+
+    person_ids: list[int] = Field(
+        ...,
+        min_length=1,
+        description="List of person IDs to attach to the gift",
+        examples=[[1, 2, 3]],
     )

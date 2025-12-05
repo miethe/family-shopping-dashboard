@@ -1,6 +1,7 @@
 """Occasion DTOs for gifting events."""
 
 import datetime
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -30,6 +31,26 @@ class OccasionCreate(BaseModel):
         None,
         description="Optional description of the occasion",
     )
+    recurrence_rule: dict[str, Any] | None = Field(
+        None,
+        description="Recurrence rule for recurring occasions (e.g., {'month': 12, 'day': 25})",
+        examples=[{"month": 12, "day": 25}, {"month": 3, "day": 15}],
+    )
+    is_active: bool = Field(
+        True,
+        description="Whether the occasion is currently active",
+    )
+    subtype: str | None = Field(
+        None,
+        max_length=50,
+        description="Subtype for recurring occasions (e.g., 'birthday', 'anniversary')",
+        examples=["birthday", "anniversary", "holiday"],
+    )
+    person_ids: list[int] = Field(
+        default_factory=list,
+        description="Optional list of person IDs to link to this occasion",
+        examples=[[1, 2], [5]],
+    )
 
 
 class OccasionUpdate(BaseModel):
@@ -39,6 +60,10 @@ class OccasionUpdate(BaseModel):
     type: OccasionType | None = None
     date: datetime.date | None = None
     description: str | None = None
+    recurrence_rule: dict[str, Any] | None = None
+    is_active: bool | None = None
+    subtype: str | None = Field(None, max_length=50)
+    person_ids: list[int] | None = None
 
 
 class OccasionResponse(TimestampSchema):
@@ -49,6 +74,14 @@ class OccasionResponse(TimestampSchema):
     type: OccasionType
     date: datetime.date
     description: str | None
+    recurrence_rule: dict[str, Any] | None = None
+    is_active: bool = True
+    next_occurrence: datetime.date | None = None
+    subtype: str | None = None
+    person_ids: list[int] = Field(
+        default_factory=list,
+        description="IDs of persons linked to this occasion",
+    )
 
 
 class OccasionSummary(BaseModel):

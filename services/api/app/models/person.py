@@ -3,12 +3,17 @@
 from datetime import date
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import JSON, Date, String, Text
+from sqlalchemy import JSON, Date, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import DateTime
+from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship as sa_relationship
 
 if TYPE_CHECKING:
+    from app.models.gift import Gift
+    from app.models.group import Group
     from app.models.list import List
+    from app.models.occasion import Occasion
 
 from app.models.base import BaseModel
 
@@ -25,6 +30,7 @@ class Person(BaseModel):
         display_name: Person's display name (required, max 100 characters)
         relationship: Relationship to user (optional, e.g., "Mom", "Sister", "Friend")
         birthdate: Person's birthdate (optional)
+        anniversary: Person's anniversary date (optional)
         notes: Additional notes about the person (optional)
         interests: JSON array of interests/hobbies (optional)
         sizes: JSON object of clothing/shoe sizes (optional)
@@ -49,6 +55,12 @@ class Person(BaseModel):
     )
 
     birthdate: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True,
+        default=None,
+    )
+
+    anniversary: Mapped[date | None] = mapped_column(
         Date,
         nullable=True,
         default=None,
@@ -91,6 +103,66 @@ class Person(BaseModel):
         lazy="selectin",
     )
 
+    occasions: Mapped[list["Occasion"]] = sa_relationship(
+        "Occasion",
+        secondary="person_occasions",
+        back_populates="persons",
+        lazy="selectin",
+    )
+
+    # Many-to-many relationship to Gift (gifts associated with this person)
+    gifts: Mapped[list["Gift"]] = sa_relationship(
+        "Gift",
+        secondary="gift_people",
+        back_populates="people",
+        lazy="select",
+    )
+
+    # Many-to-many relationship to Group (groups this person belongs to)
+    groups: Mapped[list["Group"]] = sa_relationship(
+        "Group",
+        secondary="person_groups",
+        back_populates="members",
+        lazy="select",
+    )
+
     def __repr__(self) -> str:
         """String representation of Person."""
         return f"<Person(id={self.id}, display_name='{self.display_name}')>"
+
+
+class PersonOccasion(BaseModel):
+    """
+    Association table linking persons to occasions.
+
+    This many-to-many relationship allows tracking which persons are associated
+    with which occasions (e.g., a person's birthday linked to a birthday occasion).
+
+    Attributes:
+        id: Primary key (inherited from BaseModel)
+        person_id: Foreign key to persons table
+        occasion_id: Foreign key to occasions table
+        created_at: Timestamp of creation (inherited from BaseModel)
+    """
+
+    __tablename__ = "person_occasions"
+
+    person_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("persons.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    occasion_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("occasions.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        UniqueConstraint("person_id", "occasion_id", name="uq_person_occasion"),
+    )
+
+    def __repr__(self) -> str:
+        """String representation of PersonOccasion."""
+        return f"<PersonOccasion(person_id={self.person_id}, occasion_id={self.occasion_id})>"

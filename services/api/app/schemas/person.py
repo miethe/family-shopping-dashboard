@@ -6,6 +6,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from app.schemas.base import TimestampSchema
+from app.schemas.group import GroupMinimal
 
 
 class PersonCreate(BaseModel):
@@ -28,6 +29,11 @@ class PersonCreate(BaseModel):
         None,
         description="Person's birthdate",
         examples=["1985-03-15"],
+    )
+    anniversary: date | None = Field(
+        None,
+        description="Person's anniversary date",
+        examples=["2010-06-20"],
     )
     notes: str | None = Field(
         None,
@@ -55,6 +61,11 @@ class PersonCreate(BaseModel):
         description="URL to person's photo",
         examples=["https://example.com/photos/person.jpg"],
     )
+    group_ids: list[int] = Field(
+        default_factory=list,
+        description="List of group IDs to link this person to",
+        examples=[[1, 2], []],
+    )
 
 
 class PersonUpdate(BaseModel):
@@ -63,11 +74,16 @@ class PersonUpdate(BaseModel):
     display_name: str | None = Field(None, min_length=1, max_length=100)
     relationship: str | None = Field(None, max_length=100)
     birthdate: date | None = None
+    anniversary: date | None = None
     notes: str | None = None
     interests: list[str] | None = None
     sizes: dict[str, Any] | None = None
     constraints: str | None = None
     photo_url: str | None = Field(None, max_length=500)
+    group_ids: list[int] | None = Field(
+        None,
+        description="List of group IDs to link this person to (None means don't change)",
+    )
 
 
 class PersonResponse(TimestampSchema):
@@ -77,11 +93,20 @@ class PersonResponse(TimestampSchema):
     display_name: str
     relationship: str | None
     birthdate: date | None
+    anniversary: date | None
     notes: str | None
     interests: list[str] | None
     sizes: dict[str, Any] | None
     constraints: str | None
     photo_url: str | None
+    groups: list[GroupMinimal] = Field(
+        default_factory=list,
+        description="Groups this person belongs to",
+    )
+    occasion_ids: list[int] = Field(
+        default_factory=list,
+        description="IDs of occasions linked to this person",
+    )
 
 
 class PersonSummary(BaseModel):
