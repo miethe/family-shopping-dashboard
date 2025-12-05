@@ -91,7 +91,12 @@ class Gift(BaseModel):
     )
 
     priority: Mapped[GiftPriority] = mapped_column(
-        SQLEnum(GiftPriority, name="gift_priority", native_enum=True),
+        SQLEnum(
+            GiftPriority,
+            name="gift_priority",
+            native_enum=True,
+            values_callable=lambda e: [m.value for m in e],
+        ),
         default=GiftPriority.MEDIUM,
         nullable=False,
     )

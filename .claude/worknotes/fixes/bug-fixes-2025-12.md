@@ -722,10 +722,29 @@ Monthly bug tracking for December 2025.
 
 ### GiftPriority Enum Case Mismatch
 
-**Issue**: App failed with `LookupError: 'medium' is not among the defined enum values. Enum name: gift_priority. Possible values: LOW, MEDIUM, HIGH` during Alembic migration or gift operations.
+**Issue**: App failed with `LookupError: 'medium' is not among the defined enum values. Enum name: gift_priority. Possible values: LOW, MEDIUM, HIGH` during gift operations.
 
-- **Location**: `services/api/app/models/gift.py:94`
-- **Root Cause**: The SQLAlchemy model used `native_enum=False` which causes SQLAlchemy to validate against Python enum NAMES (LOW, MEDIUM, HIGH) as strings. However, migration `cf29065501d1` created a PostgreSQL ENUM type with lowercase VALUES ('low', 'medium', 'high'). When the app tried to use the enum, SQLAlchemy expected uppercase names but the database had lowercase values.
-- **Fix**: Changed `native_enum=False` to `native_enum=True` to use the existing PostgreSQL ENUM type directly, which has the correct lowercase values.
-- **Commit(s)**: `0bf2fda`
+- **Location**: `services/api/app/models/gift.py:93-102`
+- **Root Cause**: SQLAlchemy Enum by default uses Python enum NAMES (LOW, MEDIUM, HIGH) as database literals. However, migration `cf29065501d1` created a PostgreSQL ENUM type with VALUES ('low', 'medium', 'high'). The mismatch caused SQLAlchemy to fail when reading/writing gift priority.
+- **Fix**:
+  1. Changed `native_enum=False` to `native_enum=True` to use the existing PostgreSQL ENUM type
+  2. Added `values_callable=lambda e: [m.value for m in e]` to tell SQLAlchemy to use enum VALUES ('low', 'medium', 'high') instead of NAMES
+- **Commit(s)**: `9915dd8`
+- **Status**: RESOLVED
+
+---
+
+### Alembic Multiple Head Revisions
+
+**Issue**: Alembic failed with `Multiple head revisions are present for given argument 'head'` during `alembic upgrade head`.
+
+- **Location**: `services/api/alembic/versions/`
+- **Root Cause**: Two branch points in the migration history created 3 separate heads:
+  1. `003_person_anniversary` (from `001_occasion_recurrence` branch)
+  2. `cf29065501d1` (gift_model_expansion)
+  3. `e21fa4490d9d` (groups_and_person_groups)
+  
+  Branch point `37835ac72a46` diverged into both `e5004eebd18f` and `001_occasion_recurrence`. Branch point `268c9faeabe7` diverged into both `cf29065501d1` and `e21fa4490d9d`.
+- **Fix**: Created merge migration `ca7196997ff4` using `alembic merge heads -m "merge_all_heads"` to consolidate all three heads into a single migration path.
+- **Commit(s)**: `fd315e5`
 - **Status**: RESOLVED
