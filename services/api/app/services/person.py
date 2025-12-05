@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.person import PersonRepository
-from app.schemas.person import PersonCreate, PersonResponse, PersonUpdate
+from app.schemas.person import PersonCreate, PersonResponse, PersonUpdate, SizeEntry
 from app.services.person_occasion_hooks import PersonOccasionHooks
 
 
@@ -67,7 +69,10 @@ class PersonService:
         """
         # Extract group_ids before creating person
         group_ids = data.group_ids
-        person_data = data.model_dump(exclude_unset=True, exclude={"group_ids"})
+        person_data = data.model_dump(
+            exclude_unset=True, exclude_none=True, exclude={"group_ids"}
+        )
+        person_data = self._normalize_payload(person_data)
 
         # Create person in database
         person = await self.repo.create(person_data)
@@ -220,6 +225,7 @@ class PersonService:
         # Extract group_ids separately
         update_dict = data.model_dump(exclude_unset=True)
         group_ids = update_dict.pop("group_ids", None)
+        update_dict = self._normalize_payload(update_dict)
 
         # Update person fields if there are changes
         if update_dict:
@@ -275,3 +281,69 @@ class PersonService:
         await self.hooks.on_person_deleted(person_id)
 
         return await self.repo.delete(person_id)
+
+    @staticmethod
+    def _prepare_size_fields(
+        size_profile: list[SizeEntry] | list[dict[str, Any]] | None,
+        sizes_map: dict[str, Any] | None,
+    ) -> tuple[list[dict[str, Any]] | None, dict[str, str] | None]:
+        """
+        Normalize size inputs into structured payloads and legacy map.
+        """
+        if size_profile is not None:
+            profile_payload: list[dict[str, Any]] = []
+            for entry in size_profile:
+                entry_data = (
+                    entry.model_dump(exclude_none=True)
+                    if isinstance(entry, SizeEntry)
+                    else {k: v for k, v in entry.items() if v is not None}
+                )
+                size_type = entry_data.get("type")
+                size_value = entry_data.get("value")
+                if size_type and size_value:
+                    profile_payload.append(entry_data)
+
+            sizes_payload = (
+                {entry["type"]: entry["value"] for entry in profile_payload}
+                if profile_payload
+                else None
+            )
+            return profile_payload or None, sizes_payload
+
+        if sizes_map is not None:
+            profile_payload = [
+                {"type": size_type, "value": size_value}
+                for size_type, size_value in sizes_map.items()
+                if size_type and size_value
+            ]
+            return profile_payload or None, sizes_map or None
+
+        return None, None
+
+    @classmethod
+    def _normalize_payload(cls, payload: dict[str, Any]) -> dict[str, Any]:
+        """
+        Normalize payload for persistence, ensuring size fields and advanced interests
+        are aligned and empty payloads are dropped.
+        """
+        size_profile_present = "size_profile" in payload
+        sizes_present = "sizes" in payload
+
+        size_profile = payload.pop("size_profile", None)
+        sizes_map = payload.pop("sizes", None)
+        normalized_profile, normalized_sizes = cls._prepare_size_fields(
+            size_profile=size_profile,
+            sizes_map=sizes_map,
+        )
+
+        if normalized_profile is not None or size_profile_present:
+            payload["size_profile"] = normalized_profile
+        if normalized_sizes is not None or sizes_present:
+            payload["sizes"] = normalized_sizes
+
+        if "advanced_interests" in payload:
+            advanced_interests = payload["advanced_interests"]
+            if isinstance(advanced_interests, dict) and not advanced_interests:
+                payload["advanced_interests"] = None
+
+        return payload

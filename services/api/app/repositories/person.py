@@ -113,8 +113,8 @@ class PersonRepository(BaseRepository[Person]):
 
         stmt = (
             select(self.model)
-            .where(self.model.name.ilike(search_pattern))
-            .order_by(self.model.name)
+            .where(self.model.display_name.ilike(search_pattern))
+            .order_by(self.model.display_name)
             .limit(limit)
         )
 

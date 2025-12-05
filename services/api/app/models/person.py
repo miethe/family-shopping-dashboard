@@ -84,6 +84,18 @@ class Person(BaseModel):
         default=None,
     )
 
+    size_profile: Mapped[list[dict[str, Any]] | None] = mapped_column(
+        JSON,
+        nullable=True,
+        default=None,
+    )
+
+    advanced_interests: Mapped[dict[str, Any] | None] = mapped_column(
+        JSON,
+        nullable=True,
+        default=None,
+    )
+
     constraints: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
