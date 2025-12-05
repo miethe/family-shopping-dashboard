@@ -9,10 +9,13 @@
  * Parse a date string safely as a local date.
  * Prevents off-by-one day errors when parsing "YYYY-MM-DD" strings.
  *
- * @param dateString - Date string in "YYYY-MM-DD" format or Date object
- * @returns Date object in local timezone
+ * @param dateString - Date string in "YYYY-MM-DD" format, Date object, or null/undefined
+ * @returns Date object in local timezone, or current date if input is null/undefined
  */
-export function parseLocalDate(dateString: string | Date): Date {
+export function parseLocalDate(dateString: string | Date | null | undefined): Date {
+  if (!dateString) {
+    return new Date(); // Return current date as fallback
+  }
   if (dateString instanceof Date) {
     return dateString;
   }
@@ -24,10 +27,10 @@ export function parseLocalDate(dateString: string | Date): Date {
 
 /**
  * Format date for display
- * @param dateString - ISO date string or Date object
+ * @param dateString - ISO date string, Date object, or null/undefined
  * @returns Formatted date string (e.g., "January 15, 2024")
  */
-export function formatDate(dateString: string | Date): string {
+export function formatDate(dateString: string | Date | null | undefined): string {
   const date = parseLocalDate(dateString);
   return date.toLocaleDateString('en-US', {
     month: 'long',
@@ -38,12 +41,12 @@ export function formatDate(dateString: string | Date): string {
 
 /**
  * Format date with custom options
- * @param dateString - ISO date string or Date object
+ * @param dateString - ISO date string, Date object, or null/undefined
  * @param options - Intl.DateTimeFormatOptions
  * @returns Formatted date string
  */
 export function formatDateCustom(
-  dateString: string | Date,
+  dateString: string | Date | null | undefined,
   options?: Intl.DateTimeFormatOptions
 ): string {
   const date = parseLocalDate(dateString);
@@ -52,10 +55,13 @@ export function formatDateCustom(
 
 /**
  * Calculate age from birthdate
- * @param birthdate - ISO date string
+ * @param birthdate - ISO date string or null/undefined
  * @returns Age in years, or null if invalid date
  */
-export function getAge(birthdate: string): number | null {
+export function getAge(birthdate: string | null | undefined): number | null {
+  if (!birthdate) {
+    return null;
+  }
   try {
     const today = new Date();
     const birth = parseLocalDate(birthdate);
@@ -74,14 +80,17 @@ export function getAge(birthdate: string): number | null {
 
 /**
  * Get next birthday date with days until calculation
- * @param birthdate - ISO date string
+ * @param birthdate - ISO date string or null/undefined
  * @returns Object with formatted date, daysUntil, and isPast flag, or null if invalid
  */
-export function getNextBirthday(birthdate: string): {
+export function getNextBirthday(birthdate: string | null | undefined): {
   date: string;
   daysUntil: number;
   isPast: boolean;
 } | null {
+  if (!birthdate) {
+    return null;
+  }
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -114,10 +123,13 @@ export function getNextBirthday(birthdate: string): {
 
 /**
  * Get days until a specific date
- * @param dateString - ISO date string
- * @returns Number of days until the date (can be negative if past)
+ * @param dateString - ISO date string or null/undefined
+ * @returns Number of days until the date (can be negative if past), or 0 if input is null/undefined
  */
-export function getDaysUntil(dateString: string): number {
+export function getDaysUntil(dateString: string | null | undefined): number {
+  if (!dateString) {
+    return 0;
+  }
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Reset to midnight
 
@@ -132,10 +144,13 @@ export function getDaysUntil(dateString: string): number {
 
 /**
  * Format relative time (e.g., "2 days ago", "in 5 days")
- * @param dateString - ISO date string
- * @returns Relative time string
+ * @param dateString - ISO date string or null/undefined
+ * @returns Relative time string, or "No date" if input is null/undefined
  */
-export function formatRelativeTime(dateString: string): string {
+export function formatRelativeTime(dateString: string | null | undefined): string {
+  if (!dateString) {
+    return 'No date';
+  }
   const days = getDaysUntil(dateString);
 
   if (days === 0) return 'Today';
@@ -148,10 +163,13 @@ export function formatRelativeTime(dateString: string): string {
 /**
  * Format relative time from now (e.g., "2 hours ago", "5 minutes ago")
  * More granular than formatRelativeTime - handles minutes and hours
- * @param dateString - ISO date string or Date object
- * @returns Relative time string
+ * @param dateString - ISO date string, Date object, or null/undefined
+ * @returns Relative time string, or "No date" if input is null/undefined
  */
-export function formatTimeAgo(dateString: string | Date): string {
+export function formatTimeAgo(dateString: string | Date | null | undefined): string {
+  if (!dateString) {
+    return 'No date';
+  }
   const date = parseLocalDate(dateString);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
