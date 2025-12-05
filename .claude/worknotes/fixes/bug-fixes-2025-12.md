@@ -748,3 +748,45 @@ Monthly bug tracking for December 2025.
 - **Fix**: Created merge migration `ca7196997ff4` using `alembic merge heads -m "merge_all_heads"` to consolidate all three heads into a single migration path.
 - **Commit(s)**: `fd315e5`
 - **Status**: RESOLVED
+
+---
+
+### OccasionType Enum Case Mismatch
+
+**Issue**: App failed with `LookupError: 'holiday' is not among the defined enum values. Enum name: occasiontype. Possible values: HOLIDAY, RECURRING, OTHER` on /lists page.
+
+- **Location**: `services/api/app/models/occasion.py:54-63`
+- **Root Cause**: Same as GiftPriority - SQLAlchemy Enum uses Python enum NAMES (HOLIDAY, RECURRING, OTHER) by default, but PostgreSQL ENUM was created with VALUES ('holiday', 'recurring', 'other').
+- **Fix**: Changed from `ENUM(OccasionType, name="occasiontype", create_type=False)` to `SQLEnum(OccasionType, name="occasiontype", native_enum=True, values_callable=lambda e: [m.value for m in e])`.
+- **Commit(s)**: `5bcc991`
+- **Status**: RESOLVED
+
+---
+
+### PersonResponse.groups MissingGreenlet Error
+
+**Issue**: `MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here` when accessing /people endpoint.
+
+- **Location**: `services/api/app/repositories/person.py:164`
+- **Root Cause**: The `get_multi_with_group_filter()` repository method did NOT eagerly load the `groups` relationship. When Pydantic tried to validate PersonResponse and access `person.groups`, SQLAlchemy attempted a lazy load in an async context without proper greenlet spawning.
+- **Fix**: Added `.options(selectinload(self.model.groups))` to eagerly load the groups relationship, matching the pattern used in `get_with_groups()` method.
+- **Commit(s)**: `5bcc991`
+- **Status**: RESOLVED
+
+---
+
+### Frontend Date Utils Null Pointer Error
+
+**Issue**: `TypeError: Cannot read properties of undefined (reading 'split')` on /occasions and /people pages when date fields are undefined.
+
+- **Location**: `apps/web/lib/date-utils.ts:21` and related functions
+- **Root Cause**: `parseLocalDate()` and other date utility functions called `.split('-')` on potentially undefined date strings without null checks.
+- **Fix**: Updated all date utility functions to accept `null | undefined`:
+  - `parseLocalDate()`: returns current date as fallback
+  - `formatDate()/formatDateCustom()`: handles null input
+  - `getAge()`: returns null for undefined birthdate
+  - `getNextBirthday()`: returns null for undefined birthdate
+  - `getDaysUntil()`: returns 0 for undefined date
+  - `formatRelativeTime()/formatTimeAgo()`: return "No date" for null
+- **Commit(s)**: `d1acb8a`
+- **Status**: RESOLVED
