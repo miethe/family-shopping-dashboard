@@ -167,9 +167,11 @@ async def test_person(async_session: AsyncSession) -> Person:
         Created person instance
     """
     person = Person(
-        name="Test Person",
+        display_name="Test Person",
         interests=["Reading", "Hiking"],
-        sizes={"shirt": "M", "shoe": "10"},
+        size_profile=[{"type": "Shirt", "value": "M"}, {"type": "Shoe", "value": "10"}],
+        sizes={"Shirt": "M", "Shoe": "10"},
+        advanced_interests={"gift_preferences": {"gift_card_ok": True}},
     )
     async_session.add(person)
     await async_session.commit()
@@ -339,9 +341,13 @@ def sample_person_data() -> dict[str, Any]:
         Dictionary with person fields
     """
     return {
-        "name": "Sample Person",
+        "display_name": "Sample Person",
         "interests": ["Sports", "Music"],
-        "sizes": {"shirt": "L", "pants": "32x32"},
+        "size_profile": [
+            {"type": "Shirt", "value": "L"},
+            {"type": "Pants", "value": "32x32"},
+        ],
+        "advanced_interests": {"gift_preferences": {"gift_card_ok": False}},
     }
 
 

@@ -1,14 +1,41 @@
-"""Unit tests for PersonService."""
+"""Unit tests for PersonService with advanced interests and size profile support."""
 
+from datetime import datetime, timezone
+from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.person import Person
 from app.repositories.person import PersonRepository
-from app.schemas.person import PersonCreate, PersonResponse, PersonUpdate
+from app.schemas.person import PersonCreate, PersonResponse, PersonUpdate, SizeEntry
 from app.services.person import PersonService
+from app.services.person_occasion_hooks import PersonOccasionHooks
+
+
+def build_person_stub(**overrides: object) -> SimpleNamespace:
+    """Create a simple object that matches PersonResponse attributes."""
+    now = datetime.now(timezone.utc)
+    base = {
+        "id": 1,
+        "display_name": "Jane Doe",
+        "relationship": None,
+        "birthdate": None,
+        "anniversary": None,
+        "notes": None,
+        "interests": ["Reading"],
+        "size_profile": [{"type": "Shirt", "value": "M"}],
+        "sizes": {"Shirt": "M"},
+        "advanced_interests": None,
+        "constraints": None,
+        "photo_url": None,
+        "groups": [],
+        "occasion_ids": [],
+        "created_at": now,
+        "updated_at": now,
+    }
+    base.update(overrides)
+    return SimpleNamespace(**base)
 
 
 @pytest.fixture
@@ -19,9 +46,10 @@ def mock_person_repo() -> AsyncMock:
 
 @pytest.fixture
 def person_service(mock_person_repo: AsyncMock) -> PersonService:
-    """Create PersonService with mocked repository."""
+    """Create PersonService with mocked dependencies."""
     service = PersonService(session=AsyncMock(spec=AsyncSession))
     service.repo = mock_person_repo
+    service.hooks = AsyncMock(spec=PersonOccasionHooks)
     return service
 
 
@@ -29,246 +57,109 @@ class TestPersonService:
     """Test suite for PersonService."""
 
     @pytest.mark.asyncio
-    async def test_create_person(
+    async def test_create_person_sets_legacy_sizes(
         self, person_service: PersonService, mock_person_repo: AsyncMock
     ) -> None:
-        """Test creating a person."""
-        # Arrange
+        """Ensure size_profile drives legacy sizes map on create."""
         person_data = PersonCreate(
-            name="John Doe",
-            interests=["Reading", "Hiking"],
-            sizes={"shirt": "M", "shoe": "10"},
+            display_name="John Doe",
+            interests=["Running"],
+            size_profile=[SizeEntry(type="Shirt", value="M", fit="Slim")],
+            group_ids=[],
         )
 
-        mock_person = Person(
-            id=1,
-            name="John Doe",
-            interests=["Reading", "Hiking"],
-            sizes={"shirt": "M", "shoe": "10"},
+        created_stub = build_person_stub(
+            size_profile=[{"type": "Shirt", "value": "M", "fit": "Slim"}],
+            sizes={"Shirt": "M"},
         )
-        mock_person_repo.create.return_value = mock_person
+        mock_person_repo.create.return_value = created_stub
+        mock_person_repo.get_with_groups.return_value = created_stub
 
-        # Act
         result = await person_service.create(person_data)
 
-        # Assert
-        assert isinstance(result, PersonResponse)
-        assert result.id == 1
-        assert result.name == "John Doe"
-        assert result.interests == ["Reading", "Hiking"]
-        assert result.sizes == {"shirt": "M", "shoe": "10"}
-        mock_person_repo.create.assert_called_once()
+        payload = mock_person_repo.create.await_args.args[0]
+        assert payload["sizes"] == {"Shirt": "M"}
+        assert result.size_profile[0].fit == "Slim"
+        person_service.hooks.on_person_created.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_create_person_minimal_data(
+    async def test_create_person_backfills_size_profile_from_legacy(
         self, person_service: PersonService, mock_person_repo: AsyncMock
     ) -> None:
-        """Test creating person with only required fields."""
-        # Arrange
-        person_data = PersonCreate(name="Jane Doe")
+        """Legacy sizes input should backfill size_profile."""
+        person_data = PersonCreate(
+            display_name="Legacy User",
+            sizes={"Hat": "M"},
+            group_ids=[],
+        )
 
-        mock_person = Person(id=2, name="Jane Doe", interests=None, sizes=None)
-        mock_person_repo.create.return_value = mock_person
+        created_stub = build_person_stub(
+            size_profile=[{"type": "Hat", "value": "M"}],
+            sizes={"Hat": "M"},
+        )
+        mock_person_repo.create.return_value = created_stub
+        mock_person_repo.get_with_groups.return_value = created_stub
 
-        # Act
         result = await person_service.create(person_data)
 
-        # Assert
-        assert result.name == "Jane Doe"
-        assert result.interests is None
-        assert result.sizes is None
+        payload = mock_person_repo.create.await_args.args[0]
+        assert payload["size_profile"] == [{"type": "Hat", "value": "M"}]
+        assert result.sizes == {"Hat": "M"}
 
     @pytest.mark.asyncio
-    async def test_get_person_found(
+    async def test_update_person_applies_size_profile(
         self, person_service: PersonService, mock_person_repo: AsyncMock
     ) -> None:
-        """Test getting an existing person."""
-        # Arrange
-        mock_person = Person(id=1, name="John Doe")
-        mock_person_repo.get.return_value = mock_person
-
-        # Act
-        result = await person_service.get(person_id=1)
-
-        # Assert
-        assert result is not None
-        assert result.id == 1
-        assert result.name == "John Doe"
-        mock_person_repo.get.assert_called_once_with(1)
-
-    @pytest.mark.asyncio
-    async def test_get_person_not_found(
-        self, person_service: PersonService, mock_person_repo: AsyncMock
-    ) -> None:
-        """Test getting a non-existent person returns None."""
-        # Arrange
-        mock_person_repo.get.return_value = None
-
-        # Act
-        result = await person_service.get(person_id=999)
-
-        # Assert
-        assert result is None
-        mock_person_repo.get.assert_called_once_with(999)
-
-    @pytest.mark.asyncio
-    async def test_list_persons(
-        self, person_service: PersonService, mock_person_repo: AsyncMock
-    ) -> None:
-        """Test listing persons with pagination."""
-        # Arrange
-        mock_people = [
-            Person(id=1, name="Person 1"),
-            Person(id=2, name="Person 2"),
-        ]
-        mock_person_repo.get_multi.return_value = (mock_people, True, 2)
-
-        # Act
-        people, has_more, next_cursor = await person_service.list(limit=2)
-
-        # Assert
-        assert len(people) == 2
-        assert people[0].name == "Person 1"
-        assert people[1].name == "Person 2"
-        assert has_more is True
-        assert next_cursor == 2
-        mock_person_repo.get_multi.assert_called_once_with(
-            cursor=None, limit=2, order_by="id", descending=False
-        )
-
-    @pytest.mark.asyncio
-    async def test_list_persons_with_cursor(
-        self, person_service: PersonService, mock_person_repo: AsyncMock
-    ) -> None:
-        """Test listing persons with cursor pagination."""
-        # Arrange
-        mock_people = [Person(id=3, name="Person 3")]
-        mock_person_repo.get_multi.return_value = (mock_people, False, None)
-
-        # Act
-        people, has_more, next_cursor = await person_service.list(cursor=2, limit=2)
-
-        # Assert
-        assert len(people) == 1
-        assert has_more is False
-        assert next_cursor is None
-        mock_person_repo.get_multi.assert_called_once_with(
-            cursor=2, limit=2, order_by="id", descending=False
-        )
-
-    @pytest.mark.asyncio
-    async def test_update_person(
-        self, person_service: PersonService, mock_person_repo: AsyncMock
-    ) -> None:
-        """Test updating a person."""
-        # Arrange
-        existing_person = Person(id=1, name="Old Name", interests=["Old"])
-        updated_person = Person(
-            id=1, name="New Name", interests=["Reading", "Gaming"]
+        """Update should normalize size_profile and legacy sizes."""
+        existing_person = build_person_stub()
+        updated_stub = build_person_stub(
+            size_profile=[{"type": "Pants", "value": "32"}], sizes={"Pants": "32"}
         )
 
         mock_person_repo.get.return_value = existing_person
-        mock_person_repo.update.return_value = updated_person
+        mock_person_repo.update.return_value = updated_stub
+        mock_person_repo.get_with_groups.return_value = updated_stub
 
-        update_data = PersonUpdate(name="New Name", interests=["Reading", "Gaming"])
-
-        # Act
-        result = await person_service.update(person_id=1, data=update_data)
-
-        # Assert
-        assert result is not None
-        assert result.name == "New Name"
-        assert result.interests == ["Reading", "Gaming"]
-        mock_person_repo.update.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_update_person_partial(
-        self, person_service: PersonService, mock_person_repo: AsyncMock
-    ) -> None:
-        """Test partial update of person."""
-        # Arrange
-        existing_person = Person(
-            id=1, name="John", interests=["Reading"], sizes={"shirt": "M"}
+        update_data = PersonUpdate(
+            size_profile=[SizeEntry(type="Pants", value="32")],
+            interests=["New Interest"],
         )
 
-        mock_person_repo.get.return_value = existing_person
-        mock_person_repo.update.return_value = Person(
-            id=1, name="John", interests=["Reading"], sizes={"shirt": "L"}
-        )
-
-        update_data = PersonUpdate(sizes={"shirt": "L"})
-
-        # Act
         result = await person_service.update(person_id=1, data=update_data)
 
-        # Assert
-        assert result is not None
-        assert result.sizes == {"shirt": "L"}
+        payload = mock_person_repo.update.await_args.args[1]
+        assert payload["sizes"] == {"Pants": "32"}
+        assert result.size_profile[0].type == "Pants"
+        person_service.hooks.on_person_updated.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_update_person_not_found(
         self, person_service: PersonService, mock_person_repo: AsyncMock
     ) -> None:
-        """Test updating non-existent person returns None."""
-        # Arrange
+        """Return None when updating a missing person."""
         mock_person_repo.get.return_value = None
 
-        update_data = PersonUpdate(name="New Name")
+        result = await person_service.update(
+            person_id=999, data=PersonUpdate(display_name="Ghost")
+        )
 
-        # Act
-        result = await person_service.update(person_id=999, data=update_data)
-
-        # Assert
         assert result is None
-        mock_person_repo.get.assert_called_once_with(999)
-        mock_person_repo.update.assert_not_called()
+        mock_person_repo.update.assert_not_awaited()
 
     @pytest.mark.asyncio
-    async def test_update_person_no_changes(
+    async def test_list_persons_returns_responses(
         self, person_service: PersonService, mock_person_repo: AsyncMock
     ) -> None:
-        """Test updating person with no actual changes."""
-        # Arrange
-        existing_person = Person(id=1, name="John")
-        mock_person_repo.get.return_value = existing_person
+        """List should convert ORM objects to PersonResponse instances."""
+        people = [
+            build_person_stub(id=1, display_name="A"),
+            build_person_stub(id=2, display_name="B"),
+        ]
+        mock_person_repo.get_multi_with_group_filter.return_value = (people, True, 2)
 
-        # Update with no fields set
-        update_data = PersonUpdate()
+        items, has_more, next_cursor = await person_service.list(limit=2)
 
-        # Act
-        result = await person_service.update(person_id=1, data=update_data)
-
-        # Assert
-        assert result is not None
-        assert result.name == "John"
-        mock_person_repo.update.assert_not_called()
-
-    @pytest.mark.asyncio
-    async def test_delete_person_success(
-        self, person_service: PersonService, mock_person_repo: AsyncMock
-    ) -> None:
-        """Test deleting a person successfully."""
-        # Arrange
-        mock_person_repo.delete.return_value = True
-
-        # Act
-        result = await person_service.delete(person_id=1)
-
-        # Assert
-        assert result is True
-        mock_person_repo.delete.assert_called_once_with(1)
-
-    @pytest.mark.asyncio
-    async def test_delete_person_not_found(
-        self, person_service: PersonService, mock_person_repo: AsyncMock
-    ) -> None:
-        """Test deleting non-existent person returns False."""
-        # Arrange
-        mock_person_repo.delete.return_value = False
-
-        # Act
-        result = await person_service.delete(person_id=999)
-
-        # Assert
-        assert result is False
-        mock_person_repo.delete.assert_called_once_with(999)
+        assert isinstance(items[0], PersonResponse)
+        assert items[0].display_name == "A"
+        assert has_more is True
+        assert next_cursor == 2

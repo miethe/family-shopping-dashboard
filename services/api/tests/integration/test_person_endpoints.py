@@ -21,8 +21,11 @@ async def test_create_person(
     # Assert
     assert response.status_code == 201
     data = response.json()
-    assert data["name"] == sample_person_data["name"]
+    assert data["display_name"] == sample_person_data["display_name"]
     assert data["interests"] == sample_person_data["interests"]
+    assert data["size_profile"] == sample_person_data["size_profile"]
+    assert data["sizes"] == {"Shirt": "L", "Pants": "32x32"}
+    assert data["advanced_interests"]["gift_preferences"]["gift_card_ok"] is False
     assert "id" in data
 
 
@@ -50,7 +53,9 @@ async def test_get_person(
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == test_person.id
-    assert data["name"] == test_person.name
+    assert data["display_name"] == test_person.display_name
+    assert data["size_profile"][0]["type"] == "Shirt"
+    assert data["sizes"]["Shirt"] == "M"
 
 
 @pytest.mark.asyncio
@@ -76,8 +81,10 @@ async def test_list_persons(
     # Assert
     assert response.status_code == 200
     data = response.json()
-    assert isinstance(data, list)
-    assert len(data) > 0
+    assert isinstance(data, dict)
+    assert "items" in data
+    assert isinstance(data["items"], list)
+    assert data["items"][0]["display_name"] == test_person.display_name
 
 
 @pytest.mark.asyncio
@@ -86,7 +93,11 @@ async def test_update_person(
 ) -> None:
     """Test updating a person."""
     # Arrange
-    update_data = {"name": "Updated Name", "interests": ["New Interest"]}
+    update_data = {
+        "display_name": "Updated Name",
+        "interests": ["New Interest"],
+        "advanced_interests": {"food_and_drink": {"likes_wine": True}},
+    }
 
     # Act
     response = await client.patch(
@@ -96,8 +107,9 @@ async def test_update_person(
     # Assert
     assert response.status_code == 200
     data = response.json()
-    assert data["name"] == "Updated Name"
+    assert data["display_name"] == "Updated Name"
     assert data["interests"] == ["New Interest"]
+    assert data["advanced_interests"]["food_and_drink"]["likes_wine"] is True
 
 
 @pytest.mark.asyncio
@@ -106,7 +118,7 @@ async def test_update_person_not_found(
 ) -> None:
     """Test updating non-existent person returns 404."""
     # Arrange
-    update_data = {"name": "New Name"}
+    update_data = {"display_name": "New Name"}
 
     # Act
     response = await client.patch(
