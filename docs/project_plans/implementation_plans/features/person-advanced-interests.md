@@ -191,7 +191,7 @@ related_requests:
     "domain": ["Web", "Types", "Hooks"],
     "storypoints": 3,
     "reasoning": "Medium",
-    "status": "[ ]",
+    "status": "[X]",
     "success_criteria": "Type errors resolved; network responses parsed; UI can read size_profile fallback to sizes."
   },
   {
@@ -202,7 +202,7 @@ related_requests:
     "domain": ["Web", "UI"],
     "storypoints": 3,
     "reasoning": "Medium",
-    "status": "[ ]",
+    "status": "[X]",
     "success_criteria": "Users can add multiple size rows on create; validation prevents empty rows; advanced fields absent."
   },
   {
@@ -213,7 +213,7 @@ related_requests:
     "domain": ["Web", "UI"],
     "storypoints": 5,
     "reasoning": "High",
-    "status": "[ ]",
+    "status": "[X]",
     "success_criteria": "Form captures all categories; state persists per tab; likes_wine toggles wine types; submit maps to API shape."
   },
   {
@@ -224,7 +224,7 @@ related_requests:
     "domain": ["Web", "UI"],
     "storypoints": 3,
     "reasoning": "Medium",
-    "status": "[ ]",
+    "status": "[X]",
     "success_criteria": "Empty categories hidden; populated data shows labeled chips/pills; overflow works; mobile layout intact."
   },
   {
@@ -235,7 +235,7 @@ related_requests:
     "domain": ["Web", "UI"],
     "storypoints": 2,
     "reasoning": "Low",
-    "status": "[ ]",
+    "status": "[X]",
     "success_criteria": "No regression to spacing/hit targets; visual consistency with existing design tokens."
   },
   {
@@ -246,7 +246,7 @@ related_requests:
     "domain": ["Web", "State"],
     "storypoints": 2,
     "reasoning": "Medium",
-    "status": "[ ]",
+    "status": "[X]",
     "success_criteria": "Switching tabs does not lose unsaved data; close resets; toasts fire appropriately; loaders present."
   },
   {
@@ -257,7 +257,7 @@ related_requests:
     "domain": ["Test", "Web"],
     "storypoints": 3,
     "reasoning": "Medium",
-    "status": "[ ]",
+    "status": "[X]",
     "success_criteria": "Automated tests pass; coverage includes conditional rendering and array add/remove logic."
   },
   {
@@ -268,7 +268,7 @@ related_requests:
     "domain": ["QA"],
     "storypoints": 2,
     "reasoning": "Low",
-    "status": "[ ]",
+    "status": "[X]",
     "success_criteria": "Manual scenarios verified; no crashes; mobile layout acceptable; legacy data renders gracefully."
   },
   {
