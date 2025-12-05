@@ -49,6 +49,7 @@ export interface Person extends TimestampFields {
   sizes?: Record<string, string>;
   constraints?: string;
   photo_url?: string;
+  groups?: GroupMinimal[];
 }
 
 export interface PersonCreate {
@@ -60,6 +61,7 @@ export interface PersonCreate {
   sizes?: Record<string, string>;
   constraints?: string;
   photo_url?: string;
+  group_ids?: number[];
 }
 
 export interface PersonUpdate {
@@ -71,6 +73,7 @@ export interface PersonUpdate {
   sizes?: Record<string, string>;
   constraints?: string;
   photo_url?: string;
+  group_ids?: number[];
 }
 
 export interface PersonSummary {
@@ -79,10 +82,54 @@ export interface PersonSummary {
 }
 
 // ============================================================================
+// Group Types
+// ============================================================================
+
+export interface Group extends TimestampFields {
+  id: number;
+  name: string;
+  color: string | null;
+  description: string | null;
+}
+
+export interface GroupCreate {
+  name: string;
+  color?: string | null;
+  description?: string | null;
+}
+
+export interface GroupUpdate {
+  name?: string;
+  color?: string | null;
+  description?: string | null;
+}
+
+export interface GroupMinimal {
+  id: number;
+  name: string;
+  color: string | null;
+}
+
+// ============================================================================
 // Occasion Types
 // ============================================================================
 
-export type OccasionType = 'birthday' | 'holiday' | 'other';
+export enum OccasionType {
+  HOLIDAY = 'holiday',
+  RECURRING = 'recurring',
+  OTHER = 'other',
+}
+
+/**
+ * Recurrence rule for recurring occasions
+ * Defines when an occasion repeats (e.g., birthdays, anniversaries)
+ */
+export interface RecurrenceRule {
+  month: number;              // 1-12
+  day?: number | null;        // 1-31, null for relative dates (e.g., "2nd Monday")
+  weekday?: number | null;    // 0-6 (Monday-Sunday), for relative dates
+  week_of_month?: number | null; // 1-5 or -1 for last week, for relative dates
+}
 
 export interface Occasion extends TimestampFields {
   id: number;
@@ -91,6 +138,12 @@ export interface Occasion extends TimestampFields {
   date: string; // ISO date string
   description?: string;
   budget?: number | null;
+  // New fields for recurring occasions
+  recurrence_rule: RecurrenceRule | null;
+  is_active: boolean;
+  next_occurrence: string | null; // ISO date string
+  subtype: string | null; // "birthday", "anniversary", etc.
+  person_ids: number[];
 }
 
 export interface OccasionCreate {
@@ -99,6 +152,11 @@ export interface OccasionCreate {
   date: string; // ISO date string
   description?: string;
   budget?: number | null;
+  // New fields for recurring occasions
+  recurrence_rule?: RecurrenceRule | null;
+  is_active?: boolean;
+  subtype?: string | null;
+  person_ids?: number[];
 }
 
 export interface OccasionUpdate {
@@ -107,6 +165,11 @@ export interface OccasionUpdate {
   date?: string;
   description?: string;
   budget?: number | null;
+  // New fields for recurring occasions
+  recurrence_rule?: RecurrenceRule | null;
+  is_active?: boolean;
+  subtype?: string | null;
+  person_ids?: number[];
 }
 
 export interface OccasionSummary {
@@ -121,38 +184,128 @@ export interface OccasionSummary {
 // Gift Types
 // ============================================================================
 
+/**
+ * Gift priority levels
+ * Matches backend GiftPriority enum
+ */
+export enum GiftPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+}
+
+/**
+ * Minimal store information included in gift responses
+ */
+export interface StoreMinimal {
+  id: number;
+  name: string;
+  url: string | null;
+}
+
+/**
+ * Full store entity
+ */
+export interface Store extends StoreMinimal, TimestampFields {}
+
+/**
+ * Gift entity with all fields
+ * Matches backend GiftResponse schema
+ */
 export interface Gift extends TimestampFields {
   id: number;
   name: string;
-  url?: string;
-  price?: number;
-  image_url?: string;
-  source?: string;
-  extra_data: Record<string, any>;
+  url: string | null;
+  price: number | null;
+  image_url: string | null;
+  source: string | null;
+  // New fields
+  description: string | null;
+  notes: string | null;
+  priority: GiftPriority;
+  quantity: number;
+  sale_price: number | null;
+  purchase_date: string | null; // ISO date string
+  additional_urls: string[];
+  stores: StoreMinimal[];
+  person_ids: number[];
+  // Additional fields
+  extra_data: Record<string, unknown> | null;
 }
 
+/**
+ * Gift creation DTO
+ */
 export interface GiftCreate {
   name: string;
-  url?: string;
-  price?: number;
-  image_url?: string;
-  source?: string;
+  url?: string | null;
+  price?: number | null;
+  image_url?: string | null;
+  source?: string | null;
+  description?: string | null;
+  notes?: string | null;
+  priority?: GiftPriority;
+  quantity?: number;
+  sale_price?: number | null;
+  purchase_date?: string | null; // ISO date string
+  additional_urls?: string[];
+  store_ids?: number[];
+  person_ids?: number[];
 }
 
+/**
+ * Gift update DTO
+ */
 export interface GiftUpdate {
   name?: string;
-  url?: string;
-  price?: number;
-  image_url?: string;
-  source?: string;
-  extra_data?: Record<string, any>;
+  url?: string | null;
+  price?: number | null;
+  image_url?: string | null;
+  source?: string | null;
+  description?: string | null;
+  notes?: string | null;
+  priority?: GiftPriority;
+  quantity?: number;
+  sale_price?: number | null;
+  purchase_date?: string | null; // ISO date string
+  additional_urls?: string[];
+  store_ids?: number[];
+  person_ids?: number[];
+  extra_data?: Record<string, unknown>;
 }
 
+/**
+ * Minimal gift summary for list items
+ * Matches backend GiftSummary schema
+ */
 export interface GiftSummary {
   id: number;
   name: string;
-  price?: number;
-  image_url?: string;
+  price: number | null;
+  image_url: string | null;
+  priority: GiftPriority;
+  quantity: number;
+  sale_price: number | null;
+}
+
+// ============================================================================
+// Store Types
+// ============================================================================
+
+/**
+ * Store creation DTO
+ */
+export interface StoreCreate {
+  name: string;
+  url?: string | null;
+}
+
+/**
+ * Store update DTO
+ */
+export interface StoreUpdate {
+  name?: string;
+  url?: string | null;
 }
 
 // ============================================================================

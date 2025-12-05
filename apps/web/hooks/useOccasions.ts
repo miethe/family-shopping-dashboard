@@ -97,3 +97,18 @@ export function useDeleteOccasion() {
     },
   });
 }
+
+/**
+ * Fetch upcoming occasions within a specified number of days
+ * @param withinDays - Number of days to look ahead (default: 90)
+ */
+export function useUpcomingOccasions(withinDays: number = 90) {
+  const query = useQuery({
+    queryKey: ['occasions', 'upcoming', withinDays],
+    queryFn: () => occasionApi.upcoming({ within_days: withinDays }),
+    staleTime: 1000 * 60 * 5, // 5 minutes - upcoming occasions should refresh more frequently
+    refetchOnWindowFocus: true,
+  });
+
+  return query;
+}

@@ -11,24 +11,40 @@ import type { Person, PersonCreate, PersonUpdate } from '@/types';
 
 interface UsePersonsOptions {
   enabled?: boolean;
+  groupId?: number | null;
 }
 
 /**
  * Fetch paginated list of persons
  * @param params - Optional cursor and limit for pagination
+ * @param options - Additional query options including group filter
  */
 export function usePersons(params?: PersonListParams, options: UsePersonsOptions = {}) {
-  const { enabled = true } = options;
+  const { enabled = true, groupId } = options;
 
   const query = useQuery({
-    queryKey: ['persons', params],
+    queryKey: ['persons', { ...params, groupId }],
     queryFn: () => personApi.list(params),
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
     enabled,
   });
 
-  return query;
+  // Filter by group on the client side if groupId is provided
+  // (This assumes the API doesn't support group filtering yet)
+  const filteredData = query.data && groupId !== null && groupId !== undefined
+    ? {
+        ...query.data,
+        items: query.data.items.filter(person =>
+          person.groups?.some(g => g.id === groupId)
+        ),
+      }
+    : query.data;
+
+  return {
+    ...query,
+    data: filteredData,
+  };
 }
 
 /**

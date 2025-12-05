@@ -17,6 +17,11 @@ import type {
   PersonCreate,
   PersonUpdate,
   PersonSummary,
+  // Group types
+  Group,
+  GroupCreate,
+  GroupUpdate,
+  GroupMinimal,
   // Occasion types
   Occasion,
   OccasionCreate,
@@ -27,6 +32,9 @@ import type {
   GiftCreate,
   GiftUpdate,
   GiftSummary,
+  // Store types
+  Store,
+  StoreCreate,
   // List types
   GiftList,
   ListCreate,
@@ -123,6 +131,10 @@ export interface OccasionListParams {
   filter?: 'upcoming' | 'past';
 }
 
+export interface UpcomingOccasionsParams {
+  within_days?: number; // Default: 90 days
+}
+
 export const occasionApi = {
   list: (params?: OccasionListParams) =>
     apiClient.get<PaginatedResponse<Occasion>>('/occasions', params),
@@ -130,6 +142,8 @@ export const occasionApi = {
   create: (data: OccasionCreate) => apiClient.post<Occasion>('/occasions', data),
   update: (id: number, data: OccasionUpdate) => apiClient.put<Occasion>(`/occasions/${id}`, data),
   delete: (id: number) => apiClient.delete<void>(`/occasions/${id}`),
+  upcoming: (params?: UpcomingOccasionsParams) =>
+    apiClient.get<Occasion[]>('/occasions/upcoming', params),
 };
 
 // ============================================================================
@@ -311,4 +325,33 @@ export const budgetsApi = {
 
   deleteEntityBudget: (occasionId: number, entityType: string, entityId: number) =>
     apiClient.delete<void>(`/budgets/occasions/${occasionId}/entities/${entityType}/${entityId}`),
+};
+
+// ============================================================================
+// Group API
+// ============================================================================
+
+export const groupApi = {
+  list: () => apiClient.get<Group[]>('/groups'),
+  get: (id: number) => apiClient.get<Group>(`/groups/${id}`),
+  create: (data: GroupCreate) => apiClient.post<Group>('/groups', data),
+  update: (id: number, data: GroupUpdate) => apiClient.put<Group>(`/groups/${id}`, data),
+  delete: (id: number) => apiClient.delete<void>(`/groups/${id}`),
+};
+
+// ============================================================================
+// Store API
+// ============================================================================
+
+export interface StoreListParams {
+  cursor?: number;
+  limit?: number;
+}
+
+export const storeApi = {
+  list: (params?: StoreListParams) => apiClient.get<PaginatedResponse<Store>>('/stores', params),
+  search: (q: string) => apiClient.get<Store[]>(`/stores/search?q=${encodeURIComponent(q)}`),
+  get: (id: number) => apiClient.get<Store>(`/stores/${id}`),
+  create: (data: StoreCreate) => apiClient.post<Store>('/stores', data),
+  delete: (id: number) => apiClient.delete<void>(`/stores/${id}`),
 };

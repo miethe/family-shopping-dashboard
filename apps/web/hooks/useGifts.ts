@@ -3,6 +3,7 @@
  *
  * React Query hooks for Gift entity CRUD operations with cache management.
  * Provides gift fetching, create, update, delete, and URL-based creation functionality.
+ * Supports filtering by person, occasion, list, status, and more.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -15,7 +16,7 @@ interface UseGiftsOptions {
 
 /**
  * Fetch paginated list of gifts with optional filters
- * @param params - Optional cursor, limit, search, tags filters
+ * @param params - Optional cursor, limit, search, tags, person_ids, statuses, list_ids, occasion_ids filters
  */
 export function useGifts(params?: GiftListParams, options: UseGiftsOptions = {}) {
   const { enabled = true } = options;
@@ -29,6 +30,19 @@ export function useGifts(params?: GiftListParams, options: UseGiftsOptions = {})
   });
 
   return query;
+}
+
+/**
+ * Fetch gifts linked to a specific person
+ * Convenience wrapper around useGifts with person_ids filter
+ * @param personId - Person ID to filter by
+ * @param options - Additional query options
+ */
+export function useGiftsByPerson(personId: number, options: UseGiftsOptions = {}) {
+  return useGifts(
+    { person_ids: [personId] },
+    { ...options, enabled: options.enabled !== false && !!personId }
+  );
 }
 
 /**
@@ -82,6 +96,7 @@ export function useGiftFromUrl() {
 /**
  * Update existing gift
  * Invalidates gift detail and gift cache on success
+ * Also invalidates person-filtered queries if person_ids changed
  */
 export function useUpdateGift(id: number) {
   const queryClient = useQueryClient();
@@ -91,7 +106,8 @@ export function useUpdateGift(id: number) {
     onSuccess: (updatedGift) => {
       // Update the gift in cache
       queryClient.setQueryData(['gifts', id], updatedGift);
-      // Invalidate gift cache to reflect changes
+      // Invalidate all gift queries to reflect changes
+      // This includes person-filtered queries since they use the same base key
       queryClient.invalidateQueries({ queryKey: ['gifts'], exact: false });
     },
   });

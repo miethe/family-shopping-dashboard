@@ -2,7 +2,25 @@
  * Date Utility Functions
  *
  * Centralized date formatting and calculation utilities to avoid duplication.
+ * All functions parse "YYYY-MM-DD" strings as local dates to prevent timezone shifts.
  */
+
+/**
+ * Parse a date string safely as a local date.
+ * Prevents off-by-one day errors when parsing "YYYY-MM-DD" strings.
+ *
+ * @param dateString - Date string in "YYYY-MM-DD" format or Date object
+ * @returns Date object in local timezone
+ */
+export function parseLocalDate(dateString: string | Date): Date {
+  if (dateString instanceof Date) {
+    return dateString;
+  }
+
+  // Parse "YYYY-MM-DD" as local date (not UTC)
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
 
 /**
  * Format date for display
@@ -10,12 +28,26 @@
  * @returns Formatted date string (e.g., "January 15, 2024")
  */
 export function formatDate(dateString: string | Date): string {
-  const date = new Date(dateString);
+  const date = parseLocalDate(dateString);
   return date.toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
   });
+}
+
+/**
+ * Format date with custom options
+ * @param dateString - ISO date string or Date object
+ * @param options - Intl.DateTimeFormatOptions
+ * @returns Formatted date string
+ */
+export function formatDateCustom(
+  dateString: string | Date,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  const date = parseLocalDate(dateString);
+  return date.toLocaleDateString('en-US', options);
 }
 
 /**
@@ -26,7 +58,7 @@ export function formatDate(dateString: string | Date): string {
 export function getAge(birthdate: string): number | null {
   try {
     const today = new Date();
-    const birth = new Date(birthdate);
+    const birth = parseLocalDate(birthdate);
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
 
@@ -54,7 +86,7 @@ export function getNextBirthday(birthdate: string): {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const birth = new Date(birthdate);
+    const birth = parseLocalDate(birthdate);
     const thisYear = today.getFullYear();
 
     let nextBirthday = new Date(thisYear, birth.getMonth(), birth.getDate());
@@ -89,7 +121,7 @@ export function getDaysUntil(dateString: string): number {
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Reset to midnight
 
-  const targetDate = new Date(dateString);
+  const targetDate = parseLocalDate(dateString);
   targetDate.setHours(0, 0, 0, 0);
 
   const diffTime = targetDate.getTime() - today.getTime();
@@ -120,7 +152,7 @@ export function formatRelativeTime(dateString: string): string {
  * @returns Relative time string
  */
 export function formatTimeAgo(dateString: string | Date): string {
-  const date = new Date(dateString);
+  const date = parseLocalDate(dateString);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffSeconds = Math.floor(diffMs / 1000);
