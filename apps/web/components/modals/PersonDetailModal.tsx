@@ -21,6 +21,9 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { LinkListsToContextModal } from "./LinkListsToContextModal";
 import { GroupMultiSelect } from "@/components/common/GroupMultiSelect";
+import { AdvancedInterestsView } from '@/components/people/AdvancedInterestsView';
+import { AdvancedInterestsEdit } from '@/components/people/AdvancedInterestsEdit';
+import type { AdvancedInterests, SizeEntry } from '@/types';
 
 interface PersonDetailModalProps {
   personId: string | null;
@@ -78,7 +81,9 @@ export function PersonDetailModal({
         birthdate: person.birthdate || "",
         notes: person.notes || "",
         interests: person.interests || [],
+        size_profile: person.size_profile || [],
         sizes: person.sizes || {},
+        advanced_interests: person.advanced_interests || undefined,
         constraints: person.constraints || "",
         photo_url: person.photo_url || "",
       });
@@ -93,6 +98,7 @@ export function PersonDetailModal({
       setShowLinkListsModal(false);
       setActiveTab("overview");
       setIsEditingGroups(false);
+      setFormData({});
     }
   }, [open]);
 
@@ -114,7 +120,9 @@ export function PersonDetailModal({
       if (formData.birthdate) updateData.birthdate = formData.birthdate;
       if (formData.notes) updateData.notes = formData.notes;
       if (formData.interests && formData.interests.length > 0) updateData.interests = formData.interests;
+      if (formData.size_profile && formData.size_profile.length > 0) updateData.size_profile = formData.size_profile;
       if (formData.sizes && Object.keys(formData.sizes).length > 0) updateData.sizes = formData.sizes;
+      if (formData.advanced_interests) updateData.advanced_interests = formData.advanced_interests;
       if (formData.constraints) updateData.constraints = formData.constraints;
       if (formData.photo_url) updateData.photo_url = formData.photo_url;
 
@@ -351,6 +359,9 @@ export function PersonDetailModal({
                   <TabsTrigger value="overview" className="flex-1">
                     Overview
                   </TabsTrigger>
+                  <TabsTrigger value="advanced" className="flex-1">
+                    Advanced
+                  </TabsTrigger>
                   <TabsTrigger value="linked" className="flex-1">
                     Linked Entities
                   </TabsTrigger>
@@ -495,14 +506,14 @@ export function PersonDetailModal({
                   </div>
 
                   {/* Sizes */}
-                  {person.sizes && Object.keys(person.sizes).length > 0 && (
+                  {person.size_profile && person.size_profile.length > 0 && (
                     <div>
                       <h3 className="font-semibold text-warm-900 mb-2">Sizes</h3>
                       <div className="grid grid-cols-2 gap-2">
-                        {Object.entries(person.sizes).map(([key, value]) => (
-                          <div key={key} className="flex justify-between bg-warm-50 rounded-lg p-2">
-                            <span className="font-medium text-warm-700">{key}:</span>
-                            <span className="text-warm-900">{value}</span>
+                        {person.size_profile.map((entry, index) => (
+                          <div key={index} className="flex justify-between bg-warm-50 rounded-lg p-2">
+                            <span className="font-medium text-warm-700 capitalize">{entry.type}:</span>
+                            <span className="text-warm-900">{entry.value}</span>
                           </div>
                         ))}
                       </div>
@@ -539,6 +550,11 @@ export function PersonDetailModal({
                       <p>Last updated {formatDate(person.updated_at)}</p>
                     )}
                   </div>
+                </TabsContent>
+
+                {/* Advanced Interests Tab */}
+                <TabsContent value="advanced" className="space-y-4">
+                  <AdvancedInterestsView data={person.advanced_interests} />
                 </TabsContent>
 
                 {/* Linked Entities Tab */}
@@ -660,107 +676,136 @@ export function PersonDetailModal({
           ) : (
             <>
               {/* EDIT MODE */}
-              <div className="space-y-4">
-                <Input
-                  label="Display Name"
-                  value={formData.display_name || ""}
-                  onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
-                  required
-                  placeholder="Enter display name"
-                />
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="w-full mb-6">
+                  <TabsTrigger value="overview" className="flex-1">
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger value="advanced" className="flex-1">
+                    Advanced
+                  </TabsTrigger>
+                </TabsList>
 
-                <Input
-                  label="Relationship"
-                  value={formData.relationship || ""}
-                  onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
-                  placeholder="e.g., Spouse, Child, Friend"
-                />
-
-                <Input
-                  label="Birthdate"
-                  type="date"
-                  value={formData.birthdate || ""}
-                  onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
-                />
-
-                <Input
-                  label="Photo URL"
-                  value={formData.photo_url || ""}
-                  onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
-                  placeholder="https://example.com/photo.jpg"
-                />
-
-                <Textarea
-                  label="Notes"
-                  value={formData.notes || ""}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="Add any notes about this person"
-                  rows={3}
-                />
-
-                <div>
+                {/* Overview Tab - Basic fields */}
+                <TabsContent value="overview" className="space-y-4">
                   <Input
-                    label="Interests"
-                    value={(formData.interests || []).join(", ")}
-                    onChange={(e) => handleInterestsChange(e.target.value)}
-                    placeholder="Comma-separated (e.g., Reading, Hiking, Cooking)"
-                    helperText="Separate multiple interests with commas"
+                    label="Display Name"
+                    value={formData.display_name || ""}
+                    onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+                    required
+                    placeholder="Enter display name"
                   />
-                </div>
 
-                <div>
-                  <label className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide">
-                    Sizes
-                  </label>
-                  <div className="space-y-2">
-                    {Object.entries(formData.sizes || {}).map(([key, value]) => (
-                      <div key={key} className="flex gap-2">
-                        <Input
-                          value={key}
-                          onChange={(e) => {
-                            const newSizes = { ...(formData.sizes || {}) };
-                            delete newSizes[key];
-                            newSizes[e.target.value] = value;
-                            setFormData({ ...formData, sizes: newSizes });
-                          }}
-                          placeholder="Type (e.g., Shirt)"
-                          className="flex-1"
-                        />
-                        <Input
-                          value={value}
-                          onChange={(e) => handleSizesChange(key, e.target.value)}
-                          placeholder="Size (e.g., M)"
-                          className="flex-1"
-                        />
-                        <Button
-                          variant="outline"
-                          size="md"
-                          onClick={() => handleRemoveSize(key)}
-                          className="min-w-[44px]"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleSizesChange("", "")}
-                      className="w-full"
-                    >
-                      Add Size
-                    </Button>
+                  <Input
+                    label="Relationship"
+                    value={formData.relationship || ""}
+                    onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+                    placeholder="e.g., Spouse, Child, Friend"
+                  />
+
+                  <Input
+                    label="Birthdate"
+                    type="date"
+                    value={formData.birthdate || ""}
+                    onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
+                  />
+
+                  <Input
+                    label="Photo URL"
+                    value={formData.photo_url || ""}
+                    onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
+                    placeholder="https://example.com/photo.jpg"
+                  />
+
+                  <Textarea
+                    label="Notes"
+                    value={formData.notes || ""}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Add any notes about this person"
+                    rows={3}
+                  />
+
+                  <div>
+                    <Input
+                      label="Interests"
+                      value={(formData.interests || []).join(", ")}
+                      onChange={(e) => handleInterestsChange(e.target.value)}
+                      placeholder="Comma-separated (e.g., Reading, Hiking, Cooking)"
+                      helperText="Separate multiple interests with commas"
+                    />
                   </div>
-                </div>
 
-                <Textarea
-                  label="Constraints"
-                  value={formData.constraints || ""}
-                  onChange={(e) => setFormData({ ...formData, constraints: e.target.value })}
-                  placeholder="Allergies, preferences, restrictions, etc."
-                  rows={3}
-                />
-              </div>
+                  <div>
+                    <label className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide">
+                      Sizes
+                    </label>
+                    <div className="space-y-2">
+                      {(formData.size_profile || []).map((entry, index) => (
+                        <div key={index} className="flex gap-2">
+                          <Input
+                            value={entry.type}
+                            onChange={(e) => {
+                              const newProfile = [...(formData.size_profile || [])];
+                              newProfile[index] = { ...entry, type: e.target.value };
+                              setFormData({ ...formData, size_profile: newProfile });
+                            }}
+                            placeholder="Type (e.g., Shirt)"
+                            className="flex-1"
+                          />
+                          <Input
+                            value={entry.value}
+                            onChange={(e) => {
+                              const newProfile = [...(formData.size_profile || [])];
+                              newProfile[index] = { ...entry, value: e.target.value };
+                              setFormData({ ...formData, size_profile: newProfile });
+                            }}
+                            placeholder="Size (e.g., M)"
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="md"
+                            onClick={() => {
+                              const newProfile = (formData.size_profile || []).filter((_, i) => i !== index);
+                              setFormData({ ...formData, size_profile: newProfile });
+                            }}
+                            className="min-w-[44px]"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newProfile = [...(formData.size_profile || []), { type: '', value: '' }];
+                          setFormData({ ...formData, size_profile: newProfile });
+                        }}
+                        className="w-full"
+                      >
+                        Add Size
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Textarea
+                    label="Constraints"
+                    value={formData.constraints || ""}
+                    onChange={(e) => setFormData({ ...formData, constraints: e.target.value })}
+                    placeholder="Allergies, preferences, restrictions, etc."
+                    rows={3}
+                  />
+                </TabsContent>
+
+                {/* Advanced Tab */}
+                <TabsContent value="advanced" className="space-y-4">
+                  <AdvancedInterestsEdit
+                    value={formData.advanced_interests || {}}
+                    onChange={(advanced_interests) => setFormData({ ...formData, advanced_interests })}
+                  />
+                </TabsContent>
+              </Tabs>
             </>
           )}
         </div>

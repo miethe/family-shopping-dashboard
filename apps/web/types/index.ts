@@ -39,26 +39,141 @@ export interface UserUpdate {
 // Person Types
 // ============================================================================
 
+/**
+ * Size entry with optional fit/brand/notes
+ * Used in size_profile for structured clothing and accessory sizes
+ */
+export interface SizeEntry {
+  type: string;
+  value: string;
+  fit?: string;
+  brand?: string;
+  notes?: string;
+}
+
+/**
+ * Jewelry sizes for style section
+ */
+export interface JewelrySizes {
+  ring?: string;
+  bracelet?: string;
+  necklace?: string;
+}
+
+/**
+ * Food and drink preferences
+ * Captures dietary preferences, favorite cuisines, beverage preferences
+ */
+export interface FoodAndDrink {
+  likes_wine?: boolean;
+  wine_types?: string[];
+  beverage_prefs?: string[];
+  coffee_style?: string;
+  tea_style?: string;
+  spirits?: string[];
+  dietary?: string[];
+  favorite_cuisines?: string[];
+  sweet_vs_savory?: string;
+  favorite_treats?: string;
+}
+
+/**
+ * Style and accessories preferences
+ * Captures color preferences, jewelry, fragrances, and personal style
+ */
+export interface StyleAndAccessories {
+  preferred_colors?: string[];
+  avoid_colors?: string[];
+  preferred_metals?: string[];
+  fragrance_notes?: string[];
+  jewelry_sizes?: JewelrySizes;
+  accessory_prefs?: string[];
+  style_notes?: string;
+}
+
+/**
+ * Hobbies and media preferences
+ * Captures hobbies, creative pursuits, entertainment preferences
+ */
+export interface HobbiesAndMedia {
+  hobbies?: string[];
+  creative_outlets?: string[];
+  sports_played?: string[];
+  sports_teams?: string[];
+  reading_genres?: string[];
+  music_genres?: string[];
+  favorite_authors?: string[];
+  favorite_artists?: string[];
+  board_games?: string[];
+  fandoms_or_series?: string[];
+}
+
+/**
+ * Tech, travel, and experience preferences
+ * Captures technology ecosystems, travel interests, and experience preferences
+ */
+export interface TechTravelExperiences {
+  tech_ecosystem?: string[];
+  gaming_platforms?: string[];
+  smart_home?: string[];
+  travel_styles?: string[];
+  dream_destinations?: string[];
+  experience_types?: string[];
+  event_preferences?: string[];
+}
+
+/**
+ * Gift preferences
+ * Captures specific gift-giving preferences and boundaries
+ */
+export interface GiftPreferences {
+  gift_card_ok?: boolean;
+  likes_personalized?: boolean;
+  collects?: string[];
+  avoid_categories?: string[];
+  budget_comfort?: string;
+  notes?: string;
+}
+
+/**
+ * Top-level advanced interests structure
+ * Organizes person preferences into logical categories
+ */
+export interface AdvancedInterests {
+  food_and_drink?: FoodAndDrink;
+  style_and_accessories?: StyleAndAccessories;
+  hobbies_and_media?: HobbiesAndMedia;
+  tech_travel_experiences?: TechTravelExperiences;
+  gift_preferences?: GiftPreferences;
+}
+
 export interface Person extends TimestampFields {
   id: number;
   display_name: string;
   relationship?: string;
   birthdate?: string; // ISO date string
+  anniversary?: string; // ISO date string
   notes?: string;
   interests?: string[];
-  sizes?: Record<string, string>;
+  size_profile?: SizeEntry[]; // NEW: Structured size data
+  sizes?: Record<string, string>; // DEPRECATED: Keep for backward compatibility
+  advanced_interests?: AdvancedInterests; // NEW: Structured preference data
   constraints?: string;
   photo_url?: string;
   groups?: GroupMinimal[];
+  occasion_ids?: number[];
 }
 
 export interface PersonCreate {
   display_name: string;
   relationship?: string;
   birthdate?: string; // ISO date string
+  anniversary?: string; // ISO date string
   notes?: string;
   interests?: string[];
-  sizes?: Record<string, string>;
+  size_profile?: SizeEntry[];
+  sizes?: Record<string, string>; // Keep for backward compatibility
+  advanced_interests?: AdvancedInterests;
   constraints?: string;
   photo_url?: string;
   group_ids?: number[];
@@ -68,9 +183,12 @@ export interface PersonUpdate {
   display_name?: string;
   relationship?: string;
   birthdate?: string; // ISO date string
+  anniversary?: string; // ISO date string
   notes?: string;
   interests?: string[];
-  sizes?: Record<string, string>;
+  size_profile?: SizeEntry[];
+  sizes?: Record<string, string>; // Keep for backward compatibility
+  advanced_interests?: AdvancedInterests;
   constraints?: string;
   photo_url?: string;
   group_ids?: number[];

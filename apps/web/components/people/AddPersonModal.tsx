@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreatePerson, useUpdatePerson } from '@/hooks/usePersons';
 import { GroupMultiSelect } from '@/components/common/GroupMultiSelect';
-import type { Person, PersonCreate, PersonUpdate } from '@/types';
+import type { Person, PersonCreate, PersonUpdate, SizeEntry } from '@/types';
 
 const RELATIONSHIP_OPTIONS = [
   'Parent',
@@ -51,9 +51,9 @@ export function AddPersonModal({
   const [photoUrl, setPhotoUrl] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
   const [interestInput, setInterestInput] = useState('');
-  const [sizes, setSizes] = useState<Record<string, string>>({});
-  const [sizeKey, setSizeKey] = useState('');
-  const [sizeValue, setSizeValue] = useState('');
+  const [sizeProfile, setSizeProfile] = useState<SizeEntry[]>([]);
+  const [newSizeType, setNewSizeType] = useState('');
+  const [newSizeValue, setNewSizeValue] = useState('');
   const [groupIds, setGroupIds] = useState<number[]>([]);
 
   const createMutation = useCreatePerson();
@@ -73,7 +73,7 @@ export function AddPersonModal({
       setConstraints(personToEdit.constraints || '');
       setPhotoUrl(personToEdit.photo_url || '');
       setInterests(personToEdit.interests || []);
-      setSizes(personToEdit.sizes || {});
+      setSizeProfile(personToEdit.size_profile || []);
       setGroupIds(personToEdit.groups?.map(g => g.id) || []);
     } else if (!isOpen) {
       // Reset form when modal closes
@@ -93,16 +93,18 @@ export function AddPersonModal({
   };
 
   const handleAddSize = () => {
-    if (sizeKey.trim() && sizeValue.trim()) {
-      setSizes({ ...sizes, [sizeKey.trim()]: sizeValue.trim() });
-      setSizeKey('');
-      setSizeValue('');
+    if (newSizeType.trim() && newSizeValue.trim()) {
+      setSizeProfile([
+        ...sizeProfile,
+        { type: newSizeType.trim(), value: newSizeValue.trim() }
+      ]);
+      setNewSizeType('');
+      setNewSizeValue('');
     }
   };
 
-  const handleRemoveSize = (key: string) => {
-    const { [key]: _, ...rest } = sizes;
-    setSizes(rest);
+  const handleRemoveSize = (index: number) => {
+    setSizeProfile(sizeProfile.filter((_, i) => i !== index));
   };
 
   const resetForm = () => {
@@ -114,9 +116,9 @@ export function AddPersonModal({
     setPhotoUrl('');
     setInterests([]);
     setInterestInput('');
-    setSizes({});
-    setSizeKey('');
-    setSizeValue('');
+    setSizeProfile([]);
+    setNewSizeType('');
+    setNewSizeValue('');
     setGroupIds([]);
   };
 
@@ -135,7 +137,7 @@ export function AddPersonModal({
         constraints: constraints.trim() || undefined,
         photo_url: photoUrl.trim() || undefined,
         interests: interests.length > 0 ? interests : undefined,
-        sizes: Object.keys(sizes).length > 0 ? sizes : undefined,
+        size_profile: sizeProfile.length > 0 ? sizeProfile : undefined,
         group_ids: groupIds.length > 0 ? groupIds : undefined,
       };
 
@@ -169,7 +171,7 @@ export function AddPersonModal({
         constraints: constraints.trim() || undefined,
         photo_url: photoUrl.trim() || undefined,
         interests: interests.length > 0 ? interests : undefined,
-        sizes: Object.keys(sizes).length > 0 ? sizes : undefined,
+        size_profile: sizeProfile.length > 0 ? sizeProfile : undefined,
         group_ids: groupIds.length > 0 ? groupIds : undefined,
       };
 
@@ -324,53 +326,56 @@ export function AddPersonModal({
             </label>
             <div className="flex gap-2 mb-2">
               <select
-                value={sizeKey}
-                onChange={(e) => setSizeKey(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                value={newSizeType}
+                onChange={(e) => setNewSizeType(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent min-h-[44px]"
               >
-                <option value="">Category</option>
+                <option value="">Select type...</option>
                 {SIZE_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat.charAt(0).toUpperCase() + cat.slice(1)}
                   </option>
                 ))}
-                <option value="custom">Custom</option>
+                <option value="ring">Ring</option>
+                <option value="bracelet">Bracelet</option>
+                <option value="hat">Hat</option>
+                <option value="gloves">Gloves</option>
               </select>
-              {sizeKey === 'custom' && (
-                <Input
-                  value={sizeKey}
-                  onChange={(e) => setSizeKey(e.target.value)}
-                  placeholder="Size category"
-                  className="flex-1"
-                />
-              )}
               <Input
-                value={sizeValue}
-                onChange={(e) => setSizeValue(e.target.value)}
-                placeholder="Size value (e.g., M, 32, 9.5)"
+                value={newSizeValue}
+                onChange={(e) => setNewSizeValue(e.target.value)}
+                placeholder="Size (e.g., M, 32, 9.5)"
                 className="flex-1"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddSize();
+                  }
+                }}
               />
               <Button
                 type="button"
                 onClick={handleAddSize}
                 variant="outline"
-                disabled={!sizeKey || !sizeValue.trim()}
+                disabled={!newSizeType || !newSizeValue.trim()}
+                className="min-h-[44px]"
               >
                 Add
               </Button>
             </div>
-            {Object.keys(sizes).length > 0 && (
+
+            {sizeProfile.length > 0 && (
               <div className="space-y-2">
-                {Object.entries(sizes).map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                {sizeProfile.map((entry, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-700">
-                      <span className="font-medium capitalize">{key}:</span> {String(value)}
+                      <span className="font-medium capitalize">{entry.type}:</span> {entry.value}
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleRemoveSize(key)}
-                      className="text-red-600 hover:text-red-800 min-h-[24px] min-w-[24px]"
-                      aria-label={`Remove ${key} size`}
+                      onClick={() => handleRemoveSize(index)}
+                      className="text-red-600 hover:text-red-800 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                      aria-label={`Remove ${entry.type} size`}
                     >
                       ×
                     </button>
@@ -379,7 +384,7 @@ export function AddPersonModal({
               </div>
             )}
             <p className="mt-1 text-xs text-gray-500">
-              Clothing sizes for shopping reference
+              Clothing and accessory sizes for shopping reference
             </p>
           </div>
         </section>

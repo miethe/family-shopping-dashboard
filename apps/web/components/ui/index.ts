@@ -122,3 +122,12 @@ export {
   type TablePaginationProps,
   type TableEmptyProps,
 } from './table';
+export { Select, type SelectProps, type SelectOption } from './select';
+export { Textarea, type TextareaProps } from './textarea';
+export { Switch, type SwitchProps } from './switch';
+export { ChipInput, type ChipInputProps } from './chip-input';
+export {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from './collapsible';
