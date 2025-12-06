@@ -802,3 +802,32 @@ Monthly bug tracking for December 2025.
 - **Fix**: Updated both upgrade() and downgrade() functions to use the correct index name `ix_comments_parent_type_parent_id` instead of the old name.
 - **Commit(s)**: `60ce92c`
 - **Status**: RESOLVED
+
+---
+
+### Gift Edit Price Save Returns 405 Method Not Allowed
+
+**Issue**: Saving a price on a gift in Edit mode fails with `PUT /api/v1/gifts/1 HTTP/1.1 405 Method Not Allowed`
+
+- **Location**: `apps/web/lib/api/endpoints.ts:175`
+- **Root Cause**: Frontend `giftApi.update()` used `apiClient.put()` but the backend gift update endpoint uses `@router.patch()` for partial updates (line 314 in `services/api/app/api/gifts.py`).
+- **Fix**: Changed `apiClient.put` to `apiClient.patch` in the giftApi.update function
+- **Commit(s)**: `8124ed5`
+- **Status**: RESOLVED
+
+---
+
+### Cannot Add Person to Group from Edit Mode (Feature Gap)
+
+**Issue**: No UI to add/remove people from a Group - only way to manage group membership was through the Person edit modal, not from the Group's perspective
+
+- **Location**: Missing `apps/web/components/groups/GroupEditModal.tsx`
+- **Root Cause**: Group management only existed as `GroupMultiSelect` in Person modals. No dedicated Group edit interface existed to manage group properties (name, color, description) or members.
+- **Fix**: Created:
+  1. `apps/web/components/common/PersonMultiSelect.tsx` - Multi-select component for choosing people (inverse of GroupMultiSelect)
+  2. `apps/web/components/groups/GroupEditModal.tsx` - Full modal for editing group details and managing members
+  3. `apps/web/components/groups/index.ts` - Export barrel for group components
+
+  The modal allows editing group name/color/description and uses PersonMultiSelect to add/remove people from the group. Member updates work by modifying each person's `group_ids` via the Person API.
+- **Commit(s)**: `f04b4b4`
+- **Status**: RESOLVED
