@@ -790,3 +790,15 @@ Monthly bug tracking for December 2025.
   - `formatRelativeTime()/formatTimeAgo()`: return "No date" for null
 - **Commit(s)**: `d1acb8a`
 - **Status**: RESOLVED
+
+---
+
+### Comment Visibility Migration - Wrong Index Name
+
+**Issue**: App and Alembic migrations failed with `sqlalchemy.exc.ProgrammingError: index "idx_comments_parent_type_parent_id" does not exist` when trying to run the comment visibility migration.
+
+- **Location**: `services/api/alembic/versions/1d2e5f3c4b21_add_comment_visibility_and_gift.py:40-42,63-65`
+- **Root Cause**: Migration `1d2e5f3c4b21` tried to drop `idx_comments_parent_type_parent_id`, but migration `39be0dfc7e1d` had already renamed that index to `ix_comments_parent_type_parent_id` (SQLAlchemy convention change). The newer migration referenced a stale/non-existent index name.
+- **Fix**: Updated both upgrade() and downgrade() functions to use the correct index name `ix_comments_parent_type_parent_id` instead of the old name.
+- **Commit(s)**: `60ce92c`
+- **Status**: RESOLVED
