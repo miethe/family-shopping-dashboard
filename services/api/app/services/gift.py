@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from datetime import date
 from decimal import Decimal, InvalidOperation
 
 import httpx
@@ -10,7 +11,14 @@ from bs4 import BeautifulSoup
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.gift import GiftRepository
-from app.schemas.gift import GiftCreate, GiftResponse, GiftUpdate
+from app.schemas.gift import (
+    AdditionalUrl,
+    GiftCreate,
+    GiftResponse,
+    GiftUpdate,
+    MarkPurchasedRequest,
+    StoreMinimal,
+)
 
 
 class GiftService:
@@ -75,7 +83,8 @@ class GiftService:
         Note:
             All fields except name are optional in GiftCreate.
         """
-        # Create gift in database
+        additional_urls = [url.model_dump() for url in data.additional_urls]
+
         gift = await self.repo.create(
             {
                 "name": data.name,
@@ -83,21 +92,24 @@ class GiftService:
                 "price": data.price,
                 "image_url": data.image_url,
                 "source": data.source,
+                "description": data.description,
+                "notes": data.notes,
+                "priority": data.priority,
+                "quantity": data.quantity,
+                "sale_price": data.sale_price,
+                "purchase_date": data.purchase_date,
+                "additional_urls": additional_urls,
             }
         )
 
-        # Convert ORM model to DTO
-        return GiftResponse(
-            id=gift.id,
-            name=gift.name,
-            url=gift.url,
-            price=gift.price,
-            image_url=gift.image_url,
-            source=gift.source,
-            extra_data=gift.extra_data,
-            created_at=gift.created_at,
-            updated_at=gift.updated_at,
-        )
+        # Handle relationships
+        if data.person_ids:
+            await self.repo.set_people(gift.id, data.person_ids)
+        if data.store_ids:
+            await self.repo.set_stores(gift.id, data.store_ids)
+
+        gift_with_relations = await self.repo.get_with_relations(gift.id) or gift
+        return self._to_response(gift_with_relations)
 
     async def create_from_url(self, url: str) -> GiftResponse:
         """
@@ -163,21 +175,11 @@ class GiftService:
                 print("Gift not found")
             ```
         """
-        gift = await self.repo.get(gift_id)
+        gift = await self.repo.get_with_relations(gift_id) or await self.repo.get(gift_id)
         if gift is None:
             return None
 
-        return GiftResponse(
-            id=gift.id,
-            name=gift.name,
-            url=gift.url,
-            price=gift.price,
-            image_url=gift.image_url,
-            source=gift.source,
-            extra_data=gift.extra_data,
-            created_at=gift.created_at,
-            updated_at=gift.updated_at,
-        )
+        return self._to_response(gift)
 
     async def list(
         self,
@@ -258,24 +260,10 @@ class GiftService:
         else:
             # Use simple pagination (no filters)
             gifts, has_more, next_cursor = await self.repo.get_multi(
-                cursor=cursor, limit=limit
+                cursor=cursor, limit=limit, descending=True
             )
 
-        # Convert ORM models to DTOs
-        gift_dtos = [
-            GiftResponse(
-                id=gift.id,
-                name=gift.name,
-                url=gift.url,
-                price=gift.price,
-                image_url=gift.image_url,
-                source=gift.source,
-                extra_data=gift.extra_data,
-                created_at=gift.created_at,
-                updated_at=gift.updated_at,
-            )
-            for gift in gifts
-        ]
+        gift_dtos = [self._to_response(gift) for gift in gifts]
 
         return gift_dtos, has_more, next_cursor
 
@@ -310,21 +298,7 @@ class GiftService:
         # Search using repository
         gifts = await self.repo.search_by_name(query, limit=limit)
 
-        # Convert ORM models to DTOs
-        return [
-            GiftResponse(
-                id=gift.id,
-                name=gift.name,
-                url=gift.url,
-                price=gift.price,
-                image_url=gift.image_url,
-                source=gift.source,
-                extra_data=gift.extra_data,
-                created_at=gift.created_at,
-                updated_at=gift.updated_at,
-            )
-            for gift in gifts
-        ]
+        return [self._to_response(gift) for gift in gifts]
 
     async def update(self, gift_id: int, data: GiftUpdate) -> GiftResponse | None:
         """
@@ -371,7 +345,22 @@ class GiftService:
             update_data["image_url"] = data.image_url
         if data.source is not None:
             update_data["source"] = data.source
-
+        if data.description is not None:
+            update_data["description"] = data.description
+        if data.notes is not None:
+            update_data["notes"] = data.notes
+        if data.priority is not None:
+            update_data["priority"] = data.priority
+        if data.quantity is not None:
+            update_data["quantity"] = data.quantity
+        if data.sale_price is not None:
+            update_data["sale_price"] = data.sale_price
+        if data.purchase_date is not None:
+            update_data["purchase_date"] = data.purchase_date
+        if data.additional_urls is not None:
+            update_data["additional_urls"] = [
+                url.model_dump() for url in data.additional_urls
+            ]
         # Update gift if there are changes
         if update_data:
             updated_gift = await self.repo.update(gift_id, update_data)
@@ -382,18 +371,14 @@ class GiftService:
         else:
             gift = existing_gift
 
-        # Convert ORM model to DTO
-        return GiftResponse(
-            id=gift.id,
-            name=gift.name,
-            url=gift.url,
-            price=gift.price,
-            image_url=gift.image_url,
-            source=gift.source,
-            extra_data=gift.extra_data,
-            created_at=gift.created_at,
-            updated_at=gift.updated_at,
-        )
+        # Refresh linked people and stores when provided
+        if data.person_ids is not None:
+            await self.repo.set_people(gift_id, data.person_ids)
+        if data.store_ids is not None:
+            await self.repo.set_stores(gift_id, data.store_ids)
+
+        refreshed = await self.repo.get_with_relations(gift_id)
+        return self._to_response(refreshed or gift)
 
     async def delete(self, gift_id: int) -> bool:
         """
@@ -524,6 +509,36 @@ class GiftService:
         gifts = await self.repo.get_by_linked_persons(person_ids)
         return [self._to_response(gift) for gift in gifts]
 
+    async def mark_as_purchased(self, gift_id: int, data: MarkPurchasedRequest) -> GiftResponse | None:
+        """
+        Mark a gift as purchased/partial purchased, stamping purchase date and quantity purchased metadata.
+        """
+        gift = await self.repo.get(gift_id)
+        if gift is None:
+            return None
+
+        derived_status = (
+            data.status
+            if data.status
+            else ("purchased" if data.quantity_purchased >= (gift.quantity or 1) else "partial")
+        )
+        purchase_date = data.purchase_date or date.today()
+
+        extra_data = dict(gift.extra_data or {})
+        extra_data["status"] = derived_status
+        extra_data["quantity_purchased"] = data.quantity_purchased
+
+        update_payload = {
+            "purchase_date": purchase_date,
+            "extra_data": extra_data,
+        }
+        if data.sale_price is not None:
+            update_payload["sale_price"] = data.sale_price
+
+        updated = await self.repo.update(gift_id, update_payload)
+        refreshed = await self.repo.get_with_relations(gift_id)
+        return self._to_response(refreshed or updated or gift)
+
     def _to_response(self, gift: "Gift") -> GiftResponse:
         """
         Convert ORM Gift model to GiftResponse DTO.
@@ -537,6 +552,23 @@ class GiftService:
         Note:
             This is a helper method to centralize ORM → DTO conversion.
         """
+        raw_urls = gift.additional_urls or []
+        normalized_urls: list[AdditionalUrl] = []
+        for entry in raw_urls:
+            try:
+                if isinstance(entry, dict):
+                    normalized_urls.append(AdditionalUrl(**entry))
+                else:
+                    normalized_urls.append(
+                        AdditionalUrl(label="Link", url=str(entry))
+                    )
+            except Exception:
+                # Skip invalid entries but keep response generation resilient
+                continue
+
+        stores = getattr(gift, "stores", []) or []
+        people = getattr(gift, "people", []) or []
+
         return GiftResponse(
             id=gift.id,
             name=gift.name,
@@ -544,7 +576,19 @@ class GiftService:
             price=gift.price,
             image_url=gift.image_url,
             source=gift.source,
+            description=getattr(gift, "description", None),
+            notes=getattr(gift, "notes", None),
+            priority=getattr(gift, "priority", None),
+            quantity=getattr(gift, "quantity", 1),
+            sale_price=getattr(gift, "sale_price", None),
+            purchase_date=getattr(gift, "purchase_date", None),
+            additional_urls=normalized_urls,
             extra_data=gift.extra_data,
+            stores=[
+                StoreMinimal(id=store.id, name=store.name, url=store.url)
+                for store in stores
+            ],
+            person_ids=[person.id for person in people],
             created_at=gift.created_at,
             updated_at=gift.updated_at,
         )

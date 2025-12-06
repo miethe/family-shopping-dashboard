@@ -1,6 +1,6 @@
 """Gift repository with search and relationship loading capabilities."""
 
-from sqlalchemy import select, distinct, func, delete
+from sqlalchemy import select, distinct, func, delete, asc, desc
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +9,7 @@ from app.models.tag import Tag, gift_tags
 from app.models.list_item import ListItem
 from app.models.list import List
 from app.models.gift_person import GiftPerson
+from app.models.store import Store
 from app.repositories.base import BaseRepository
 
 
@@ -76,6 +77,10 @@ class GiftRepository(BaseRepository[Gift]):
         """
         stmt = (
             select(self.model)
+            .options(
+                selectinload(self.model.people),
+                selectinload(self.model.stores),
+            )
             .where(self.model.name.ilike(f"%{query}%"))
             .order_by(self.model.name)
             .limit(limit)
@@ -155,6 +160,21 @@ class GiftRepository(BaseRepository[Gift]):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def get_with_relations(self, gift_id: int) -> Gift | None:
+        """
+        Get a gift with people and stores eager loaded.
+        """
+        stmt = (
+            select(self.model)
+            .options(
+                selectinload(self.model.people),
+                selectinload(self.model.stores),
+            )
+            .where(self.model.id == gift_id)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def get_with_list_items(self, gift_id: int) -> Gift | None:
         """
         Get a single gift with list_items eagerly loaded.
@@ -191,6 +211,46 @@ class GiftRepository(BaseRepository[Gift]):
 
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_multi(
+        self,
+        cursor: int | None = None,
+        limit: int = 50,
+        order_by: str = "id",
+        descending: bool = False,
+    ) -> tuple[list[Gift], bool, int | None]:
+        """
+        Override base get_multi to eager-load people and stores for response shaping.
+        """
+        stmt = (
+            select(self.model)
+            .options(
+                selectinload(self.model.people),
+                selectinload(self.model.stores),
+            )
+        )
+
+        if cursor is not None:
+            order_column = getattr(self.model, order_by)
+            if descending:
+                stmt = stmt.where(order_column < cursor)
+            else:
+                stmt = stmt.where(order_column > cursor)
+
+        order_column = getattr(self.model, order_by)
+        stmt = stmt.order_by(desc(order_column) if descending else asc(order_column))
+        stmt = stmt.limit(limit + 1)
+
+        result = await self.session.execute(stmt)
+        items = list(result.scalars().all())
+
+        has_more = len(items) > limit
+        if has_more:
+            items = items[:limit]
+
+        next_cursor = getattr(items[-1], order_by) if items and has_more else None
+
+        return items, has_more, next_cursor
 
     async def get_filtered(
         self,
@@ -294,7 +354,14 @@ class GiftRepository(BaseRepository[Gift]):
         id_subquery = id_subquery.subquery()
 
         # Step 2: Select full Gift models where ID is in the subquery
-        stmt = select(self.model).where(self.model.id.in_(select(id_subquery.c.gift_id)))
+        stmt = (
+            select(self.model)
+            .options(
+                selectinload(self.model.people),
+                selectinload(self.model.stores),
+            )
+            .where(self.model.id.in_(select(id_subquery.c.gift_id)))
+        )
 
         # Apply cursor pagination
         if cursor is not None:
@@ -438,6 +505,27 @@ class GiftRepository(BaseRepository[Gift]):
 
         await self.session.commit()
 
+    async def set_stores(self, gift_id: int, store_ids: list[int]) -> None:
+        """
+        Replace all linked stores for a gift.
+        """
+        gift = await self.get(gift_id)
+        if gift is None:
+            return
+
+        if not store_ids:
+            gift.stores = []
+            await self.session.commit()
+            await self.session.refresh(gift)
+            return
+
+        stmt = select(Store).where(Store.id.in_(store_ids))
+        result = await self.session.execute(stmt)
+        stores = list(result.scalars().all())
+        gift.stores = stores
+        await self.session.commit()
+        await self.session.refresh(gift)
+
     async def get_by_linked_person(self, person_id: int) -> list[Gift]:
         """
         Get all gifts directly linked to a specific person via gift_people table.
@@ -468,6 +556,10 @@ class GiftRepository(BaseRepository[Gift]):
         """
         stmt = (
             select(self.model)
+            .options(
+                selectinload(self.model.people),
+                selectinload(self.model.stores),
+            )
             .join(GiftPerson, self.model.id == GiftPerson.gift_id)
             .where(GiftPerson.person_id == person_id)
             .order_by(self.model.id.desc())
@@ -509,6 +601,10 @@ class GiftRepository(BaseRepository[Gift]):
 
         stmt = (
             select(self.model)
+            .options(
+                selectinload(self.model.people),
+                selectinload(self.model.stores),
+            )
             .join(GiftPerson, self.model.id == GiftPerson.gift_id)
             .where(GiftPerson.person_id.in_(person_ids))
             .distinct()
@@ -565,7 +661,13 @@ class GiftRepository(BaseRepository[Gift]):
             - Cursor-based pagination for performance
             - Results ordered by gift ID (most recent first)
         """
-        stmt = select(self.model)
+        stmt = (
+            select(self.model)
+            .options(
+                selectinload(self.model.people),
+                selectinload(self.model.stores),
+            )
+        )
 
         # Apply linked person filter if provided
         if linked_person_ids:

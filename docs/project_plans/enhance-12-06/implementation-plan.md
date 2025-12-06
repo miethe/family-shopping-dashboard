@@ -34,13 +34,20 @@
   - Route map (static labels): `/dashboard` → Dashboard, `/assignments` → Assignments, `/gifts` → Gifts, `/gifts/new` → Add Gift, `/lists` → Lists, `/lists/new` → New List, `/people` → People, `/people/new` → Add Person, `/occasions` → Occasions, `/occasions/new` → Add Occasion.
   - Dynamic labels: `/gifts/[id]` and `/gifts/[id]/edit` pull `gift.name` via `useGift`; `/lists/[id]` uses `useList` name; `/people/[id]` uses `usePerson.display_name`; `/occasions/[id]` uses `useOccasion.name`. Builder should fall back to `#{id}` when data missing and prefer `queryClient.getQueryData` to avoid duplicate fetches. Source of truth lives in the new navigation helper consumed by page-level headers.
 
+### Backend Updates (12-06)
+
+- Linking: `PATCH /gifts/{id}` now persists `person_ids` via `set_people`; attach/detach endpoints (`POST /gifts/{id}/people`, `DELETE /gifts/{id}/people/{person_id}`) return updated person_id lists for immediate UI refresh.
+- Gift payload: `GiftResponse` now returns description, notes, priority, quantity, sale_price, purchase_date, stores, and person_ids; `additional_urls` is validated `{label,url}` JSON with legacy string normalization.
+- Media: Added `/upload/image` (file or URL, 10MB, JPEG/PNG/GIF/WebP/HEIF/HEIC) plus `/upload/image/config`; local storage at `/uploads/**` with optional `CDN_BASE_URL`.
+- Mark as purchased: `POST /gifts/{id}/mark-purchased` stamps `purchase_date`, derives status vs quantity, records `quantity_purchased` in `extra_data`, and returns updated `GiftResponse`.
+
 - Phase: Backend
-  - {"id":"BE-FR1-01","phase":"Backend","fr":["FR1"],"task":"Fix entity-link PATCH to persist relations and return updated linked entities; add regression tests.","domain":["API","Data"],"storypoints":3,"model":"Claude Opus 4.5","reasoning":"High","status":"[ ]","success_criteria":"Linking a Person to a Gift stores relation and response includes new link; automated test covers gift/person link."}
-  - {"id":"BE-FR2-01","phase":"Backend","fr":["FR2"],"task":"Expose/confirm unlink endpoint that removes relation and returns refreshed linked entities list.","domain":["API","Data"],"storypoints":2,"model":"GPT-5.1-Codex-Max","reasoning":"Medium","status":"[ ]","success_criteria":"Unlink call removes relation in DB and returns list sans entity; test covers unlink path."}
-  - {"id":"BE-FR5-01","phase":"Backend","fr":["FR5","FR6"],"task":"Ensure Gift model supports description, salePrice, quantity, relation metadata for linked person; include in read/write DTOs.","domain":["API","Data"],"storypoints":2,"model":"Claude Sonnet 4.5","reasoning":"Medium","status":"[ ]","success_criteria":"Gift detail API returns description, salePrice, quantity, linked person summary; create/update accepts fields."}
-  - {"id":"BE-FR7-01","phase":"Backend","fr":["FR7"],"task":"Add Additional URLs array {label,url} to Gift schema with validation and include in APIs.","domain":["API","Data"],"storypoints":2,"model":"GPT-5.1-Codex-Max","reasoning":"Medium","status":"[ ]","success_criteria":"Gift APIs store and return multiple labeled URLs; validation rejects bad URLs/empty labels."}
-  - {"id":"BE-FR8-01","phase":"Backend","fr":["FR8"],"task":"Provide unified media endpoint for entity images supporting upload (file/paste/drag) and URL ingestion with size/type validation and storage.","domain":["API","Infra"],"storypoints":5,"model":"Claude Opus 4.5","reasoning":"High","status":"[ ]","success_criteria":"Entities accept image upload/URL; files stored and retrievable via CDN link; validation errors surfaced cleanly."}
-  - {"id":"BE-FR11-01","phase":"Backend","fr":["FR11"],"task":"Implement mark-as-purchased mutation to set status, purchase date (now), and quantity purchased logic.","domain":["API","Data"],"storypoints":2,"model":"GPT-5.1-Codex-Max","reasoning":"Medium","status":"[ ]","success_criteria":"Mutation updates status per quantity vs needed, stamps purchase date, and returns updated gift record."}
+  - {"id":"BE-FR1-01","phase":"Backend","fr":["FR1"],"task":"Fix entity-link PATCH to persist relations and return updated linked entities; add regression tests.","domain":["API","Data"],"storypoints":3,"model":"Claude Opus 4.5","reasoning":"High","status":"[X]","success_criteria":"Linking a Person to a Gift stores relation and response includes new link; automated test covers gift/person link."}
+  - {"id":"BE-FR2-01","phase":"Backend","fr":["FR2"],"task":"Expose/confirm unlink endpoint that removes relation and returns refreshed linked entities list.","domain":["API","Data"],"storypoints":2,"model":"GPT-5.1-Codex-Max","reasoning":"Medium","status":"[X]","success_criteria":"Unlink call removes relation in DB and returns list sans entity; test covers unlink path."}
+  - {"id":"BE-FR5-01","phase":"Backend","fr":["FR5","FR6"],"task":"Ensure Gift model supports description, salePrice, quantity, relation metadata for linked person; include in read/write DTOs.","domain":["API","Data"],"storypoints":2,"model":"Claude Sonnet 4.5","reasoning":"Medium","status":"[X]","success_criteria":"Gift detail API returns description, salePrice, quantity, linked person summary; create/update accepts fields."}
+  - {"id":"BE-FR7-01","phase":"Backend","fr":["FR7"],"task":"Add Additional URLs array {label,url} to Gift schema with validation and include in APIs.","domain":["API","Data"],"storypoints":2,"model":"GPT-5.1-Codex-Max","reasoning":"Medium","status":"[X]","success_criteria":"Gift APIs store and return multiple labeled URLs; validation rejects bad URLs/empty labels."}
+  - {"id":"BE-FR8-01","phase":"Backend","fr":["FR8"],"task":"Provide unified media endpoint for entity images supporting upload (file/paste/drag) and URL ingestion with size/type validation and storage.","domain":["API","Infra"],"storypoints":5,"model":"Claude Opus 4.5","reasoning":"High","status":"[X]","success_criteria":"Entities accept image upload/URL; files stored and retrievable via CDN link; validation errors surfaced cleanly."}
+  - {"id":"BE-FR11-01","phase":"Backend","fr":["FR11"],"task":"Implement mark-as-purchased mutation to set status, purchase date (now), and quantity purchased logic.","domain":["API","Data"],"storypoints":2,"model":"GPT-5.1-Codex-Max","reasoning":"Medium","status":"[X]","success_criteria":"Mutation updates status per quantity vs needed, stamps purchase date, and returns updated gift record."}
 
 - Phase: Frontend
   - {"id":"FE-FR1-01","phase":"Frontend","fr":["FR1"],"task":"Update link-entity flows in modals to optimistically refresh linked entities list after successful PATCH.","domain":["Web","UI"],"storypoints":2,"model":"GPT-5.1-Codex-Max","reasoning":"Medium","status":"[ ]","success_criteria":"Linking person to gift immediately shows in modal without refresh across entity modals."}
@@ -64,19 +71,19 @@
   - {"id":"QA-FR9-01","phase":"Testing","fr":["FR9"],"task":"Test breadcrumb rendering across main routes and responsive layouts.","domain":["Test","Web"],"storypoints":1,"model":"GPT-4.1","reasoning":"Low","status":"[ ]","success_criteria":"Breadcrumb shows correct hierarchy per route and remains usable on mobile widths."}
 
 - Phase: Docs
-  - {"id":"DOC-FR4-11-01","phase":"Docs","fr":["FR4","FR7","FR8","FR11"],"task":"Update user/admin docs for gift links, additional URLs, image upload, and mark-as-purchased flow; note From URL disabled state.","domain":["Docs"],"storypoints":1,"model":"GPT-5.1-Codex-Max","reasoning":"Low","status":"[ ]","success_criteria":"Docs describe new fields/flows and constraints; tooltips and dialog behaviors captured."}
+  - {"id":"DOC-FR4-11-01","phase":"Docs","fr":["FR4","FR7","FR8","FR11"],"task":"Update user/admin docs for gift links, additional URLs, image upload, and mark-as-purchased flow; note From URL disabled state.","domain":["Docs"],"storypoints":1,"model":"GPT-5.1-Codex-Max","reasoning":"Low","status":"[X]","success_criteria":"Docs describe new fields/flows and constraints; tooltips and dialog behaviors captured."}
 
 ## Tracking
 
 - [X] DISC-ALL-01 — Inventory linking/dialog/media components.
 - [X] DISC-FR8-01 — Decide upload/storage approach.
 - [X] DISC-FR9-01 — Choose breadcrumb strategy.
-- [ ] BE-FR1-01 — Fix link persistence + response.
-- [ ] BE-FR2-01 — Unlink endpoint returns refreshed list.
-- [ ] BE-FR5-01 — Gift fields in API/DTOs.
-- [ ] BE-FR7-01 — Additional URLs schema + validation.
-- [ ] BE-FR8-01 — Media upload/URL pipeline.
-- [ ] BE-FR11-01 — Mark-as-purchased mutation.
+- [X] BE-FR1-01 — Fix link persistence + response.
+- [X] BE-FR2-01 — Unlink endpoint returns refreshed list.
+- [X] BE-FR5-01 — Gift fields in API/DTOs.
+- [X] BE-FR7-01 — Additional URLs schema + validation.
+- [X] BE-FR8-01 — Media upload/URL pipeline.
+- [X] BE-FR11-01 — Mark-as-purchased mutation.
 - [ ] FE-FR1-01 — Immediate linked list refresh on link.
 - [ ] FE-FR2-01 — Unlink control + confirm dialog.
 - [ ] FE-FR3-01 — Unified dialog adoption.
@@ -94,4 +101,4 @@
 - [ ] QA-FR4-10-01 — Gift overview regressions.
 - [ ] QA-FR8-01 — Image ingestion tests.
 - [ ] QA-FR9-01 — Breadcrumb tests.
-- [ ] DOC-FR4-11-01 — Docs updates.
+- [X] DOC-FR4-11-01 — Docs updates.

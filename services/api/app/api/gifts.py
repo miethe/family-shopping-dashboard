@@ -6,7 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import NotFoundError
 from app.schemas.base import PaginatedResponse
-from app.schemas.gift import GiftCreate, GiftPeopleLink, GiftResponse, GiftUpdate
+from app.schemas.gift import (
+    GiftCreate,
+    GiftPeopleLink,
+    GiftResponse,
+    GiftUpdate,
+    MarkPurchasedRequest,
+)
 from app.services.gift import GiftService
 
 router = APIRouter(prefix="/gifts", tags=["gifts"])
@@ -475,16 +481,17 @@ async def get_gift_people(
 
 @router.post(
     "/{gift_id}/people",
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=list[int],
+    status_code=status.HTTP_200_OK,
     summary="Attach people to a gift",
-    description="Attach multiple people to a gift (batch operation, skips duplicates)",
+    description="Attach multiple people to a gift (batch operation, skips duplicates) and return updated person ids.",
 )
 async def attach_people_to_gift(
     gift_id: int,
     data: GiftPeopleLink,
     current_user_id: int = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> None:
+) -> list[int]:
     """
     Attach people to a gift (batch operation).
 
@@ -526,20 +533,22 @@ async def attach_people_to_gift(
         )
 
     await service.attach_people(gift_id, data.person_ids)
+    return await service.get_linked_people(gift_id)
 
 
 @router.delete(
     "/{gift_id}/people/{person_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=list[int],
+    status_code=status.HTTP_200_OK,
     summary="Detach a person from a gift",
-    description="Remove the link between a gift and a person",
+    description="Remove the link between a gift and a person and return the updated person list",
 )
 async def detach_person_from_gift(
     gift_id: int,
     person_id: int,
     current_user_id: int = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> None:
+) -> list[int]:
     """
     Detach a person from a gift.
 
@@ -550,23 +559,11 @@ async def detach_person_from_gift(
         db: Database session (injected)
 
     Returns:
-        No content (204)
+        Updated list of linked person IDs
 
     Raises:
         HTTPException: 404 if link not found (either gift or person doesn't exist,
                       or they aren't linked)
-
-    Example:
-        ```
-        DELETE /gifts/42/people/5
-        Headers: Authorization: Bearer eyJhbGc...
-
-        Response 204 No Content
-        ```
-
-    Note:
-        - Returns 404 if the link doesn't exist
-        - Returns 204 if the link was successfully removed
     """
     service = GiftService(db)
     deleted = await service.detach_person(gift_id, person_id)
@@ -576,6 +573,31 @@ async def detach_person_from_gift(
             code="LINK_NOT_FOUND",
             message=f"No link found between gift {gift_id} and person {person_id}",
         )
+
+    return await service.get_linked_people(gift_id)
+
+
+@router.post(
+    "/{gift_id}/mark-purchased",
+    response_model=GiftResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Mark gift as purchased or partially purchased",
+    description="Sets purchase date, status, and quantity purchased metadata on the gift.",
+)
+async def mark_gift_as_purchased(
+    gift_id: int,
+    data: MarkPurchasedRequest,
+    current_user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> GiftResponse:
+    service = GiftService(db)
+    updated = await service.mark_as_purchased(gift_id, data)
+    if updated is None:
+        raise NotFoundError(
+            code="GIFT_NOT_FOUND",
+            message=f"Gift with ID {gift_id} not found",
+        )
+    return updated
 
 
 @router.get(

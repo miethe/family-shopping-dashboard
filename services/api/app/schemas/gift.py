@@ -6,8 +6,9 @@ from datetime import date
 from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING
+from urllib.parse import urlparse
 
-from pydantic import BaseModel, ConfigDict, Field, field_serializer
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 from app.schemas.base import TimestampSchema
 
@@ -21,6 +22,45 @@ class GiftPriority(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
+
+
+class AdditionalUrl(BaseModel):
+    """Labeled URL for gift other links."""
+
+    label: str = Field(..., min_length=1, max_length=120, description="Display label for the link")
+    url: str = Field(..., max_length=2048, description="HTTP or HTTPS link to external resource")
+
+    @field_validator("url")
+    def validate_url(cls, value: str) -> str:
+        parsed = urlparse(value)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise ValueError("URL must start with http:// or https:// and include a host")
+        return value
+
+
+class MarkPurchasedRequest(BaseModel):
+    """Payload for marking a gift as purchased."""
+
+    quantity_purchased: int = Field(
+        ...,
+        ge=1,
+        description="How many units were purchased in this action",
+    )
+    status: str | None = Field(
+        default=None,
+        pattern="^(purchased|partial)$",
+        description="Optional override for derived status (purchased|partial)",
+    )
+    purchase_date: date | None = Field(
+        default=None,
+        description="Optional purchase date (defaults to today)",
+    )
+    sale_price: Decimal | None = Field(
+        default=None,
+        ge=0,
+        decimal_places=2,
+        description="Optional sale/paid price for the gift",
+    )
 
 
 class GiftCreate(BaseModel):
@@ -81,7 +121,7 @@ class GiftCreate(BaseModel):
         None,
         description="Date when the gift was purchased",
     )
-    additional_urls: list[str] = Field(
+    additional_urls: list[AdditionalUrl] = Field(
         default_factory=list,
         description="Additional related URLs",
     )
@@ -109,7 +149,7 @@ class GiftUpdate(BaseModel):
     quantity: int | None = Field(None, ge=1)
     sale_price: Decimal | None = Field(None, ge=0, decimal_places=2)
     purchase_date: date | None = None
-    additional_urls: list[str] | None = None
+    additional_urls: list[AdditionalUrl] | None = None
     store_ids: list[int] | None = None
     person_ids: list[int] | None = None
 
@@ -139,7 +179,7 @@ class GiftResponse(TimestampSchema):
     quantity: int = 1
     sale_price: Decimal | None = None
     purchase_date: date | None = None
-    additional_urls: list[str] = Field(default_factory=list)
+    additional_urls: list[AdditionalUrl] = Field(default_factory=list)
     extra_data: dict = Field(default_factory=dict)
     stores: list[StoreMinimal] = Field(
         default_factory=list,

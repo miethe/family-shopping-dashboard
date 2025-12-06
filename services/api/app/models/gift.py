@@ -117,8 +117,8 @@ class Gift(BaseModel):
         nullable=True,
     )
 
-    additional_urls: Mapped[Optional[list[str]]] = mapped_column(
-        ARRAY(Text),
+    additional_urls: Mapped[Optional[list[dict[str, str]]]] = mapped_column(
+        JSON,
         nullable=True,
     )
 

@@ -7,6 +7,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
 from app.core.exceptions import AppException
@@ -230,3 +231,15 @@ app.include_router(budgets.router, prefix=API_V1_PREFIX)
 from app.api import stores
 
 app.include_router(stores.router, prefix=API_V1_PREFIX)
+
+# Upload/media routes
+from app.api import upload
+
+app.include_router(upload.router, prefix=API_V1_PREFIX)
+
+# Serve uploaded media if stored locally
+app.mount(
+    "/uploads",
+    StaticFiles(directory=settings.UPLOAD_DIR, check_dir=False),
+    name="uploads",
+)
