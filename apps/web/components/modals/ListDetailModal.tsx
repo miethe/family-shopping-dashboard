@@ -35,6 +35,7 @@ import { useOccasion } from "@/hooks/useOccasions";
 import type { ListWithItems, ListItemStatus } from "@/types";
 import { cn } from "@/lib/utils";
 import { LinkEntityToListModal } from "./LinkEntityToListModal";
+import { CommentsTab } from "@/components/comments";
 
 interface ListDetailModalProps {
   listId: string | null;
@@ -352,6 +353,9 @@ export function ListDetailModal({
                 </TabsTrigger>
                 <TabsTrigger value="linked" className="flex-1">
                   Linked Entities
+                </TabsTrigger>
+                <TabsTrigger value="comments" className="flex-1">
+                  Comments
                 </TabsTrigger>
                 <TabsTrigger value="history" className="flex-1">
                   History
@@ -712,6 +716,11 @@ export function ListDetailModal({
                     </div>
                   )}
                 </div>
+              </TabsContent>
+
+              {/* Comments Tab */}
+              <TabsContent value="comments" className="space-y-4">
+                <CommentsTab entityType="list" entityId={list?.id} />
               </TabsContent>
 
               {/* History Tab */}

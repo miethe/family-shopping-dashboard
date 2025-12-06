@@ -30,6 +30,7 @@ import { LinkGiftToListsModal } from "../gifts/LinkGiftToListsModal";
 import { PeopleMultiSelect } from "@/components/common/PeopleMultiSelect";
 import { Avatar, AvatarFallback, getInitials } from "@/components/ui/avatar";
 import { usePersons } from "@/hooks/usePersons";
+import { CommentsTab } from "@/components/comments";
 
 interface GiftDetailModalProps {
   giftId: string | null;
@@ -217,6 +218,9 @@ export function GiftDetailModal({
                 </TabsTrigger>
                 <TabsTrigger value="linked" className="flex-1">
                   Linked Entities
+                </TabsTrigger>
+                <TabsTrigger value="comments" className="flex-1">
+                  Comments
                 </TabsTrigger>
                 <TabsTrigger value="history" className="flex-1">
                   History
@@ -696,6 +700,11 @@ export function GiftDetailModal({
                   </div>
                 )}
               </div>
+            </TabsContent>
+
+            {/* Comments Tab */}
+            <TabsContent value="comments" className="space-y-4">
+              <CommentsTab entityType="gift" entityId={gift?.id} />
             </TabsContent>
 
             {/* History Tab */}

@@ -24,6 +24,8 @@ import { GroupMultiSelect } from "@/components/common/GroupMultiSelect";
 import { AdvancedInterestsView } from '@/components/people/AdvancedInterestsView';
 import { AdvancedInterestsEdit } from '@/components/people/AdvancedInterestsEdit';
 import type { AdvancedInterests, SizeEntry } from '@/types';
+import { CommentThread } from '@/components/comments';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PersonDetailModalProps {
   personId: string | null;
@@ -37,6 +39,7 @@ export function PersonDetailModal({
   onOpenChange,
 }: PersonDetailModalProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [showLinkListsModal, setShowLinkListsModal] = React.useState(false);
@@ -365,6 +368,9 @@ export function PersonDetailModal({
                   <TabsTrigger value="linked" className="flex-1">
                     Linked Entities
                   </TabsTrigger>
+                  <TabsTrigger value="comments" className="flex-1">
+                    Comments
+                  </TabsTrigger>
                   <TabsTrigger value="history" className="flex-1">
                     History
                   </TabsTrigger>
@@ -528,13 +534,6 @@ export function PersonDetailModal({
                     </div>
                   )}
 
-                  {/* Notes */}
-                  {person.notes && (
-                    <div>
-                      <h3 className="font-semibold text-warm-900 mb-2">Notes</h3>
-                      <p className="text-warm-700 whitespace-pre-wrap">{person.notes}</p>
-                    </div>
-                  )}
 
                   {/* Metadata */}
                   <div
@@ -550,6 +549,14 @@ export function PersonDetailModal({
                       <p>Last updated {formatDate(person.updated_at)}</p>
                     )}
                   </div>
+                  {/* Notes */}
+                  {person.notes && (
+                    <div>
+                      <h3 className="font-semibold text-warm-900 mb-2">Notes</h3>
+                      <p className="text-warm-700 whitespace-pre-wrap">{person.notes}</p>
+                    </div>
+                  )}
+
                 </TabsContent>
 
                 {/* Advanced Interests Tab */}
@@ -652,6 +659,15 @@ export function PersonDetailModal({
                   )}
                 </TabsContent>
 
+                {/* Comments Tab */}
+                <TabsContent value="comments" className="space-y-4">
+                  <CommentThread
+                    entityType="person"
+                    entityId={person.id}
+                    currentUserId={user?.id}
+                  />
+                </TabsContent>
+
                 {/* History Tab */}
                 <TabsContent value="history" className="space-y-4">
                   <div
@@ -717,13 +733,6 @@ export function PersonDetailModal({
                     placeholder="https://example.com/photo.jpg"
                   />
 
-                  <Textarea
-                    label="Notes"
-                    value={formData.notes || ""}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    placeholder="Add any notes about this person"
-                    rows={3}
-                  />
 
                   <div>
                     <Input
@@ -794,6 +803,14 @@ export function PersonDetailModal({
                     value={formData.constraints || ""}
                     onChange={(e) => setFormData({ ...formData, constraints: e.target.value })}
                     placeholder="Allergies, preferences, restrictions, etc."
+                    rows={3}
+                  />
+
+                  <Textarea
+                    label="Notes"
+                    value={formData.notes || ""}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Add any notes about this person"
                     rows={3}
                   />
                 </TabsContent>

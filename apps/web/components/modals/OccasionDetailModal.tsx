@@ -18,6 +18,7 @@ import { ListDetailModal } from "./ListDetailModal";
 import type { Occasion, RecurrenceRule, OccasionType } from "@/types";
 import { cn } from "@/lib/utils";
 import { LinkListsToContextModal } from "./LinkListsToContextModal";
+import { CommentsTab } from "@/components/comments";
 
 interface OccasionDetailModalProps {
   occasionId: string | null;
@@ -379,6 +380,9 @@ export function OccasionDetailModal({
               <TabsTrigger value="linked" className="flex-1">
                 Linked Entities
               </TabsTrigger>
+              <TabsTrigger value="comments" className="flex-1">
+                Comments
+              </TabsTrigger>
               <TabsTrigger value="history" className="flex-1">
                 History
               </TabsTrigger>
@@ -633,6 +637,11 @@ export function OccasionDetailModal({
                   </div>
                 </div>
               )}
+            </TabsContent>
+
+            {/* Comments Tab */}
+            <TabsContent value="comments" className="space-y-4">
+              <CommentsTab entityType="occasion" entityId={occasion?.id} />
             </TabsContent>
 
             {/* History Tab */}

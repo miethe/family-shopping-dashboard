@@ -52,6 +52,7 @@ import type {
   // Comment types
   Comment,
   CommentCreate,
+  CommentUpdate,
   CommentEntityType,
   // Activity types
   ActivityFeedResponse,
@@ -255,6 +256,7 @@ export interface CommentListParams {
 export const commentApi = {
   list: (params: CommentListParams) => apiClient.get<Comment[]>('/comments', params),
   create: (data: CommentCreate) => apiClient.post<Comment>('/comments', data),
+  update: (id: number, data: CommentUpdate) => apiClient.patch<Comment>(`/comments/${id}`, data),
   delete: (id: number) => apiClient.delete<void>(`/comments/${id}`),
 };
 

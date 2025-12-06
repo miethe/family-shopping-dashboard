@@ -572,21 +572,40 @@ export interface WSEvent<T = unknown> {
 // Comment Types
 // ============================================================================
 
-export type CommentEntityType = 'list' | 'occasion' | 'list_item';
+export type CommentEntityType = 'person' | 'list' | 'list_item' | 'occasion' | 'gift';
+
+export type CommentVisibility = 'public' | 'private';
 
 export interface Comment extends TimestampFields {
   id: number;
+  // Canonical fields
+  content: string;
+  visibility: CommentVisibility;
+  parent_type: CommentEntityType;
+  parent_id: number;
+  author_id: number;
+  author_name: string;
+  author_label: string;
+  can_edit: boolean;
+
+  // Alias fields for compatibility
+  text: string;
   entity_type: CommentEntityType;
   entity_id: number;
   user_id: number;
   user_name: string;
-  text: string;
 }
 
 export interface CommentCreate {
   entity_type: CommentEntityType;
   entity_id: number;
   text: string;
+  visibility?: CommentVisibility;
+}
+
+export interface CommentUpdate {
+  text?: string;
+  visibility?: CommentVisibility;
 }
 
 // ============================================================================
