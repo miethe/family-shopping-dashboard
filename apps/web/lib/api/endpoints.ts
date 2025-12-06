@@ -172,7 +172,7 @@ export const giftApi = {
   get: (id: number) => apiClient.get<Gift>(`/gifts/${id}`),
   create: (data: GiftCreate) => apiClient.post<Gift>('/gifts', data),
   createFromUrl: (data: GiftFromUrlRequest) => apiClient.post<Gift>('/gifts/from-url', data),
-  update: (id: number, data: GiftUpdate) => apiClient.put<Gift>(`/gifts/${id}`, data),
+  update: (id: number, data: GiftUpdate) => apiClient.patch<Gift>(`/gifts/${id}`, data),
   delete: (id: number) => apiClient.delete<void>(`/gifts/${id}`),
 };
 
