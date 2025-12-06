@@ -2,10 +2,18 @@
 
 from enum import Enum
 
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy import ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
+
+
+class CommentVisibility(str, Enum):
+    """Visibility scope for comments."""
+
+    public = "public"
+    private = "private"
 
 
 class CommentParentType(str, Enum):
@@ -15,6 +23,7 @@ class CommentParentType(str, Enum):
     list = "list"  # Comment on the list itself
     occasion = "occasion"  # Comment on an occasion
     person = "person"  # Comment on a person's profile
+    gift = "gift"  # Comment on a gift
 
 
 class Comment(BaseModel):
@@ -58,6 +67,13 @@ class Comment(BaseModel):
         nullable=False,
     )
 
+    visibility: Mapped[CommentVisibility] = mapped_column(
+        SAEnum(CommentVisibility),
+        nullable=False,
+        default=CommentVisibility.public,
+        server_default=CommentVisibility.public.value,
+    )
+
     # Relationships
     author: Mapped["User"] = relationship(
         "User",
@@ -67,9 +83,14 @@ class Comment(BaseModel):
 
     __table_args__ = (
         # Composite index for efficient queries by parent
-        Index("ix_comments_parent_type_parent_id", "parent_type", "parent_id"),
+        Index(
+            "idx_comments_parent_type_parent_id_visibility",
+            "parent_type",
+            "parent_id",
+            "visibility",
+        ),
         # Index on author_id for user's comments
-        Index("ix_comments_author_id", "author_id"),
+        Index("idx_comments_author_id", "author_id"),
         {"comment": "Comments on various entities (polymorphic parent relationship)"},
     )
 

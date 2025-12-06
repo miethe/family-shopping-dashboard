@@ -171,6 +171,11 @@ from app.api import lists
 
 app.include_router(lists.router, prefix=API_V1_PREFIX)
 
+# Comment routes (polymorphic)
+from app.api import comments
+
+app.include_router(comments.router, prefix=API_V1_PREFIX)
+
 # List item routes (status transitions, assignments)
 from app.api import list_items
 

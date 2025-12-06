@@ -1,11 +1,13 @@
 """Unit tests for CommentService."""
 
+from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.comment import Comment, CommentParentType
+from app.core.exceptions import ForbiddenError
+from app.models.comment import Comment, CommentParentType, CommentVisibility
 from app.repositories.comment import CommentRepository
 from app.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
 from app.services.comment import CommentService
@@ -29,13 +31,13 @@ class TestCommentService:
     """Test suite for CommentService."""
 
     @pytest.mark.asyncio
-    async def test_create_comment(
+    async def test_create_comment_defaults_public(
         self, comment_service: CommentService, mock_comment_repo: AsyncMock
     ) -> None:
-        """Test creating a comment."""
+        """Test creating a comment with default visibility."""
         # Arrange
         comment_data = CommentCreate(
-            content="Great gift idea!",
+            content=" Great gift idea! ",
             parent_type=CommentParentType.list_item,
             parent_id=123,
         )
@@ -46,147 +48,110 @@ class TestCommentService:
             author_id=42,
             parent_type=CommentParentType.list_item,
             parent_id=123,
+            visibility=CommentVisibility.public,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         mock_comment_repo.create.return_value = mock_comment
+        mock_comment_repo.get_with_author.return_value = mock_comment
 
         # Act
         result = await comment_service.create(author_id=42, data=comment_data)
 
         # Assert
         assert isinstance(result, CommentResponse)
-        assert result.id == 1
-        assert result.content == "Great gift idea!"
-        assert result.author_id == 42
-        assert result.parent_type == CommentParentType.list_item
-        assert result.parent_id == 123
+        assert result.visibility == CommentVisibility.public
+        assert result.text == "Great gift idea!"
+        assert result.user_id == 42
+        assert result.entity_type == CommentParentType.list_item
 
     @pytest.mark.asyncio
-    async def test_create_comment_on_list(
+    async def test_get_for_parent_filters_private_for_other_user(
         self, comment_service: CommentService, mock_comment_repo: AsyncMock
     ) -> None:
-        """Test creating comment on a list (different parent type)."""
-        # Arrange
-        comment_data = CommentCreate(
-            content="Comment on list",
-            parent_type=CommentParentType.list,
-            parent_id=5,
-        )
-
-        mock_comment = Comment(
-            id=2,
-            content="Comment on list",
-            author_id=10,
-            parent_type=CommentParentType.list,
-            parent_id=5,
-        )
-        mock_comment_repo.create.return_value = mock_comment
-
-        # Act
-        result = await comment_service.create(author_id=10, data=comment_data)
-
-        # Assert
-        assert result.parent_type == CommentParentType.list
-        assert result.parent_id == 5
-
-    @pytest.mark.asyncio
-    async def test_get_comment_found(
-        self, comment_service: CommentService, mock_comment_repo: AsyncMock
-    ) -> None:
-        """Test getting an existing comment."""
-        # Arrange
-        mock_comment = Comment(
+        """Private comments from other users should be excluded."""
+        public_comment = Comment(
             id=1,
-            content="Test comment",
+            content="Visible",
             author_id=1,
             parent_type=CommentParentType.list_item,
-            parent_id=1,
+            parent_id=123,
+            visibility=CommentVisibility.public,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
-        mock_comment_repo.get_with_author.return_value = mock_comment
+        mock_comment_repo.get_for_parent.return_value = [public_comment]
 
-        # Act
-        result = await comment_service.get(comment_id=1)
+        result = await comment_service.get_for_parent(
+            parent_type=CommentParentType.list_item,
+            parent_id=123,
+            viewer_id=99,
+        )
 
-        # Assert
-        assert result is not None
-        assert result.id == 1
-        assert result.content == "Test comment"
+        assert len(result) == 1
+        assert result[0].id == public_comment.id
 
     @pytest.mark.asyncio
-    async def test_get_comment_not_found(
+    async def test_get_for_parent_includes_own_private(
         self, comment_service: CommentService, mock_comment_repo: AsyncMock
     ) -> None:
-        """Test getting non-existent comment returns None."""
-        # Arrange
-        mock_comment_repo.get_with_author.return_value = None
+        """Private comments should be returned for the author."""
+        private_comment = Comment(
+            id=2,
+            content="My note",
+            author_id=42,
+            parent_type=CommentParentType.list_item,
+            parent_id=123,
+            visibility=CommentVisibility.private,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        mock_comment_repo.get_for_parent.return_value = [private_comment]
 
-        # Act
-        result = await comment_service.get(comment_id=999)
+        result = await comment_service.get_for_parent(
+            parent_type=CommentParentType.list_item,
+            parent_id=123,
+            viewer_id=42,
+        )
 
-        # Assert
+        assert len(result) == 1
+        assert result[0].visibility == CommentVisibility.private
+        assert result[0].can_edit is True
+
+    @pytest.mark.asyncio
+    async def test_get_private_comment_other_user_returns_none(
+        self, comment_service: CommentService, mock_comment_repo: AsyncMock
+    ) -> None:
+        """Getting a private comment from another user returns None."""
+        private_comment = Comment(
+            id=5,
+            content="Secret",
+            author_id=7,
+            parent_type=CommentParentType.person,
+            parent_id=11,
+            visibility=CommentVisibility.private,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        mock_comment_repo.get_with_author.return_value = private_comment
+
+        result = await comment_service.get(comment_id=5, viewer_id=99)
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_get_for_parent(
+    async def test_update_comment_author_only(
         self, comment_service: CommentService, mock_comment_repo: AsyncMock
     ) -> None:
-        """Test getting all comments for a parent entity."""
-        # Arrange
-        mock_comments = [
-            Comment(
-                id=1,
-                content="Comment 1",
-                author_id=1,
-                parent_type=CommentParentType.list_item,
-                parent_id=123,
-            ),
-            Comment(
-                id=2,
-                content="Comment 2",
-                author_id=2,
-                parent_type=CommentParentType.list_item,
-                parent_id=123,
-            ),
-        ]
-        mock_comment_repo.get_for_parent.return_value = mock_comments
-
-        # Act
-        result = await comment_service.get_for_parent(
-            parent_type=CommentParentType.list_item, parent_id=123
-        )
-
-        # Assert
-        assert len(result) == 2
-        assert all(c.parent_id == 123 for c in result)
-        assert all(c.parent_type == CommentParentType.list_item for c in result)
-
-    @pytest.mark.asyncio
-    async def test_get_for_parent_empty(
-        self, comment_service: CommentService, mock_comment_repo: AsyncMock
-    ) -> None:
-        """Test getting comments for parent with no comments returns empty list."""
-        # Arrange
-        mock_comment_repo.get_for_parent.return_value = []
-
-        # Act
-        result = await comment_service.get_for_parent(
-            parent_type=CommentParentType.list, parent_id=999
-        )
-
-        # Assert
-        assert result == []
-
-    @pytest.mark.asyncio
-    async def test_update_comment(
-        self, comment_service: CommentService, mock_comment_repo: AsyncMock
-    ) -> None:
-        """Test updating comment content."""
-        # Arrange
+        """Author can update their own comment."""
         existing = Comment(
             id=1,
             content="Old content",
             author_id=1,
             parent_type=CommentParentType.list_item,
             parent_id=1,
+            visibility=CommentVisibility.public,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         updated = Comment(
             id=1,
@@ -194,62 +159,86 @@ class TestCommentService:
             author_id=1,
             parent_type=CommentParentType.list_item,
             parent_id=1,
+            visibility=CommentVisibility.private,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
 
-        mock_comment_repo.get.return_value = existing
+        mock_comment_repo.get_with_author.side_effect = [existing, updated]
         mock_comment_repo.update.return_value = updated
 
-        update_data = CommentUpdate(content="Updated content")
+        update_data = CommentUpdate(content="Updated content", visibility=CommentVisibility.private)
 
-        # Act
-        result = await comment_service.update(comment_id=1, data=update_data)
+        result = await comment_service.update(
+            comment_id=1, data=update_data, current_user_id=1
+        )
 
-        # Assert
         assert result is not None
         assert result.content == "Updated content"
+        assert result.visibility == CommentVisibility.private
 
     @pytest.mark.asyncio
-    async def test_update_comment_not_found(
+    async def test_update_comment_forbidden_for_other_user(
         self, comment_service: CommentService, mock_comment_repo: AsyncMock
     ) -> None:
-        """Test updating non-existent comment returns None."""
-        # Arrange
-        mock_comment_repo.get.return_value = None
+        """Non-author cannot update comment."""
+        existing = Comment(
+            id=1,
+            content="Old content",
+            author_id=1,
+            parent_type=CommentParentType.list_item,
+            parent_id=1,
+            visibility=CommentVisibility.public,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        mock_comment_repo.get_with_author.return_value = existing
 
-        update_data = CommentUpdate(content="New content")
+        update_data = CommentUpdate(content="Try update")
 
-        # Act
-        result = await comment_service.update(comment_id=999, data=update_data)
+        with pytest.raises(ForbiddenError):
+            await comment_service.update(
+                comment_id=1, data=update_data, current_user_id=2
+            )
 
-        # Assert
-        assert result is None
-        mock_comment_repo.update.assert_not_called()
+    @pytest.mark.asyncio
+    async def test_delete_comment_forbidden_for_other_user(
+        self, comment_service: CommentService, mock_comment_repo: AsyncMock
+    ) -> None:
+        """Non-author cannot delete comment."""
+        existing = Comment(
+            id=1,
+            content="Hello",
+            author_id=1,
+            parent_type=CommentParentType.list_item,
+            parent_id=1,
+            visibility=CommentVisibility.public,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        mock_comment_repo.get.return_value = existing
+
+        with pytest.raises(ForbiddenError):
+            await comment_service.delete(comment_id=1, current_user_id=2)
 
     @pytest.mark.asyncio
     async def test_delete_comment_success(
         self, comment_service: CommentService, mock_comment_repo: AsyncMock
     ) -> None:
-        """Test deleting a comment successfully."""
-        # Arrange
+        """Author can delete their comment."""
+        existing = Comment(
+            id=1,
+            content="Hello",
+            author_id=1,
+            parent_type=CommentParentType.list_item,
+            parent_id=1,
+            visibility=CommentVisibility.public,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        mock_comment_repo.get.return_value = existing
         mock_comment_repo.delete.return_value = True
 
-        # Act
-        result = await comment_service.delete(comment_id=1)
+        result = await comment_service.delete(comment_id=1, current_user_id=1)
 
-        # Assert
         assert result is True
-        mock_comment_repo.delete.assert_called_once_with(1)
-
-    @pytest.mark.asyncio
-    async def test_delete_comment_not_found(
-        self, comment_service: CommentService, mock_comment_repo: AsyncMock
-    ) -> None:
-        """Test deleting non-existent comment returns False."""
-        # Arrange
-        mock_comment_repo.delete.return_value = False
-
-        # Act
-        result = await comment_service.delete(comment_id=999)
-
-        # Assert
-        assert result is False

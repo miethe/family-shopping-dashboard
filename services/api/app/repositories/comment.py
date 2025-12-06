@@ -4,8 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.comment import Comment, CommentParentType
-from app.models.user import User
+from app.models.comment import Comment, CommentParentType, CommentVisibility
 from app.repositories.base import BaseRepository
 
 
@@ -46,7 +45,7 @@ class CommentRepository(BaseRepository[Comment]):
         super().__init__(session, Comment)
 
     async def get_for_parent(
-        self, parent_type: CommentParentType, parent_id: int
+        self, parent_type: CommentParentType, parent_id: int, viewer_id: int | None = None
     ) -> list[Comment]:
         """
         Get all comments for a specific parent entity.
@@ -58,6 +57,7 @@ class CommentRepository(BaseRepository[Comment]):
         Args:
             parent_type: Type of parent entity (from CommentParentType enum)
             parent_id: ID of the parent entity
+            viewer_id: Current user ID to include their private comments
 
         Returns:
             List of Comment instances with author relationship loaded.
@@ -87,6 +87,18 @@ class CommentRepository(BaseRepository[Comment]):
             .order_by(Comment.created_at.desc())
             .options(selectinload(Comment.author))
         )
+
+        # Apply visibility filter: public or viewer's own private
+        if viewer_id is not None:
+            stmt = stmt.where(
+                (Comment.visibility == CommentVisibility.public)
+                | (
+                    (Comment.visibility == CommentVisibility.private)
+                    & (Comment.author_id == viewer_id)
+                )
+            )
+        else:
+            stmt = stmt.where(Comment.visibility == CommentVisibility.public)
 
         result = await self.session.execute(stmt)
         return list(result.scalars().all())

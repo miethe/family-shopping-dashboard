@@ -1,8 +1,9 @@
-"""Comment service for polymorphic comments on entities."""
+"""Comment service for polymorphic comments on entities with visibility."""
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.comment import CommentParentType
+from app.core.exceptions import ForbiddenError
+from app.models.comment import CommentParentType, CommentVisibility
 from app.repositories.comment import CommentRepository
 from app.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
 
@@ -12,7 +13,7 @@ class CommentService:
     Comment service handling polymorphic comments on various entities.
 
     Converts ORM models to DTOs. Supports comments on multiple parent types:
-    list_item, list, occasion, person.
+    list_item, list, occasion, person, gift.
 
     Example:
         ```python
@@ -39,9 +40,7 @@ class CommentService:
         self.session = session
         self.repo = CommentRepository(session)
 
-    async def create(
-        self, author_id: int, data: CommentCreate
-    ) -> CommentResponse:
+    async def create(self, author_id: int, data: CommentCreate) -> CommentResponse:
         """
         Create a new comment on a parent entity.
 
@@ -80,185 +79,100 @@ class CommentService:
                 "parent_type": data.parent_type,
                 "parent_id": data.parent_id,
                 "author_id": author_id,
+                "visibility": data.visibility,
             }
         )
 
-        # Convert ORM model to DTO
-        return CommentResponse(
-            id=comment.id,
-            content=comment.content,
-            author_id=comment.author_id,
-            parent_type=comment.parent_type,
-            parent_id=comment.parent_id,
-            created_at=comment.created_at,
-            updated_at=comment.updated_at,
-        )
+        # Reload with author relationship for response mapping
+        created = await self.repo.get_with_author(comment.id)
+        assert created is not None  # For type checking; just created above
 
-    async def get(self, comment_id: int) -> CommentResponse | None:
-        """
-        Get comment by ID.
+        return self._to_response(created, viewer_id=author_id)
 
-        Args:
-            comment_id: Comment ID to retrieve
-
-        Returns:
-            CommentResponse DTO if found, None otherwise
-
-        Example:
-            ```python
-            comment = await service.get(comment_id=123)
-            if comment:
-                print(f"Comment: {comment.content}")
-            else:
-                print("Comment not found")
-            ```
-
-        Note:
-            Uses get_with_author() from repository to eager load author relationship.
-        """
+    async def get(self, comment_id: int, viewer_id: int) -> CommentResponse | None:
+        """Get comment by ID with visibility check."""
         comment = await self.repo.get_with_author(comment_id)
         if comment is None:
             return None
 
-        return CommentResponse(
-            id=comment.id,
-            content=comment.content,
-            author_id=comment.author_id,
-            parent_type=comment.parent_type,
-            parent_id=comment.parent_id,
-            created_at=comment.created_at,
-            updated_at=comment.updated_at,
-        )
+        if comment.visibility == CommentVisibility.private and comment.author_id != viewer_id:
+            return None
+
+        return self._to_response(comment, viewer_id=viewer_id)
 
     async def get_for_parent(
-        self, parent_type: CommentParentType, parent_id: int
+        self, parent_type: CommentParentType, parent_id: int, viewer_id: int
     ) -> list[CommentResponse]:
-        """
-        Get all comments for a specific parent entity.
-
-        Fetches all comments attached to a given parent (list, list_item, etc.)
-        ordered by created_at descending (newest first).
-
-        Args:
-            parent_type: Type of parent entity (from CommentParentType enum)
-            parent_id: ID of the parent entity
-
-        Returns:
-            List of CommentResponse DTOs, empty list if no comments exist
-
-        Example:
-            ```python
-            # Get all comments for a list
-            comments = await service.get_for_parent(
-                parent_type=CommentParentType.list,
-                parent_id=5
-            )
-
-            for comment in comments:
-                print(f"{comment.author_id}: {comment.content}")
-            ```
-
-        Note:
-            - Returns empty list if no comments found (not None)
-            - Comments are ordered newest first
-            - Author relationship is eager loaded for efficiency
-        """
-        comments = await self.repo.get_for_parent(parent_type, parent_id)
-
-        # Convert ORM models to DTOs
-        return [
-            CommentResponse(
-                id=comment.id,
-                content=comment.content,
-                author_id=comment.author_id,
-                parent_type=comment.parent_type,
-                parent_id=comment.parent_id,
-                created_at=comment.created_at,
-                updated_at=comment.updated_at,
-            )
-            for comment in comments
-        ]
+        """Get visible comments for a parent entity for the current viewer."""
+        comments = await self.repo.get_for_parent(
+            parent_type=parent_type, parent_id=parent_id, viewer_id=viewer_id
+        )
+        return [self._to_response(comment, viewer_id=viewer_id) for comment in comments]
 
     async def update(
-        self, comment_id: int, data: CommentUpdate
+        self, comment_id: int, data: CommentUpdate, current_user_id: int
     ) -> CommentResponse | None:
-        """
-        Update comment content.
-
-        Currently only supports updating content field. Future: support
-        editing metadata or adding reactions.
-
-        Args:
-            comment_id: Comment ID to update
-            data: Update data (currently only content)
-
-        Returns:
-            Updated CommentResponse DTO if comment found, None otherwise
-
-        Example:
-            ```python
-            comment = await service.update(
-                comment_id=123,
-                data=CommentUpdate(content="Updated comment text")
-            )
-            if comment:
-                print(f"Updated: {comment.content}")
-            ```
-
-        Note:
-            - Only updates content field (partial update)
-            - Returns None if comment not found
-            - Author validation should be done at router level
-        """
-        # Check comment exists
-        existing_comment = await self.repo.get(comment_id)
+        """Update comment content/visibility (author-only)."""
+        existing_comment = await self.repo.get_with_author(comment_id)
         if existing_comment is None:
             return None
 
-        # Update comment
-        updated_comment = await self.repo.update(
-            comment_id, {"content": data.content}
-        )
+        if existing_comment.author_id != current_user_id:
+            raise ForbiddenError(
+                code="COMMENT_FORBIDDEN",
+                message="You can only edit your own comments",
+            )
+
+        update_payload: dict[str, object] = {}
+        if data.content:
+            update_payload["content"] = data.content
+        if data.visibility:
+            update_payload["visibility"] = data.visibility
+
+        updated_comment = await self.repo.update(comment_id, update_payload)
         if updated_comment is None:
-            # Should not happen since we checked existence
             return None
 
-        # Convert ORM model to DTO
-        return CommentResponse(
-            id=updated_comment.id,
-            content=updated_comment.content,
-            author_id=updated_comment.author_id,
-            parent_type=updated_comment.parent_type,
-            parent_id=updated_comment.parent_id,
-            created_at=updated_comment.created_at,
-            updated_at=updated_comment.updated_at,
-        )
+        refreshed = await self.repo.get_with_author(comment_id)
+        if refreshed is None:
+            return None
+        return self._to_response(refreshed, viewer_id=current_user_id)
 
-    async def delete(self, comment_id: int) -> bool:
-        """
-        Delete comment by ID.
+    async def delete(self, comment_id: int, current_user_id: int) -> bool:
+        """Delete comment by ID (author-only)."""
+        comment = await self.repo.get(comment_id)
+        if comment is None:
+            return False
 
-        Permanently removes comment from database. Author validation
-        should be done at router level.
+        if comment.author_id != current_user_id:
+            raise ForbiddenError(
+                code="COMMENT_FORBIDDEN",
+                message="You can only delete your own comments",
+            )
 
-        Args:
-            comment_id: Comment ID to delete
-
-        Returns:
-            True if comment was deleted, False if comment not found
-
-        Example:
-            ```python
-            deleted = await service.delete(comment_id=123)
-            if deleted:
-                print("Comment deleted successfully")
-            else:
-                print("Comment not found")
-            ```
-
-        Note:
-            - Returns False (not exception) if comment doesn't exist
-            - Cascade behavior depends on database constraints
-            - Author authorization should be enforced at router level
-        """
         return await self.repo.delete(comment_id)
+
+    def _to_response(self, comment, viewer_id: int) -> CommentResponse:
+        """Map ORM comment to response with aliases and permissions."""
+        author_name = getattr(comment.author, "email", None) if getattr(comment, "author", None) else None
+        author_label = author_name or f"User {comment.author_id}"
+
+        can_edit = comment.author_id == viewer_id
+        return CommentResponse(
+            id=comment.id,
+            content=comment.content,
+            text=comment.content,
+            visibility=comment.visibility,
+            parent_type=comment.parent_type,
+            parent_id=comment.parent_id,
+            entity_type=comment.parent_type,
+            entity_id=comment.parent_id,
+            author_id=comment.author_id,
+            user_id=comment.author_id,
+            author_name=author_label,
+            user_name=author_label,
+            author_label=author_label,
+            can_edit=can_edit,
+            created_at=comment.created_at,
+            updated_at=comment.updated_at,
+        )
