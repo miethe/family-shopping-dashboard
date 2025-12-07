@@ -44,7 +44,7 @@ async def list_gifts(
 
     Supports filtering by:
     - Search: Case-insensitive substring match on gift name
-    - Person: Filter by recipient person IDs
+    - Person: Filter by recipient person IDs (via list ownership OR direct GiftPerson linking)
     - Status: Filter by list item statuses (idea/selected/purchased/received)
     - List: Filter by specific list IDs
     - Occasion: Filter by occasion IDs
@@ -53,11 +53,15 @@ async def list_gifts(
     For example: person_ids=[1,2] AND statuses=['purchased'] means
     "gifts for person 1 OR 2 that have status 'purchased'".
 
+    Note: The person_ids filter returns gifts from BOTH:
+    1. List ownership (gifts added to lists owned by the person)
+    2. Direct linking (gifts linked via GiftPerson table with role=RECIPIENT)
+
     Args:
         cursor: ID of last item from previous page (None for first page)
         limit: Maximum number of items to return (1-100, default: 50)
         search: Search query for gift name (minimum 2 characters)
-        person_ids: Filter by recipient person IDs
+        person_ids: Filter by recipient person IDs (includes list-based AND GiftPerson-based)
         statuses: Filter by list item statuses
         list_ids: Filter by list IDs
         occasion_ids: Filter by occasion IDs

@@ -198,11 +198,15 @@ class GiftService:
         Supports filtering by recipient (person), status, list, occasion, and search.
         Can be used for both general listing and filtered queries.
 
+        The person_ids filter uses a UNION approach to include gifts from both:
+        1. List ownership (gifts added to lists owned by the person)
+        2. Direct linking (gifts linked via GiftPerson table with role=RECIPIENT)
+
         Args:
             cursor: ID of last item from previous page (None for first page)
             limit: Maximum number of items to return (default: 50)
             search: Case-insensitive substring search on gift name
-            person_ids: Filter by recipient person IDs (OR within group)
+            person_ids: Filter by recipient person IDs (list-based OR GiftPerson-based, OR within group)
             statuses: Filter by list item statuses (OR within group)
             list_ids: Filter by list IDs (OR within group)
             occasion_ids: Filter by occasion IDs (OR within group)

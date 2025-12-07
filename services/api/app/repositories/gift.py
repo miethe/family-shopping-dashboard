@@ -1,11 +1,11 @@
 """Gift repository with search and relationship loading capabilities."""
 
-from sqlalchemy import asc, delete, desc, distinct, func, select
+from sqlalchemy import asc, delete, desc, distinct, func, select, union
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.gift import Gift
-from app.models.gift_person import GiftPerson
+from app.models.gift_person import GiftPerson, GiftPersonRole
 from app.models.list import List
 from app.models.list_item import ListItem
 from app.models.store import Store
@@ -266,16 +266,20 @@ class GiftRepository(BaseRepository[Gift]):
         """
         Get filtered list of gifts with cursor-based pagination.
 
-        Filters gifts by recipient (person), status, list, and occasion through
-        the Gift → ListItem → List relationship chain. Uses a subquery approach
-        to avoid duplicate gifts when filtering by list relationships while
+        Filters gifts by recipient (person), status, list, and occasion. The person_ids
+        filter uses a UNION approach to include gifts from both:
+        1. List ownership (Gift → ListItem → List where List.person_id matches)
+        2. Direct linking (Gift → GiftPerson where role=RECIPIENT)
+
+        Other filters use the Gift → ListItem → List relationship chain. Uses a subquery
+        approach to avoid duplicate gifts when filtering by list relationships while
         preventing PostgreSQL JSON column DISTINCT errors.
 
         Args:
             cursor: ID of last item from previous page (None for first page)
             limit: Maximum number of items to return (default: 50)
             search: Case-insensitive substring search on gift name
-            person_ids: Filter by recipient person IDs (OR logic within group)
+            person_ids: Filter by recipient person IDs via list ownership OR GiftPerson table (OR logic)
             statuses: Filter by list item statuses (OR logic within group)
             list_ids: Filter by list IDs (OR logic within group)
             occasion_ids: Filter by occasion IDs (OR logic within group)
@@ -290,6 +294,7 @@ class GiftRepository(BaseRepository[Gift]):
         Example:
             ```python
             # Find gifts for person 5, with status 'purchased' or 'selected'
+            # Includes gifts via list ownership AND direct GiftPerson links
             gifts, has_more, cursor = await repo.get_filtered(
                 person_ids=[5],
                 statuses=['purchased', 'selected'],
@@ -307,32 +312,68 @@ class GiftRepository(BaseRepository[Gift]):
             - Empty list = no filter, None = no filter (both treated the same)
             - AND logic across filter groups (person AND status AND list)
             - OR logic within filter groups (person_id=1 OR person_id=2)
+            - person_ids filter includes BOTH list-based AND GiftPerson-based links (UNION)
             - Uses database indexes: ix_list_items_status, ix_lists_person_id,
               ix_lists_occasion_id for optimal query performance
             - Subquery approach prevents duplicate gifts and avoids JSON DISTINCT errors
         """
         # Step 1: Build subquery for distinct gift IDs with all filters
         # Label the column explicitly so we can reference it after subquery()
-        id_subquery = select(distinct(self.model.id).label("gift_id")).select_from(self.model)
 
-        # Track if we need to join ListItem and List tables
-        need_list_item_join = bool(statuses or list_ids or person_ids or occasion_ids)
+        # Track if we need to join ListItem and List tables (for non-person filters)
+        need_list_item_join = bool(statuses or list_ids or occasion_ids)
 
-        # Join through ListItem to List if filtering by list-related fields
-        if need_list_item_join:
-            id_subquery = id_subquery.join(ListItem, self.model.id == ListItem.gift_id)
-            id_subquery = id_subquery.join(List, ListItem.list_id == List.id)
+        # Special handling for person_ids: UNION of list-based and GiftPerson-based gifts
+        if person_ids:
+            # Subquery 1: Gifts via list ownership (existing behavior)
+            list_based_gifts = (
+                select(distinct(self.model.id).label("gift_id"))
+                .select_from(self.model)
+                .join(ListItem, self.model.id == ListItem.gift_id)
+                .join(List, ListItem.list_id == List.id)
+                .where(List.person_id.in_(person_ids))
+            )
 
-        # Apply filters (AND logic across groups)
+            # Subquery 2: Gifts via direct GiftPerson linking
+            direct_gifts = (
+                select(distinct(self.model.id).label("gift_id"))
+                .select_from(self.model)
+                .join(GiftPerson, self.model.id == GiftPerson.gift_id)
+                .where(
+                    GiftPerson.person_id.in_(person_ids),
+                    GiftPerson.role == GiftPersonRole.RECIPIENT
+                )
+            )
+
+            # UNION both sources
+            person_gift_ids = union(list_based_gifts, direct_gifts).subquery()
+
+            # Start with gifts matching person filter
+            id_subquery = (
+                select(distinct(self.model.id).label("gift_id"))
+                .select_from(self.model)
+                .where(self.model.id.in_(select(person_gift_ids.c.gift_id)))
+            )
+
+            # Now join ListItem/List if we need other list-based filters
+            if need_list_item_join:
+                id_subquery = id_subquery.join(ListItem, self.model.id == ListItem.gift_id)
+                id_subquery = id_subquery.join(List, ListItem.list_id == List.id)
+        else:
+            # No person filter - start fresh
+            id_subquery = select(distinct(self.model.id).label("gift_id")).select_from(self.model)
+
+            # Join through ListItem to List if filtering by list-related fields
+            if need_list_item_join:
+                id_subquery = id_subquery.join(ListItem, self.model.id == ListItem.gift_id)
+                id_subquery = id_subquery.join(List, ListItem.list_id == List.id)
+
+        # Apply remaining filters (AND logic across groups)
         filters = []
 
         # Search by name (case-insensitive)
         if search:
             filters.append(func.lower(self.model.name).contains(func.lower(search)))
-
-        # Filter by person (recipient) - OR logic within group
-        if person_ids:
-            filters.append(List.person_id.in_(person_ids))
 
         # Filter by list item status - OR logic within group
         if statuses:
