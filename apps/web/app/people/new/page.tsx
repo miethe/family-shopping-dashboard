@@ -18,6 +18,11 @@ export default function NewPersonPage() {
         title="Add Person"
         subtitle="Add a person to your family"
         backHref="/people"
+        breadcrumbItems={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'People', href: '/people' },
+          { label: 'Add Person' }
+        ]}
       />
 
       <Card className="max-w-lg mx-auto">

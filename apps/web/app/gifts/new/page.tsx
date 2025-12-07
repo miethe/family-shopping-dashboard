@@ -20,6 +20,11 @@ export default function NewGiftPage() {
         title="Add Gift"
         subtitle="Add a gift to your catalog"
         backHref="/gifts"
+        breadcrumbItems={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Gifts', href: '/gifts' },
+          { label: 'Add Gift' }
+        ]}
       />
 
       <Tabs defaultValue="url" className="max-w-lg mx-auto">

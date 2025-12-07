@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Icon, IconNames } from '@/components/ui/icon';
 import { KanbanView, TableView, AddListItemModal, AddListModal } from '@/components/lists';
 import { GiftDetailModal } from '@/components/modals';
-import { PageHeader } from '@/components/layout';
+import { PageHeader, Breadcrumb } from '@/components/layout';
 import {
   FilterIcon,
   ArrowUpDownIcon,
@@ -156,6 +156,15 @@ export default function ListDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-background-dark dark:to-warm-900">
       <div className="max-w-7xl mx-auto h-full flex flex-col pb-20">
+        {/* Breadcrumb Navigation - Desktop Only */}
+        <div className="hidden md:block px-4 md:px-8 pt-4">
+          <Breadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Lists', href: '/lists' },
+            { label: listData.name }
+          ]} />
+        </div>
+
         {/* Enhanced Header Section */}
         <div className="px-4 md:px-8 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-4 border-b border-slate-200 dark:border-slate-700">

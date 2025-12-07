@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { GiftDetail, GiftUsage, GiftDetailSkeleton, GiftEditModal } from '@/components/gifts';
 import { PencilIcon, TrashIcon } from '@/components/layout/icons';
 import { useToast } from '@/components/ui/use-toast';
+import { useConfirmDialog } from '@/components/ui';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -18,13 +19,21 @@ export default function GiftDetailPage({ params }: Props) {
   const giftId = parseInt(id, 10);
   const router = useRouter();
   const { toast } = useToast();
+  const { confirm, dialog } = useConfirmDialog();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: gift, isLoading, error } = useGift(giftId);
   const deleteMutation = useDeleteGift(giftId);
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this gift? This action cannot be undone.')) {
+    const confirmed = await confirm({
+      title: 'Delete Gift?',
+      description: 'Are you sure you want to delete this gift? This action cannot be undone.',
+      variant: 'destructive',
+      confirmLabel: 'Delete',
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -63,6 +72,11 @@ export default function GiftDetailPage({ params }: Props) {
         <PageHeader
           title="Loading..."
           backHref="/gifts"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Gifts', href: '/gifts' },
+            { label: 'Loading...' }
+          ]}
         />
         <GiftDetailSkeleton />
       </div>
@@ -75,6 +89,11 @@ export default function GiftDetailPage({ params }: Props) {
         <PageHeader
           title="Error"
           backHref="/gifts"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Gifts', href: '/gifts' },
+            { label: 'Error' }
+          ]}
         />
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-800">
@@ -91,6 +110,11 @@ export default function GiftDetailPage({ params }: Props) {
         <PageHeader
           title="Not Found"
           backHref="/gifts"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Gifts', href: '/gifts' },
+            { label: 'Not Found' }
+          ]}
         />
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <p className="text-yellow-800">
@@ -103,10 +127,16 @@ export default function GiftDetailPage({ params }: Props) {
 
   return (
     <>
+      {dialog}
       <div className="space-y-6">
         <PageHeader
           title={gift.name}
           backHref="/gifts"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Gifts', href: '/gifts' },
+            { label: gift.name }
+          ]}
           actions={
             <div className="flex gap-2">
               <Button

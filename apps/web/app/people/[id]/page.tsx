@@ -22,6 +22,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { AddPersonModal } from '@/components/people/AddPersonModal';
+import { useConfirmDialog, useToast } from '@/components/ui';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -54,24 +55,40 @@ export default function PersonDetailPage({ params }: Props) {
   const personId = parseInt(id, 10);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const { confirm, dialog } = useConfirmDialog();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: person, isLoading, error } = usePerson(personId);
   const deleteMutation = useDeletePerson();
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this person?')) {
+    const confirmed = await confirm({
+      title: 'Delete Person?',
+      description: 'Are you sure you want to delete this person? This action cannot be undone.',
+      variant: 'destructive',
+      confirmLabel: 'Delete',
+    });
+
+    if (!confirmed) {
       return;
     }
 
     try {
       await deleteMutation.mutateAsync(personId);
-      // Note: toast is not implemented yet, using console.log for now
-      console.log('Person deleted successfully');
+      toast({
+        title: 'Person deleted',
+        description: 'The person has been successfully removed.',
+        variant: 'success',
+      });
       router.push('/people');
     } catch (error) {
       console.error('Failed to delete person:', error);
-      alert('Failed to delete person. Please try again.');
+      toast({
+        title: 'Error',
+        description: 'Failed to delete person. Please try again.',
+        variant: 'error',
+      });
     }
   };
 
@@ -82,7 +99,15 @@ export default function PersonDetailPage({ params }: Props) {
   if (error) {
     return (
       <div className="space-y-4">
-        <PageHeader title="Error" backHref="/people" />
+        <PageHeader
+          title="Error"
+          backHref="/people"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'People', href: '/people' },
+            { label: 'Error' }
+          ]}
+        />
         <div className="rounded-md bg-red-50 border border-red-200 p-4">
           <p className="text-red-800">
             Failed to load person details. Please try again.
@@ -95,7 +120,15 @@ export default function PersonDetailPage({ params }: Props) {
   if (!person) {
     return (
       <div className="space-y-4">
-        <PageHeader title="Not Found" backHref="/people" />
+        <PageHeader
+          title="Not Found"
+          backHref="/people"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'People', href: '/people' },
+            { label: 'Not Found' }
+          ]}
+        />
         <div className="rounded-md bg-yellow-50 border border-yellow-200 p-4">
           <p className="text-yellow-800">Person not found.</p>
         </div>
@@ -104,58 +137,66 @@ export default function PersonDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title={person.display_name}
-        backHref="/people"
-        actions={
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setIsEditModalOpen(true)}>
-              Edit
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={handleDelete}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-            </Button>
-          </div>
-        }
-      />
+    <>
+      {dialog}
+      <div className="space-y-6">
+        <PageHeader
+          title={person.display_name}
+          backHref="/people"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'People', href: '/people' },
+            { label: person.display_name }
+          ]}
+          actions={
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setIsEditModalOpen(true)}>
+                Edit
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDelete}
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              </Button>
+            </div>
+          }
+        />
 
-      <PersonDetail person={person} />
+        <PersonDetail person={person} />
 
-      <Tabs defaultValue="info" className="w-full">
-        <TabsList className="w-full">
-          <TabsTrigger value="info">Info</TabsTrigger>
-          <TabsTrigger value="lists">Lists</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-        </TabsList>
+        <Tabs defaultValue="info" className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="info">Info</TabsTrigger>
+            <TabsTrigger value="lists">Lists</TabsTrigger>
+            <TabsTrigger value="history">History</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="info">
-          <PersonInfo person={person} />
-        </TabsContent>
+          <TabsContent value="info">
+            <PersonInfo person={person} />
+          </TabsContent>
 
-        <TabsContent value="lists">
-          <PersonLists personId={person.id} />
-        </TabsContent>
+          <TabsContent value="lists">
+            <PersonLists personId={person.id} />
+          </TabsContent>
 
-        <TabsContent value="history">
-          <PersonHistory personId={person.id} />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="history">
+            <PersonHistory personId={person.id} />
+          </TabsContent>
+        </Tabs>
 
-      <AddPersonModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        mode="edit"
-        personToEdit={person}
-        onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ['person', personId] });
-        }}
-      />
-    </div>
+        <AddPersonModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          mode="edit"
+          personToEdit={person}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ['person', personId] });
+          }}
+        />
+      </div>
+    </>
   );
 }

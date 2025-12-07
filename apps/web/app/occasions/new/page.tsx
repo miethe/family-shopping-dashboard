@@ -122,6 +122,11 @@ export default function NewOccasionPage() {
         title="Add Occasion"
         subtitle="Create a new occasion"
         backHref="/occasions"
+        breadcrumbItems={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Occasions', href: '/occasions' },
+          { label: 'Add Occasion' }
+        ]}
       />
 
       <Card className="max-w-lg mx-auto">
