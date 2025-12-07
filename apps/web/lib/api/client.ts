@@ -75,14 +75,25 @@ export class ApiClient {
       });
     }
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    // Detect if body is FormData
+    const isFormData = options.body instanceof FormData;
 
-    // Merge custom headers if provided
+    const headers: Record<string, string> = {};
+
+    // Only set Content-Type for non-FormData requests
+    // (FormData sets its own Content-Type with boundary)
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    // Merge custom headers if provided (skip Content-Type for FormData)
     if (options.headers) {
       const customHeaders = new Headers(options.headers);
       customHeaders.forEach((value, key) => {
+        // Skip Content-Type for FormData to let browser set it
+        if (isFormData && key.toLowerCase() === 'content-type') {
+          return;
+        }
         headers[key] = value;
       });
     }
@@ -96,7 +107,11 @@ export class ApiClient {
     const response = await fetch(url.toString(), {
       method,
       headers,
-      body: options.body ? JSON.stringify(options.body) : undefined,
+      body: options.body
+        ? isFormData
+          ? (options.body as FormData)
+          : JSON.stringify(options.body)
+        : undefined,
     });
 
     // Handle non-OK responses

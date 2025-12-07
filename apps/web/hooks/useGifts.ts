@@ -128,3 +128,60 @@ export function useDeleteGift() {
     },
   });
 }
+
+/**
+ * Attach people to a gift
+ * Invalidates gift detail and all gift queries on success
+ * @param giftId - Gift ID to attach people to
+ */
+export function useAttachPeopleToGift(giftId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (personIds: number[]) => giftApi.attachPeople(giftId, personIds),
+    onSuccess: (updatedGift) => {
+      // Update the gift in cache
+      queryClient.setQueryData(['gifts', giftId], updatedGift);
+      // Invalidate all gift queries to reflect changes in lists
+      queryClient.invalidateQueries({ queryKey: ['gifts'], exact: false });
+    },
+  });
+}
+
+/**
+ * Detach person from a gift
+ * Invalidates gift detail and all gift queries on success
+ * @param giftId - Gift ID to detach person from
+ */
+export function useDetachPersonFromGift(giftId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (personId: number) => giftApi.detachPerson(giftId, personId),
+    onSuccess: (updatedGift) => {
+      // Update the gift in cache
+      queryClient.setQueryData(['gifts', giftId], updatedGift);
+      // Invalidate all gift queries to reflect changes in lists
+      queryClient.invalidateQueries({ queryKey: ['gifts'], exact: false });
+    },
+  });
+}
+
+/**
+ * Mark gift as purchased
+ * Invalidates gift detail and all gift queries on success
+ * @param giftId - Gift ID to mark as purchased
+ */
+export function useMarkGiftPurchased(giftId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { quantity_purchased?: number }) => giftApi.markPurchased(giftId, data),
+    onSuccess: (updatedGift) => {
+      // Update the gift in cache
+      queryClient.setQueryData(['gifts', giftId], updatedGift);
+      // Invalidate all gift queries to reflect status changes
+      queryClient.invalidateQueries({ queryKey: ['gifts'], exact: false });
+    },
+  });
+}
