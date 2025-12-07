@@ -12,6 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import BaseModel
 
 if TYPE_CHECKING:
+    from app.models.gift_person import GiftPerson
     from app.models.list_item import ListItem
     from app.models.person import Person
     from app.models.store import Store
@@ -158,6 +159,16 @@ class Gift(BaseModel):
         secondary="gift_people",
         back_populates="gifts",
         lazy="select",
+    )
+
+    # Direct relationship to GiftPerson (for accessing role information)
+    gift_people_links: Mapped[list["GiftPerson"]] = relationship(
+        "GiftPerson",
+        foreign_keys="[GiftPerson.gift_id]",
+        back_populates="gift",
+        lazy="select",
+        cascade="all, delete-orphan",
+        overlaps="people",  # This relationship overlaps with the secondary 'people' relationship
     )
 
     # Many-to-one relationship to Person (gift purchaser)

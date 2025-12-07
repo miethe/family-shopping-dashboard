@@ -14,6 +14,7 @@ from app.repositories.gift import GiftRepository
 from app.schemas.gift import (
     AdditionalUrl,
     GiftCreate,
+    GiftPersonLink,
     GiftResponse,
     GiftUpdate,
     MarkPurchasedRequest,
@@ -768,6 +769,7 @@ class GiftService:
 
         stores = getattr(gift, "stores", []) or []
         people = getattr(gift, "people", []) or []
+        gift_people_links = getattr(gift, "gift_people_links", []) or []
 
         return GiftResponse(
             id=gift.id,
@@ -789,6 +791,10 @@ class GiftService:
                 for store in stores
             ],
             person_ids=[person.id for person in people],
+            gift_people=[
+                GiftPersonLink(person_id=link.person_id, role=link.role.value)
+                for link in gift_people_links
+            ],
             created_at=gift.created_at,
             updated_at=gift.updated_at,
         )

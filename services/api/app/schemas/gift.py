@@ -164,6 +164,19 @@ class StoreMinimal(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class GiftPersonLink(BaseModel):
+    """Person-gift relationship with role information."""
+
+    person_id: int = Field(..., description="ID of the person linked to this gift")
+    role: str = Field(
+        ...,
+        description="Role of the person for this gift (recipient, purchaser, contributor)",
+        pattern="^(recipient|purchaser|contributor)$"
+    )
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class GiftResponse(TimestampSchema):
     """DTO for gift response."""
 
@@ -188,6 +201,10 @@ class GiftResponse(TimestampSchema):
     person_ids: list[int] = Field(
         default_factory=list,
         description="Person IDs linked to this gift",
+    )
+    gift_people: list[GiftPersonLink] = Field(
+        default_factory=list,
+        description="Person relationships with role information (recipient/purchaser/contributor)",
     )
 
     @field_serializer('price')
