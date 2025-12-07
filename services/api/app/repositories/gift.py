@@ -1,15 +1,15 @@
 """Gift repository with search and relationship loading capabilities."""
 
-from sqlalchemy import select, distinct, func, delete, asc, desc
-from sqlalchemy.orm import selectinload
+from sqlalchemy import asc, delete, desc, distinct, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.gift import Gift
-from app.models.tag import Tag, gift_tags
-from app.models.list_item import ListItem
-from app.models.list import List
 from app.models.gift_person import GiftPerson
+from app.models.list import List
+from app.models.list_item import ListItem
 from app.models.store import Store
+from app.models.tag import gift_tags
 from app.repositories.base import BaseRepository
 
 
@@ -698,3 +698,122 @@ class GiftRepository(BaseRepository[Gift]):
         next_cursor = gifts[-1].id if (gifts and has_more) else None
 
         return gifts, has_more, next_cursor
+
+    async def get_by_purchaser_id(
+        self,
+        purchaser_id: int,
+        cursor: int | None = None,
+        limit: int = 50,
+    ) -> tuple[list[Gift], bool, int | None]:
+        """
+        Get all gifts where this person is the purchaser.
+
+        Args:
+            purchaser_id: Person ID to filter by (Gift.purchaser_id)
+            cursor: Optional cursor for pagination
+            limit: Max items to return (default: 50)
+
+        Returns:
+            Tuple of (gifts, has_more, next_cursor):
+            - gifts: List of Gift instances (up to `limit` items)
+            - has_more: True if more items exist after this page
+            - next_cursor: ID to use for next page (None if no more items)
+
+        Example:
+            ```python
+            # Get gifts purchased by person 5
+            gifts, has_more, cursor = await repo.get_by_purchaser_id(
+                purchaser_id=5,
+                limit=20
+            )
+
+            # Next page
+            if has_more:
+                gifts, has_more, cursor = await repo.get_by_purchaser_id(
+                    purchaser_id=5,
+                    cursor=cursor,
+                    limit=20
+                )
+            ```
+
+        Note:
+            - Filters by Gift.purchaser_id column
+            - Results ordered by gift ID descending (most recent first)
+            - Uses cursor-based pagination for performance
+            - Eager loads people and stores relationships
+        """
+        stmt = (
+            select(self.model)
+            .options(
+                selectinload(self.model.people),
+                selectinload(self.model.stores),
+            )
+            .where(self.model.purchaser_id == purchaser_id)
+        )
+
+        # Apply cursor pagination
+        if cursor is not None:
+            stmt = stmt.where(self.model.id < cursor)
+
+        # Order by ID descending (most recent first) and limit
+        stmt = stmt.order_by(self.model.id.desc()).limit(limit + 1)
+
+        # Execute query
+        result = await self.session.execute(stmt)
+        gifts = list(result.scalars().all())
+
+        # Check if there are more results
+        has_more = len(gifts) > limit
+        if has_more:
+            gifts = gifts[:limit]  # Trim to requested limit
+
+        # Determine next cursor
+        next_cursor = gifts[-1].id if (gifts and has_more) else None
+
+        return gifts, has_more, next_cursor
+
+    async def update_purchaser(
+        self,
+        gift_id: int,
+        purchaser_id: int | None,
+    ) -> Gift | None:
+        """
+        Update the purchaser of a gift.
+
+        Args:
+            gift_id: Gift to update
+            purchaser_id: New purchaser ID (or None to clear)
+
+        Returns:
+            Updated Gift with relationships loaded, or None if not found
+
+        Example:
+            ```python
+            # Set purchaser
+            gift = await repo.update_purchaser(gift_id=123, purchaser_id=5)
+            if gift:
+                print(f"Purchaser updated for {gift.name}")
+
+            # Clear purchaser
+            gift = await repo.update_purchaser(gift_id=123, purchaser_id=None)
+            ```
+
+        Note:
+            - Returns None if gift not found
+            - Commits changes to database
+            - Eager loads people and stores relationships
+            - Can set to None to clear the purchaser
+        """
+        # Get gift
+        gift = await self.get(gift_id)
+        if gift is None:
+            return None
+
+        # Update purchaser_id field
+        gift.purchaser_id = purchaser_id
+
+        # Commit and refresh
+        await self.session.commit()
+        await self.session.refresh(gift, ["people", "stores"])
+
+        return gift

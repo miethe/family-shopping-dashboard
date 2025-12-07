@@ -7,6 +7,8 @@ from app.core.deps import get_current_user, get_db
 from app.core.exceptions import NotFoundError
 from app.schemas.base import PaginatedResponse
 from app.schemas.gift import (
+    BulkGiftAction,
+    BulkGiftResult,
     GiftCreate,
     GiftPeopleLink,
     GiftResponse,
@@ -598,6 +600,72 @@ async def mark_gift_as_purchased(
             message=f"Gift with ID {gift_id} not found",
         )
     return updated
+
+
+@router.patch(
+    "/bulk",
+    response_model=BulkGiftResult,
+    status_code=status.HTTP_200_OK,
+    summary="Bulk update gifts",
+    description="Perform bulk actions on multiple gifts (assign, mark purchased, delete)",
+)
+async def bulk_update_gifts(
+    data: BulkGiftAction,
+    current_user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> BulkGiftResult:
+    """
+    Perform bulk action on multiple gifts.
+
+    Supports the following actions:
+    - assign_recipient: Add person as recipient (requires person_id)
+    - assign_purchaser: Set person as purchaser (requires person_id)
+    - mark_purchased: Set purchase_date to today
+    - delete: Delete gifts
+
+    Returns partial success - continues even if some gifts fail.
+    This allows the UI to show which gifts were successfully processed
+    and which failed with error details.
+
+    Args:
+        data: Bulk action request with gift IDs, action type, and optional person_id
+        current_user_id: Authenticated user ID (from JWT)
+        db: Database session (injected)
+
+    Returns:
+        BulkGiftResult with success count, failed IDs, and error messages
+
+    Example:
+        ```json
+        PATCH /gifts/bulk
+        Headers: Authorization: Bearer eyJhbGc...
+        {
+            "gift_ids": [1, 2, 3],
+            "action": "assign_recipient",
+            "person_id": 5
+        }
+
+        Response 200:
+        {
+            "success_count": 2,
+            "failed_ids": [3],
+            "errors": ["Gift 3: Gift not found"]
+        }
+        ```
+
+    Note:
+        - Validates person_id is provided for assign actions
+        - Continues processing even if some gifts fail
+        - Returns detailed error messages for each failed gift
+        - Maximum 100 gifts per request
+    """
+    service = GiftService(db)
+    result = await service.bulk_action(
+        gift_ids=data.gift_ids,
+        action=data.action,
+        person_id=data.person_id,
+    )
+    return BulkGiftResult(**result)
 
 
 @router.get(

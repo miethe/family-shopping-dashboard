@@ -7,7 +7,7 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.person import PersonRepository
-from app.schemas.person import PersonCreate, PersonResponse, PersonUpdate, SizeEntry
+from app.schemas.person import PersonBudget, PersonCreate, PersonResponse, PersonUpdate, SizeEntry
 from app.services.person_occasion_hooks import PersonOccasionHooks
 
 
@@ -281,6 +281,60 @@ class PersonService:
         await self.hooks.on_person_deleted(person_id)
 
         return await self.repo.delete(person_id)
+
+    async def get_budget(
+        self,
+        person_id: int,
+        occasion_id: int | None = None,
+    ) -> PersonBudget | None:
+        """
+        Get gift budget totals for a person.
+
+        Calculates:
+        - Gifts assigned TO this person as recipient (via gift_people)
+        - Gifts purchased BY this person (where they are the purchaser)
+
+        Args:
+            person_id: Person to calculate budget for
+            occasion_id: Optional filter by occasion (via list -> occasion)
+
+        Returns:
+            PersonBudget DTO or None if person not found
+
+        Example:
+            ```python
+            budget = await service.get_budget(person_id=5)
+            if budget:
+                print(f"Assigned: {budget.gifts_assigned_count} gifts, ${budget.gifts_assigned_total}")
+                print(f"Purchased: {budget.gifts_purchased_count} gifts, ${budget.gifts_purchased_total}")
+
+            # Filter by occasion
+            christmas_budget = await service.get_budget(person_id=5, occasion_id=1)
+            ```
+
+        Note:
+            - Returns None if person doesn't exist
+            - "Assigned" = gifts where person is a recipient
+            - "Purchased" = gifts where person is purchaser AND purchase_date is set
+            - Totals use Decimal for precision, serialized to float in JSON
+        """
+        # First check person exists
+        person = await self.repo.get(person_id)
+        if person is None:
+            return None
+
+        # Get budget from repository
+        result = await self.repo.get_gift_budget(person_id, occasion_id)
+
+        # Convert to DTO
+        return PersonBudget(
+            person_id=result.person_id,
+            occasion_id=result.occasion_id,
+            gifts_assigned_count=result.gifts_assigned_count,
+            gifts_assigned_total=result.gifts_assigned_total,
+            gifts_purchased_count=result.gifts_purchased_count,
+            gifts_purchased_total=result.gifts_purchased_total,
+        )
 
     @staticmethod
     def _prepare_size_fields(

@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
@@ -237,3 +237,30 @@ class GiftPeopleLink(BaseModel):
         description="List of person IDs to attach to the gift",
         examples=[[1, 2, 3]],
     )
+
+
+class BulkGiftAction(BaseModel):
+    """Request body for bulk gift actions."""
+
+    gift_ids: list[int] = Field(
+        ...,
+        min_length=1,
+        max_length=100,
+        description="Gift IDs to perform action on"
+    )
+    action: Literal["assign_recipient", "assign_purchaser", "mark_purchased", "delete"] = Field(
+        ...,
+        description="Action to perform"
+    )
+    person_id: int | None = Field(
+        None,
+        description="Person ID for assign actions (required for assign_recipient/assign_purchaser)"
+    )
+
+
+class BulkGiftResult(BaseModel):
+    """Result of a bulk gift action."""
+
+    success_count: int = Field(description="Number of successfully processed gifts")
+    failed_ids: list[int] = Field(default_factory=list, description="Gift IDs that failed")
+    errors: list[str] = Field(default_factory=list, description="Error messages for failed gifts")

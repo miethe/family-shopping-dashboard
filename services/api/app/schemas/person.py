@@ -4,9 +4,17 @@ from __future__ import annotations
 
 import unicodedata
 from datetime import date
+from decimal import Decimal
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_serializer,
+    field_validator,
+    model_validator,
+)
 
 from app.schemas.base import TimestampSchema
 from app.schemas.group import GroupMinimal
@@ -812,3 +820,19 @@ class PersonSummary(BaseModel):
 
     id: int
     display_name: str
+
+
+class PersonBudget(BaseModel):
+    """Budget calculation result for a person."""
+
+    person_id: int
+    occasion_id: int | None = None
+    gifts_assigned_count: int
+    gifts_assigned_total: Decimal
+    gifts_purchased_count: int
+    gifts_purchased_total: Decimal
+
+    @field_serializer("gifts_assigned_total", "gifts_purchased_total")
+    def serialize_decimal(self, value: Decimal) -> float:
+        """Serialize Decimal fields to float for JSON."""
+        return float(value)

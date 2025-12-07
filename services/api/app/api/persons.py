@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import NotFoundError
 from app.schemas.base import PaginatedResponse
-from app.schemas.person import PersonCreate, PersonResponse, PersonUpdate
+from app.schemas.person import PersonBudget, PersonCreate, PersonResponse, PersonUpdate
 from app.services.person import PersonService
 
 router = APIRouter(prefix="/persons", tags=["persons"])
@@ -353,3 +353,71 @@ async def delete_person(
             message=f"Person with ID {person_id} not found",
             details={"person_id": person_id},
         )
+
+
+@router.get(
+    "/{person_id}/budgets",
+    response_model=PersonBudget,
+    status_code=status.HTTP_200_OK,
+    summary="Get person budget",
+    description="Get gift budget totals for a person (assigned and purchased)",
+)
+async def get_person_budget(
+    person_id: int,
+    occasion_id: int | None = Query(None, description="Filter by occasion ID"),
+    current_user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> PersonBudget:
+    """
+    Get gift budget totals for a person.
+
+    Returns:
+    - gifts_assigned_count: Number of gifts assigned TO this person as recipient
+    - gifts_assigned_total: Total value of assigned gifts
+    - gifts_purchased_count: Number of gifts purchased BY this person
+    - gifts_purchased_total: Total value of purchased gifts
+
+    Args:
+        person_id: Person to get budget for
+        occasion_id: Optional filter by occasion
+        current_user_id: Authenticated user (from JWT)
+        db: Database session (injected)
+
+    Returns:
+        PersonBudget with counts and totals
+
+    Raises:
+        HTTPException 404: If person not found
+
+    Example:
+        ```json
+        GET /persons/5/budgets
+        GET /persons/5/budgets?occasion_id=1
+
+        Response 200:
+        {
+            "person_id": 5,
+            "occasion_id": null,
+            "gifts_assigned_count": 3,
+            "gifts_assigned_total": 150.00,
+            "gifts_purchased_count": 2,
+            "gifts_purchased_total": 89.99
+        }
+        ```
+
+    Note:
+        - Returns 404 if person not found
+        - User must be authenticated
+        - Occasion filter is optional
+    """
+    service = PersonService(db)
+    budget = await service.get_budget(person_id, occasion_id)
+
+    if budget is None:
+        raise NotFoundError(
+            code="PERSON_NOT_FOUND",
+            message=f"Person with ID {person_id} not found",
+            details={"person_id": person_id},
+        )
+
+    return budget

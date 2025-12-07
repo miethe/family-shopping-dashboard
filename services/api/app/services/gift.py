@@ -539,6 +539,202 @@ class GiftService:
         refreshed = await self.repo.get_with_relations(gift_id)
         return self._to_response(refreshed or updated or gift)
 
+    async def list_by_purchaser(
+        self,
+        purchaser_id: int,
+        cursor: int | None = None,
+        limit: int = 50,
+    ) -> tuple[list[GiftResponse], bool, int | None]:
+        """
+        Get all gifts purchased by a specific person.
+
+        Returns gifts where the person is assigned as the purchaser via
+        the Gift.purchaser_id field. Uses cursor-based pagination for
+        efficient querying of large result sets.
+
+        Args:
+            purchaser_id: Person ID who is the purchaser
+            cursor: Optional cursor for pagination (ID of last item from previous page)
+            limit: Maximum number of items to return (default: 50)
+
+        Returns:
+            Tuple of (GiftResponse DTOs, has_more, next_cursor):
+            - List of GiftResponse DTOs (up to `limit` items)
+            - has_more: True if more items exist after this page
+            - next_cursor: ID to use for next page (None if no more items)
+
+        Example:
+            ```python
+            # Get first page of gifts purchased by person 5
+            gifts, has_more, cursor = await service.list_by_purchaser(
+                purchaser_id=5,
+                limit=20
+            )
+
+            # Get next page
+            if has_more:
+                gifts, has_more, cursor = await service.list_by_purchaser(
+                    purchaser_id=5,
+                    cursor=cursor,
+                    limit=20
+                )
+            ```
+
+        Note:
+            - Returns gifts where Gift.purchaser_id matches the provided person ID
+            - Results ordered by gift ID descending (most recent first)
+            - Returns empty list if person has no purchased gifts
+        """
+        gifts, has_more, next_cursor = await self.repo.get_by_purchaser_id(
+            purchaser_id=purchaser_id,
+            cursor=cursor,
+            limit=limit,
+        )
+        return [self._to_response(g) for g in gifts], has_more, next_cursor
+
+    async def assign_purchaser(
+        self,
+        gift_id: int,
+        purchaser_id: int | None,
+    ) -> GiftResponse | None:
+        """
+        Assign or clear the purchaser on a gift.
+
+        Sets or clears the Gift.purchaser_id field to track who is responsible
+        for purchasing this gift. This is separate from the actual purchase_date
+        which is set when the gift is marked as purchased.
+
+        Args:
+            gift_id: Gift to update
+            purchaser_id: Person ID to assign as purchaser (or None to clear)
+
+        Returns:
+            Updated GiftResponse DTO if gift found, None if gift not found
+
+        Raises:
+            ValueError: If purchaser_id is provided but person doesn't exist
+
+        Example:
+            ```python
+            # Assign person 5 as purchaser
+            gift = await service.assign_purchaser(gift_id=123, purchaser_id=5)
+            if gift:
+                print(f"Purchaser assigned to {gift.name}")
+
+            # Clear purchaser assignment
+            gift = await service.assign_purchaser(gift_id=123, purchaser_id=None)
+            ```
+
+        Note:
+            - Validates that the person exists before assignment (if not None)
+            - Returns None if gift not found
+            - Clears purchaser if purchaser_id is None
+        """
+        # Import PersonRepository here to avoid circular imports
+        from app.repositories.person import PersonRepository
+
+        # Validate person exists if purchaser_id is provided
+        if purchaser_id is not None:
+            person_repo = PersonRepository(self.session)
+            person = await person_repo.get(purchaser_id)
+            if person is None:
+                raise ValueError(f"Person with ID {purchaser_id} not found")
+
+        # Update purchaser via repository
+        updated_gift = await self.repo.update_purchaser(
+            gift_id=gift_id,
+            purchaser_id=purchaser_id,
+        )
+
+        # Return None if gift not found
+        if updated_gift is None:
+            return None
+
+        # Convert to DTO and return
+        return self._to_response(updated_gift)
+
+    async def bulk_action(
+        self,
+        gift_ids: list[int],
+        action: str,
+        person_id: int | None = None,
+    ) -> dict:
+        """
+        Perform bulk action on multiple gifts.
+
+        Processes multiple gifts with a single action, continuing even if some
+        gifts fail. This is useful for batch operations in the UI where partial
+        success is acceptable.
+
+        Args:
+            gift_ids: List of gift IDs to process
+            action: One of 'assign_recipient', 'assign_purchaser', 'mark_purchased', 'delete'
+            person_id: Required for assign actions, ignored otherwise
+
+        Returns:
+            Dict with success_count, failed_ids, errors:
+            - success_count: Number of successfully processed gifts
+            - failed_ids: List of gift IDs that failed
+            - errors: List of error messages for failed gifts
+
+        Example:
+            ```python
+            # Assign recipient to multiple gifts
+            result = await service.bulk_action(
+                gift_ids=[1, 2, 3],
+                action="assign_recipient",
+                person_id=5
+            )
+            print(f"Success: {result['success_count']}, Failed: {len(result['failed_ids'])}")
+
+            # Mark multiple gifts as purchased
+            result = await service.bulk_action(
+                gift_ids=[1, 2, 3],
+                action="mark_purchased"
+            )
+            ```
+
+        Note:
+            - Continues processing even if some gifts fail
+            - Returns partial success results
+            - Validates person_id for assign actions
+            - Each gift is processed independently
+        """
+        success_count = 0
+        failed_ids = []
+        errors = []
+
+        for gift_id in gift_ids:
+            try:
+                if action == "assign_recipient":
+                    if person_id is None:
+                        raise ValueError("person_id required for assign_recipient")
+                    await self.repo.attach_people(gift_id, [person_id])
+                elif action == "assign_purchaser":
+                    if person_id is None:
+                        raise ValueError("person_id required for assign_purchaser")
+                    await self.assign_purchaser(gift_id, person_id)
+                elif action == "mark_purchased":
+                    gift = await self.repo.get(gift_id)
+                    if gift:
+                        await self.repo.update(gift_id, {"purchase_date": date.today()})
+                    else:
+                        raise ValueError(f"Gift {gift_id} not found")
+                elif action == "delete":
+                    deleted = await self.repo.delete(gift_id)
+                    if not deleted:
+                        raise ValueError(f"Gift {gift_id} not found")
+                success_count += 1
+            except Exception as e:
+                failed_ids.append(gift_id)
+                errors.append(f"Gift {gift_id}: {str(e)}")
+
+        return {
+            "success_count": success_count,
+            "failed_ids": failed_ids,
+            "errors": errors,
+        }
+
     def _to_response(self, gift: "Gift") -> GiftResponse:
         """
         Convert ORM Gift model to GiftResponse DTO.
