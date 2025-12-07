@@ -123,6 +123,11 @@ export const personApi = {
   create: (data: PersonCreate) => apiClient.post<Person>('/persons', data),
   update: (id: number, data: PersonUpdate) => apiClient.put<Person>(`/persons/${id}`, data),
   delete: (id: number) => apiClient.delete<void>(`/persons/${id}`),
+  getBudget: (personId: number, occasionId?: number) =>
+    apiClient.get<import('@/types/budget').PersonBudget>(
+      `/persons/${personId}/budgets`,
+      occasionId ? { occasion_id: occasionId } : undefined
+    ),
 };
 
 // ============================================================================

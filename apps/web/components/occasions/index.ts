@@ -9,3 +9,4 @@ export { OccasionList } from './OccasionList';
 export { OccasionDetail } from './OccasionDetail';
 export { OccasionLists } from './OccasionLists';
 export { AddOccasionModal } from './AddOccasionModal';
+export { OccasionRecipientsSection } from './OccasionRecipientsSection';

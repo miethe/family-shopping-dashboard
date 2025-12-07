@@ -18,10 +18,11 @@ import { useBudgetMeter, useBudgetWarning } from '@/hooks/useBudgetMeter';
 import { PageHeader } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { OccasionDetail, OccasionLists } from '@/components/occasions';
+import { OccasionDetail, OccasionLists, OccasionRecipientsSection } from '@/components/occasions';
 import { AddOccasionModal } from '@/components/occasions/AddOccasionModal';
 import { BudgetMeter, BudgetMeterSkeleton, BudgetWarningCard } from '@/components/budget';
 import { Card, CardContent } from '@/components/ui/card';
+import { useConfirmDialog, useToast } from '@/components/ui';
 
 interface OccasionDetailPageProps {
   params: Promise<{ id: string }>;
@@ -68,6 +69,8 @@ export default function OccasionDetailPage({ params }: OccasionDetailPageProps) 
   const occasionId = parseInt(id, 10);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const { confirm, dialog } = useConfirmDialog();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: occasion, isLoading, error } = useOccasion(occasionId);
@@ -78,16 +81,32 @@ export default function OccasionDetailPage({ params }: OccasionDetailPageProps) 
   const { data: warningData } = useBudgetWarning(occasionId);
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this occasion? All associated lists will remain but will no longer be linked to this occasion.')) {
+    const confirmed = await confirm({
+      title: 'Delete Occasion?',
+      description: 'Are you sure you want to delete this occasion? All associated lists will remain but will no longer be linked to this occasion.',
+      variant: 'destructive',
+      confirmLabel: 'Delete',
+    });
+
+    if (!confirmed) {
       return;
     }
 
     try {
       await deleteMutation.mutateAsync();
+      toast({
+        title: 'Occasion deleted',
+        description: 'The occasion has been successfully removed.',
+        variant: 'success',
+      });
       router.push('/occasions');
     } catch (err) {
       console.error('Failed to delete occasion:', err);
-      alert('Failed to delete occasion. Please try again.');
+      toast({
+        title: 'Error',
+        description: 'Failed to delete occasion. Please try again.',
+        variant: 'error',
+      });
     }
   };
 
@@ -97,36 +116,58 @@ export default function OccasionDetailPage({ params }: OccasionDetailPageProps) 
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card variant="elevated" padding="lg">
-          <CardContent className="text-center">
-            <h2 className="text-xl font-semibold text-red-600 mb-2">Error Loading Occasion</h2>
-            <p className="text-gray-600 mb-4">
-              {error instanceof Error ? error.message : 'An unexpected error occurred'}
-            </p>
-            <Button variant="outline" onClick={() => router.push('/occasions')}>
-              Back to Occasions
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="space-y-4">
+        <PageHeader
+          title="Error"
+          backHref="/occasions"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Occasions', href: '/occasions' },
+            { label: 'Error' }
+          ]}
+        />
+        <div className="min-h-screen flex items-center justify-center p-4">
+          <Card variant="elevated" padding="lg">
+            <CardContent className="text-center">
+              <h2 className="text-xl font-semibold text-red-600 mb-2">Error Loading Occasion</h2>
+              <p className="text-gray-600 mb-4">
+                {error instanceof Error ? error.message : 'An unexpected error occurred'}
+              </p>
+              <Button variant="outline" onClick={() => router.push('/occasions')}>
+                Back to Occasions
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   if (!occasion) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card variant="elevated" padding="lg">
-          <CardContent className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Occasion Not Found</h2>
-            <p className="text-gray-600 mb-4">
-              The occasion you&apos;re looking for doesn&apos;t exist or has been deleted.
-            </p>
-            <Button variant="outline" onClick={() => router.push('/occasions')}>
-              Back to Occasions
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="space-y-4">
+        <PageHeader
+          title="Not Found"
+          backHref="/occasions"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Occasions', href: '/occasions' },
+            { label: 'Not Found' }
+          ]}
+        />
+        <div className="min-h-screen flex items-center justify-center p-4">
+          <Card variant="elevated" padding="lg">
+            <CardContent className="text-center">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Occasion Not Found</h2>
+              <p className="text-gray-600 mb-4">
+                The occasion you&apos;re looking for doesn&apos;t exist or has been deleted.
+              </p>
+              <Button variant="outline" onClick={() => router.push('/occasions')}>
+                Back to Occasions
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -136,65 +177,82 @@ export default function OccasionDetailPage({ params }: OccasionDetailPageProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Page Header */}
-      <PageHeader
-        title={occasion.name}
-        subtitle={formatDate(occasion.date)}
-        backHref="/occasions"
-        actions={
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleEdit}>
-              Edit
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              isLoading={deleteMutation.isPending}
-              disabled={deleteMutation.isPending}
-            >
-              Delete
-            </Button>
-          </div>
-        }
-      />
+    <>
+      {dialog}
+      <div className="min-h-screen bg-gray-50">
+        {/* Page Header */}
+        <PageHeader
+          title={occasion.name}
+          subtitle={formatDate(occasion.date)}
+          backHref="/occasions"
+          breadcrumbItems={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Occasions', href: '/occasions' },
+            { label: occasion.name }
+          ]}
+          actions={
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleEdit}>
+                Edit
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                isLoading={deleteMutation.isPending}
+                disabled={deleteMutation.isPending}
+              >
+                Delete
+              </Button>
+            </div>
+          }
+        />
 
-      {/* Main Content */}
-      <div className="px-4 py-6 md:px-6 space-y-6 max-w-4xl mx-auto">
-        {/* Occasion Detail Card */}
-        <OccasionDetail occasion={occasion} />
+        {/* Main Content */}
+        <div className="px-4 py-6 md:px-6 space-y-6 max-w-4xl mx-auto">
+          {/* Occasion Detail Card */}
+          <OccasionDetail occasion={occasion} />
 
-        {/* Budget Status Section */}
-        {budgetData?.has_budget && (
-          <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900">Budget Status</h3>
-            {budgetLoading ? (
-              <BudgetMeterSkeleton />
-            ) : (
-              <>
-                <BudgetMeter data={budgetData} />
-                {warningData && warningData.level !== 'none' && (
-                  <BudgetWarningCard warning={warningData} className="mt-4" />
-                )}
-              </>
-            )}
-          </section>
-        )}
+          {/* Recipients Section */}
+          {occasion.person_ids && occasion.person_ids.length > 0 && (
+            <OccasionRecipientsSection
+              personIds={occasion.person_ids}
+              occasionId={occasion.id}
+              onEditClick={handleEdit}
+            />
+          )}
 
-        {/* Associated Lists */}
-        <OccasionLists occasionId={occasion.id} />
+          {/* Budget Status Section */}
+          {budgetData?.has_budget && (
+            <section className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+              <h3 className="text-lg font-semibold mb-4 text-gray-900">Budget Status</h3>
+              {budgetLoading ? (
+                <BudgetMeterSkeleton />
+              ) : (
+                <>
+                  <BudgetMeter data={budgetData} />
+                  {warningData && warningData.level !== 'none' && (
+                    <BudgetWarningCard warning={warningData} className="mt-4" />
+                  )}
+                </>
+              )}
+            </section>
+          )}
+
+          {/* Associated Lists */}
+          <OccasionLists occasionId={occasion.id} />
+        </div>
+
+        {/* Edit Modal */}
+        <AddOccasionModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          mode="edit"
+          occasionToEdit={occasion}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ['occasion', occasionId] });
+          }}
+        />
       </div>
-
-      {/* Edit Modal */}
-      <AddOccasionModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        mode="edit"
-        occasionToEdit={occasion}
-        onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ['occasion', occasionId] });
-        }}
-      />
-    </div>
+    </>
   );
 }

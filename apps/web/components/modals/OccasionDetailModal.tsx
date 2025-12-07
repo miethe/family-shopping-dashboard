@@ -15,10 +15,13 @@ import { useListsForOccasion } from "@/hooks/useLists";
 import { usePersons } from "@/hooks/usePersons";
 import { AddOccasionModal } from "@/components/occasions/AddOccasionModal";
 import { ListDetailModal } from "./ListDetailModal";
+import { PersonDetailModal } from "./PersonDetailModal";
 import type { Occasion, RecurrenceRule, OccasionType } from "@/types";
 import { cn } from "@/lib/utils";
 import { LinkListsToContextModal } from "./LinkListsToContextModal";
 import { CommentsTab } from "@/components/comments";
+import { Avatar, AvatarImage, AvatarFallback, getInitials } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface OccasionDetailModalProps {
   occasionId: string | null;
@@ -147,6 +150,7 @@ export function OccasionDetailModal({
   const [showLinkListsModal, setShowLinkListsModal] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("overview");
   const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
+  const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
 
   const { data: occasion, isLoading } = useQuery<Occasion>({
     queryKey: ["occasions", occasionId],
@@ -173,6 +177,7 @@ export function OccasionDetailModal({
       setShowLinkListsModal(false);
       setActiveTab("overview");
       setSelectedListId(null);
+      setSelectedPersonId(null);
     }
   }, [open]);
 
@@ -454,7 +459,7 @@ export function OccasionDetailModal({
                 </div>
               )}
 
-              {/* Linked People */}
+              {/* Recipients */}
               {occasion.person_ids && occasion.person_ids.length > 0 && (
                 <div
                   className={cn(
@@ -463,22 +468,93 @@ export function OccasionDetailModal({
                 >
                   <h3 className="font-semibold text-warm-900 mb-3 flex items-center gap-2">
                     <User className="h-4 w-4 text-purple-600" />
-                    Linked People
+                    Recipients
                   </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {occasion.person_ids.map((personId) => {
-                      const person = personsData?.items?.find((p) => p.id === personId);
-                      return person ? (
-                        <Badge key={personId} variant="primary" size="md">
-                          {person.display_name}
-                        </Badge>
-                      ) : (
-                        <Badge key={personId} variant="default" size="md">
-                          Person #{personId}
-                        </Badge>
-                      );
-                    })}
-                  </div>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <button
+                          className={cn(
+                            "text-left px-4 py-2.5 rounded-lg",
+                            "bg-white border-2 border-purple-200",
+                            "hover:border-purple-400 hover:shadow-md",
+                            "transition-all duration-200",
+                            "focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2",
+                            "min-h-[44px]"
+                          )}
+                        >
+                          <span className="text-warm-900 font-medium">
+                            {occasion.person_ids.length} {occasion.person_ids.length === 1 ? 'person' : 'people'}
+                          </span>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="bottom"
+                        align="start"
+                        className={cn(
+                          "bg-white border border-warm-200 shadow-lg p-3 rounded-lg",
+                          "max-w-xs w-72"
+                        )}
+                      >
+                        <div className="space-y-2">
+                          {occasion.person_ids.slice(0, 5).map((personId) => {
+                            const person = personsData?.items?.find((p) => p.id === personId);
+                            if (!person) {
+                              return (
+                                <div
+                                  key={personId}
+                                  className="flex items-center gap-3 p-2 rounded-md bg-warm-50"
+                                >
+                                  <Avatar size="sm">
+                                    <AvatarFallback>?</AvatarFallback>
+                                  </Avatar>
+                                  <span className="text-sm text-warm-600">Person #{personId}</span>
+                                </div>
+                              );
+                            }
+                            return (
+                              <button
+                                key={personId}
+                                onClick={() => setSelectedPersonId(String(person.id))}
+                                className={cn(
+                                  "w-full flex items-center gap-3 p-2 rounded-md",
+                                  "hover:bg-purple-50 transition-colors",
+                                  "focus:outline-none focus:ring-2 focus:ring-purple-500",
+                                  "min-h-[44px]"
+                                )}
+                              >
+                                <Avatar size="sm">
+                                  {person.photo_url && (
+                                    <AvatarImage src={person.photo_url} alt={person.display_name} />
+                                  )}
+                                  <AvatarFallback>
+                                    {getInitials(person.display_name)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1 text-left min-w-0">
+                                  <div className="font-medium text-warm-900 text-sm truncate">
+                                    {person.display_name}
+                                  </div>
+                                  {person.relationship && (
+                                    <div className="text-xs text-warm-600 truncate">
+                                      {person.relationship}
+                                    </div>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })}
+                          {occasion.person_ids.length > 5 && (
+                            <div className="pt-2 border-t border-warm-200 text-center">
+                              <span className="text-xs text-warm-600 font-medium">
+                                +{occasion.person_ids.length - 5} more
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               )}
 
@@ -684,6 +760,13 @@ export function OccasionDetailModal({
         listId={selectedListId}
         open={!!selectedListId}
         onOpenChange={(open) => !open && setSelectedListId(null)}
+      />
+
+      {/* Person Detail Modal */}
+      <PersonDetailModal
+        personId={selectedPersonId}
+        open={!!selectedPersonId}
+        onOpenChange={(open) => !open && setSelectedPersonId(null)}
       />
 
       {occasionId && (

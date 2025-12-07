@@ -4,6 +4,7 @@ import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { EntityModal, useEntityModal } from "./EntityModal";
 import { ListDetailModal } from "./ListDetailModal";
+import { GiftDetailModal } from "./GiftDetailModal";
 import { Avatar, AvatarImage, AvatarFallback, getInitials } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,8 @@ import { LinkListsToContextModal } from "./LinkListsToContextModal";
 import { GroupMultiSelect } from "@/components/common/GroupMultiSelect";
 import { AdvancedInterestsView } from '@/components/people/AdvancedInterestsView';
 import { AdvancedInterestsEdit } from '@/components/people/AdvancedInterestsEdit';
+import { PersonBudgetBar } from '@/components/people/PersonBudgetBar';
+import { LinkedGiftsSection } from '@/components/people/LinkedGiftsSection';
 import type { AdvancedInterests, SizeEntry } from '@/types';
 import { CommentThread } from '@/components/comments';
 import { useAuth } from '@/hooks/useAuth';
@@ -63,6 +66,14 @@ export function PersonDetailModal({
     openModal: openListModal,
     closeModal: closeListModal
   } = useEntityModal('list');
+
+  // Gift modal management
+  const {
+    open: giftModalOpen,
+    entityId: giftModalId,
+    openModal: openGiftModal,
+    closeModal: closeGiftModal
+  } = useEntityModal('gift');
 
   // Fetch lists for this person
   const {
@@ -378,6 +389,12 @@ export function PersonDetailModal({
 
                 {/* Overview Tab */}
                 <TabsContent value="overview" className="space-y-6">
+                  {/* Budget Section */}
+                  <div>
+                    <h3 className="font-semibold text-warm-900 mb-3">Budget Overview</h3>
+                    <PersonBudgetBar personId={person.id} variant="modal" />
+                  </div>
+
                   {/* Birthday Info */}
                   {person.birthdate && (
                     <div
@@ -565,98 +582,115 @@ export function PersonDetailModal({
                 </TabsContent>
 
                 {/* Linked Entities Tab */}
-                <TabsContent value="linked" className="space-y-4">
-                  {listsLoading ? (
-                    <div className="flex items-center justify-center py-12">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
-                    </div>
-                  ) : lists.length > 0 ? (
-                    <div className="space-y-3">
-                      <h3 className="font-semibold text-warm-900 text-sm mb-3">
-                        Lists for this person
-                      </h3>
+                <TabsContent value="linked" className="space-y-6">
+                  {/* Gifts Section */}
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-warm-900 text-lg mb-1">
+                      Gifts
+                    </h3>
+                    <p className="text-warm-600 text-sm mb-4">
+                      Gifts linked to this person
+                    </p>
+                    <LinkedGiftsSection
+                      personId={person.id}
+                      onOpenGiftDetail={openGiftModal}
+                    />
+                  </div>
 
-                      {/* Add New List Card */}
-                      <button
-                        onClick={() => setShowLinkListsModal(true)}
-                        className={cn(
-                          "w-full text-left",
-                          "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
-                          "hover:border-blue-500 hover:bg-blue-50/50",
-                          "transition-all duration-200",
-                          "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-                          "min-h-[44px]"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
-                            <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
-                          </div>
-                          <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
-                            Add New List
-                          </span>
-                        </div>
-                      </button>
-
-                      {lists.map((list: GiftList) => (
-                        <Card
-                          key={list.id}
-                          variant="interactive"
-                          padding="default"
-                          onClick={() => openListModal(String(list.id))}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-warm-900 truncate">
-                                {list.name}
-                              </h4>
-                              <p className="text-sm text-warm-600">
-                                {list.item_count || 0} {list.item_count === 1 ? 'item' : 'items'}
-                              </p>
-                            </div>
-                            <Badge variant="default" className="ml-3">
-                              {list.type}
-                            </Badge>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {/* Add New List Card */}
-                      <button
-                        onClick={() => setShowLinkListsModal(true)}
-                        className={cn(
-                          "w-full text-left",
-                          "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
-                          "hover:border-blue-500 hover:bg-blue-50/50",
-                          "transition-all duration-200",
-                          "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-                          "min-h-[44px]"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
-                            <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
-                          </div>
-                          <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
-                            Add New List
-                          </span>
-                        </div>
-                      </button>
-
-                      <div
-                        className={cn(
-                          "bg-warm-50 rounded-xl p-12 border border-warm-200",
-                          "text-center"
-                        )}
-                      >
-                        <p className="text-warm-600">
-                          No lists attached to this person
-                        </p>
+                  {/* Lists Section */}
+                  <div className="space-y-3 pt-6 border-t border-warm-200">
+                    {listsLoading ? (
+                      <div className="flex items-center justify-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
                       </div>
-                    </div>
-                  )}
+                    ) : lists.length > 0 ? (
+                      <div className="space-y-3">
+                        <h3 className="font-semibold text-warm-900 text-sm mb-3">
+                          Lists for this person
+                        </h3>
+
+                        {/* Add New List Card */}
+                        <button
+                          onClick={() => setShowLinkListsModal(true)}
+                          className={cn(
+                            "w-full text-left",
+                            "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                            "hover:border-blue-500 hover:bg-blue-50/50",
+                            "transition-all duration-200",
+                            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                            "min-h-[44px]"
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                              <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                            </div>
+                            <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                              Add New List
+                            </span>
+                          </div>
+                        </button>
+
+                        {lists.map((list: GiftList) => (
+                          <Card
+                            key={list.id}
+                            variant="interactive"
+                            padding="default"
+                            onClick={() => openListModal(String(list.id))}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-warm-900 truncate">
+                                  {list.name}
+                                </h4>
+                                <p className="text-sm text-warm-600">
+                                  {list.item_count || 0} {list.item_count === 1 ? 'item' : 'items'}
+                                </p>
+                              </div>
+                              <Badge variant="default" className="ml-3">
+                                {list.type}
+                              </Badge>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {/* Add New List Card */}
+                        <button
+                          onClick={() => setShowLinkListsModal(true)}
+                          className={cn(
+                            "w-full text-left",
+                            "bg-white rounded-xl p-4 border-2 border-dashed border-warm-300",
+                            "hover:border-blue-500 hover:bg-blue-50/50",
+                            "transition-all duration-200",
+                            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                            "min-h-[44px]"
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-warm-100 hover:bg-blue-100 flex items-center justify-center transition-colors">
+                              <Plus className="h-5 w-5 text-warm-400 group-hover:text-blue-500" />
+                            </div>
+                            <span className="text-sm font-medium text-warm-600 group-hover:text-blue-600">
+                              Add New List
+                            </span>
+                          </div>
+                        </button>
+
+                        <div
+                          className={cn(
+                            "bg-warm-50 rounded-xl p-12 border border-warm-200",
+                            "text-center"
+                          )}
+                        >
+                          <p className="text-warm-600">
+                            No lists attached to this person
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </TabsContent>
 
                 {/* Comments Tab */}
@@ -833,6 +867,13 @@ export function PersonDetailModal({
         listId={listModalId}
         open={listModalOpen}
         onOpenChange={closeListModal}
+      />
+
+      {/* Gift Detail Modal */}
+      <GiftDetailModal
+        giftId={giftModalId}
+        open={giftModalOpen}
+        onOpenChange={closeGiftModal}
       />
 
       {personId && (

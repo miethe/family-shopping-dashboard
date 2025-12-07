@@ -56,3 +56,15 @@ export interface SetEntityBudgetRequest {
   entity_id: number;
   budget_amount: number;
 }
+
+/**
+ * Person budget calculation showing gifts assigned to and purchased by a person
+ */
+export interface PersonBudget {
+  person_id: number;
+  occasion_id: number | null;
+  gifts_assigned_count: number;
+  gifts_assigned_total: number;  // Decimal serialized as float
+  gifts_purchased_count: number;
+  gifts_purchased_total: number; // Decimal serialized as float
+}
