@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useCreatePerson } from '@/hooks/usePersons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ImagePicker } from '@/components/ui/image-picker';
 import { useToast } from '@/components/ui/use-toast';
 import type { PersonCreate } from '@/types';
 
@@ -143,13 +144,26 @@ export function PersonForm() {
           placeholder="YYYY-MM-DD"
         />
 
-        <Input
-          label="Photo URL (optional)"
-          type="url"
-          value={photoUrl}
-          onChange={(e) => setPhotoUrl(e.target.value)}
-          placeholder="https://example.com/photo.jpg"
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Photo (optional)
+          </label>
+          <ImagePicker
+            value={photoUrl || null}
+            onChange={(url) => setPhotoUrl(url || '')}
+            onError={(error) => {
+              toast({
+                title: 'Image upload failed',
+                description: error,
+                variant: 'error',
+              });
+            }}
+            disabled={isPending}
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Upload or link to a photo of this person
+          </p>
+        </div>
       </section>
 
       {/* Interests Section */}

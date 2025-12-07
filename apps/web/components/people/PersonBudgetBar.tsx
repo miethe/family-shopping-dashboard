@@ -6,17 +6,6 @@ import { usePersonBudget } from '@/hooks/usePersonBudget';
 import { useGiftsByPerson } from '@/hooks/useGifts';
 import { useEntityModal } from '@/components/modals';
 import { StackedProgressBar, type TooltipItem } from '@/components/ui/stacked-progress-bar';
-import type { Gift } from '@/types';
-
-/**
- * Format currency using USD locale
- */
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount);
-}
 
 export interface PersonBudgetBarProps {
   personId: number;

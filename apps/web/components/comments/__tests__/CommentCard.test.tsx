@@ -81,8 +81,6 @@ describe('CommentCard', () => {
     mockUpdateComment.isError = false;
     mockDeleteMutateAsync.mockResolvedValue({});
     mockUpdateMutateAsync.mockResolvedValue({});
-    // Mock window.confirm to automatically return true
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
   });
 
   it('renders comment text and user name', () => {
@@ -309,24 +307,46 @@ describe('CommentCard', () => {
       wrapper,
     });
 
+    // Click delete button
     await user.click(screen.getByRole('button', { name: /delete comment/i }));
 
-    expect(window.confirm).toHaveBeenCalledWith(
-      'Are you sure you want to delete this comment?'
-    );
-    expect(mockDeleteMutateAsync).toHaveBeenCalledWith(1);
+    // Wait for confirm dialog to appear
+    expect(await screen.findByText('Delete Comment?')).toBeInTheDocument();
+    expect(screen.getByText(/are you sure you want to delete this comment/i)).toBeInTheDocument();
+
+    // Click the confirm button in the dialog
+    const confirmButton = screen.getByRole('button', { name: /delete/i });
+    await user.click(confirmButton);
+
+    // Verify deleteComment was called
+    await waitFor(() => {
+      expect(mockDeleteMutateAsync).toHaveBeenCalledWith(1);
+    });
   });
 
   it('does not delete when user cancels confirmation', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
     const user = userEvent.setup();
     render(<CommentCard comment={mockComment} entityType="person" entityId={1} />, {
       wrapper,
     });
 
+    // Click delete button
     await user.click(screen.getByRole('button', { name: /delete comment/i }));
 
+    // Wait for confirm dialog to appear
+    expect(await screen.findByText('Delete Comment?')).toBeInTheDocument();
+
+    // Click the cancel button in the dialog
+    const cancelButton = screen.getByRole('button', { name: /cancel/i });
+    await user.click(cancelButton);
+
+    // Verify deleteComment was not called
     expect(mockDeleteMutateAsync).not.toHaveBeenCalled();
+
+    // Verify dialog is closed
+    await waitFor(() => {
+      expect(screen.queryByText('Delete Comment?')).not.toBeInTheDocument();
+    });
   });
 
   it('shows delete error message when deletion fails', () => {

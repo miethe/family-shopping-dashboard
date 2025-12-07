@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Icon } from '@/components/ui/icon';
 import { useDeleteComment, useUpdateComment } from '@/hooks/useComments';
 import { formatRelativeTime } from '@/lib/utils';
+import { useConfirmDialog } from '@/components/ui';
 import type { Comment, CommentEntityType, CommentVisibility } from '@/types';
 
 interface CommentCardProps {
@@ -27,6 +28,7 @@ export function CommentCard({ comment, currentUserId, entityType, entityId }: Co
 
   const deleteComment = useDeleteComment(entityType, entityId);
   const updateComment = useUpdateComment(entityType, entityId);
+  const { confirm, dialog } = useConfirmDialog();
 
   const canEdit = comment.can_edit;
   const isEdited = new Date(comment.updated_at) > new Date(comment.created_at);
@@ -36,7 +38,14 @@ export function CommentCard({ comment, currentUserId, entityType, entityId }: Co
   const isOverLimit = remainingChars < 0;
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this comment?')) {
+    const confirmed = await confirm({
+      title: 'Delete Comment?',
+      description: 'Are you sure you want to delete this comment? This action cannot be undone.',
+      variant: 'destructive',
+      confirmLabel: 'Delete',
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -79,14 +88,16 @@ export function CommentCard({ comment, currentUserId, entityType, entityId }: Co
   };
 
   return (
-    <div className="flex gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-      {/* Avatar */}
-      <Avatar size="default">
-        <AvatarFallback>{getInitials(comment.user_name)}</AvatarFallback>
-      </Avatar>
+    <>
+      {dialog}
+      <div className="flex gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+        {/* Avatar */}
+        <Avatar size="default">
+          <AvatarFallback>{getInitials(comment.user_name)}</AvatarFallback>
+        </Avatar>
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
+        {/* Content */}
+        <div className="flex-1 min-w-0">
         {/* Header: Name + Timestamp + Badges */}
         <div className="flex items-center justify-between gap-2 mb-1">
           <div className="flex items-center gap-2 min-w-0 flex-wrap">
@@ -205,7 +216,8 @@ export function CommentCard({ comment, currentUserId, entityType, entityId }: Co
             Failed to delete comment. Please try again.
           </p>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

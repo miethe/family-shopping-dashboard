@@ -11,6 +11,7 @@
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { GiftIcon } from '@/components/layout/icons';
+import { GiftTitleLink } from '@/components/common/GiftTitleLink';
 import { formatPrice } from '@/lib/utils';
 import { GiftDetailModal, useEntityModal } from '@/components/modals';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
@@ -53,12 +54,12 @@ export function ListItemRow({ item, onStatusChange }: ListItemRowProps) {
 
         {/* Gift Info */}
         <div className="flex-1 min-w-0">
-          <button
-            onClick={() => openModal(String(item.gift_id))}
-            className="font-medium text-gray-900 hover:text-primary-600 hover:underline block truncate text-left"
-          >
-            {item.gift?.name ?? `Gift #${item.gift_id}`}
-          </button>
+          <div className="font-medium text-gray-900 block truncate">
+            <GiftTitleLink
+              name={item.gift?.name ?? `Gift #${item.gift_id}`}
+              url={item.gift?.url}
+            />
+          </div>
 
           {/* Price */}
           {item.gift?.price && (

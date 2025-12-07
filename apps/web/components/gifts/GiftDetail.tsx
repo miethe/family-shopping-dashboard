@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { GiftIcon } from '@/components/layout/icons';
+import { GiftTitleLink } from '@/components/common/GiftTitleLink';
 import { formatPrice } from '@/lib/utils';
 import type { Gift } from '@/types';
 
@@ -57,7 +58,9 @@ export function GiftDetail({ gift }: GiftDetailProps) {
       {/* Info */}
       <Card>
         <CardContent className="p-6 space-y-4">
-          <h1 className="text-2xl font-bold text-gray-900">{gift.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            <GiftTitleLink name={gift.name} url={gift.url} showExternalIcon />
+          </h1>
 
           {gift.price !== undefined && gift.price !== null && (
             <p className="text-3xl font-bold text-primary-600">

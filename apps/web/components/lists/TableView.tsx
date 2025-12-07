@@ -14,6 +14,7 @@
 
 import Image from 'next/image';
 import { Icon, IconNames } from '@/components/ui/icon';
+import { GiftTitleLink } from '@/components/common/GiftTitleLink';
 import { cn } from '@/lib/utils';
 import type { ListItemWithGift, ListItemStatus } from '@/types';
 
@@ -142,7 +143,7 @@ export function TableView({ items, onItemClick }: TableViewProps) {
                     </div>
                     <div>
                       <p className="font-bold text-slate-900 dark:text-white">
-                        {item.gift.name}
+                        <GiftTitleLink name={item.gift.name} url={item.gift.url} />
                       </p>
                       <p className="text-xs text-slate-400">
                         Added {formatDate(item.created_at)}

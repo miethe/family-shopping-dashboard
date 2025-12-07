@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, Badge } from '@/components/ui';
 import { GiftIcon, CheckCircleIcon, ShoppingCartIcon, LightbulbIcon } from '@/components/layout/icons';
+import { GiftTitleLink } from '@/components/common/GiftTitleLink';
 import { formatPrice } from '@/lib/utils';
 import type { AssignmentItem } from '@/hooks/useMyAssignments';
 import type { ListItemStatus } from '@/types';
@@ -109,7 +110,7 @@ export function AssignmentCard({ assignment }: AssignmentCardProps) {
           <div className="flex-1 min-w-0 flex flex-col justify-between">
             {/* Gift name */}
             <h3 className="font-medium text-sm md:text-base line-clamp-2">
-              {assignment.gift.name}
+              <GiftTitleLink name={assignment.gift.name} url={assignment.gift.url} />
             </h3>
 
             {/* Person name */}
