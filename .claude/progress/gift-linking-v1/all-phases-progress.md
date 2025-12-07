@@ -4,18 +4,18 @@ type: progress
 prd: "gift-linking-v1"
 phase: "all"
 title: "Gift Linking & Budget Display Fixes"
-status: "planning"
+status: "in_progress"
 started: "2025-12-07"
 completed: null
 
 # Overall Progress
-overall_progress: 0
+overall_progress: 38
 completion_estimate: "on-track"
 
 # Task Counts
 total_tasks: 13
-completed_tasks: 0
-in_progress_tasks: 0
+completed_tasks: 5
+in_progress_tasks: 2
 blocked_tasks: 0
 at_risk_tasks: 0
 
@@ -28,26 +28,29 @@ tasks:
   # Phase 1: Backend Async Fix
   - id: "BE-001"
     description: "Fix base repository update - remove/replace session.refresh()"
-    status: "pending"
+    status: "completed"
     assigned_to: ["python-backend-engineer"]
     dependencies: []
     estimated_effort: "2h"
     priority: "critical"
     phase: 1
+    commit: "ce16932"
 
   - id: "BE-002"
     description: "Fix gift set_stores - replace session.refresh() with async pattern"
-    status: "pending"
+    status: "completed"
     assigned_to: ["python-backend-engineer"]
     dependencies: []
     estimated_effort: "1h"
     priority: "high"
     phase: 1
+    commit: "d3e23cb"
 
   - id: "BE-003"
     description: "Fix gift update_purchaser - replace session.refresh() with selectinload"
-    status: "pending"
+    status: "completed"
     assigned_to: ["python-backend-engineer"]
+    commit: "d3e23cb"
     dependencies: []
     estimated_effort: "1h"
     priority: "high"
