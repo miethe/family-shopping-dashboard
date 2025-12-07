@@ -8,8 +8,7 @@
 'use client';
 
 import { usePersons } from '@/hooks/usePersons';
-import { Button } from '@/components/ui/button';
-import { XIcon } from '@/components/layout/icons';
+import { PersonChip } from './PersonChip';
 
 interface PersonMultiSelectProps {
   value: number[];
@@ -40,20 +39,12 @@ export function PersonMultiSelect({ value, onChange, excludePersonIds = [] }: Pe
       {selectedPersons.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedPersons.map((person) => (
-            <div
+            <PersonChip
               key={person.id}
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-50 border-2 border-orange-200 rounded-full"
-            >
-              <span className="text-xs font-medium text-warm-900">{person.display_name}</span>
-              <button
-                type="button"
-                onClick={() => handleSelect(person.id)}
-                className="min-h-[24px] min-w-[24px] flex items-center justify-center text-orange-600 hover:text-orange-800 rounded-full hover:bg-orange-100 transition-colors"
-                aria-label={`Remove ${person.display_name}`}
-              >
-                <XIcon className="h-3 w-3" />
-              </button>
-            </div>
+              person={person}
+              selected={true}
+              onToggle={handleSelect}
+            />
           ))}
         </div>
       )}
@@ -62,16 +53,12 @@ export function PersonMultiSelect({ value, onChange, excludePersonIds = [] }: Pe
       {availablePersons.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {availablePersons.map((person) => (
-            <Button
+            <PersonChip
               key={person.id}
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => handleSelect(person.id)}
-              className="h-8"
-            >
-              {person.display_name}
-            </Button>
+              person={person}
+              selected={false}
+              onToggle={handleSelect}
+            />
           ))}
         </div>
       )}

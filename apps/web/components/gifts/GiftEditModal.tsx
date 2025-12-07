@@ -17,10 +17,15 @@ import { useCreateListItem } from '@/hooks/useListItems';
 import { EntityModal } from '@/components/modals/EntityModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select } from '@/components/ui/select';
+import { ImagePicker } from '@/components/ui/image-picker';
+import { UrlListInput } from '@/components/common/UrlListInput';
+import { StoreMultiSelect } from '@/components/gifts/StoreMultiSelect';
+import { PeopleMultiSelect } from '@/components/common/PeopleMultiSelect';
 import { useToast } from '@/components/ui/use-toast';
-import type { Gift, GiftUpdate, ListItemStatus } from '@/types';
+import type { Gift, GiftUpdate, GiftPriority, ListItemStatus } from '@/types';
 
 export interface GiftEditModalProps {
   gift: Gift;
@@ -35,10 +40,25 @@ export function GiftEditModal({
   onClose,
   onSuccess,
 }: GiftEditModalProps) {
+  // Basic fields
   const [name, setName] = useState(gift.name);
   const [url, setUrl] = useState(gift.url || '');
   const [price, setPrice] = useState(gift.price?.toString() || '');
   const [imageUrl, setImageUrl] = useState(gift.image_url || '');
+  const [source, setSource] = useState(gift.source || '');
+
+  // New fields
+  const [description, setDescription] = useState(gift.description || '');
+  const [notes, setNotes] = useState(gift.notes || '');
+  const [priority, setPriority] = useState<GiftPriority>(gift.priority);
+  const [quantity, setQuantity] = useState(gift.quantity || 1);
+  const [salePrice, setSalePrice] = useState(gift.sale_price?.toString() || '');
+  const [purchaseDate, setPurchaseDate] = useState(gift.purchase_date || '');
+  const [additionalUrls, setAdditionalUrls] = useState(gift.additional_urls || []);
+  const [storeIds, setStoreIds] = useState(gift.stores?.map(s => s.id) || []);
+  const [personIds, setPersonIds] = useState(gift.person_ids || []);
+
+  // List association fields
   const [status, setStatus] = useState<ListItemStatus>('idea');
   const [selectedListIds, setSelectedListIds] = useState<number[]>([]);
 
@@ -99,6 +119,16 @@ export function GiftEditModal({
       url: url.trim() || undefined,
       price: price ? parseFloat(price) : undefined,
       image_url: imageUrl.trim() || undefined,
+      source: source.trim() || undefined,
+      description: description.trim() || undefined,
+      notes: notes.trim() || undefined,
+      priority: priority,
+      quantity: quantity,
+      sale_price: salePrice ? parseFloat(salePrice) : undefined,
+      purchase_date: purchaseDate || undefined,
+      additional_urls: additionalUrls,
+      store_ids: storeIds,
+      person_ids: personIds,
     };
 
     updateGift(updateData, {
@@ -140,6 +170,8 @@ export function GiftEditModal({
     { value: 'received', label: 'Received' },
   ];
 
+  const GIFT_SOURCES = ['Amazon', 'Target', 'Etsy', 'Other'] as const;
+
   return (
     <EntityModal
       open={isOpen}
@@ -149,56 +181,206 @@ export function GiftEditModal({
       size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name Input */}
         <Input
-          label="Name"
+          label="Gift Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          placeholder="Enter gift name"
+          placeholder="e.g., LEGO Star Wars Set"
         />
 
+        {/* URL Input */}
         <Input
-          label="URL (optional)"
+          label="Product URL"
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://..."
-          helperText="Link to the product page"
+          helperText="Optional - link to product page"
         />
 
+        {/* Price Input */}
         <Input
-          label="Price (optional)"
+          label="Price"
           type="number"
           step="0.01"
           min="0"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          placeholder="29.99"
-          helperText="Price in USD"
+          placeholder="0.00"
+          helperText="Optional - estimated or actual price"
         />
 
-        <Input
-          label="Image URL (optional)"
-          type="url"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="https://..."
-          helperText="Direct link to product image"
-        />
-
-        <Select
-          label="Status"
-          value={status}
-          onChange={(value) => setStatus(value as ListItemStatus)}
-          options={statusOptions}
-          helperText="Status when adding to new lists"
-        />
-
-        {/* List Selection */}
-        <div className="space-y-3">
-          <label className="block text-xs font-semibold text-warm-800 uppercase tracking-wide">
-            Add to Lists (optional)
+        {/* Gift Image Picker */}
+        <div>
+          <label className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide">
+            Gift Image
           </label>
+          <ImagePicker
+            value={imageUrl || null}
+            onChange={(url) => setImageUrl(url || '')}
+            onError={(error) => {
+              toast({
+                title: 'Image upload failed',
+                description: error,
+                variant: 'error',
+              });
+            }}
+            disabled={isUpdating}
+          />
+          <p className="mt-1.5 text-xs text-warm-600">
+            Optional - upload or link to product image
+          </p>
+        </div>
+
+        {/* People Multi-Select */}
+        <div>
+          <label className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide">
+            For...
+          </label>
+          <PeopleMultiSelect
+            value={personIds}
+            onChange={setPersonIds}
+          />
+          <p className="mt-1.5 text-xs text-warm-600">
+            Optional - who is this gift for
+          </p>
+        </div>
+
+        {/* Source Dropdown */}
+        <div>
+          <label htmlFor="source" className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide">
+            Source
+          </label>
+          <select
+            id="source"
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            disabled={isUpdating}
+            className="w-full px-4 py-3 bg-white text-base text-warm-900 font-normal min-h-[44px] border-2 border-border-medium rounded-medium shadow-subtle focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200 ease-out disabled:bg-warm-100 disabled:text-warm-500 disabled:border-warm-300 disabled:cursor-not-allowed"
+          >
+            <option value="">Select a source (optional)</option>
+            {GIFT_SOURCES.map((src) => (
+              <option key={src} value={src}>
+                {src}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1.5 text-xs text-warm-600">
+            Optional - where to purchase this gift
+          </p>
+        </div>
+
+        {/* Description Textarea */}
+        <Textarea
+          label="Description"
+          placeholder="Describe the gift..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={3}
+          helperText="Optional - detailed description of the gift"
+          disabled={isUpdating}
+        />
+
+        {/* Notes Textarea (internal) */}
+        <Textarea
+          label="Notes (Internal)"
+          placeholder="Private notes about this gift..."
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={2}
+          helperText="Optional - private notes for your reference only"
+          disabled={isUpdating}
+        />
+
+        {/* Priority & Quantity Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Select
+            label="Priority"
+            value={priority}
+            onChange={(value) => setPriority(value as GiftPriority)}
+            options={[
+              { value: 'low', label: 'Low' },
+              { value: 'medium', label: 'Medium' },
+              { value: 'high', label: 'High' },
+            ]}
+            disabled={isUpdating}
+          />
+          <Input
+            label="Quantity"
+            type="number"
+            min={1}
+            value={quantity}
+            onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+            helperText="How many items"
+            disabled={isUpdating}
+          />
+        </div>
+
+        {/* Sale Price */}
+        <Input
+          label="Sale Price"
+          placeholder="0.00"
+          type="number"
+          step="0.01"
+          min="0"
+          value={salePrice}
+          onChange={(e) => setSalePrice(e.target.value)}
+          helperText="Optional - discounted or sale price"
+          disabled={isUpdating}
+        />
+
+        {/* Purchase Date */}
+        <Input
+          label="Purchase Date"
+          type="date"
+          value={purchaseDate}
+          onChange={(e) => setPurchaseDate(e.target.value)}
+          helperText="Optional - when the gift was purchased"
+          disabled={isUpdating}
+        />
+
+        {/* Additional URLs */}
+        <UrlListInput
+          label="Additional URLs"
+          value={additionalUrls}
+          onChange={setAdditionalUrls}
+          helperText="Add more product links or references"
+          disabled={isUpdating}
+        />
+
+        {/* Stores Multi-Select */}
+        <StoreMultiSelect
+          label="Stores"
+          value={storeIds}
+          onChange={setStoreIds}
+          stores={gift.stores}
+          helperText="Select stores where this gift can be purchased"
+        />
+
+        {/* Divider */}
+        <div className="border-t-2 border-border-light my-6" />
+
+        {/* List Management Section */}
+        <div className="space-y-4 pt-2">
+          <h3 className="text-sm font-bold text-warm-900 uppercase tracking-wide">
+            List Management
+          </h3>
+
+          <Select
+            label="Status"
+            value={status}
+            onChange={(value) => setStatus(value as ListItemStatus)}
+            options={statusOptions}
+            helperText="Status when adding to new lists"
+          />
+
+          {/* List Selection */}
+          <div className="space-y-3">
+            <label className="block text-xs font-semibold text-warm-800 uppercase tracking-wide">
+              Add to Lists (optional)
+            </label>
           <p className="text-xs text-warm-600">
             Select lists to add this gift to. To remove from lists, visit the list page.
           </p>
@@ -220,6 +402,7 @@ export function GiftEditModal({
               ))}
             </div>
           )}
+          </div>
         </div>
 
         <div className="flex gap-3 pt-4">
