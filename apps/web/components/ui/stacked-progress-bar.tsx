@@ -43,6 +43,8 @@ export interface StackedProgressBarProps {
   label?: string;
   /** Show amounts in header */
   showAmounts?: boolean;
+  /** Show column headers above amounts */
+  showHeaders?: boolean;
   /** Variant: 'recipient' or 'purchaser' for different color schemes */
   variant?: 'recipient' | 'purchaser';
   /** Height of the bar */
@@ -79,12 +81,14 @@ export interface StackedProgressBarProps {
  *
  * @example
  * ```tsx
+ * // With headers and amounts
  * <StackedProgressBar
  *   total={200}
  *   planned={100}
  *   purchased={75}
  *   label="Gifts to Give"
  *   showAmounts
+ *   showHeaders
  *   variant="recipient"
  *   tooltipItems={gifts.map(g => ({
  *     id: g.id,
@@ -95,6 +99,16 @@ export interface StackedProgressBarProps {
  *   }))}
  *   onItemClick={(id) => openGiftModal(String(id))}
  * />
+ *
+ * // Without headers (original behavior)
+ * <StackedProgressBar
+ *   total={200}
+ *   planned={100}
+ *   purchased={75}
+ *   label="Gifts to Give"
+ *   showAmounts
+ *   variant="recipient"
+ * />
  * ```
  */
 export function StackedProgressBar({
@@ -103,6 +117,7 @@ export function StackedProgressBar({
   purchased,
   label,
   showAmounts = false,
+  showHeaders = false,
   variant = 'recipient',
   size = 'md',
   className,
@@ -143,20 +158,40 @@ export function StackedProgressBar({
 
   const progressBar = (
     <div className="w-full">
-      {/* Header with label and amounts */}
-      {(label || showAmounts) && (
-        <div className="flex items-center justify-between mb-1.5">
-          {label && (
-            <span className="text-xs text-gray-500 font-medium">{label}</span>
-          )}
-          {showAmounts && (
-            <span className="text-sm font-semibold text-gray-900">
-              {formatCurrency(purchased)} / {formatCurrency(planned)}
-              <span className="text-xs text-gray-500 font-normal ml-1">
-                of {formatCurrency(total)}
-              </span>
-            </span>
-          )}
+      {/* Label */}
+      {label && (
+        <div className="mb-1.5">
+          <span className="text-xs text-gray-500 font-medium">{label}</span>
+        </div>
+      )}
+
+      {/* Column headers (optional) */}
+      {showHeaders && showAmounts && (
+        <div className="flex gap-4 mb-1">
+          <span className="flex-1 text-xs font-semibold text-warm-500">
+            Purchased
+          </span>
+          <span className="flex-1 text-xs font-semibold text-warm-500">
+            Planned
+          </span>
+          <span className="flex-[1.2] text-xs font-semibold text-warm-500 text-right">
+            Budget
+          </span>
+        </div>
+      )}
+
+      {/* Amount values */}
+      {showAmounts && (
+        <div className="flex gap-4 mb-2">
+          <span className="flex-1 text-sm font-semibold text-gray-900">
+            {formatCurrency(purchased)}
+          </span>
+          <span className="flex-1 text-sm font-semibold text-gray-900">
+            {formatCurrency(planned)}
+          </span>
+          <span className="flex-[1.2] text-sm font-semibold text-gray-900 text-right">
+            {formatCurrency(total)}
+          </span>
         </div>
       )}
 
