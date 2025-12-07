@@ -63,8 +63,20 @@ export interface SetEntityBudgetRequest {
 export interface PersonBudget {
   person_id: number;
   occasion_id: number | null;
+
+  // Recipient role (gifts TO this person)
   gifts_assigned_count: number;
   gifts_assigned_total: number;  // Decimal serialized as float
+
+  // NEW: Of assigned gifts, how many are purchased
+  gifts_assigned_purchased_count: number;
+  gifts_assigned_purchased_total: number;  // Decimal serialized as float
+
+  // Purchaser role (gifts BY this person - already purchased)
   gifts_purchased_count: number;
   gifts_purchased_total: number; // Decimal serialized as float
+
+  // NEW: Gifts assigned as purchaser but not yet bought
+  gifts_to_purchase_count: number;
+  gifts_to_purchase_total: number;  // Decimal serialized as float
 }

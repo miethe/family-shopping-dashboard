@@ -3,6 +3,10 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { usePersonBudget } from '@/hooks/usePersonBudget';
+import { useGiftsByPerson } from '@/hooks/useGifts';
+import { useEntityModal } from '@/components/modals';
+import { StackedProgressBar, type TooltipItem } from '@/components/ui/stacked-progress-bar';
+import type { Gift } from '@/types';
 
 /**
  * Format currency using USD locale
@@ -24,13 +28,15 @@ export interface PersonBudgetBarProps {
 /**
  * PersonBudgetBar Component
  *
- * Displays two progress bars showing:
- * 1. "Gifts to Give" - gifts assigned TO this person as recipient
- * 2. "Gifts Purchased" - gifts purchased BY this person as purchaser
+ * Displays two stacked progress bars showing:
+ * 1. "Gifts to Receive" - gifts assigned TO this person as recipient
+ * 2. "Gifts to Buy" - gifts assigned BY this person as purchaser
  *
  * Features:
  * - Card variant: Only shows if data exists (compact display)
  * - Modal variant: Always shows (full display with zero states)
+ * - Interactive tooltips showing gift details
+ * - Clickable gifts in tooltips to open gift modal
  * - Mobile-first responsive design
  * - Currency formatting
  * - Loading states
@@ -48,6 +54,8 @@ export function PersonBudgetBar({
   className,
 }: PersonBudgetBarProps) {
   const { data: budget, isLoading } = usePersonBudget(personId, occasionId);
+  const { data: giftsData } = useGiftsByPerson(personId);
+  const { openModal: openGiftModal } = useEntityModal('gift');
 
   // Card variant: hide if loading or no data
   if (variant === 'card') {
@@ -80,73 +88,52 @@ export function PersonBudgetBar({
     return null;
   }
 
-  // Calculate max value for progress bar scaling
-  const maxValue = Math.max(
-    budget.gifts_assigned_total,
-    budget.gifts_purchased_total,
-    500 // Minimum cap for reasonable progress display
-  );
+  const gifts = giftsData?.items || [];
 
-  const assignedPercent =
-    maxValue > 0 ? (budget.gifts_assigned_total / maxValue) * 100 : 0;
-  const purchasedPercent =
-    maxValue > 0 ? (budget.gifts_purchased_total / maxValue) * 100 : 0;
+  // For now, show all gifts associated with this person in both tooltips
+  // TODO: Once backend provides gift_people relationship data with is_recipient/is_purchaser flags,
+  // filter gifts properly by role
+  const allGiftTooltipItems: TooltipItem[] = gifts.map((gift) => ({
+    id: gift.id,
+    name: gift.name,
+    price: gift.price || 0,
+    status: gift.purchase_date ? 'purchased' : 'planned',
+    imageUrl: gift.image_url || undefined,
+  }));
+
+  // Calculate budget estimates
+  // Recipient: Use assigned total * 1.5 as budget estimate (or 500 minimum)
+  const recipientBudgetTotal = Math.max(budget.gifts_assigned_total * 1.5, 500);
+
+  // Purchaser: Use (to_purchase + purchased) * 1.2 as budget estimate
+  const purchaserPlannedTotal = budget.gifts_to_purchase_total + budget.gifts_purchased_total;
+  const purchaserBudgetTotal = Math.max(purchaserPlannedTotal * 1.2, 100);
 
   return (
-    <div className={cn('space-y-3', className)}>
-      {/* Gifts to Give (Assigned TO person as recipient) */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500 font-medium">
-            Gifts to Give
-          </span>
-          <span className="text-sm font-semibold text-gray-900">
-            {formatCurrency(budget.gifts_assigned_total)}
-            <span className="text-xs text-gray-500 font-normal ml-1">
-              ({budget.gifts_assigned_count}{' '}
-              {budget.gifts_assigned_count === 1 ? 'gift' : 'gifts'})
-            </span>
-          </span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-          <div
-            className="bg-amber-500 h-2 rounded-full transition-all duration-300 ease-out"
-            style={{ width: `${assignedPercent}%` }}
-            role="progressbar"
-            aria-valuenow={assignedPercent}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`Gifts to give: ${formatCurrency(budget.gifts_assigned_total)}, ${budget.gifts_assigned_count} gifts`}
-          />
-        </div>
-      </div>
+    <div className={cn('space-y-4', className)}>
+      {/* Gifts to Receive (Recipient role) */}
+      <StackedProgressBar
+        total={recipientBudgetTotal}
+        planned={budget.gifts_assigned_total}
+        purchased={budget.gifts_assigned_purchased_total}
+        label="Gifts to Receive"
+        showAmounts
+        variant="recipient"
+        tooltipItems={allGiftTooltipItems}
+        onItemClick={(id) => openGiftModal(String(id))}
+      />
 
-      {/* Gifts Purchased (Purchased BY person as purchaser) */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500 font-medium">
-            Gifts Purchased
-          </span>
-          <span className="text-sm font-semibold text-gray-900">
-            {formatCurrency(budget.gifts_purchased_total)}
-            <span className="text-xs text-gray-500 font-normal ml-1">
-              ({budget.gifts_purchased_count}{' '}
-              {budget.gifts_purchased_count === 1 ? 'gift' : 'gifts'})
-            </span>
-          </span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-          <div
-            className="bg-emerald-500 h-2 rounded-full transition-all duration-300 ease-out"
-            style={{ width: `${purchasedPercent}%` }}
-            role="progressbar"
-            aria-valuenow={purchasedPercent}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`Gifts purchased: ${formatCurrency(budget.gifts_purchased_total)}, ${budget.gifts_purchased_count} gifts`}
-          />
-        </div>
-      </div>
+      {/* Gifts to Buy (Purchaser role) */}
+      <StackedProgressBar
+        total={purchaserBudgetTotal}
+        planned={purchaserPlannedTotal}
+        purchased={budget.gifts_purchased_total}
+        label="Gifts to Buy"
+        showAmounts
+        variant="purchaser"
+        tooltipItems={allGiftTooltipItems}
+        onItemClick={(id) => openGiftModal(String(id))}
+      />
     </div>
   );
 }
