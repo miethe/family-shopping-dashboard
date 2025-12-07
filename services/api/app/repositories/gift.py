@@ -505,26 +505,46 @@ class GiftRepository(BaseRepository[Gift]):
 
         await self.session.commit()
 
-    async def set_stores(self, gift_id: int, store_ids: list[int]) -> None:
+    async def set_stores(self, gift_id: int, store_ids: list[int]) -> Gift | None:
         """
         Replace all linked stores for a gift.
+
+        Args:
+            gift_id: Gift ID to update stores for
+            store_ids: New list of store IDs to link
+
+        Returns:
+            Updated Gift with stores relationship loaded, or None if not found
+
+        Note:
+            Re-fetches gift with eager-loaded stores to avoid lazy loading in async context.
         """
         gift = await self.get(gift_id)
         if gift is None:
-            return
+            return None
 
         if not store_ids:
             gift.stores = []
             await self.session.commit()
-            await self.session.refresh(gift)
-            return
+            # Re-fetch with explicit eager loading to avoid lazy load in async context
+            stmt = select(Gift).where(Gift.id == gift_id).options(
+                selectinload(Gift.stores)
+            )
+            result = await self.session.execute(stmt)
+            return result.scalar_one_or_none()
 
         stmt = select(Store).where(Store.id.in_(store_ids))
         result = await self.session.execute(stmt)
         stores = list(result.scalars().all())
         gift.stores = stores
         await self.session.commit()
-        await self.session.refresh(gift)
+
+        # Re-fetch with explicit eager loading to avoid lazy load in async context
+        stmt = select(Gift).where(Gift.id == gift_id).options(
+            selectinload(Gift.stores)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def get_by_linked_person(self, person_id: int) -> list[Gift]:
         """
@@ -812,8 +832,13 @@ class GiftRepository(BaseRepository[Gift]):
         # Update purchaser_id field
         gift.purchaser_id = purchaser_id
 
-        # Commit and refresh
+        # Commit changes
         await self.session.commit()
-        await self.session.refresh(gift, ["people", "stores"])
 
-        return gift
+        # Re-fetch with explicit eager loading to avoid lazy load in async context
+        stmt = select(Gift).where(Gift.id == gift_id).options(
+            selectinload(Gift.people),
+            selectinload(Gift.stores)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
