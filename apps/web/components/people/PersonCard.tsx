@@ -3,12 +3,18 @@
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { PersonDetailModal, useEntityModal, ListDetailModal } from '@/components/modals';
+import { PersonDetailModal, useEntityModal, ListDetailModal, GiftDetailModal } from '@/components/modals';
 import { useQuery } from '@tanstack/react-query';
 import { listApi } from '@/lib/api/endpoints';
 import { getAge, formatDateCustom, getNextBirthday } from '@/lib/date-utils';
+import { PersonBudgetBar } from './PersonBudgetBar';
+import { useGiftsByPerson } from '@/hooks/useGifts';
+import { MiniCardTooltip } from '@/components/common/MiniCardTooltip';
+import { GiftIcon } from '@/components/layout/icons';
+import { formatPrice } from '@/lib/utils';
 import Link from 'next/link';
-import type { Person } from '@/types';
+import Image from 'next/image';
+import type { Person, Gift } from '@/types';
 
 export interface PersonCardProps {
   person: Person;
@@ -64,6 +70,7 @@ export function PersonCard({ person }: PersonCardProps) {
 
   const { open, entityId, openModal, closeModal } = useEntityModal('person');
   const { open: listModalOpen, entityId: listModalId, openModal: openListModal, closeModal: closeListModal } = useEntityModal('list');
+  const { open: giftModalOpen, entityId: giftModalId, openModal: openGiftModal, closeModal: closeGiftModal } = useEntityModal('gift');
 
   // Fetch lists for this person
   const { data: listsData, isLoading: listsLoading } = useQuery({
@@ -73,10 +80,10 @@ export function PersonCard({ person }: PersonCardProps) {
 
   const lists = listsData?.items || [];
 
-  // Calculate gift counts from lists
-  const totalGifts = lists.reduce((sum, list) => sum + (list.item_count || 0), 0);
-  const giftsNeeded = lists.length > 0 ? lists.length * 5 : 0; // Placeholder: assume 5 gifts needed per list
-  const hasNoGifts = totalGifts === 0 && lists.length > 0;
+  // Fetch gifts for this person
+  const { data: giftsData, isLoading: giftsLoading } = useGiftsByPerson(person.id);
+  const gifts = giftsData?.items || [];
+  const totalGifts = gifts.length;
 
   return (
     <>
@@ -128,24 +135,57 @@ export function PersonCard({ person }: PersonCardProps) {
                 </div>
               )}
 
-              {/* Gift Count */}
-              {lists.length > 0 && (
-                <Link
-                  href={`/gifts?recipient=${person.id}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className={`inline-flex items-center gap-1.5 text-sm font-medium hover:underline ${
-                    hasNoGifts ? 'text-orange-600' : 'text-gray-700'
-                  }`}
-                >
-                  <span aria-label="Gifts">🎁</span>
-                  <span className="truncate">
-                    {totalGifts}/{giftsNeeded} gifts
-                  </span>
-                  {hasNoGifts && (
-                    <span className="text-xs whitespace-nowrap">(Add gifts!)</span>
+              {/* Gift Count with Tooltip */}
+              {!giftsLoading && totalGifts > 0 && (
+                <MiniCardTooltip
+                  items={gifts}
+                  maxVisible={5}
+                  enabled={totalGifts > 0}
+                  trigger={
+                    <div className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 cursor-help">
+                      <span aria-label="Gifts">🎁</span>
+                      <span className="truncate">
+                        {totalGifts} {totalGifts === 1 ? 'gift' : 'gifts'}
+                      </span>
+                    </div>
+                  }
+                  renderItem={(gift: Gift) => (
+                    <button
+                      key={gift.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openGiftModal(String(gift.id));
+                      }}
+                      className="flex gap-2 p-2 hover:bg-warm-50 rounded-medium w-full text-left transition-colors min-h-[44px]"
+                    >
+                      {/* Image thumbnail */}
+                      <div className="w-12 h-12 rounded bg-warm-100 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                        {gift.image_url ? (
+                          <Image
+                            src={gift.image_url}
+                            alt={gift.name}
+                            width={48}
+                            height={48}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <GiftIcon className="w-6 h-6 text-warm-300" />
+                        )}
+                      </div>
+                      {/* Gift info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-warm-900 truncate">{gift.name}</p>
+                        {gift.price !== null && gift.price !== undefined && (
+                          <p className="text-xs text-primary-600">${formatPrice(gift.price)}</p>
+                        )}
+                      </div>
+                    </button>
                   )}
-                </Link>
+                />
               )}
+
+              {/* Budget Bar (card variant - only shows if data exists) */}
+              <PersonBudgetBar personId={person.id} variant="card" />
 
               {/* Lists Section */}
               {!listsLoading && lists.length > 0 && (
@@ -240,6 +280,14 @@ export function PersonCard({ person }: PersonCardProps) {
         open={listModalOpen}
         onOpenChange={(isOpen) => {
           if (!isOpen) closeListModal();
+        }}
+      />
+
+      <GiftDetailModal
+        giftId={giftModalId}
+        open={giftModalOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) closeGiftModal();
         }}
       />
     </>
