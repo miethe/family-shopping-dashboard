@@ -57,11 +57,18 @@ class BaseRepository(Generic[T]):
             ```python
             gift = await repo.create({"name": "LEGO", "price": 49.99})
             ```
+
+        Note:
+            Returns the object without refreshing relationships to avoid lazy loading
+            in async context. If you need fresh data with relationships, call get()
+            or a specialized get method (e.g., get_with_relations()) after create.
         """
         db_obj = self.model(**obj_in)
         self.session.add(db_obj)
         await self.session.commit()
-        await self.session.refresh(db_obj)
+        # Don't refresh - avoids lazy loading in async context (greenlet error)
+        # The object already has ID and timestamps from the commit
+        # Caller should re-fetch with proper eager loading if needed
         return db_obj
 
     async def get(self, id: int) -> T | None:
@@ -182,6 +189,9 @@ class BaseRepository(Generic[T]):
 
         Note:
             Only updates fields provided in obj_in. Does not modify other fields.
+            Returns the object without refreshing relationships to avoid lazy loading
+            in async context. If you need fresh data with relationships, call get()
+            or a specialized get method (e.g., get_with_relations()) after update.
         """
         # Get existing record
         db_obj = await self.get(id)
@@ -194,7 +204,8 @@ class BaseRepository(Generic[T]):
 
         # Commit changes
         await self.session.commit()
-        await self.session.refresh(db_obj)
+        # Don't refresh - avoids lazy loading in async context (greenlet error)
+        # Caller should re-fetch with proper eager loading if needed
         return db_obj
 
     async def delete(self, id: int) -> bool:
