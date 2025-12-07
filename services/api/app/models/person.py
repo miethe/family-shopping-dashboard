@@ -4,8 +4,6 @@ from datetime import date
 from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import JSON, Date, ForeignKey, Integer, String, Text, UniqueConstraint
-from sqlalchemy import DateTime
-from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship as sa_relationship
 
@@ -135,6 +133,14 @@ class Person(BaseModel):
         "Group",
         secondary="person_groups",
         back_populates="members",
+        lazy="select",
+    )
+
+    # One-to-many relationship to Gift (gifts this person is purchasing)
+    gifts_purchasing: Mapped[list["Gift"]] = sa_relationship(
+        "Gift",
+        foreign_keys="Gift.purchaser_id",
+        back_populates="purchaser",
         lazy="select",
     )
 

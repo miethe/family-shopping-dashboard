@@ -1,12 +1,30 @@
 """Person repository for database operations on Person entities."""
 
-from sqlalchemy import delete, select
+from dataclasses import dataclass
+from decimal import Decimal
+
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.models.gift import Gift
+from app.models.gift_person import GiftPerson, GiftPersonRole
 from app.models.group import PersonGroup
+from app.models.list import List
+from app.models.list_item import ListItem
 from app.models.person import Person
 from app.repositories.base import BaseRepository
+
+
+@dataclass
+class PersonBudgetResult:
+    """Budget calculation result for a person."""
+    person_id: int
+    occasion_id: int | None
+    gifts_assigned_count: int
+    gifts_assigned_total: Decimal
+    gifts_purchased_count: int
+    gifts_purchased_total: Decimal
 
 
 class PersonRepository(BaseRepository[Person]):
@@ -267,3 +285,98 @@ class PersonRepository(BaseRepository[Person]):
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_gift_budget(
+        self,
+        person_id: int,
+        occasion_id: int | None = None,
+    ) -> PersonBudgetResult:
+        """
+        Calculate gift budget totals for a person.
+
+        Calculates the total value and count of gifts where this person is:
+        - A recipient (gifts assigned TO them via gift_people)
+        - A purchaser (gifts they are buying for others via purchaser_id)
+
+        For "assigned" we count gifts where the person is a recipient.
+        For "purchased" we count gifts where the person is the purchaser AND
+        the gift has a purchase_date set.
+
+        Args:
+            person_id: ID of the person to calculate budgets for
+            occasion_id: Optional occasion ID to filter by (via list -> occasion)
+
+        Returns:
+            PersonBudgetResult with counts and totals
+
+        Example:
+            ```python
+            budget = await repo.get_gift_budget(person_id=5)
+            print(f"Assigned: {budget.gifts_assigned_count} gifts")
+            print(f"Purchased: {budget.gifts_purchased_count} gifts")
+
+            # Filter by occasion
+            christmas_budget = await repo.get_gift_budget(person_id=5, occasion_id=1)
+            ```
+        """
+        # Query 1: Gifts assigned to this person as recipient
+        # Join through gift_people to get gifts where person is recipient
+        assigned_stmt = (
+            select(
+                func.count(Gift.id).label("count"),
+                func.coalesce(func.sum(Gift.price), Decimal("0")).label("total"),
+            )
+            .select_from(Gift)
+            .join(GiftPerson, Gift.id == GiftPerson.gift_id)
+            .where(
+                GiftPerson.person_id == person_id,
+                GiftPerson.role == GiftPersonRole.RECIPIENT,
+            )
+        )
+
+        # If occasion filter, join through list_items -> lists
+        if occasion_id is not None:
+            assigned_stmt = (
+                assigned_stmt
+                .join(ListItem, Gift.id == ListItem.gift_id)
+                .join(List, ListItem.list_id == List.id)
+                .where(List.occasion_id == occasion_id)
+            )
+
+        assigned_result = await self.session.execute(assigned_stmt)
+        assigned_row = assigned_result.one()
+
+        # Query 2: Gifts purchased by this person
+        # Use the purchaser_id FK on Gift where purchase_date is set
+        purchased_stmt = (
+            select(
+                func.count(Gift.id).label("count"),
+                func.coalesce(func.sum(Gift.price), Decimal("0")).label("total"),
+            )
+            .select_from(Gift)
+            .where(
+                Gift.purchaser_id == person_id,
+                Gift.purchase_date.isnot(None),  # Only count actually purchased
+            )
+        )
+
+        # If occasion filter, join through list_items -> lists
+        if occasion_id is not None:
+            purchased_stmt = (
+                purchased_stmt
+                .join(ListItem, Gift.id == ListItem.gift_id)
+                .join(List, ListItem.list_id == List.id)
+                .where(List.occasion_id == occasion_id)
+            )
+
+        purchased_result = await self.session.execute(purchased_stmt)
+        purchased_row = purchased_result.one()
+
+        return PersonBudgetResult(
+            person_id=person_id,
+            occasion_id=occasion_id,
+            gifts_assigned_count=int(assigned_row[0] or 0),
+            gifts_assigned_total=Decimal(assigned_row[1] or 0),
+            gifts_purchased_count=int(purchased_row[0] or 0),
+            gifts_purchased_total=Decimal(purchased_row[1] or 0),
+        )

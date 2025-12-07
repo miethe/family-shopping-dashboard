@@ -5,8 +5,8 @@ from datetime import date
 from decimal import Decimal
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Date, Enum as SQLEnum, Index, Integer, JSON, Numeric, String, Text
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy import JSON, Date, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
@@ -129,6 +129,13 @@ class Gift(BaseModel):
         server_default="{}",
     )
 
+    # Foreign key to Person (gift purchaser)
+    purchaser_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("persons.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,  # Index for filtering by purchaser
+    )
+
     # Many-to-many relationship to Tag
     tags: Mapped[list["Tag"]] = relationship(
         "Tag",
@@ -150,6 +157,14 @@ class Gift(BaseModel):
         "Person",
         secondary="gift_people",
         back_populates="gifts",
+        lazy="select",
+    )
+
+    # Many-to-one relationship to Person (gift purchaser)
+    purchaser: Mapped[Optional["Person"]] = relationship(
+        "Person",
+        foreign_keys=[purchaser_id],
+        back_populates="gifts_purchasing",
         lazy="select",
     )
 

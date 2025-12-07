@@ -1,7 +1,9 @@
 """Gift-Person association table for many-to-many relationship."""
 
+import enum
 from typing import TYPE_CHECKING
 
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -10,6 +12,14 @@ from app.models.base import BaseModel
 if TYPE_CHECKING:
     from app.models.gift import Gift
     from app.models.person import Person
+
+
+class GiftPersonRole(str, enum.Enum):
+    """Role types for gift-person relationships."""
+
+    RECIPIENT = "recipient"
+    PURCHASER = "purchaser"
+    CONTRIBUTOR = "contributor"  # For shared purchases
 
 
 class GiftPerson(BaseModel):
@@ -40,6 +50,17 @@ class GiftPerson(BaseModel):
         nullable=False,
     )
 
+    role: Mapped[GiftPersonRole] = mapped_column(
+        SQLEnum(
+            GiftPersonRole,
+            name="gift_person_role",
+            native_enum=True,
+            values_callable=lambda e: [m.value for m in e],
+        ),
+        default=GiftPersonRole.RECIPIENT,
+        nullable=False,
+    )
+
     # Relationships to parent entities
     gift: Mapped["Gift"] = relationship(
         "Gift",
@@ -54,7 +75,7 @@ class GiftPerson(BaseModel):
     )
 
     __table_args__ = (
-        UniqueConstraint("gift_id", "person_id", name="uq_gift_person"),
+        UniqueConstraint("gift_id", "person_id", "role", name="uq_gift_person_role"),
     )
 
     def __repr__(self) -> str:

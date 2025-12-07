@@ -4,7 +4,7 @@ from app.models.base import BaseModel, TimestampMixin
 from app.models.comment import Comment, CommentParentType
 from app.models.entity_budget import EntityBudget
 from app.models.gift import Gift, GiftPriority
-from app.models.gift_person import GiftPerson
+from app.models.gift_person import GiftPerson, GiftPersonRole
 from app.models.group import Group, PersonGroup
 from app.models.list import List, ListType, ListVisibility
 from app.models.list_item import ListItem, ListItemStatus
@@ -33,6 +33,7 @@ __all__ = [
     "EntityBudget",
     "PersonOccasion",
     "GiftPerson",
+    "GiftPersonRole",
     "PersonGroup",
     # Association tables
     "gift_tags",
