@@ -1,6 +1,6 @@
 """Person repository for database operations on Person entities."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 
 from sqlalchemy import delete, func, select
@@ -25,6 +25,11 @@ class PersonBudgetResult:
     gifts_assigned_total: Decimal
     gifts_purchased_count: int
     gifts_purchased_total: Decimal
+    # New fields for stacked progress bars
+    gifts_assigned_purchased_count: int = 0
+    gifts_assigned_purchased_total: Decimal = field(default_factory=lambda: Decimal("0"))
+    gifts_to_purchase_count: int = 0
+    gifts_to_purchase_total: Decimal = field(default_factory=lambda: Decimal("0"))
 
 
 class PersonRepository(BaseRepository[Person]):
@@ -372,6 +377,60 @@ class PersonRepository(BaseRepository[Person]):
         purchased_result = await self.session.execute(purchased_stmt)
         purchased_row = purchased_result.one()
 
+        # Query 3: Assigned gifts that have been purchased
+        # Join through gift_people to get gifts where person is recipient AND purchased
+        assigned_purchased_stmt = (
+            select(
+                func.count(Gift.id).label("count"),
+                func.coalesce(func.sum(Gift.price), Decimal("0")).label("total"),
+            )
+            .select_from(Gift)
+            .join(GiftPerson, Gift.id == GiftPerson.gift_id)
+            .where(
+                GiftPerson.person_id == person_id,
+                GiftPerson.role == GiftPersonRole.RECIPIENT,
+                Gift.purchase_date.isnot(None),  # Only count purchased gifts
+            )
+        )
+
+        # If occasion filter, join through list_items -> lists
+        if occasion_id is not None:
+            assigned_purchased_stmt = (
+                assigned_purchased_stmt
+                .join(ListItem, Gift.id == ListItem.gift_id)
+                .join(List, ListItem.list_id == List.id)
+                .where(List.occasion_id == occasion_id)
+            )
+
+        assigned_purchased_result = await self.session.execute(assigned_purchased_stmt)
+        assigned_purchased_row = assigned_purchased_result.one()
+
+        # Query 4: Gifts to purchase (assigned as purchaser but not yet bought)
+        # Use the purchaser_id FK on Gift where purchase_date is NOT set
+        to_purchase_stmt = (
+            select(
+                func.count(Gift.id).label("count"),
+                func.coalesce(func.sum(Gift.price), Decimal("0")).label("total"),
+            )
+            .select_from(Gift)
+            .where(
+                Gift.purchaser_id == person_id,
+                Gift.purchase_date.is_(None),  # Only count NOT yet purchased
+            )
+        )
+
+        # If occasion filter, join through list_items -> lists
+        if occasion_id is not None:
+            to_purchase_stmt = (
+                to_purchase_stmt
+                .join(ListItem, Gift.id == ListItem.gift_id)
+                .join(List, ListItem.list_id == List.id)
+                .where(List.occasion_id == occasion_id)
+            )
+
+        to_purchase_result = await self.session.execute(to_purchase_stmt)
+        to_purchase_row = to_purchase_result.one()
+
         return PersonBudgetResult(
             person_id=person_id,
             occasion_id=occasion_id,
@@ -379,4 +438,8 @@ class PersonRepository(BaseRepository[Person]):
             gifts_assigned_total=Decimal(assigned_row[1] or 0),
             gifts_purchased_count=int(purchased_row[0] or 0),
             gifts_purchased_total=Decimal(purchased_row[1] or 0),
+            gifts_assigned_purchased_count=int(assigned_purchased_row[0] or 0),
+            gifts_assigned_purchased_total=Decimal(assigned_purchased_row[1] or 0),
+            gifts_to_purchase_count=int(to_purchase_row[0] or 0),
+            gifts_to_purchase_total=Decimal(to_purchase_row[1] or 0),
         )

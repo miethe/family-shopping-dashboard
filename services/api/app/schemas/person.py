@@ -827,12 +827,24 @@ class PersonBudget(BaseModel):
 
     person_id: int
     occasion_id: int | None = None
+
+    # EXISTING - Recipient role (gifts TO this person)
     gifts_assigned_count: int
     gifts_assigned_total: Decimal
+
+    # NEW - Of assigned gifts, how many are purchased
+    gifts_assigned_purchased_count: int = 0
+    gifts_assigned_purchased_total: Decimal = Decimal("0")
+
+    # EXISTING - Purchaser role (gifts BY this person)
     gifts_purchased_count: int
     gifts_purchased_total: Decimal
 
-    @field_serializer("gifts_assigned_total", "gifts_purchased_total")
+    # NEW - Gifts assigned to this person as purchaser (not yet bought)
+    gifts_to_purchase_count: int = 0
+    gifts_to_purchase_total: Decimal = Decimal("0")
+
+    @field_serializer("gifts_assigned_total", "gifts_purchased_total", "gifts_assigned_purchased_total", "gifts_to_purchase_total")
     def serialize_decimal(self, value: Decimal) -> float:
         """Serialize Decimal fields to float for JSON."""
         return float(value)
