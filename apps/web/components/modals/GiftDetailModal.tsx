@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StatusSelector } from "@/components/ui/status-selector";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import {
   Dialog,
   DialogContent,
@@ -15,22 +16,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ExternalLink, Gift as GiftIcon, DollarSign, Calendar, User, Tag, Edit, Trash2, Heart, Lightbulb, CheckSquare, ShoppingBag, Plus, CalendarCheck, Store, Pencil } from "@/components/ui/icons";
+import { ExternalLink, Gift as GiftIcon, DollarSign, Calendar, User, Tag, Edit, Trash2, Heart, Lightbulb, CheckSquare, ShoppingBag, Plus, CalendarCheck, Store, Pencil, X, Package, ChevronRight } from "@/components/ui/icons";
 import { formatDate } from "@/lib/date-utils";
 import { formatPrice } from "@/lib/utils";
 import { giftApi } from "@/lib/api/endpoints";
-import { useDeleteGift, useUpdateGift } from "@/hooks/useGifts";
+import { useDeleteGift, useUpdateGift, useAttachPeopleToGift, useDetachPersonFromGift, useMarkGiftPurchased } from "@/hooks/useGifts";
 import { useListsForGift } from "@/hooks/useLists";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { Gift, GiftPriority, Person } from "@/types";
 import type { GiftStatus } from "@/components/ui/status-pill";
+import { StatusPill } from "@/components/ui/status-pill";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ListDetailModal } from "./ListDetailModal";
 import { LinkGiftToListsModal } from "../gifts/LinkGiftToListsModal";
 import { PeopleMultiSelect } from "@/components/common/PeopleMultiSelect";
-import { Avatar, AvatarFallback, getInitials } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage, getInitials } from "@/components/ui/avatar";
 import { usePersons } from "@/hooks/usePersons";
 import { CommentsTab } from "@/components/comments";
+import { GiftTitleLink } from "@/components/common/GiftTitleLink";
+import { PersonDetailModal } from "./PersonDetailModal";
+import { Select } from "@/components/ui/select";
+import { PurchaserAssignDialog } from "./PurchaserAssignDialog";
 
 interface GiftDetailModalProps {
   giftId: string | null;
@@ -38,7 +45,8 @@ interface GiftDetailModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Import AddListModal if not already imported
+// Purchasing statuses that trigger the purchaser assignment dialog
+const PURCHASING_STATUSES: GiftStatus[] = ['buying', 'ordered', 'purchased'];
 
 export function GiftDetailModal({
   giftId,
@@ -48,12 +56,19 @@ export function GiftDetailModal({
   const [activeTab, setActiveTab] = React.useState("overview");
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
+  const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [showLinkListsModal, setShowLinkListsModal] = React.useState(false);
   const [isEditingPeople, setIsEditingPeople] = React.useState(false);
   const [editingPersonIds, setEditingPersonIds] = React.useState<number[]>([]);
+  const [showMarkPurchasedDialog, setShowMarkPurchasedDialog] = React.useState(false);
+  const [quantityPurchased, setQuantityPurchased] = React.useState<string>("1");
+
+  // Purchaser assignment dialog state
+  const [showPurchaserDialog, setShowPurchaserDialog] = React.useState(false);
+  const [pendingStatus, setPendingStatus] = React.useState<GiftStatus | null>(null);
 
   const { data: gift, isLoading } = useQuery<Gift>({
-    queryKey: ["gifts", giftId],
+    queryKey: ["gifts", giftId ? Number(giftId) : null],
     queryFn: () => giftApi.get(Number(giftId)),
     enabled: !!giftId && open,
   });
@@ -67,17 +82,61 @@ export function GiftDetailModal({
 
   const deleteGift = useDeleteGift();
   const updateGiftMutation = useUpdateGift(giftId ? Number(giftId) : 0);
+  const attachPeopleMutation = useAttachPeopleToGift(giftId ? Number(giftId) : 0);
+  const detachPersonMutation = useDetachPersonFromGift(giftId ? Number(giftId) : 0);
+  const markPurchasedMutation = useMarkGiftPurchased(giftId ? Number(giftId) : 0);
+  const { confirm: confirmUnlink, dialog: unlinkDialog } = useConfirmDialog();
 
   const handleStatusChange = (newStatus: GiftStatus) => {
     if (!giftId) return;
 
-    // Optimistically update the status
-    updateGiftMutation.mutate({
-      extra_data: {
-        ...gift?.extra_data,
-        status: newStatus,
+    const currentStatus = gift?.extra_data?.status;
+    const wasPurchasingStatus = currentStatus && PURCHASING_STATUSES.includes(currentStatus as GiftStatus);
+    const isPurchasingStatus = PURCHASING_STATUSES.includes(newStatus);
+
+    // Show purchaser dialog if:
+    // 1. Moving to a purchasing status AND
+    // 2. Not already in a purchasing status AND
+    // 3. No purchaser assigned
+    if (isPurchasingStatus && !wasPurchasingStatus && !gift?.extra_data?.purchaser_id) {
+      setPendingStatus(newStatus);
+      setShowPurchaserDialog(true);
+    } else {
+      // Directly update status without purchaser dialog
+      updateGiftMutation.mutate({
+        extra_data: {
+          ...gift?.extra_data,
+          status: newStatus,
+        },
+      });
+    }
+  };
+
+  const handlePurchaserAssign = (purchaserId: number | null) => {
+    if (!giftId || !pendingStatus) return;
+
+    // Update both status and purchaser_id
+    updateGiftMutation.mutate(
+      {
+        extra_data: {
+          ...gift?.extra_data,
+          status: pendingStatus,
+          purchaser_id: purchaserId,
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          // Close dialog and reset state
+          setShowPurchaserDialog(false);
+          setPendingStatus(null);
+        },
+        onError: () => {
+          // On error, just close the dialog
+          setShowPurchaserDialog(false);
+          setPendingStatus(null);
+        },
+      }
+    );
   };
 
   const handleDelete = async () => {
@@ -105,12 +164,44 @@ export function GiftDetailModal({
     if (!giftId) return;
 
     try {
-      await updateGiftMutation.mutateAsync({
-        person_ids: editingPersonIds,
-      });
+      // Use the dedicated attach people endpoint
+      await attachPeopleMutation.mutateAsync(editingPersonIds);
       setIsEditingPeople(false);
     } catch (error) {
       console.error("Failed to update linked people:", error);
+    }
+  };
+
+  const handleUnlinkPerson = async (person: Person) => {
+    if (!giftId) return;
+
+    const confirmed = await confirmUnlink({
+      title: "Unlink Person",
+      description: `Are you sure you want to unlink ${person.display_name} from this gift?`,
+      confirmLabel: "Unlink",
+      cancelLabel: "Cancel",
+      variant: "destructive",
+    });
+
+    if (confirmed) {
+      try {
+        await detachPersonMutation.mutateAsync(person.id);
+      } catch (error) {
+        console.error("Failed to unlink person:", error);
+      }
+    }
+  };
+
+  const handleMarkPurchased = async () => {
+    if (!giftId) return;
+
+    try {
+      await markPurchasedMutation.mutateAsync({
+        quantity_purchased: Number(quantityPurchased),
+      });
+      setShowMarkPurchasedDialog(false);
+    } catch (error) {
+      console.error("Failed to mark gift as purchased:", error);
     }
   };
 
@@ -149,6 +240,10 @@ export function GiftDetailModal({
       setActiveTab("overview");
       setIsEditingPeople(false);
       setEditingPersonIds([]);
+      setShowMarkPurchasedDialog(false);
+      setQuantityPurchased("1");
+      setShowPurchaserDialog(false);
+      setPendingStatus(null);
     }
   }, [open]);
 
@@ -241,13 +336,58 @@ export function GiftDetailModal({
                   )}
                 >
                   {gift.image_url ? (
-                    <Image
-                      src={gift.image_url}
-                      alt={gift.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
+                    <>
+                      <Image
+                        src={gift.image_url}
+                        alt={gift.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                      {/* Price & Status Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3 rounded-b-2xl">
+                        <div className="flex flex-col gap-2">
+                          {/* Price Row */}
+                          {(hasPrice || hasSalePrice) && (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                {hasSalePrice && (
+                                  <span className="text-white font-bold text-lg">
+                                    {salePriceDisplay}
+                                  </span>
+                                )}
+                                {hasPrice && hasSalePrice && (
+                                  <span className="text-white/70 line-through text-sm">
+                                    {priceDisplay}
+                                  </span>
+                                )}
+                                {hasPrice && !hasSalePrice && (
+                                  <span className="text-white font-bold text-lg">
+                                    {priceDisplay}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          {/* Quantity & Status Row */}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              {gift.quantity && (
+                                <span className="text-white text-sm font-medium">
+                                  Qty: {gift.quantity}
+                                </span>
+                              )}
+                            </div>
+                            {giftStatus && (
+                              <StatusPill
+                                status={giftStatus as GiftStatus}
+                                size="sm"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <div className="flex flex-col items-center text-purple-300">
                       <GiftIcon className="h-24 w-24 mb-2" />
@@ -259,11 +399,44 @@ export function GiftDetailModal({
                 {/* Info */}
                 <div className="space-y-4">
                   <h2 className="text-2xl font-bold text-warm-900 leading-tight">
-                    {gift.name}
+                    <GiftTitleLink name={gift.name} url={gift.url} showExternalIcon />
                   </h2>
 
+                  {/* Linked People - Inline Display */}
+                  {linkedPeople && linkedPeople.length > 0 && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-warm-600">For:</span>
+                      {linkedPeople.map((person, index) => (
+                        <React.Fragment key={person.id}>
+                          <button
+                            onClick={() => setSelectedPersonId(String(person.id))}
+                            className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity"
+                          >
+                            <Avatar size="sm">
+                              {person.photo_url && (
+                                <AvatarImage src={person.photo_url} alt={person.display_name} />
+                              )}
+                              <AvatarFallback className="text-xs">
+                                {getInitials(person.display_name)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="font-semibold text-warm-900 hover:underline">
+                              {person.display_name}
+                            </span>
+                            {person.relationship && (
+                              <span className="text-warm-600">({person.relationship})</span>
+                            )}
+                          </button>
+                          {index < linkedPeople.length - 1 && (
+                            <span className="text-warm-400">,</span>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Priority & Quantity */}
-                  {(gift.priority || gift.quantity > 1) && (
+                  {(gift.priority || gift.quantity) && (
                     <div className="flex items-center gap-4">
                       {gift.priority && (
                         <div className="flex items-center gap-2">
@@ -273,7 +446,7 @@ export function GiftDetailModal({
                           </Badge>
                         </div>
                       )}
-                      {gift.quantity > 1 && (
+                      {gift.quantity && (
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-warm-600">Qty:</span>
                           <span className="font-medium">{gift.quantity}</span>
@@ -354,6 +527,25 @@ export function GiftDetailModal({
                     </div>
                   ) : null}
 
+                  {/* Mark as Purchased Button */}
+                  {!gift.purchase_date && giftStatus !== 'purchased' && (
+                    <div>
+                      <Button
+                        variant="outline"
+                        size="md"
+                        onClick={() => {
+                          setQuantityPurchased(String(gift.quantity || 1));
+                          setShowMarkPurchasedDialog(true);
+                        }}
+                        disabled={markPurchasedMutation.isPending}
+                        className="w-full"
+                      >
+                        <Package className="h-4 w-4 mr-2" />
+                        Mark as Purchased
+                      </Button>
+                    </div>
+                  )}
+
                   {/* Source */}
                   {gift.source && (
                     <div className="flex items-center gap-2">
@@ -410,23 +602,28 @@ export function GiftDetailModal({
 
               {/* Additional URLs */}
               {gift.additional_urls && gift.additional_urls.length > 0 && (
-                <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-warm-900">Related Links</h3>
-                  <div className="space-y-1.5">
-                    {gift.additional_urls.map((url, index) => (
-                      <a
-                        key={index}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 hover:underline"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        {new URL(url).hostname}
-                      </a>
+                <Collapsible defaultOpen={false}>
+                  <CollapsibleTrigger className="flex items-center gap-2 text-sm text-warm-600 hover:text-warm-900 transition-colors">
+                    <ChevronRight className="h-4 w-4 transition-transform data-[state=open]:rotate-90" />
+                    <span className="font-semibold">Other Links ({gift.additional_urls.length})</span>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="mt-3 space-y-2 pl-6">
+                    {gift.additional_urls.map((link, index) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <span className="text-sm text-warm-600 font-medium min-w-[80px]">{link.label}:</span>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary-600 hover:text-primary-700 hover:underline flex items-center gap-1 break-all"
+                        >
+                          <span className="truncate max-w-[300px]">{new URL(link.url).hostname}</span>
+                          <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                        </a>
+                      </div>
                     ))}
-                  </div>
-                </div>
+                  </CollapsibleContent>
+                </Collapsible>
               )}
 
               {/* Extra Data (for any other metadata) */}
@@ -512,14 +709,14 @@ export function GiftDetailModal({
                           setIsEditingPeople(false);
                           setEditingPersonIds(gift?.person_ids || []);
                         }}
-                        disabled={updateGiftMutation.isPending}
+                        disabled={attachPeopleMutation.isPending}
                       >
                         Cancel
                       </Button>
                       <Button
                         onClick={handleSavePeople}
-                        disabled={updateGiftMutation.isPending}
-                        isLoading={updateGiftMutation.isPending}
+                        disabled={attachPeopleMutation.isPending}
+                        isLoading={attachPeopleMutation.isPending}
                       >
                         Save
                       </Button>
@@ -528,14 +725,36 @@ export function GiftDetailModal({
                 ) : linkedPeople && linkedPeople.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {linkedPeople.map((person) => (
-                      <Badge key={person.id} variant="default" className="gap-2 pl-1 pr-3 py-1.5">
+                      <div
+                        key={person.id}
+                        className={cn(
+                          "inline-flex items-center gap-2 pl-1 pr-2 py-1.5",
+                          "bg-warm-100 border border-warm-200 rounded-full",
+                          "group hover:bg-warm-150 transition-colors"
+                        )}
+                      >
                         <Avatar size="xs">
                           <AvatarFallback className="text-xs">
                             {getInitials(person.display_name)}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-sm">{person.display_name}</span>
-                      </Badge>
+                        <span className="text-sm text-warm-900">{person.display_name}</span>
+                        <button
+                          onClick={() => handleUnlinkPerson(person)}
+                          disabled={detachPersonMutation.isPending}
+                          className={cn(
+                            "min-h-[44px] min-w-[44px] -mr-2 -my-2",
+                            "flex items-center justify-center rounded-full",
+                            "hover:bg-red-100 transition-colors",
+                            "text-warm-500 hover:text-red-600",
+                            "disabled:opacity-50 disabled:cursor-not-allowed",
+                            "focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                          )}
+                          aria-label={`Unlink ${person.display_name}`}
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
                     ))}
                   </div>
                 ) : (
@@ -758,6 +977,65 @@ export function GiftDetailModal({
         </DialogContent>
       </Dialog>
 
+      {/* Mark as Purchased Dialog */}
+      <Dialog open={showMarkPurchasedDialog} onOpenChange={setShowMarkPurchasedDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mark as Purchased</DialogTitle>
+            <DialogDescription>
+              How many of this gift did you purchase?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Select
+              value={quantityPurchased}
+              onChange={setQuantityPurchased}
+              options={[
+                { value: "1", label: "1" },
+                { value: "2", label: "2" },
+                { value: "3", label: "3" },
+                { value: "4", label: "4" },
+                { value: "5", label: "5" },
+                { value: "6", label: "6" },
+                { value: "7", label: "7" },
+                { value: "8", label: "8" },
+                { value: "9", label: "9" },
+                { value: "10", label: "10" },
+              ]}
+              label="Quantity Purchased"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowMarkPurchasedDialog(false)}
+              disabled={markPurchasedMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleMarkPurchased}
+              disabled={markPurchasedMutation.isPending}
+              isLoading={markPurchasedMutation.isPending}
+            >
+              Mark Purchased
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Purchaser Assign Dialog */}
+      <PurchaserAssignDialog
+        isOpen={showPurchaserDialog}
+        onClose={() => {
+          setShowPurchaserDialog(false);
+          setPendingStatus(null);
+        }}
+        onAssign={handlePurchaserAssign}
+        isLoading={updateGiftMutation.isPending}
+        giftName={gift?.name}
+      />
+
       {/* List Detail Modal - Only render when needed to avoid subscription storm */}
       {selectedListId && (
         <ListDetailModal
@@ -776,6 +1054,18 @@ export function GiftDetailModal({
           onLinked={() => setShowLinkListsModal(false)}
         />
       )}
+
+      {/* Person Detail Modal - Only render when needed to avoid subscription storm */}
+      {selectedPersonId && (
+        <PersonDetailModal
+          personId={selectedPersonId}
+          open={true}
+          onOpenChange={(open) => !open && setSelectedPersonId(null)}
+        />
+      )}
+
+      {/* Unlink Confirmation Dialog */}
+      {unlinkDialog}
     </>
   );
 }

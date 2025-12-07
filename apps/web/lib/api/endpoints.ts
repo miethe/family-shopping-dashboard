@@ -62,6 +62,9 @@ import type {
   EntityBudget,
   SetBudgetRequest,
   SetEntityBudgetRequest,
+  // Bulk Gift types
+  BulkGiftAction,
+  BulkGiftResult,
 } from '@/types';
 
 // ============================================================================
@@ -167,6 +170,10 @@ export interface GiftFromUrlRequest {
   url: string;
 }
 
+export interface MarkPurchasedRequest {
+  quantity_purchased?: number;
+}
+
 export const giftApi = {
   list: (params?: GiftListParams) => apiClient.get<PaginatedResponse<Gift>>('/gifts', params),
   get: (id: number) => apiClient.get<Gift>(`/gifts/${id}`),
@@ -174,6 +181,14 @@ export const giftApi = {
   createFromUrl: (data: GiftFromUrlRequest) => apiClient.post<Gift>('/gifts/from-url', data),
   update: (id: number, data: GiftUpdate) => apiClient.patch<Gift>(`/gifts/${id}`, data),
   delete: (id: number) => apiClient.delete<void>(`/gifts/${id}`),
+  attachPeople: (giftId: number, personIds: number[]) =>
+    apiClient.post<Gift>(`/gifts/${giftId}/people`, { person_ids: personIds }),
+  detachPerson: (giftId: number, personId: number) =>
+    apiClient.delete<Gift>(`/gifts/${giftId}/people/${personId}`),
+  markPurchased: (giftId: number, data: MarkPurchasedRequest) =>
+    apiClient.post<Gift>(`/gifts/${giftId}/mark-purchased`, data),
+  bulkAction: (data: BulkGiftAction) =>
+    apiClient.patch<BulkGiftResult>('/gifts/bulk', data),
 };
 
 // ============================================================================

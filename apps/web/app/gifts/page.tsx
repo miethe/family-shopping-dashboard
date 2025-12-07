@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useGifts } from '@/hooks/useGifts';
+import { useGiftSelection } from '@/hooks/useGiftSelection';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button, Skeleton } from '@/components/ui';
 import {
@@ -67,6 +68,7 @@ interface GiftsPageContentProps {
  * Browse and search gift catalog with filtering and sorting.
  * Mobile-first responsive design with loading states.
  * Supports URL query params for initial filter state (e.g., ?status=idea)
+ * Includes bulk selection mode with checkbox UI.
  */
 function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
   const searchParams = useSearchParams();
@@ -80,6 +82,9 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
     list_ids: [],
     occasion_ids: [],
   });
+
+  // Selection mode hook
+  const selection = useGiftSelection();
 
   // Initialize filters from URL query params on mount
   useEffect(() => {
@@ -107,9 +112,37 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
         title="Gift Catalog"
         subtitle="Browse and manage gift ideas"
         actions={
-          <Button onClick={() => setIsAddModalOpen(true)}>Add Gift</Button>
+          <div className="flex gap-2">
+            {/* Selection Mode Toggle */}
+            <Button
+              variant={selection.isSelectionMode ? 'outline' : 'ghost'}
+              onClick={selection.toggleSelectionMode}
+            >
+              {selection.isSelectionMode ? 'Cancel' : 'Select'}
+            </Button>
+            {/* Add Gift Button */}
+            <Button onClick={() => setIsAddModalOpen(true)}>Add Gift</Button>
+          </div>
         }
       />
+
+      {/* Selection Bar - shows when items are selected */}
+      {selection.isSelectionMode && selection.selectedIds.size > 0 && (
+        <div className="bg-primary-50 border border-primary-200 rounded-large p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-warm-900">
+              {selection.selectedIds.size} selected
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={selection.clearSelection}
+          >
+            Clear Selection
+          </Button>
+        </div>
+      )}
 
       <GiftToolbar
         search={search}
@@ -154,7 +187,14 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
       ) : groupBy === 'none' ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {data.items.map((gift) => (
-            <GiftCard key={gift.id} gift={gift} onOpenDetail={onOpenDetail} />
+            <GiftCard
+              key={gift.id}
+              gift={gift}
+              onOpenDetail={onOpenDetail}
+              selectionMode={selection.isSelectionMode}
+              isSelected={selection.isSelected(gift.id)}
+              onToggleSelection={() => selection.toggleSelection(gift.id)}
+            />
           ))}
         </div>
       ) : (

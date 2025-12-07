@@ -131,3 +131,12 @@ export {
   CollapsibleTrigger,
   CollapsibleContent,
 } from './collapsible';
+export {
+  ConfirmDialog,
+  useConfirmDialog,
+  type ConfirmDialogProps,
+  type UseConfirmDialogOptions,
+} from './confirm-dialog';
+
+// Export icon components
+export { Check } from './icons';

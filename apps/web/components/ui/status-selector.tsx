@@ -4,8 +4,8 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown } from '@/components/ui/icons';
 
-// Backend ListItemStatus values: idea, selected, purchased, received
-type GiftStatus = 'idea' | 'selected' | 'purchased' | 'received';
+// All gift status values matching backend schema
+type GiftStatus = 'idea' | 'shortlisted' | 'buying' | 'ordered' | 'purchased' | 'delivered' | 'gifted';
 
 interface StatusSelectorProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   status: GiftStatus;
@@ -26,12 +26,26 @@ const statusConfig: Record<GiftStatus, { bg: string; text: string; border: strin
     dot: 'bg-status-idea-600',
     label: 'Idea',
   },
-  selected: {
+  shortlisted: {
+    bg: 'bg-status-idea-100',
+    text: 'text-status-idea-900',
+    border: 'border-status-idea-300',
+    dot: 'bg-status-idea-600',
+    label: 'Shortlisted',
+  },
+  buying: {
     bg: 'bg-status-progress-100',
     text: 'text-status-progress-900',
     border: 'border-status-progress-300',
     dot: 'bg-status-progress-600',
-    label: 'Selected',
+    label: 'Buying',
+  },
+  ordered: {
+    bg: 'bg-status-progress-100',
+    text: 'text-status-progress-900',
+    border: 'border-status-progress-300',
+    dot: 'bg-status-progress-600',
+    label: 'Ordered',
   },
   purchased: {
     bg: 'bg-status-success-100',
@@ -40,12 +54,19 @@ const statusConfig: Record<GiftStatus, { bg: string; text: string; border: strin
     dot: 'bg-status-success-600',
     label: 'Purchased',
   },
-  received: {
+  delivered: {
     bg: 'bg-status-success-100',
     text: 'text-status-success-900',
     border: 'border-status-success-300',
     dot: 'bg-status-success-600',
-    label: 'Received',
+    label: 'Delivered',
+  },
+  gifted: {
+    bg: 'bg-status-success-100',
+    text: 'text-status-success-900',
+    border: 'border-status-success-300',
+    dot: 'bg-status-success-600',
+    label: 'Gifted',
   },
 };
 

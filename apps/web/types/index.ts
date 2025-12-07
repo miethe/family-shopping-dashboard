@@ -344,7 +344,7 @@ export interface Gift extends TimestampFields {
   quantity: number;
   sale_price: number | null;
   purchase_date: string | null; // ISO date string
-  additional_urls: string[];
+  additional_urls: { label: string; url: string }[];
   stores: StoreMinimal[];
   person_ids: number[];
   // Additional fields
@@ -366,7 +366,7 @@ export interface GiftCreate {
   quantity?: number;
   sale_price?: number | null;
   purchase_date?: string | null; // ISO date string
-  additional_urls?: string[];
+  additional_urls?: { label: string; url: string }[];
   store_ids?: number[];
   person_ids?: number[];
 }
@@ -386,7 +386,7 @@ export interface GiftUpdate {
   quantity?: number;
   sale_price?: number | null;
   purchase_date?: string | null; // ISO date string
-  additional_urls?: string[];
+  additional_urls?: { label: string; url: string }[];
   store_ids?: number[];
   person_ids?: number[];
   extra_data?: Record<string, unknown>;
@@ -399,6 +399,7 @@ export interface GiftUpdate {
 export interface GiftSummary {
   id: number;
   name: string;
+  url: string | null;
   price: number | null;
   image_url: string | null;
   priority: GiftPriority;
@@ -662,3 +663,19 @@ export interface ActivityFeedResponse {
 // ============================================================================
 
 export * from './budget';
+
+// ============================================================================
+// Bulk Gift Action Types
+// ============================================================================
+
+export interface BulkGiftAction {
+  gift_ids: number[];
+  action: 'assign_recipient' | 'assign_purchaser' | 'mark_purchased' | 'delete';
+  person_id?: number;
+}
+
+export interface BulkGiftResult {
+  success_count: number;
+  failed_ids: number[];
+  errors: string[];
+}
