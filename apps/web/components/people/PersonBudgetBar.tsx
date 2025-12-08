@@ -36,6 +36,16 @@ const getProgressColor = (spent: number, budget: number | null): 'blue' | 'red' 
 };
 
 /**
+ * Helper function to format currency
+ */
+const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
+};
+
+/**
  * PersonBudgetBar Component
  *
  * Displays budget visualization for a person in two roles:
@@ -73,14 +83,14 @@ const getProgressColor = (spent: number, budget: number | null): 'blue' | 'red' 
  * />
  * ```
  */
-export function PersonBudgetBar({
+const PersonBudgetBarComponent = ({
   personId,
   variant = 'modal',
   occasionId,
   className,
   recipientBudgetTotal,
   purchaserBudgetTotal,
-}: PersonBudgetBarProps) {
+}: PersonBudgetBarProps) => {
   const { data: budget, isLoading } = usePersonBudget(personId, occasionId);
   const { data: giftsData } = useGiftsByPerson(personId);
   const { openModal: openGiftModal } = useEntityModal('gift');
@@ -121,21 +131,13 @@ export function PersonBudgetBar({
   // For now, show all gifts associated with this person in both tooltips
   // TODO: Once backend provides gift_people relationship data with is_recipient/is_purchaser flags,
   // filter gifts properly by role
-  const allGiftTooltipItems: TooltipItem[] = gifts.map((gift) => ({
+  const allGiftTooltipItems: TooltipItem[] = React.useMemo(() => gifts.map((gift) => ({
     id: gift.id,
     name: gift.name,
     price: gift.price || 0,
     status: gift.purchase_date ? 'purchased' : 'planned',
     imageUrl: gift.image_url || undefined,
-  }));
-
-  // Format currency helper
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
+  })), [gifts]);
 
   // Recipient role display logic
   const hasRecipientBudget = recipientBudgetTotal !== null && recipientBudgetTotal !== undefined;
@@ -195,7 +197,7 @@ export function PersonBudgetBar({
                 onItemClick={(id) => openGiftModal(String(id))}
               />
               {isOverBudget(budget.gifts_assigned_total, recipientBudgetTotal) && (
-                <div className="flex items-center gap-1 text-red-600 text-sm font-semibold">
+                <div role="alert" className="flex items-center gap-1 text-red-600 text-sm font-semibold">
                   <AlertTriangle className="h-4 w-4" />
                   <span>Over budget</span>
                 </div>
@@ -229,7 +231,7 @@ export function PersonBudgetBar({
                 onItemClick={(id) => openGiftModal(String(id))}
               />
               {isOverBudget(purchaserPlannedTotal, purchaserBudgetTotal) && (
-                <div className="flex items-center gap-1 text-red-600 text-sm font-semibold">
+                <div role="alert" className="flex items-center gap-1 text-red-600 text-sm font-semibold">
                   <AlertTriangle className="h-4 w-4" />
                   <span>Over budget</span>
                 </div>
@@ -240,6 +242,7 @@ export function PersonBudgetBar({
       )}
     </div>
   );
-}
+};
 
+export const PersonBudgetBar = React.memo(PersonBudgetBarComponent);
 PersonBudgetBar.displayName = 'PersonBudgetBar';

@@ -37,7 +37,7 @@ interface OccasionBudgetRowProps {
   occasion: Occasion;
 }
 
-function OccasionBudgetRow({ personId, occasion }: OccasionBudgetRowProps) {
+const OccasionBudgetRowComponent = ({ personId, occasion }: OccasionBudgetRowProps) => {
   const { data: budget, isLoading } = usePersonOccasionBudget(personId, occasion.id);
   const updateBudget = useUpdatePersonOccasionBudget(personId, occasion.id);
 
@@ -172,7 +172,9 @@ function OccasionBudgetRow({ personId, occasion }: OccasionBudgetRowProps) {
       )}
     </div>
   );
-}
+};
+
+const OccasionBudgetRow = React.memo(OccasionBudgetRowComponent);
 
 /**
  * Main PersonBudgetsTab Component
