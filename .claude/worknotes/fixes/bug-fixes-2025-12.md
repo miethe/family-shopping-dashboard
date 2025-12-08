@@ -935,5 +935,5 @@ Monthly bug tracking for December 2025.
   1. Updated `endpoints.ts` line 370: Changed return type from `Group[]` to `PaginatedResponse<Group>`
   2. Updated `people/page.tsx` line 120: Changed from `groupsData ?? []` to `groupsData?.items ?? []`
   3. Updated `GroupMultiSelect.tsx`: Added `allGroups = groupsData?.items ?? []` to extract array from paginated response
-- **Commit(s)**: (pending)
+- **Commit(s)**: `cbc549f`
 - **Status**: RESOLVED
