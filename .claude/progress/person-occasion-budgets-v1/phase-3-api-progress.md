@@ -3,16 +3,18 @@ type: progress
 prd: person-occasion-budgets-v1
 phase: 3
 phase_name: Service & API Layer
-status: not_started
-progress: 0
+status: completed
+progress: 100
 total_tasks: 7
-completed_tasks: 0
+completed_tasks: 7
 story_points: 14
 estimated_duration: 1.5 days
+completed_at: 2025-12-08
+commit: 6443a7d
 tasks:
   - id: API-001
     title: Create PersonOccasionBudgetResponse DTO
-    status: pending
+    status: completed
     assigned_to: python-backend-engineer
     dependencies: [REPO-004]
     story_points: 1
@@ -21,7 +23,7 @@ tasks:
     description: DTO for returning budget data to frontend
   - id: API-002
     title: Create PersonOccasionBudgetUpdate DTO
-    status: pending
+    status: completed
     assigned_to: python-backend-engineer
     dependencies: [REPO-004]
     story_points: 1
@@ -30,54 +32,54 @@ tasks:
     description: DTO for updating budget data from frontend
   - id: API-003
     title: Add PersonService.get_occasion_budget() method
-    status: pending
+    status: completed
     assigned_to: python-backend-engineer
     dependencies: [API-001, REPO-004]
     story_points: 2
     files:
-      - services/api/app/services/person_service.py
+      - services/api/app/services/person.py
     description: Service method to get budget, converts ORM to DTO
   - id: API-004
     title: Add PersonService.set_occasion_budget() method
-    status: pending
+    status: completed
     assigned_to: python-backend-engineer
     dependencies: [API-002, REPO-004]
     story_points: 3
     files:
-      - services/api/app/services/person_service.py
+      - services/api/app/services/person.py
     description: Service method to update budget with validation
   - id: API-005
     title: Add GET /persons/{id}/occasions/{oid}/budget endpoint
-    status: pending
+    status: completed
     assigned_to: python-backend-engineer
     dependencies: [API-003]
     story_points: 2
     files:
-      - services/api/app/api/v1/endpoints/persons.py
+      - services/api/app/api/persons.py
     description: REST endpoint to retrieve person-occasion budget
   - id: API-006
     title: Add PUT /persons/{id}/occasions/{oid}/budget endpoint
-    status: pending
+    status: completed
     assigned_to: python-backend-engineer
     dependencies: [API-004]
     story_points: 2
     files:
-      - services/api/app/api/v1/endpoints/persons.py
+      - services/api/app/api/persons.py
     description: REST endpoint to update person-occasion budget
   - id: API-007
     title: Write API integration tests
-    status: pending
+    status: completed
     assigned_to: python-backend-engineer
     dependencies: [API-005, API-006]
     story_points: 3
     files:
-      - services/api/tests/integration/test_person_budget_api.py
+      - services/api/tests/integration/test_person_occasion_budget_api.py
     description: End-to-end API tests for budget endpoints
 ---
 
 # Phase 3: Service & API Layer
 
-**Status**: Not Started
+**Status**: Completed
 **Last Updated**: 2025-12-07
 **Completion**: 0%
 **Story Points**: 14 / 14 remaining
