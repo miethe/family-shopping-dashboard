@@ -22,6 +22,7 @@ import { LinkListsToContextModal } from "./LinkListsToContextModal";
 import { CommentsTab } from "@/components/comments";
 import { Avatar, AvatarImage, AvatarFallback, getInitials } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuth } from "@/lib/context/AuthContext";
 
 interface OccasionDetailModalProps {
   occasionId: string | null;
@@ -152,10 +153,12 @@ export function OccasionDetailModal({
   const [selectedListId, setSelectedListId] = React.useState<string | null>(null);
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
 
+  const { loading: authLoading } = useAuth();
+
   const { data: occasion, isLoading } = useQuery<Occasion>({
     queryKey: ["occasions", occasionId],
     queryFn: () => occasionApi.get(Number(occasionId)),
-    enabled: !!occasionId && open,
+    enabled: !!occasionId && open && !authLoading,
   });
 
   // Fetch lists attached to this occasion

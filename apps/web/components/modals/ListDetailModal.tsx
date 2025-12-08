@@ -36,6 +36,7 @@ import type { ListWithItems, ListItemStatus } from "@/types";
 import { cn } from "@/lib/utils";
 import { LinkEntityToListModal } from "./LinkEntityToListModal";
 import { CommentsTab } from "@/components/comments";
+import { useAuth } from "@/lib/context/AuthContext";
 
 interface ListDetailModalProps {
   listId: string | null;
@@ -105,10 +106,12 @@ export function ListDetailModal({
   const [statusFilter, setStatusFilter] = React.useState<StatusFilter>('all');
   const [activeTab, setActiveTab] = React.useState("overview");
 
+  const { loading: authLoading } = useAuth();
+
   const { data: list, isLoading } = useQuery<ListWithItems>({
     queryKey: ["lists", listId],
     queryFn: () => listApi.get(Number(listId)),
-    enabled: !!listId && open,
+    enabled: !!listId && open && !authLoading,
   });
 
   // Fetch attached person and occasion details

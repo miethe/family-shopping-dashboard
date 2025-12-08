@@ -51,10 +51,12 @@ export function PersonDetailModal({
   const [isEditingGroups, setIsEditingGroups] = React.useState(false);
   const [editingGroupIds, setEditingGroupIds] = React.useState<number[]>([]);
 
+  const { loading: authLoading } = useAuth();
+
   const { data: person, isLoading } = useQuery<Person>({
     queryKey: ["people", personId],
     queryFn: () => personApi.get(Number(personId)),
-    enabled: !!personId && open,
+    enabled: !!personId && open && !authLoading,
   });
 
   const updateMutation = useUpdatePerson(Number(personId));

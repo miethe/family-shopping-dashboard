@@ -38,6 +38,7 @@ import { GiftTitleLink } from "@/components/common/GiftTitleLink";
 import { PersonDetailModal } from "./PersonDetailModal";
 import { Select } from "@/components/ui/select";
 import { PurchaserAssignDialog } from "./PurchaserAssignDialog";
+import { useAuth } from "@/lib/context/AuthContext";
 
 interface GiftDetailModalProps {
   giftId: string | null;
@@ -67,10 +68,12 @@ export function GiftDetailModal({
   const [showPurchaserDialog, setShowPurchaserDialog] = React.useState(false);
   const [pendingStatus, setPendingStatus] = React.useState<GiftStatus | null>(null);
 
+  const { loading: authLoading } = useAuth();
+
   const { data: gift, isLoading } = useQuery<Gift>({
     queryKey: ["gifts", giftId ? Number(giftId) : null],
     queryFn: () => giftApi.get(Number(giftId)),
-    enabled: !!giftId && open,
+    enabled: !!giftId && open && !authLoading,
   });
 
   const { data: listsData, isLoading: isLoadingLists } = useListsForGift(
