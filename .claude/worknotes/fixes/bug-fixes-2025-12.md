@@ -922,3 +922,18 @@ Monthly bug tracking for December 2025.
   This ensures API requests wait for auth validation before firing.
 - **Commit(s)**: `2f8ef4c`
 - **Status**: RESOLVED
+
+---
+
+### Groups API PaginatedResponse Type Mismatch
+
+**Issue**: The /people page failed to load with `TypeError: C.map is not a function`. The error occurred when trying to call `.map()` on `groups` which was not an array.
+
+- **Location**: `apps/web/lib/api/endpoints.ts:370`, `apps/web/app/people/page.tsx:120`, `apps/web/components/common/GroupMultiSelect.tsx:28-29`
+- **Root Cause**: The backend `/groups` endpoint returns `PaginatedResponse[GroupResponse]` with structure `{ items: [], has_more, next_cursor }`, but the frontend `groupApi.list()` was typed as returning `Group[]`. When the frontend code called `.map()` on the response, it failed because the response was an object, not an array.
+- **Fix**:
+  1. Updated `endpoints.ts` line 370: Changed return type from `Group[]` to `PaginatedResponse<Group>`
+  2. Updated `people/page.tsx` line 120: Changed from `groupsData ?? []` to `groupsData?.items ?? []`
+  3. Updated `GroupMultiSelect.tsx`: Added `allGroups = groupsData?.items ?? []` to extract array from paginated response
+- **Commit(s)**: (pending)
+- **Status**: RESOLVED

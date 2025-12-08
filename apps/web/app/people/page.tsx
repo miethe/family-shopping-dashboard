@@ -117,7 +117,7 @@ export default function RecipientsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const { data: groupsData } = useGroups();
-  const groups = useMemo(() => groupsData ?? [], [groupsData]);
+  const groups = useMemo(() => groupsData?.items ?? [], [groupsData?.items]);
 
   const { data: personsData, isLoading: personsLoading, error: personsError } = usePersons(
     { cursor },

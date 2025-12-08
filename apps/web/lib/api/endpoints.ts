@@ -367,7 +367,7 @@ export const budgetsApi = {
 // ============================================================================
 
 export const groupApi = {
-  list: () => apiClient.get<Group[]>('/groups'),
+  list: () => apiClient.get<PaginatedResponse<Group>>('/groups'),
   get: (id: number) => apiClient.get<Group>(`/groups/${id}`),
   create: (data: GroupCreate) => apiClient.post<Group>('/groups', data),
   update: (id: number, data: GroupUpdate) => apiClient.put<Group>(`/groups/${id}`, data),

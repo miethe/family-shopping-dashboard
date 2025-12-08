@@ -19,12 +19,13 @@ interface GroupMultiSelectProps {
 }
 
 export function GroupMultiSelect({ value, onChange }: GroupMultiSelectProps) {
-  const { data: allGroups = [] } = useGroups();
+  const { data: groupsData } = useGroups();
   const [isAdding, setIsAdding] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [newGroupColor, setNewGroupColor] = useState('#3B82F6');
   const createGroup = useCreateGroup();
 
+  const allGroups = groupsData?.items ?? [];
   const selectedGroups = allGroups.filter((g) => value.includes(g.id));
   const availableGroups = allGroups.filter((g) => !value.includes(g.id));
 
