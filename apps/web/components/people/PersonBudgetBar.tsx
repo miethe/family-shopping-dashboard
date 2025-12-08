@@ -6,6 +6,7 @@ import { usePersonBudget } from '@/hooks/usePersonBudget';
 import { useGiftsByPerson } from '@/hooks/useGifts';
 import { useEntityModal } from '@/components/modals';
 import { StackedProgressBar, type TooltipItem } from '@/components/ui/stacked-progress-bar';
+import { AlertTriangle } from '@/components/ui/icons';
 
 export interface PersonBudgetBarProps {
   personId: number;
@@ -15,6 +16,24 @@ export interface PersonBudgetBarProps {
   recipientBudgetTotal?: number | null;  // Set budget for gifts TO this person (null = no budget)
   purchaserBudgetTotal?: number | null;  // Set budget for gifts BY this person (null = no budget)
 }
+
+/**
+ * Helper function to check if spending exceeds budget
+ */
+const isOverBudget = (spent: number, budget: number | null): boolean => {
+  return budget !== null && spent > budget;
+};
+
+/**
+ * Helper function to get progress bar color based on spending
+ */
+const getProgressColor = (spent: number, budget: number | null): 'blue' | 'red' | 'amber' | 'green' => {
+  if (budget === null) return 'blue';  // No budget = no warning
+  const progress = (spent / budget) * 100;
+  if (progress > 100) return 'red';    // Over budget
+  if (progress > 80) return 'amber';   // Approaching limit
+  return 'green';                      // Within budget
+};
 
 /**
  * PersonBudgetBar Component
@@ -164,16 +183,24 @@ export function PersonBudgetBar({
             />
           ) : hasRecipientBudget ? (
             // State: Has budget (with or without gifts) → Progress bar
-            <StackedProgressBar
-              total={recipientBudgetTotal}
-              planned={budget.gifts_assigned_total}
-              purchased={budget.gifts_assigned_purchased_total}
-              label="Gifts to Receive"
-              showAmounts
-              variant="recipient"
-              tooltipItems={allGiftTooltipItems}
-              onItemClick={(id) => openGiftModal(String(id))}
-            />
+            <div className="space-y-2">
+              <StackedProgressBar
+                total={recipientBudgetTotal}
+                planned={budget.gifts_assigned_total}
+                purchased={budget.gifts_assigned_purchased_total}
+                label="Gifts to Receive"
+                showAmounts
+                variant="recipient"
+                tooltipItems={allGiftTooltipItems}
+                onItemClick={(id) => openGiftModal(String(id))}
+              />
+              {isOverBudget(budget.gifts_assigned_total, recipientBudgetTotal) && (
+                <div className="flex items-center gap-1 text-red-600 text-sm font-semibold">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span>Over budget</span>
+                </div>
+              )}
+            </div>
           ) : null}
         </>
       )}
@@ -190,16 +217,24 @@ export function PersonBudgetBar({
             />
           ) : hasPurchaserBudget ? (
             // State: Has budget (with or without gifts) → Progress bar
-            <StackedProgressBar
-              total={purchaserBudgetTotal}
-              planned={purchaserPlannedTotal}
-              purchased={budget.gifts_purchased_total}
-              label="Gifts to Buy"
-              showAmounts
-              variant="purchaser"
-              tooltipItems={allGiftTooltipItems}
-              onItemClick={(id) => openGiftModal(String(id))}
-            />
+            <div className="space-y-2">
+              <StackedProgressBar
+                total={purchaserBudgetTotal}
+                planned={purchaserPlannedTotal}
+                purchased={budget.gifts_purchased_total}
+                label="Gifts to Buy"
+                showAmounts
+                variant="purchaser"
+                tooltipItems={allGiftTooltipItems}
+                onItemClick={(id) => openGiftModal(String(id))}
+              />
+              {isOverBudget(purchaserPlannedTotal, purchaserBudgetTotal) && (
+                <div className="flex items-center gap-1 text-red-600 text-sm font-semibold">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span>Over budget</span>
+                </div>
+              )}
+            </div>
           ) : null}
         </>
       )}

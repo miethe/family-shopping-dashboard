@@ -26,6 +26,7 @@ import { AdvancedInterestsView } from '@/components/people/AdvancedInterestsView
 import { AdvancedInterestsEdit } from '@/components/people/AdvancedInterestsEdit';
 import { PersonBudgetBar } from '@/components/people/PersonBudgetBar';
 import { LinkedGiftsSection } from '@/components/people/LinkedGiftsSection';
+import { PersonBudgetsTab } from '@/components/people/PersonBudgetsTab';
 import type { AdvancedInterests, SizeEntry } from '@/types';
 import { CommentThread } from '@/components/comments';
 import { useAuth } from '@/hooks/useAuth';
@@ -373,6 +374,9 @@ export function PersonDetailModal({
                   <TabsTrigger value="overview" className="flex-1">
                     Overview
                   </TabsTrigger>
+                  <TabsTrigger value="budgets" className="flex-1">
+                    Budgets
+                  </TabsTrigger>
                   <TabsTrigger value="advanced" className="flex-1">
                     Advanced
                   </TabsTrigger>
@@ -574,6 +578,14 @@ export function PersonDetailModal({
                     </div>
                   )}
 
+                </TabsContent>
+
+                {/* Budgets Tab */}
+                <TabsContent value="budgets" className="space-y-6">
+                  <PersonBudgetsTab
+                    personId={person.id}
+                    occasionIds={person.occasion_ids || []}
+                  />
                 </TabsContent>
 
                 {/* Advanced Interests Tab */}

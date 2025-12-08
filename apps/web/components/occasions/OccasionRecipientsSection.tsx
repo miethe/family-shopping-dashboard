@@ -17,6 +17,8 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback, getInitials } from '@/components/ui/avatar';
 import { PersonDetailModal, useEntityModal } from '@/components/modals';
 import { usePersons } from '@/hooks/usePersons';
+import { usePersonOccasionBudget } from '@/hooks/usePersonOccasionBudget';
+import { PersonBudgetBar } from '@/components/people/PersonBudgetBar';
 import { Plus } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import type { Person } from '@/types';
@@ -28,15 +30,25 @@ interface OccasionRecipientsSectionProps {
 }
 
 /**
- * Mini person card for displaying in recipients section
+ * Mini person card for displaying in recipients section with budget display
  */
-function PersonMiniCard({ person, onClick }: { person: Person; onClick: () => void }) {
+function PersonMiniCard({
+  person,
+  occasionId,
+  onClick
+}: {
+  person: Person;
+  occasionId: number;
+  onClick: () => void;
+}) {
+  const { data: budget } = usePersonOccasionBudget(person.id, occasionId);
+
   return (
     <button
       onClick={onClick}
       className={cn(
         'flex flex-col items-center gap-2 p-3 rounded-lg',
-        'min-w-[100px] min-h-[120px]',
+        'min-w-[100px]',
         'hover:bg-gray-50 transition-colors',
         'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
         'cursor-pointer group'
@@ -55,6 +67,17 @@ function PersonMiniCard({ person, onClick }: { person: Person; onClick: () => vo
       <span className="text-sm font-medium text-gray-900 text-center line-clamp-2 max-w-[90px]">
         {person.display_name}
       </span>
+
+      {/* Budget bar - auto-hides if no data */}
+      <div className="w-full mt-1">
+        <PersonBudgetBar
+          personId={person.id}
+          occasionId={occasionId}
+          variant="card"
+          recipientBudgetTotal={budget?.recipient_budget_total}
+          purchaserBudgetTotal={budget?.purchaser_budget_total}
+        />
+      </div>
     </button>
   );
 }
@@ -126,6 +149,7 @@ export function OccasionRecipientsSection({
                 <PersonMiniCard
                   key={person.id}
                   person={person}
+                  occasionId={occasionId}
                   onClick={() => openModal(String(person.id))}
                 />
               ))}

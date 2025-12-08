@@ -57,6 +57,8 @@ export interface StackedProgressBarProps {
   onItemClick?: (id: number | string) => void;
   /** Maximum number of tooltip items to show (default: 5) */
   maxTooltipItems?: number;
+  /** Warning state override for colors (auto-calculated if not provided) */
+  warningState?: 'normal' | 'warning' | 'over';
 }
 
 /**
@@ -124,6 +126,7 @@ export function StackedProgressBar({
   tooltipItems = [],
   onItemClick,
   maxTooltipItems = 5,
+  warningState,
 }: StackedProgressBarProps) {
   // Calculate percentages
   const purchasedPercent = total > 0 ? (purchased / total) * 100 : 0;
@@ -131,15 +134,25 @@ export function StackedProgressBar({
   const remainingPlannedPercent = total > 0 ? (remainingPlannedAmount / total) * 100 : 0;
   const totalUsedPercent = purchasedPercent + remainingPlannedPercent;
 
-  // Color schemes based on variant
+  // Auto-calculate warning state if not provided
+  const effectiveWarningState = warningState || (() => {
+    const progress = (planned / total) * 100;
+    if (progress > 100) return 'over';
+    if (progress > 80) return 'warning';
+    return 'normal';
+  })();
+
+  // Color schemes based on variant and warning state
   const colors = {
     recipient: {
-      purchased: 'bg-emerald-500',
-      planned: 'bg-amber-400',
+      purchased: effectiveWarningState === 'over' ? 'bg-red-500' : 'bg-emerald-500',
+      planned: effectiveWarningState === 'over' ? 'bg-red-400' :
+               effectiveWarningState === 'warning' ? 'bg-amber-500' : 'bg-amber-400',
     },
     purchaser: {
-      purchased: 'bg-emerald-500',
-      planned: 'bg-amber-400',
+      purchased: effectiveWarningState === 'over' ? 'bg-red-500' : 'bg-emerald-500',
+      planned: effectiveWarningState === 'over' ? 'bg-red-400' :
+               effectiveWarningState === 'warning' ? 'bg-amber-500' : 'bg-amber-400',
     },
   };
 
