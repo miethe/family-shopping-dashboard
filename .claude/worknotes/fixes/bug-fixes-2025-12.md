@@ -970,4 +970,48 @@ Monthly bug tracking for December 2025.
      filters.append(ListItem.status.in_(enum_statuses))
      ```
 - **Commit(s)**: `d93e95a`
+- **Status**: RESOLVED (partial - see below)
+
+---
+
+### Gift Status Filters Still Not Working (Model Type Mismatch)
+
+**Issue**: After the previous fix (d93e95a), status filters on /gifts page still returned no results when any status was selected. Other filters (person, list, occasion) worked correctly.
+
+- **Location**: `services/api/app/models/list_item.py:63-72`
+- **Root Cause**: The previous fix added enum string-to-value conversion, but the model column definition was missing `SQLEnum` configuration. Other enum columns in the codebase (e.g., `GiftPriority`, `OccasionType`, `GiftPersonRole`) use:
+  ```python
+  SQLEnum(
+      EnumType,
+      name="enum_name",
+      native_enum=True,
+      values_callable=lambda e: [m.value for m in e],
+  )
+  ```
+  But `ListItemStatus` was defined without `SQLEnum`:
+  ```python
+  status: Mapped[ListItemStatus] = mapped_column(
+      nullable=False,
+      default=ListItemStatus.idea,
+      server_default="idea",
+  )
+  ```
+  This caused SQLAlchemy to infer a type that didn't match the PostgreSQL native ENUM created in migrations, breaking query comparisons.
+- **Fix**: Updated model to use explicit `SQLEnum` with `native_enum=True`:
+  ```python
+  from sqlalchemy import Enum as SQLEnum
+
+  status: Mapped[ListItemStatus] = mapped_column(
+      SQLEnum(
+          ListItemStatus,
+          name="listitemstatus",  # Matches PostgreSQL enum from migration
+          native_enum=True,
+          values_callable=lambda e: [m.value for m in e],
+      ),
+      nullable=False,
+      default=ListItemStatus.idea,
+      server_default="idea",
+  )
+  ```
+- **Commit(s)**: `de3b721`
 - **Status**: RESOLVED

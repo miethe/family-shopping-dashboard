@@ -4,7 +4,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Optional
 
-from sqlalchemy import ForeignKey, Index, Integer, Numeric, String, Text, UniqueConstraint
+from sqlalchemy import Enum as SQLEnum, ForeignKey, Index, Integer, Numeric, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
@@ -61,9 +61,15 @@ class ListItem(BaseModel):
 
     # Status and metadata
     status: Mapped[ListItemStatus] = mapped_column(
+        SQLEnum(
+            ListItemStatus,
+            name="listitemstatus",
+            native_enum=True,
+            values_callable=lambda e: [m.value for m in e],
+        ),
         nullable=False,
         default=ListItemStatus.idea,
-        server_default="idea",  # PostgreSQL default
+        server_default="idea",
     )
     notes: Mapped[Optional[str]] = mapped_column(
         Text,
