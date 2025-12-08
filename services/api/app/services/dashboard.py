@@ -231,7 +231,7 @@ class DashboardService:
             people_summaries.append(
                 PersonSummary(
                     id=row.id,
-                    name=row.display_name,
+                    display_name=row.display_name,
                     pending_gifts=row.pending_gifts,
                     photo_url=row.photo_url,
                     next_occasion=next_occasion_date.isoformat() if next_occasion_date else None,

@@ -22,7 +22,7 @@ class PersonSummary(BaseModel):
     """Summary of a person needing gifts."""
 
     id: int
-    name: str
+    display_name: str
     pending_gifts: int
     photo_url: str | None = None
     next_occasion: str | None = None  # ISO date string
