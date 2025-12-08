@@ -2,7 +2,7 @@
 
 from datetime import date, timedelta
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -223,16 +223,17 @@ class OccasionRepository(BaseRepository[Occasion]):
 
     async def get_upcoming_by_next_occurrence(self, within_days: int = 90) -> list[Occasion]:
         """
-        Get occasions with next_occurrence within N days.
+        Get occasions with next_occurrence or date within N days.
 
-        Filters active occasions by next_occurrence date, ordered by soonest first.
-        This is useful for recurring occasions that track their next occurrence.
+        Filters active occasions by next_occurrence date (or falls back to date if NULL),
+        ordered by soonest first. This is useful for recurring occasions that track their
+        next occurrence, as well as one-time occasions with only a date field set.
 
         Args:
             within_days: Number of days to look ahead (default: 90)
 
         Returns:
-            List of Occasion instances ordered by next_occurrence (soonest first)
+            List of Occasion instances ordered by next_occurrence or date (soonest first)
 
         Example:
             ```python
@@ -240,26 +241,29 @@ class OccasionRepository(BaseRepository[Occasion]):
             upcoming = await repo.get_upcoming_by_next_occurrence(within_days=90)
 
             for occasion in upcoming:
-                days_until = (occasion.next_occurrence - date.today()).days
+                effective_date = occasion.next_occurrence or occasion.date
+                days_until = (effective_date - date.today()).days
                 print(f"{occasion.name} in {days_until} days")
             ```
 
         Note:
             Only returns occasions where:
             - is_active is True
-            - next_occurrence is not None
-            - next_occurrence is between today and today + within_days
+            - COALESCE(next_occurrence, date) is between today and today + within_days
+            Uses COALESCE to fall back to date when next_occurrence is NULL
         """
         today = date.today()
         cutoff = today + timedelta(days=within_days)
 
+        # Use COALESCE to fall back to date when next_occurrence is NULL
+        effective_date = func.coalesce(self.model.next_occurrence, self.model.date)
+
         stmt = (
             select(self.model)
             .where(self.model.is_active == True)
-            .where(self.model.next_occurrence.isnot(None))
-            .where(self.model.next_occurrence >= today)
-            .where(self.model.next_occurrence <= cutoff)
-            .order_by(self.model.next_occurrence.asc())
+            .where(effective_date >= today)
+            .where(effective_date <= cutoff)
+            .order_by(effective_date.asc())
         )
 
         result = await self.session.execute(stmt)

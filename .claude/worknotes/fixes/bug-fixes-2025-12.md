@@ -937,3 +937,37 @@ Monthly bug tracking for December 2025.
   3. Updated `GroupMultiSelect.tsx`: Added `allGroups = groupsData?.items ?? []` to extract array from paginated response
 - **Commit(s)**: `cbc549f`
 - **Status**: RESOLVED
+
+---
+
+### Dashboard Not Showing Occasions with NULL next_occurrence
+
+**Issue**: Dashboard showed no data despite an occasion existing 17 days away. The occasion was a Holiday type that displayed correctly on other pages but not on the dashboard.
+
+- **Location**: `services/api/app/repositories/occasion.py:256-263`
+- **Root Cause**: The `get_upcoming_by_next_occurrence()` method filtered with `.where(self.model.next_occurrence.isnot(None))` which excluded occasions where `next_occurrence` was NULL but `date` was set. Holiday occasions created manually may not have `next_occurrence` set.
+- **Fix**: Used SQLAlchemy's `func.coalesce()` to fall back to `date` when `next_occurrence` is NULL:
+  1. Created `effective_date = func.coalesce(self.model.next_occurrence, self.model.date)`
+  2. Replaced all WHERE clauses and ORDER BY to use `effective_date`
+  3. Removed the `next_occurrence.isnot(None)` filter
+- **Commit(s)**: `d93e95a`
+- **Status**: RESOLVED
+
+---
+
+### Gift Status Filters Not Working
+
+**Issue**: Status filters on the /gifts page (Ideas, Selected, Purchased, Received) did not filter results correctly despite gifts having different statuses set.
+
+- **Location**: `services/api/app/repositories/gift.py:381-383`
+- **Root Cause**: The status filter compared `ListItem.status` (an enum column) with raw strings from the API query parameters. SQLAlchemy requires enum values for comparison, but the code was passing strings like `['purchased']` instead of `[ListItemStatus.purchased]`.
+- **Evidence**: Dashboard service at `dashboard.py:131` correctly uses enum values: `.where(ListItem.status.in_([ListItemStatus.purchased, ListItemStatus.received]))`
+- **Fix**:
+  1. Added `ListItemStatus` to imports
+  2. Converted strings to enum values before filtering:
+     ```python
+     enum_statuses = [ListItemStatus(s) for s in statuses]
+     filters.append(ListItem.status.in_(enum_statuses))
+     ```
+- **Commit(s)**: `d93e95a`
+- **Status**: RESOLVED

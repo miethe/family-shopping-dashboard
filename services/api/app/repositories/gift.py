@@ -7,7 +7,7 @@ from sqlalchemy.orm import selectinload
 from app.models.gift import Gift
 from app.models.gift_person import GiftPerson, GiftPersonRole
 from app.models.list import List
-from app.models.list_item import ListItem
+from app.models.list_item import ListItem, ListItemStatus
 from app.models.store import Store
 from app.models.tag import gift_tags
 from app.repositories.base import BaseRepository
@@ -380,7 +380,9 @@ class GiftRepository(BaseRepository[Gift]):
 
         # Filter by list item status - OR logic within group
         if statuses:
-            filters.append(ListItem.status.in_(statuses))
+            # Convert string values to enum (frontend sends strings like 'purchased')
+            enum_statuses = [ListItemStatus(s) for s in statuses]
+            filters.append(ListItem.status.in_(enum_statuses))
 
         # Filter by list ID - OR logic within group
         if list_ids:
