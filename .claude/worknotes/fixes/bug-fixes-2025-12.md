@@ -874,3 +874,51 @@ Monthly bug tracking for December 2025.
 
 - **Commit(s)**: `15d31f3` (confirm-dialog), `4e4f07a` (remaining fixes)
 - **Status**: RESOLVED
+
+---
+
+### Groups API Endpoint Missing (404)
+
+**Issue**: Navigating to /people page caused 404 error for `GET /api/v1/groups` in API traces
+
+- **Location**: `services/api/app/api/groups.py` (created), `services/api/app/services/group_service.py` (created), `services/api/app/repositories/group_repository.py` (created), `services/api/app/main.py:235-238`
+- **Root Cause**: Frontend called `/api/v1/groups` endpoint via `useGroups()` hook, but the API endpoint was never implemented. The Group model and schema existed, but no repository, service, or router layers were created.
+- **Fix**: Created complete groups API stack following project architecture:
+  1. `group_repository.py` - Extends BaseRepository with eager member loading and cursor pagination
+  2. `group_service.py` - Business logic with ORM→DTO conversion and member counts
+  3. `groups.py` router - Full CRUD endpoints (GET list, GET by id, POST, PUT, DELETE)
+  4. Registered router in main.py with `/api/v1` prefix and `groups` tag
+- **Commit(s)**: `028fe23`
+- **Status**: RESOLVED
+
+---
+
+### Dashboard Not Displaying - PersonSummary Field Mismatch
+
+**Issue**: Dashboard page (/dashboard) showed no information - upcoming occasion, progress bar, and gift status details were all missing
+
+- **Location**: `services/api/app/schemas/dashboard.py:25`, `services/api/app/services/dashboard.py:234`
+- **Root Cause**: API schema `PersonSummary` used field `name: str` but frontend type `PersonSummaryDashboard` expected `display_name: string`. The field name mismatch caused person data to be undefined in the dashboard components.
+- **Fix**: Changed schema field from `name` to `display_name` in both:
+  1. `schemas/dashboard.py` - PersonSummary class field renamed
+  2. `services/dashboard.py` - Field assignment in PersonSummary instantiation
+- **Commit(s)**: `eeda144`
+- **Status**: RESOLVED
+
+---
+
+### Entity Modals 401 Unauthorized - Auth Race Condition
+
+**Issue**: Clicking entity cards (gifts, persons, occasions, lists) to open detail modals failed with 401 unauthorized for `GET /api/v1/{entity}/{id}`
+
+- **Location**: `apps/web/components/modals/GiftDetailModal.tsx`, `apps/web/components/modals/PersonDetailModal.tsx`, `apps/web/components/modals/OccasionDetailModal.tsx`, `apps/web/components/modals/ListDetailModal.tsx`
+- **Root Cause**: Race condition between authentication initialization and modal API requests. When modal opened, `useQuery` hooks fired immediately with `enabled: !!entityId && open`, but `AuthContext` was still validating the token asynchronously. This caused requests to go out without Authorization headers before the token was available in localStorage.
+- **Why list endpoints worked**: List endpoints load during initial page render when auth has had time to complete. Modal fetches fire immediately on user click, before auth validation finishes.
+- **Fix**: Added auth loading check to all entity modal queries:
+  1. Import `useAuth` from auth context
+  2. Get `loading: authLoading` from `useAuth()`
+  3. Update query enabled condition: `enabled: !!entityId && open && !authLoading`
+
+  This ensures API requests wait for auth validation before firing.
+- **Commit(s)**: `2f8ef4c`
+- **Status**: RESOLVED
