@@ -95,6 +95,21 @@ const PersonBudgetBarComponent = ({
   const { data: giftsData } = useGiftsByPerson(personId);
   const { openModal: openGiftModal } = useEntityModal('gift');
 
+  // HOOKS: Must be called unconditionally before any early returns
+  // Wrap gifts in useMemo to prevent new array creation on every render
+  const gifts = React.useMemo(() => giftsData?.items ?? [], [giftsData?.items]);
+
+  // For now, show all gifts associated with this person in both tooltips
+  // TODO: Once backend provides gift_people relationship data with is_recipient/is_purchaser flags,
+  // filter gifts properly by role
+  const allGiftTooltipItems: TooltipItem[] = React.useMemo(() => gifts.map((gift) => ({
+    id: gift.id,
+    name: gift.name,
+    price: gift.price || 0,
+    status: gift.purchase_date ? 'purchased' : 'planned',
+    imageUrl: gift.image_url || undefined,
+  })), [gifts]);
+
   // Card variant: hide if loading or no data
   if (variant === 'card') {
     if (isLoading || !budget) {
@@ -125,19 +140,6 @@ const PersonBudgetBarComponent = ({
   if (!budget) {
     return null;
   }
-
-  const gifts = giftsData?.items || [];
-
-  // For now, show all gifts associated with this person in both tooltips
-  // TODO: Once backend provides gift_people relationship data with is_recipient/is_purchaser flags,
-  // filter gifts properly by role
-  const allGiftTooltipItems: TooltipItem[] = React.useMemo(() => gifts.map((gift) => ({
-    id: gift.id,
-    name: gift.name,
-    price: gift.price || 0,
-    status: gift.purchase_date ? 'purchased' : 'planned',
-    imageUrl: gift.image_url || undefined,
-  })), [gifts]);
 
   // Recipient role display logic
   const hasRecipientBudget = recipientBudgetTotal !== null && recipientBudgetTotal !== undefined;

@@ -560,12 +560,10 @@ describe('PersonOccasionBudgetCard', () => {
       await user.type(recipientInput, '199.99');
       await user.tab();
 
-      
-        expect(mockMutate).toHaveBeenCalledWith(
-          { recipient_budget_total: 199.99 },
-          expect.any(Object)
-        );
-      });
+      expect(mockMutate).toHaveBeenCalledWith(
+        { recipient_budget_total: 199.99 },
+        expect.any(Object)
+      );
     });
 
     it('handles person without relationship', () => {

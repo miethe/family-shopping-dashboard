@@ -64,7 +64,12 @@ export function PersonDropdown({
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   const { data: personsData, isLoading, error: fetchError } = usePersons();
-  const persons = personsData?.items || [];
+
+  // Memoize persons array to maintain stable reference
+  const persons = React.useMemo(
+    () => personsData?.items ?? [],
+    [personsData?.items]
+  );
 
   // Filter persons by search query
   const filteredPersons = React.useMemo(() => {

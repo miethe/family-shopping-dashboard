@@ -20,7 +20,7 @@
 import * as React from 'react';
 import NextImage from 'next/image';
 import { cn } from '@/lib/utils';
-import { Upload, Link, Image, X, AlertCircle } from './icons';
+import { Upload, Link, Image as ImageIcon, X, AlertCircle } from './icons';
 import { Button } from './button';
 import { Input } from './input';
 import { uploadApi } from '@/lib/api/upload';
@@ -82,15 +82,15 @@ export function ImagePicker({
   /**
    * Handle error display
    */
-  const handleError = (errorMessage: string) => {
+  const handleError = React.useCallback((errorMessage: string) => {
     setError(errorMessage);
     onError?.(errorMessage);
-  };
+  }, [onError]);
 
   /**
    * Upload file to backend
    */
-  const uploadFile = async (file: File) => {
+  const uploadFile = React.useCallback(async (file: File) => {
     const validationError = validateFile(file);
     if (validationError) {
       handleError(validationError);
@@ -109,7 +109,7 @@ export function ImagePicker({
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [onChange, handleError]);
 
   /**
    * Upload from URL
@@ -341,7 +341,7 @@ export function ImagePicker({
                 isUploading && 'cursor-wait'
               )}
             >
-              <Image className="h-12 w-12 text-warm-400 mb-4" />
+              <ImageIcon className="h-12 w-12 text-warm-400 mb-4" />
               <p className="text-base font-semibold text-warm-900 mb-2 text-center">
                 {isUploading ? 'Uploading...' : 'Drop image here, paste, or click to upload'}
               </p>
