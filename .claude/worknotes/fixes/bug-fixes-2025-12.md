@@ -831,3 +831,46 @@ Monthly bug tracking for December 2025.
   The modal allows editing group name/color/description and uses PersonMultiSelect to add/remove people from the group. Member updates work by modifying each person's `group_ids` via the Person API.
 - **Commit(s)**: `f04b4b4`
 - **Status**: RESOLVED
+
+---
+
+### React Hooks Build Errors Post for-people-ui-enhancement
+
+**Issue**: Build failed with multiple React hooks violations and ESLint errors after the for-people-ui-enhancement implementation
+
+- **Location**: Multiple frontend components
+- **Root Cause**: Several React hooks rule violations introduced during UI enhancement work
+- **Fixes Applied**:
+
+#### 1. PersonOccasionBudgetCard.test.tsx Parsing Error
+- **Location**: `apps/web/components/budgets/__tests__/PersonOccasionBudgetCard.test.tsx:563-569`
+- **Root Cause**: Stray closing braces and extra indentation caused "Declaration or statement expected" parsing error
+- **Fix**: Removed extra `});` and cleaned up indentation in the 'handles decimal budget values' test
+
+#### 2. PersonBudgetBar.tsx Conditional Hook Call
+- **Location**: `apps/web/components/people/PersonBudgetBar.tsx:129-140`
+- **Root Cause**: `React.useMemo` was called after multiple early returns, violating React hooks rules
+- **Fix**: Moved `gifts` and `allGiftTooltipItems` useMemo calls before all early returns; wrapped `gifts` in useMemo to prevent new array on every render
+
+#### 3. PersonDropdown.tsx Logical Expression Warning
+- **Location**: `apps/web/components/common/PersonDropdown.tsx:67`
+- **Root Cause**: `personsData?.items || []` created new array reference each render, breaking useMemo deps
+- **Fix**: Wrapped `persons` initialization in useMemo: `React.useMemo(() => personsData?.items ?? [], [personsData?.items])`
+
+#### 4. confirm-dialog.tsx useCallback Missing Dependencies
+- **Location**: `apps/web/components/ui/confirm-dialog.tsx:126-134`
+- **Root Cause**: `handleConfirm` and `handleCancel` accessed `state.resolve` but only included `[state.resolve]` in deps
+- **Fix**: Used functional state updates (`setState(prevState => ...)`) to avoid external state dependency
+
+#### 5. image-picker.tsx uploadFile Function Recreation
+- **Location**: `apps/web/components/ui/image-picker.tsx:93-112`
+- **Root Cause**: `uploadFile` function recreated every render, causing `handlePaste` useCallback to recreate
+- **Fix**: Wrapped `uploadFile` and `handleError` in useCallback with proper dependencies
+
+#### 6. image-picker.tsx Image Alt Text False Positive
+- **Location**: `apps/web/components/ui/image-picker.tsx:344`
+- **Root Cause**: ESLint confused `Image` icon component (from `./icons`) with HTML `<img>` element
+- **Fix**: Renamed import to `Image as ImageIcon` and usage to `<ImageIcon />`
+
+- **Commit(s)**: `15d31f3` (confirm-dialog), `4e4f07a` (remaining fixes)
+- **Status**: RESOLVED
