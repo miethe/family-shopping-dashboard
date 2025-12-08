@@ -848,3 +848,35 @@ class PersonBudget(BaseModel):
     def serialize_decimal(self, value: Decimal) -> float:
         """Serialize Decimal fields to float for JSON."""
         return float(value)
+
+
+class PersonOccasionBudgetResponse(BaseModel):
+    """Response DTO for person-occasion budget with spending progress."""
+
+    person_id: int
+    occasion_id: int
+
+    # Budget fields (None = no limit set)
+    recipient_budget_total: Decimal | None = None
+    purchaser_budget_total: Decimal | None = None
+
+    # Spending data (from get_gift_budget)
+    recipient_spent: Decimal = Decimal("0")
+    recipient_progress: float | None = None  # None if no budget set
+
+    purchaser_spent: Decimal = Decimal("0")
+    purchaser_progress: float | None = None
+
+    @field_serializer("recipient_budget_total", "purchaser_budget_total", "recipient_spent", "purchaser_spent")
+    def serialize_decimal(self, value: Decimal | None) -> float | None:
+        """Serialize Decimal to float for JSON."""
+        return float(value) if value is not None else None
+
+
+class PersonOccasionBudgetUpdate(BaseModel):
+    """Request DTO for updating person-occasion budget."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    recipient_budget_total: Decimal | None = Field(None, ge=0, description="Budget for gifts TO person (>=0 or None)")
+    purchaser_budget_total: Decimal | None = Field(None, ge=0, description="Budget for gifts BY person (>=0 or None)")

@@ -6,7 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import NotFoundError
 from app.schemas.base import PaginatedResponse
-from app.schemas.person import PersonBudget, PersonCreate, PersonResponse, PersonUpdate
+from app.schemas.person import (
+    PersonBudget,
+    PersonCreate,
+    PersonOccasionBudgetResponse,
+    PersonOccasionBudgetUpdate,
+    PersonResponse,
+    PersonUpdate,
+)
 from app.services.person import PersonService
 
 router = APIRouter(prefix="/persons", tags=["persons"])
@@ -418,6 +425,83 @@ async def get_person_budget(
             code="PERSON_NOT_FOUND",
             message=f"Person with ID {person_id} not found",
             details={"person_id": person_id},
+        )
+
+    return budget
+
+
+@router.get(
+    "/{person_id}/occasions/{occasion_id}/budget",
+    response_model=PersonOccasionBudgetResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get person budget for specific occasion",
+    description="Retrieve budget fields and spending progress for a person-occasion pair",
+)
+async def get_person_occasion_budget(
+    person_id: int,
+    occasion_id: int,
+    current_user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> PersonOccasionBudgetResponse:
+    """
+    Get budget and spending progress for person-occasion pair.
+
+    Returns:
+        - Budget fields (recipient_budget_total, purchaser_budget_total)
+        - Spending amounts (recipient_spent, purchaser_spent)
+        - Progress percentages (recipient_progress, purchaser_progress)
+
+    Raises:
+        HTTPException 404: If person-occasion link doesn't exist
+    """
+    service = PersonService(db)
+    budget = await service.get_occasion_budget(person_id, occasion_id)
+
+    if budget is None:
+        raise NotFoundError(
+            code="PERSON_OCCASION_NOT_FOUND",
+            message=f"Person {person_id} is not linked to occasion {occasion_id}",
+            details={"person_id": person_id, "occasion_id": occasion_id},
+        )
+
+    return budget
+
+
+@router.put(
+    "/{person_id}/occasions/{occasion_id}/budget",
+    response_model=PersonOccasionBudgetResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Update person budget for specific occasion",
+    description="Set or update budget fields for a person-occasion pair",
+)
+async def update_person_occasion_budget(
+    person_id: int,
+    occasion_id: int,
+    data: PersonOccasionBudgetUpdate,
+    current_user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> PersonOccasionBudgetResponse:
+    """
+    Update budget for person-occasion pair.
+
+    Args:
+        recipient_budget_total: Budget for gifts TO person (>=0 or None for no limit)
+        purchaser_budget_total: Budget for gifts BY person (>=0 or None for no limit)
+
+    Returns:
+        Updated budget response with spending progress
+
+    Raises:
+        HTTPException 404: If person-occasion link doesn't exist
+    """
+    service = PersonService(db)
+    budget = await service.set_occasion_budget(person_id, occasion_id, data)
+
+    if budget is None:
+        raise NotFoundError(
+            code="PERSON_OCCASION_NOT_FOUND",
+            message=f"Person {person_id} is not linked to occasion {occasion_id}",
+            details={"person_id": person_id, "occasion_id": occasion_id},
         )
 
     return budget

@@ -7,7 +7,15 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.person import PersonRepository
-from app.schemas.person import PersonBudget, PersonCreate, PersonResponse, PersonUpdate, SizeEntry
+from app.schemas.person import (
+    PersonBudget,
+    PersonCreate,
+    PersonOccasionBudgetResponse,
+    PersonOccasionBudgetUpdate,
+    PersonResponse,
+    PersonUpdate,
+    SizeEntry,
+)
 from app.services.person_occasion_hooks import PersonOccasionHooks
 
 
@@ -401,3 +409,65 @@ class PersonService:
                 payload["advanced_interests"] = None
 
         return payload
+
+    async def get_occasion_budget(
+        self,
+        person_id: int,
+        occasion_id: int
+    ) -> PersonOccasionBudgetResponse | None:
+        """
+        Get budget and spending progress for person-occasion pair.
+
+        Returns budget fields with calculated progress percentages.
+        Returns None if person-occasion link doesn't exist.
+        """
+        # Get PersonOccasion record with budget fields
+        person_occasion = await self.repo.get_person_occasion_budget(person_id, occasion_id)
+        if person_occasion is None:
+            return None
+
+        # Get spending data filtered by occasion
+        budget_result = await self.repo.get_gift_budget(person_id, occasion_id)
+
+        # Calculate progress percentages
+        recipient_progress = None
+        if person_occasion.recipient_budget_total is not None and person_occasion.recipient_budget_total > 0:
+            recipient_progress = float(budget_result.gifts_assigned_total / person_occasion.recipient_budget_total * 100)
+
+        purchaser_progress = None
+        if person_occasion.purchaser_budget_total is not None and person_occasion.purchaser_budget_total > 0:
+            purchaser_progress = float(budget_result.gifts_purchased_total / person_occasion.purchaser_budget_total * 100)
+
+        return PersonOccasionBudgetResponse(
+            person_id=person_id,
+            occasion_id=occasion_id,
+            recipient_budget_total=person_occasion.recipient_budget_total,
+            purchaser_budget_total=person_occasion.purchaser_budget_total,
+            recipient_spent=budget_result.gifts_assigned_total,
+            recipient_progress=recipient_progress,
+            purchaser_spent=budget_result.gifts_purchased_total,
+            purchaser_progress=purchaser_progress
+        )
+
+    async def set_occasion_budget(
+        self,
+        person_id: int,
+        occasion_id: int,
+        data: PersonOccasionBudgetUpdate
+    ) -> PersonOccasionBudgetResponse | None:
+        """
+        Update budget for person-occasion pair.
+
+        Returns updated budget response with progress, or None if link doesn't exist.
+        """
+        try:
+            await self.repo.update_person_occasion_budget(
+                person_id,
+                occasion_id,
+                data.recipient_budget_total,
+                data.purchaser_budget_total
+            )
+        except ValueError:
+            return None
+
+        return await self.get_occasion_budget(person_id, occasion_id)

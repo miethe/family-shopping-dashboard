@@ -80,3 +80,32 @@ export interface PersonBudget {
   gifts_to_purchase_count: number;
   gifts_to_purchase_total: number;  // Decimal serialized as float
 }
+
+/**
+ * Person-Occasion budget with spending limits and progress
+ * Response from GET /persons/{person_id}/occasions/{occasion_id}/budget
+ */
+export interface PersonOccasionBudget {
+  person_id: number;
+  occasion_id: number;
+
+  // Budget fields (null = no limit set)
+  recipient_budget_total: number | null;
+  purchaser_budget_total: number | null;
+
+  // Spending amounts
+  recipient_spent: number;
+  purchaser_spent: number;
+
+  // Progress percentages (null if no budget set)
+  recipient_progress: number | null;
+  purchaser_progress: number | null;
+}
+
+/**
+ * Request body for PUT /persons/{person_id}/occasions/{occasion_id}/budget
+ */
+export interface PersonOccasionBudgetUpdate {
+  recipient_budget_total?: number | null;
+  purchaser_budget_total?: number | null;
+}

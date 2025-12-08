@@ -128,6 +128,19 @@ export const personApi = {
       `/persons/${personId}/budgets`,
       occasionId ? { occasion_id: occasionId } : undefined
     ),
+  getOccasionBudget: (personId: number, occasionId: number) =>
+    apiClient.get<import('@/types/budget').PersonOccasionBudget>(
+      `/persons/${personId}/occasions/${occasionId}/budget`
+    ),
+  updateOccasionBudget: (
+    personId: number,
+    occasionId: number,
+    data: import('@/types/budget').PersonOccasionBudgetUpdate
+  ) =>
+    apiClient.put<import('@/types/budget').PersonOccasionBudget>(
+      `/persons/${personId}/occasions/${occasionId}/budget`,
+      data
+    ),
 };
 
 // ============================================================================
