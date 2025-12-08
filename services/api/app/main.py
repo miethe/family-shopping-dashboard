@@ -232,6 +232,11 @@ from app.api import stores
 
 app.include_router(stores.router, prefix=API_V1_PREFIX)
 
+# Group routes (organizing persons into groups)
+from app.api import groups
+
+app.include_router(groups.router, prefix=API_V1_PREFIX)
+
 # Upload/media routes
 from app.api import upload
 
