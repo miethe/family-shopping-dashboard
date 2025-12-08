@@ -12,7 +12,7 @@ from app.models.gift_person import GiftPerson, GiftPersonRole
 from app.models.group import PersonGroup
 from app.models.list import List
 from app.models.list_item import ListItem
-from app.models.person import Person
+from app.models.person import Person, PersonOccasion
 from app.repositories.base import BaseRepository
 
 
@@ -443,3 +443,78 @@ class PersonRepository(BaseRepository[Person]):
             gifts_to_purchase_count=int(to_purchase_row[0] or 0),
             gifts_to_purchase_total=Decimal(to_purchase_row[1] or 0),
         )
+
+    async def get_person_occasion_budget(
+        self,
+        person_id: int,
+        occasion_id: int
+    ) -> PersonOccasion | None:
+        """
+        Retrieve PersonOccasion record with budget fields.
+
+        Args:
+            person_id: ID of the person
+            occasion_id: ID of the occasion
+
+        Returns:
+            PersonOccasion model with budget fields, or None if not linked
+
+        Example:
+            ```python
+            po = await repo.get_person_occasion_budget(person_id=5, occasion_id=1)
+            if po:
+                print(f"Budget: {po.budget_amount}")
+                print(f"Spent: {po.spent_amount}")
+            ```
+        """
+        stmt = (
+            select(PersonOccasion)
+            .where(
+                PersonOccasion.person_id == person_id,
+                PersonOccasion.occasion_id == occasion_id
+            )
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def update_person_occasion_budget(
+        self,
+        person_id: int,
+        occasion_id: int,
+        recipient_budget_total: Decimal | None = None,
+        purchaser_budget_total: Decimal | None = None
+    ) -> PersonOccasion:
+        """
+        Update budget fields for a person-occasion link.
+
+        Args:
+            person_id: ID of the person
+            occasion_id: ID of the occasion
+            recipient_budget_total: Budget for gifts TO person (NULL = no limit)
+            purchaser_budget_total: Budget for gifts BY person (NULL = no limit)
+
+        Returns:
+            Updated PersonOccasion model
+
+        Raises:
+            ValueError: If budgets are negative or link doesn't exist
+        """
+        # Validate non-negative
+        if recipient_budget_total is not None and recipient_budget_total < 0:
+            raise ValueError("recipient_budget_total must be >= 0 or None")
+        if purchaser_budget_total is not None and purchaser_budget_total < 0:
+            raise ValueError("purchaser_budget_total must be >= 0 or None")
+
+        # Get existing record
+        person_occasion = await self.get_person_occasion_budget(person_id, occasion_id)
+        if not person_occasion:
+            raise ValueError(f"PersonOccasion link not found: person={person_id}, occasion={occasion_id}")
+
+        # Update fields
+        person_occasion.recipient_budget_total = recipient_budget_total
+        person_occasion.purchaser_budget_total = purchaser_budget_total
+
+        await self.session.commit()
+        await self.session.refresh(person_occasion)
+
+        return person_occasion

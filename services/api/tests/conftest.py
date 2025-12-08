@@ -192,9 +192,10 @@ async def test_occasion(async_session: AsyncSession) -> Occasion:
     """
     occasion = Occasion(
         name="Test Birthday",
-        type=OccasionType.birthday,
+        type=OccasionType.RECURRING,
         date=date(2025, 12, 25),
         description="Test occasion",
+        subtype="birthday",
     )
     async_session.add(occasion)
     await async_session.commit()

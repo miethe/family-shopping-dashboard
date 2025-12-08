@@ -76,9 +76,7 @@ class Tag(BaseModel):
         lazy="select",  # Load gifts when accessed
     )
 
-    __table_args__ = (
-        Index("ix_tags_name", "name"),  # Explicit name for unique index
-    )
+    __table_args__: tuple = ()  # Index created automatically by mapped_column(index=True)
 
     def __repr__(self) -> str:
         """String representation of Tag."""

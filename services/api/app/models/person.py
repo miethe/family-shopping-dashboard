@@ -1,9 +1,10 @@
 """Person model representing gift recipients (family members and friends)."""
 
 from datetime import date
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import JSON, Date, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Date, ForeignKey, Integer, NUMERIC, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship as sa_relationship
 
@@ -175,6 +176,18 @@ class PersonOccasion(BaseModel):
         Integer,
         ForeignKey("occasions.id", ondelete="CASCADE"),
         nullable=False,
+    )
+
+    recipient_budget_total: Mapped[Decimal | None] = mapped_column(
+        NUMERIC(10, 2),
+        nullable=True,
+        comment="Budget for gifts TO this person for this occasion"
+    )
+
+    purchaser_budget_total: Mapped[Decimal | None] = mapped_column(
+        NUMERIC(10, 2),
+        nullable=True,
+        comment="Budget for gifts BY this person for this occasion"
     )
 
     __table_args__ = (

@@ -71,9 +71,8 @@ class User(BaseModel):
     )
 
     __table_args__ = (
-        Index("ix_users_email", "email", unique=True),
         {"comment": "Family members with authentication credentials"},
-    )
+    )  # Index created automatically by mapped_column(unique=True, index=True)
 
     def __repr__(self) -> str:
         """String representation for debugging."""

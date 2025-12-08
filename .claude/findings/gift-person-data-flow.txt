@@ -1,0 +1,335 @@
+================================================================================
+GIFT-TO-PERSON LINKING: DATA FLOW DIAGRAMS
+================================================================================
+
+1. VIEWING PERSON'S LINKED GIFTS
+================================================================================
+
+User opens PersonDetailModal for Person #5
+     |
+     v
+PersonDetailModal (PersonDetailModal.tsx:39-890)
+     |
+     |-- Fetches: useQuery(['people', 5]) -> GET /persons/5
+     |
+     |-- Renders: <Tabs /> with 5 tabs
+     |
+     v
+"Linked Entities" Tab
+     |
+     v
+LinkedGiftsSection (LinkedGiftsSection.tsx:31-149)
+     |
+     |-- Calls: useGiftsByPerson(5)
+     |
+     |-- Which calls: useGifts({ person_ids: [5] })
+     |
+     |-- Which calls: giftApi.list({ person_ids: [5] })
+     |
+     v
+HTTP GET /gifts?person_ids=5
+     |
+     v
+Backend: GiftService.list()
+     |
+     v
+Backend: GiftRepository.get_filtered(person_ids=[5])
+     |
+     v
+SQL QUERY:
+     SELECT DISTINCT gifts.*
+     FROM gifts
+     JOIN list_items ON gifts.id = list_items.gift_id
+     JOIN lists ON list_items.list_id = lists.id
+     WHERE lists.person_id = 5  <-- KEY: Filters by list ownership
+     ORDER BY gifts.id DESC
+     LIMIT 51
+     |
+     v
+Database returns: All gifts in lists owned by Person #5
+     |
+     v
+Frontend groups by purchase_date:
+     |-- Pending: purchase_date IS NULL
+     |-- Purchased: purchase_date IS NOT NULL
+     |
+     v
+Render MiniGiftCard grid for each group
+
+
+2. DATABASE SCHEMA: GIFT-PERSON RELATIONSHIPS
+================================================================================
+
+Table: gifts
+  ├─ id (PK)
+  ├─ name
+  ├─ price
+  ├─ purchase_date  <-- NULL = pending, NOT NULL = purchased
+  ├─ purchaser_id FK (→ persons.id)  <-- Who bought it
+  └─ ...
+
+Table: gift_people (Junction Table)
+  ├─ id (PK)
+  ├─ gift_id FK (→ gifts.id, CASCADE DELETE)
+  ├─ person_id FK (→ persons.id, CASCADE DELETE)
+  ├─ role ENUM('recipient', 'purchaser', 'contributor')
+  └─ Unique: (gift_id, person_id, role)
+
+Table: lists
+  ├─ id (PK)
+  ├─ person_id FK (→ persons.id)  <-- Who owns this list
+  ├─ name
+  └─ ...
+
+Table: list_items
+  ├─ id (PK)
+  ├─ gift_id FK (→ gifts.id)
+  ├─ list_id FK (→ lists.id)
+  ├─ status ENUM('idea', 'selected', 'purchased', 'received')
+  └─ ...
+
+Table: persons
+  ├─ id (PK)
+  ├─ display_name
+  └─ ...
+
+
+3. TWO LINKING MECHANISMS (DESIGN ISSUE!)
+================================================================================
+
+MECHANISM 1: Direct Linking via GiftPerson
+────────────────────────────────────────────────────────────────────────────
+
+Workflow:
+  Gift created with person_ids=[5, 7]
+    ↓
+  GiftService.create(GiftCreate { person_ids: [5,7], ... })
+    ↓
+  GiftRepository.create()           # Create Gift record
+    ↓
+  GiftRepository.set_people([5,7])  # Create GiftPerson rows
+    ↓
+  Result:
+    gifts table: 1 row
+    gift_people table: 2 rows (one per person)
+
+Used by:
+  - PersonRepository.get_gift_budget()
+    Query: Gift JOIN GiftPerson WHERE GiftPerson.person_id = X
+  - NOT currently used in UI (LinkedGiftsSection)
+
+
+MECHANISM 2: List-Based Linking via List.person_id
+────────────────────────────────────────────────────────────────────────────
+
+Workflow:
+  Person #5 creates a list "Wishlist"
+    ↓
+  lists table: new row with person_id=5
+    ↓
+  User adds Gift #3 to this list via ListItem
+    ↓
+  list_items table: new row (gift_id=3, list_id=X)
+    ↓
+  Result: Gift appears in Person #5's LinkedGiftsSection
+    (because lists.person_id = 5)
+
+Used by:
+  - GiftRepository.get_filtered(person_ids=[5])
+    Query: Gift JOIN ListItem JOIN List WHERE List.person_id = 5
+  - LinkedGiftsSection (UI)
+
+
+4. GIFT-PERSON LINKING: BUDGET QUERIES
+================================================================================
+
+PersonRepository.get_gift_budget(person_id=5, occasion_id=None)
+     |
+     +-- Query 1: Gifts assigned TO this person (as recipient)
+     |   SELECT COUNT(*), SUM(price) FROM gifts
+     |   JOIN gift_people ON gifts.id = gift_people.gift_id
+     |   WHERE gift_people.person_id = 5
+     |     AND gift_people.role = 'recipient'
+     |
+     |   Returns: gifts_assigned_count, gifts_assigned_total
+     |
+     |
+     +-- Query 2: Gifts purchased BY this person
+     |   SELECT COUNT(*), SUM(price) FROM gifts
+     |   WHERE gifts.purchaser_id = 5
+     |     AND gifts.purchase_date IS NOT NULL
+     |
+     |   Returns: gifts_purchased_count, gifts_purchased_total
+     |
+     |
+     +-- Query 3: Assigned gifts that have been purchased
+     |   SELECT COUNT(*), SUM(price) FROM gifts
+     |   JOIN gift_people ON gifts.id = gift_people.gift_id
+     |   WHERE gift_people.person_id = 5
+     |     AND gift_people.role = 'recipient'
+     |     AND gifts.purchase_date IS NOT NULL
+     |
+     |   Returns: gifts_assigned_purchased_count, gifts_assigned_purchased_total
+     |
+     |
+     +-- Query 4: Gifts assigned to purchase but not yet bought
+         SELECT COUNT(*), SUM(price) FROM gifts
+         WHERE gifts.purchaser_id = 5
+           AND gifts.purchase_date IS NULL
+
+         Returns: gifts_to_purchase_count, gifts_to_purchase_total
+
+
+5. COMPONENT STRUCTURE: PERSON MODAL
+================================================================================
+
+PersonDetailModal
+  ├─ useQuery(['people', personId])  → GET /persons/5
+  |
+  ├─ Tabs (activeTab: 'overview' | 'advanced' | 'linked' | 'comments' | 'history')
+  |
+  └─ TabsContent value="linked"
+      |
+      ├─ Section: "Gifts" (LinkedGiftsSection)
+      |   |
+      |   ├─ useGiftsByPerson(personId) → GET /gifts?person_ids=5
+      |   |
+      |   └─ Groups gifts by purchase_date:
+      |       ├─ Pending Gifts (purchase_date IS NULL)
+      |       |   └─ Grid of MiniGiftCards
+      |       |
+      |       └─ Purchased Gifts (purchase_date IS NOT NULL)
+      |           └─ Grid of MiniGiftCards
+      |
+      └─ Section: "Lists for this person" (useListsForPerson)
+          |
+          └─ List of all lists owned by this person
+              ├─ Each clickable to open ListDetailModal
+              └─ Shows item count per list
+
+
+6. API CONTRACT: GET /gifts?person_ids=5
+================================================================================
+
+Request:
+  GET /gifts?person_ids=5&limit=50
+  Authorization: Bearer <token>
+
+Query Flow:
+  Router (api/gifts.py:30-115)
+    ├─ Validates params (person_ids, limit, cursor, search, etc.)
+    └─ GiftService.list(person_ids=[5], ...)
+         └─ GiftRepository.get_filtered(person_ids=[5], ...)
+              └─ Executes: Gift JOIN ListItem JOIN List WHERE List.person_id IN (5)
+
+Response Schema (GiftResponse[]):
+  [
+    {
+      id: 1,
+      name: "LEGO Star Wars",
+      price: 79.99,
+      image_url: "https://...",
+      purchase_date: null,           ← Used to determine Pending vs Purchased
+      people: [
+        { id: 5, display_name: "Alice" }  ← From gift_people.person_id
+      ],
+      stores: [ ... ],
+      created_at: "2025-11-26T...",
+      updated_at: "2025-11-26T..."
+    },
+    ...
+  ]
+
+Metadata:
+  has_more: true
+  next_cursor: 42
+
+
+7. THE GAP: Two Linking Methods, Different Behavior
+================================================================================
+
+Scenario:
+  1. Create gift #10 with person_ids=[5]
+  2. GiftPerson(gift_id=10, person_id=5, role=RECIPIENT) is created
+  3. But gift #10 is NOT added to any list
+
+Question: Will Gift #10 appear in Person #5's LinkedGiftsSection?
+
+Answer: NO! Here's why:
+
+  LinkedGiftsSection query:
+    SELECT gifts.* FROM gifts
+    JOIN list_items ON gifts.id = list_items.gift_id
+    JOIN lists ON list_items.list_id = lists.id
+    WHERE lists.person_id = 5
+
+  Gift #10 fails the JOIN:
+    - No list_item references it (not in any list)
+    - Can't JOIN to list_items
+    - Filtered out
+
+  But gift_people table HAS:
+    - GiftPerson(gift_id=10, person_id=5, role=RECIPIENT)
+
+  Budget calculation DOES see it:
+    SELECT COUNT(*) FROM gifts
+    JOIN gift_people ON gifts.id = gift_people.gift_id
+    WHERE gift_people.person_id = 5 AND role = 'recipient'
+    → Counts gift #10!
+
+RESULT: Confusing inconsistency
+  - Budget says: "Person has 1 assigned gift"
+  - LinkedGiftsSection says: "No gifts"
+
+
+8. FILE LOCATION REFERENCE
+================================================================================
+
+FRONTEND:
+  - apps/web/components/modals/PersonDetailModal.tsx
+    ├─ Lines 28-597: Main component
+    ├─ Lines 53-57: useQuery for person data
+    ├─ Lines 79-82: useListsForPerson hook
+    ├─ Lines 371-388: Tabs definition
+    └─ Lines 585-694: "Linked Entities" tab content
+
+  - apps/web/components/people/LinkedGiftsSection.tsx
+    ├─ Lines 31-149: Main component
+    ├─ Lines 36: useGiftsByPerson hook call
+    ├─ Lines 39-56: Group gifts by purchase_date
+    └─ Lines 88-114: Render pending and purchased gift grids
+
+  - apps/web/hooks/useGifts.ts
+    ├─ Lines 21-33: useGifts (base hook)
+    ├─ Lines 41-46: useGiftsByPerson (convenience wrapper)
+    ├─ Lines 68-114: useCreateGift, useUpdateGift, useDeleteGift
+
+BACKEND:
+  - services/api/app/api/gifts.py
+    ├─ Lines 23-115: GET /gifts endpoint
+    └─ Calls: GiftService.list()
+
+  - services/api/app/services/gift.py
+    ├─ Lines 61-112: create() method
+    └─ Calls: repo.set_people(gift.id, person_ids)
+
+  - services/api/app/repositories/gift.py
+    ├─ Lines 255-400: get_filtered() method
+    ├─ Lines 333-335: person_ids filter logic
+    ├─ Lines 402-420: get_linked_people()
+    └─ Lines 422-448: attach_people()
+
+  - services/api/app/models/gift_person.py
+    ├─ Lines 17-22: GiftPersonRole enum
+    └─ Lines 25-83: GiftPerson model
+
+  - services/api/app/repositories/person.py
+    ├─ Lines 294-445: get_gift_budget()
+    └─ Uses GiftPerson JOIN for recipient tracking
+
+API ENDPOINTS:
+  - GET /persons/{id} → PersonResponse (includes groups, occasion_ids, but NOT gifts)
+  - GET /gifts?person_ids=X → PaginatedResponse[GiftResponse]
+  - GET /persons/{id}/budgets → PersonBudget (includes gift counts/totals)
+
+================================================================================
