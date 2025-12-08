@@ -124,14 +124,18 @@ export function useConfirmDialog() {
   }, []);
 
   const handleConfirm = React.useCallback(() => {
-    state.resolve?.(true);
-    setState({ open: false, config: null, resolve: null });
-  }, [state.resolve]);
+    setState((prevState) => {
+      prevState.resolve?.(true);
+      return { open: false, config: null, resolve: null };
+    });
+  }, []);
 
   const handleCancel = React.useCallback(() => {
-    state.resolve?.(false);
-    setState({ open: false, config: null, resolve: null });
-  }, [state.resolve]);
+    setState((prevState) => {
+      prevState.resolve?.(false);
+      return { open: false, config: null, resolve: null };
+    });
+  }, []);
 
   const dialog = state.config ? (
     <ConfirmDialog
