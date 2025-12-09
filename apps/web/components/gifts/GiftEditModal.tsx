@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select } from '@/components/ui/select';
+import { StatusSelector } from '@/components/ui/status-selector';
 import { ImagePicker } from '@/components/ui/image-picker';
 import { UrlListInput } from '@/components/common/UrlListInput';
 import { StoreMultiSelect } from '@/components/gifts/StoreMultiSelect';
@@ -165,13 +166,6 @@ export function GiftEditModal({
     });
   };
 
-  const giftStatusOptions = [
-    { value: 'idea', label: 'Idea' },
-    { value: 'selected', label: 'Selected' },
-    { value: 'purchased', label: 'Purchased' },
-    { value: 'received', label: 'Received' },
-  ];
-
   const listItemStatusOptions = [
     { value: 'idea', label: 'Idea' },
     { value: 'selected', label: 'Selected' },
@@ -220,6 +214,22 @@ export function GiftEditModal({
           placeholder="0.00"
           helperText="Optional - estimated or actual price"
         />
+
+        {/* Gift Status - positioned between Price and URL per design spec */}
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold text-warm-800 uppercase tracking-wide">
+            Gift Status
+          </label>
+          <StatusSelector
+            status={giftStatus as 'idea' | 'selected' | 'purchased' | 'received'}
+            onChange={(value) => setGiftStatus(value as GiftStatus)}
+            size="md"
+            disabled={isUpdating}
+          />
+          <p className="mt-1.5 text-xs text-warm-600">
+            Overall status of this gift
+          </p>
+        </div>
 
         {/* Gift Image Picker */}
         <div>
@@ -303,28 +313,18 @@ export function GiftEditModal({
           disabled={isUpdating}
         />
 
-        {/* Priority & Status Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Select
-            label="Priority"
-            value={priority}
-            onChange={(value) => setPriority(value as GiftPriority)}
-            options={[
-              { value: 'low', label: 'Low' },
-              { value: 'medium', label: 'Medium' },
-              { value: 'high', label: 'High' },
-            ]}
-            disabled={isUpdating}
-          />
-          <Select
-            label="Gift Status"
-            value={giftStatus}
-            onChange={(value) => setGiftStatus(value as GiftStatus)}
-            options={giftStatusOptions}
-            disabled={isUpdating}
-            helperText="Overall status of this gift"
-          />
-        </div>
+        {/* Priority */}
+        <Select
+          label="Priority"
+          value={priority}
+          onChange={(value) => setPriority(value as GiftPriority)}
+          options={[
+            { value: 'low', label: 'Low' },
+            { value: 'medium', label: 'Medium' },
+            { value: 'high', label: 'High' },
+          ]}
+          disabled={isUpdating}
+        />
 
         {/* Quantity */}
         <Input

@@ -39,6 +39,7 @@ import { PersonDetailModal } from "./PersonDetailModal";
 import { Select } from "@/components/ui/select";
 import { PurchaserAssignDialog } from "./PurchaserAssignDialog";
 import { useAuth } from "@/lib/context/AuthContext";
+import { useToast } from "@/components/ui/use-toast";
 
 interface GiftDetailModalProps {
   giftId: string | null;
@@ -69,6 +70,7 @@ export function GiftDetailModal({
   const [pendingStatus, setPendingStatus] = React.useState<GiftStatus | null>(null);
 
   const { loading: authLoading } = useAuth();
+  const { toast } = useToast();
 
   const { data: gift, isLoading } = useQuery<Gift>({
     queryKey: ["gifts", giftId ? Number(giftId) : null],
@@ -106,9 +108,25 @@ export function GiftDetailModal({
       setShowPurchaserDialog(true);
     } else {
       // Directly update status without purchaser dialog
-      updateGiftMutation.mutate({
-        status: newStatus,
-      });
+      updateGiftMutation.mutate(
+        { status: newStatus },
+        {
+          onSuccess: () => {
+            toast({
+              title: 'Status updated',
+              description: `Status changed to ${newStatus}`,
+              variant: 'success',
+            });
+          },
+          onError: (error: Error) => {
+            toast({
+              title: 'Failed to update status',
+              description: error.message || 'An error occurred',
+              variant: 'error',
+            });
+          },
+        }
+      );
     }
   };
 
@@ -129,11 +147,21 @@ export function GiftDetailModal({
           // Close dialog and reset state
           setShowPurchaserDialog(false);
           setPendingStatus(null);
+          toast({
+            title: 'Status updated',
+            description: `Status changed to ${pendingStatus}`,
+            variant: 'success',
+          });
         },
-        onError: () => {
-          // On error, just close the dialog
+        onError: (error: Error) => {
+          // On error, show toast and close the dialog
           setShowPurchaserDialog(false);
           setPendingStatus(null);
+          toast({
+            title: 'Failed to update status',
+            description: error.message || 'An error occurred',
+            variant: 'error',
+          });
         },
       }
     );
@@ -200,8 +228,18 @@ export function GiftDetailModal({
         quantity_purchased: Number(quantityPurchased),
       });
       setShowMarkPurchasedDialog(false);
+      toast({
+        title: 'Gift marked as purchased',
+        description: 'Status updated to purchased',
+        variant: 'success',
+      });
     } catch (error) {
       console.error("Failed to mark gift as purchased:", error);
+      toast({
+        title: 'Failed to mark as purchased',
+        description: error instanceof Error ? error.message : 'An error occurred',
+        variant: 'error',
+      });
     }
   };
 

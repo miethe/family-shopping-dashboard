@@ -30,7 +30,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select } from '@/components/ui/select';
-import { StatusSelector } from '@/components/ui/status-selector';
 import { useToast } from '@/components/ui/use-toast';
 import { BudgetWarningCard } from '@/components/budget/BudgetWarningCard';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -40,7 +39,7 @@ import { PeopleMultiSelect } from '@/components/common/PeopleMultiSelect';
 import { ImagePicker } from '@/components/ui/image-picker';
 import { ChevronDown } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
-import type { GiftCreate, GiftPriority, ListItemStatus } from '@/types';
+import type { GiftCreate, GiftPriority } from '@/types';
 
 export interface ManualGiftFormProps {
   defaultListId?: number;
@@ -64,7 +63,6 @@ export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps
   const [additionalUrls, setAdditionalUrls] = useState<{ label: string; url: string }[]>([]);
   const [storeIds, setStoreIds] = useState<number[]>([]);
   const [personIds, setPersonIds] = useState<number[]>([]);
-  const [status, setStatus] = useState<ListItemStatus>('idea');
   const [selectedListIds, setSelectedListIds] = useState<number[]>(
     defaultListId ? [defaultListId] : []
   );
@@ -151,13 +149,13 @@ export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps
 
     mutate(giftData, {
       onSuccess: (gift) => {
-        // Create list items for each selected list with the selected status
+        // Create list items for each selected list (default to 'idea' status)
         selectedListIds.forEach((listId) => {
           createListItem({
             listId,
             data: {
               gift_id: gift.id,
-              status: status,
+              status: 'idea',
             },
           });
         });
@@ -410,22 +408,6 @@ export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps
             />
           </CollapsibleContent>
         </Collapsible>
-
-        {/* Status Select */}
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-warm-800 uppercase tracking-wide">
-            Status
-          </label>
-          <StatusSelector
-            status={status as any}
-            onChange={(value) => setStatus(value as ListItemStatus)}
-            size="md"
-            disabled={isPending}
-          />
-          <p className="mt-1.5 text-xs text-warm-600">
-            Current status of this gift idea
-          </p>
-        </div>
 
         {/* List Selection */}
         <div className="space-y-3">

@@ -34,17 +34,17 @@ const statusConfig: Record<GiftStatus, { bg: string; text: string; border: strin
     label: 'Selected',
   },
   purchased: {
-    bg: 'bg-status-success-100',
-    text: 'text-status-success-900',
-    border: 'border-status-success-300',
-    dot: 'bg-status-success-600',
+    bg: 'bg-status-purchased-100',
+    text: 'text-status-purchased-text',
+    border: 'border-status-purchased-500',
+    dot: 'bg-status-purchased-700',
     label: 'Purchased',
   },
   received: {
     bg: 'bg-status-success-100',
-    text: 'text-status-success-900',
-    border: 'border-status-success-300',
-    dot: 'bg-status-success-600',
+    text: 'text-status-success-700',
+    border: 'border-status-success-500',
+    dot: 'bg-status-success-700',
     label: 'Received',
   },
 };
@@ -185,7 +185,7 @@ export function StatusSelector({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 mt-2',
+            'absolute z-[100] mt-2',
             'bg-white dark:bg-warm-800',
             'border border-warm-200 dark:border-warm-700',
             'rounded-large shadow-diffused',

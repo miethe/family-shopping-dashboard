@@ -11,6 +11,7 @@ import { ExternalLink, UserPlus, MoreVertical } from '@/components/ui/icons';
 import { GiftTitleLink } from '@/components/common/GiftTitleLink';
 import { formatPrice, cn } from '@/lib/utils';
 import { useUpdateGift, useAttachPeopleToGift } from '@/hooks/useGifts';
+import { useToast } from '@/components/ui/use-toast';
 import type { Gift } from '@/types';
 import type { GiftStatus } from '@/components/ui/status-pill';
 import { LinkedEntityIcons, type LinkedPerson, type LinkedList } from './LinkedEntityIcons';
@@ -62,15 +63,32 @@ export function GiftCard({
 }: GiftCardProps) {
   const updateGiftMutation = useUpdateGift(gift.id);
   const attachPeopleMutation = useAttachPeopleToGift(gift.id);
+  const { toast } = useToast();
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
   const [showRecipientPicker, setShowRecipientPicker] = React.useState(false);
   const mobileMenuRef = React.useRef<HTMLDivElement>(null);
 
   const handleStatusChange = (newStatus: GiftStatus) => {
-    // Optimistically update the status
-    updateGiftMutation.mutate({
-      status: newStatus,
-    });
+    // Optimistically update the status with toast feedback
+    updateGiftMutation.mutate(
+      { status: newStatus },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Status updated',
+            description: `Status changed to ${newStatus}`,
+            variant: 'success',
+          });
+        },
+        onError: (error: Error) => {
+          toast({
+            title: 'Failed to update status',
+            description: error.message || 'An error occurred',
+            variant: 'error',
+          });
+        },
+      }
+    );
   };
 
   const handleRecipientChange = (personId: number | number[] | null) => {
