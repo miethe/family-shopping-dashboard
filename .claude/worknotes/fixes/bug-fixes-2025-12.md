@@ -1014,4 +1014,32 @@ Monthly bug tracking for December 2025.
   )
   ```
 - **Commit(s)**: `de3b721`
+- **Status**: RESOLVED (partial - SQLEnum fix only)
+
+---
+
+### Gift Status Filter Returns Only One Gift (JOIN Type Issue)
+
+**Issue**: After the SQLEnum fix, status filters only returned ONE gift despite many having matching statuses. Other filters (person, list, occasion) had the same problem when applied.
+
+- **Location**: `services/api/app/repositories/gift.py:366-408`
+- **Root Cause**: The `get_filtered()` method used **INNER JOIN** to ListItem table. Most gifts exist as standalone ideas without being added to any lists yet. INNER JOIN excluded all these "orphaned" gifts when any list-based filter (status, list_ids, occasion_ids) was applied.
+- **Evidence**: Only 1 gift had an associated ListItem record; the rest were orphaned.
+- **Fix**:
+  1. Changed `.join()` to `.outerjoin()` (LEFT JOIN) for ListItem and List joins (lines 366-367, 374-375)
+  2. Updated filter conditions to include orphaned gifts using `or_()`:
+     ```python
+     # Status filter (lines 389-392)
+     filters.append(or_(
+         ListItem.status.in_(enum_statuses),
+         ListItem.gift_id.is_(None)  # Include orphaned gifts
+     ))
+
+     # Same pattern for list_ids and occasion_ids filters
+     ```
+  3. Added `or_` import from sqlalchemy
+- **Behavior**: Status filter now returns:
+  - All gifts with ListItems matching the selected status
+  - PLUS all orphaned gifts (not yet added to any list)
+- **Commit(s)**: `d3b9f5d`
 - **Status**: RESOLVED

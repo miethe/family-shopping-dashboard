@@ -1,6 +1,6 @@
 """Gift repository with search and relationship loading capabilities."""
 
-from sqlalchemy import asc, delete, desc, distinct, func, select, union
+from sqlalchemy import asc, delete, desc, distinct, func, or_, select, union
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -363,16 +363,16 @@ class GiftRepository(BaseRepository[Gift]):
 
             # Now join ListItem/List if we need other list-based filters
             if need_list_item_join:
-                id_subquery = id_subquery.join(ListItem, self.model.id == ListItem.gift_id)
-                id_subquery = id_subquery.join(List, ListItem.list_id == List.id)
+                id_subquery = id_subquery.outerjoin(ListItem, self.model.id == ListItem.gift_id)
+                id_subquery = id_subquery.outerjoin(List, ListItem.list_id == List.id)
         else:
             # No person filter - start fresh
             id_subquery = select(distinct(self.model.id).label("gift_id")).select_from(self.model)
 
             # Join through ListItem to List if filtering by list-related fields
             if need_list_item_join:
-                id_subquery = id_subquery.join(ListItem, self.model.id == ListItem.gift_id)
-                id_subquery = id_subquery.join(List, ListItem.list_id == List.id)
+                id_subquery = id_subquery.outerjoin(ListItem, self.model.id == ListItem.gift_id)
+                id_subquery = id_subquery.outerjoin(List, ListItem.list_id == List.id)
 
         # Apply remaining filters (AND logic across groups)
         filters = []
@@ -382,18 +382,30 @@ class GiftRepository(BaseRepository[Gift]):
             filters.append(func.lower(self.model.name).contains(func.lower(search)))
 
         # Filter by list item status - OR logic within group
+        # Include orphaned gifts (no ListItem records) along with matching statuses
         if statuses:
             # Convert string values to enum (frontend sends strings like 'purchased')
             enum_statuses = [ListItemStatus(s) for s in statuses]
-            filters.append(ListItem.status.in_(enum_statuses))
+            filters.append(or_(
+                ListItem.status.in_(enum_statuses),
+                ListItem.gift_id.is_(None)  # Include gifts without ListItems
+            ))
 
         # Filter by list ID - OR logic within group
+        # Include orphaned gifts (no ListItem records) along with matching list_ids
         if list_ids:
-            filters.append(ListItem.list_id.in_(list_ids))
+            filters.append(or_(
+                ListItem.list_id.in_(list_ids),
+                ListItem.gift_id.is_(None)  # Include gifts without ListItems
+            ))
 
         # Filter by occasion - OR logic within group
+        # Include orphaned gifts (no ListItem records) along with matching occasion_ids
         if occasion_ids:
-            filters.append(List.occasion_id.in_(occasion_ids))
+            filters.append(or_(
+                List.occasion_id.in_(occasion_ids),
+                ListItem.gift_id.is_(None)  # Include gifts without ListItems
+            ))
 
         # Apply all filters to subquery
         if filters:
