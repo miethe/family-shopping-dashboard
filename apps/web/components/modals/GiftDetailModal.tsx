@@ -47,7 +47,7 @@ interface GiftDetailModalProps {
 }
 
 // Purchasing statuses that trigger the purchaser assignment dialog
-const PURCHASING_STATUSES: GiftStatus[] = ['buying', 'ordered', 'purchased'];
+const PURCHASING_STATUSES: GiftStatus[] = ['purchased'];
 
 export function GiftDetailModal({
   giftId,
