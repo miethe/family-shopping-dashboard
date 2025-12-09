@@ -24,6 +24,15 @@ class GiftPriority(str, Enum):
     HIGH = "high"
 
 
+class GiftStatus(str, Enum):
+    """Gift lifecycle status."""
+
+    IDEA = "idea"
+    SELECTED = "selected"
+    PURCHASED = "purchased"
+    RECEIVED = "received"
+
+
 class AdditionalUrl(BaseModel):
     """Labeled URL for gift other links."""
 
@@ -106,6 +115,10 @@ class GiftCreate(BaseModel):
         default=GiftPriority.MEDIUM,
         description="Priority level for this gift",
     )
+    status: GiftStatus = Field(
+        default=GiftStatus.IDEA,
+        description="Lifecycle status for this gift",
+    )
     quantity: int = Field(
         default=1,
         ge=1,
@@ -146,6 +159,7 @@ class GiftUpdate(BaseModel):
     description: str | None = None
     notes: str | None = None
     priority: GiftPriority | None = None
+    status: GiftStatus | None = None
     quantity: int | None = Field(None, ge=1)
     sale_price: Decimal | None = Field(None, ge=0, decimal_places=2)
     purchase_date: date | None = None
@@ -200,6 +214,7 @@ class GiftResponse(TimestampSchema):
     description: str | None = None
     notes: str | None = None
     priority: GiftPriority = GiftPriority.MEDIUM
+    status: GiftStatus = GiftStatus.IDEA
     quantity: int = 1
     sale_price: Decimal | None = None
     purchase_date: date | None = None
@@ -239,6 +254,7 @@ class GiftSummary(BaseModel):
     price: Decimal | None
     image_url: str | None
     priority: GiftPriority = GiftPriority.MEDIUM
+    status: GiftStatus = GiftStatus.IDEA
     quantity: int = 1
     sale_price: Decimal | None = None
 

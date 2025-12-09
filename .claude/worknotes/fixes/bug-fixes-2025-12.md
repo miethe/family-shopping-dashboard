@@ -1042,4 +1042,43 @@ Monthly bug tracking for December 2025.
   - All gifts with ListItems matching the selected status
   - PLUS all orphaned gifts (not yet added to any list)
 - **Commit(s)**: `d3b9f5d`
+- **Status**: SUPERSEDED (see below)
+
+---
+
+### Gift Status Architecture Redesign
+
+**Issue**: Status filters partially worked but showed incorrect results - nearly all gifts appeared for all statuses because orphaned gifts (no ListItem) were included. The root problem: Gift status was stored on ListItem, but most gifts weren't on any list.
+
+- **Location**: Multiple files (model, schemas, repository, frontend)
+- **Root Cause**: Status was an attribute of ListItem (junction table), not Gift itself. This meant:
+  1. Gifts without ListItems had no status
+  2. Status filtering required complex JOIN logic
+  3. User expectation: status belongs to the Gift entity
+- **Solution**: Added `status` field directly to Gift model with values: `idea`, `selected`, `purchased`, `received`
+- **Changes**:
+  1. **Backend Model** (`services/api/app/models/gift.py`):
+     - Added `GiftStatus` enum
+     - Added `status` column with SQLEnum, native_enum=True
+  2. **Migration** (`d7b9b25e3eda_add_status_field_to_gift.py`):
+     - Creates `giftstatus` PostgreSQL enum
+     - Adds `status` column with default 'idea'
+  3. **Schemas** (`services/api/app/schemas/gift.py`):
+     - Added `GiftStatus` enum
+     - Added `status` field to GiftCreate, GiftUpdate, GiftResponse, GiftSummary
+  4. **Repository** (`services/api/app/repositories/gift.py`):
+     - Changed filter from `ListItem.status` to `Gift.status`
+     - Removed complex OR/IS NULL logic
+     - Import GiftStatus instead of ListItemStatus for filtering
+  5. **Frontend Types** (`apps/web/types/index.ts`):
+     - Added `GiftStatus` type
+     - Added `status` field to Gift, GiftCreate, GiftUpdate interfaces
+  6. **UI Components**:
+     - `status-pill.tsx`: Updated to 4 statuses
+     - `status-selector.tsx`: Updated to 4 statuses
+     - `GiftDetailModal.tsx`: Uses `gift.status` directly
+     - `GiftCard.tsx`: Uses `gift.status` directly
+     - `ManualGiftForm.tsx`: Added StatusSelector field
+     - `GiftEditModal.tsx`: Added gift status field (separate from list item status)
+- **Commit(s)**: `b61ba5b`
 - **Status**: RESOLVED

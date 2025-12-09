@@ -27,6 +27,15 @@ class GiftPriority(str, enum.Enum):
     HIGH = "high"
 
 
+class GiftStatus(str, enum.Enum):
+    """Gift lifecycle status."""
+
+    IDEA = "idea"
+    SELECTED = "selected"
+    PURCHASED = "purchased"
+    RECEIVED = "received"
+
+
 class Gift(BaseModel):
     """
     Gift entity representing individual gift items.
@@ -44,6 +53,7 @@ class Gift(BaseModel):
         description: Optional detailed description of the gift
         notes: Optional internal notes about the gift
         priority: Gift priority level (low/medium/high), defaults to medium
+        status: Gift lifecycle status (idea/selected/purchased/received), defaults to idea
         quantity: Number of items needed, defaults to 1
         sale_price: Optional sale/discounted price in currency
         purchase_date: Optional date when the gift was purchased
@@ -99,6 +109,17 @@ class Gift(BaseModel):
             values_callable=lambda e: [m.value for m in e],
         ),
         default=GiftPriority.MEDIUM,
+        nullable=False,
+    )
+
+    status: Mapped[GiftStatus] = mapped_column(
+        SQLEnum(
+            GiftStatus,
+            name="giftstatus",
+            native_enum=True,
+            values_callable=lambda e: [m.value for m in e],
+        ),
+        default=GiftStatus.IDEA,
         nullable=False,
     )
 

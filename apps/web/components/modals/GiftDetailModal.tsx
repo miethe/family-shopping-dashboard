@@ -93,7 +93,7 @@ export function GiftDetailModal({
   const handleStatusChange = (newStatus: GiftStatus) => {
     if (!giftId) return;
 
-    const currentStatus = gift?.extra_data?.status;
+    const currentStatus = gift?.status;
     const wasPurchasingStatus = currentStatus && PURCHASING_STATUSES.includes(currentStatus as GiftStatus);
     const isPurchasingStatus = PURCHASING_STATUSES.includes(newStatus);
 
@@ -107,10 +107,7 @@ export function GiftDetailModal({
     } else {
       // Directly update status without purchaser dialog
       updateGiftMutation.mutate({
-        extra_data: {
-          ...gift?.extra_data,
-          status: newStatus,
-        },
+        status: newStatus,
       });
     }
   };
@@ -121,9 +118,9 @@ export function GiftDetailModal({
     // Update both status and purchaser_id
     updateGiftMutation.mutate(
       {
+        status: pendingStatus,
         extra_data: {
           ...gift?.extra_data,
-          status: pendingStatus,
           purchaser_id: purchaserId,
         },
       },
@@ -235,7 +232,7 @@ export function GiftDetailModal({
   const showSalePriceOnly = Boolean(!hasPrice && hasSalePrice);
   const priceDisplay = hasPrice ? formatPrice(gift?.price) : '';
   const salePriceDisplay = hasSalePrice ? formatPrice(gift?.sale_price) : '';
-  const giftStatus = typeof gift?.extra_data?.status === 'string' ? gift.extra_data.status : null;
+  const giftStatus = gift?.status ?? 'idea';
 
   // Reset tab and editing state when modal closes
   React.useEffect(() => {

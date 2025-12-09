@@ -25,7 +25,7 @@ import { UrlListInput } from '@/components/common/UrlListInput';
 import { StoreMultiSelect } from '@/components/gifts/StoreMultiSelect';
 import { PeopleMultiSelect } from '@/components/common/PeopleMultiSelect';
 import { useToast } from '@/components/ui/use-toast';
-import type { Gift, GiftUpdate, GiftPriority, ListItemStatus } from '@/types';
+import type { Gift, GiftUpdate, GiftPriority, GiftStatus, ListItemStatus } from '@/types';
 
 export interface GiftEditModalProps {
   gift: Gift;
@@ -51,6 +51,7 @@ export function GiftEditModal({
   const [description, setDescription] = useState(gift.description || '');
   const [notes, setNotes] = useState(gift.notes || '');
   const [priority, setPriority] = useState<GiftPriority>(gift.priority);
+  const [giftStatus, setGiftStatus] = useState<GiftStatus>(gift.status);
   const [quantity, setQuantity] = useState(gift.quantity || 1);
   const [salePrice, setSalePrice] = useState(gift.sale_price?.toString() || '');
   const [purchaseDate, setPurchaseDate] = useState(gift.purchase_date || '');
@@ -59,7 +60,7 @@ export function GiftEditModal({
   const [personIds, setPersonIds] = useState(gift.person_ids || []);
 
   // List association fields
-  const [status, setStatus] = useState<ListItemStatus>('idea');
+  const [listItemStatus, setListItemStatus] = useState<ListItemStatus>('idea');
   const [selectedListIds, setSelectedListIds] = useState<number[]>([]);
 
   const { mutate: updateGift, isPending: isUpdating } = useUpdateGift(gift.id);
@@ -123,6 +124,7 @@ export function GiftEditModal({
       description: description.trim() || undefined,
       notes: notes.trim() || undefined,
       priority: priority,
+      status: giftStatus,
       quantity: quantity,
       sale_price: salePrice ? parseFloat(salePrice) : undefined,
       purchase_date: purchaseDate || undefined,
@@ -133,13 +135,13 @@ export function GiftEditModal({
 
     updateGift(updateData, {
       onSuccess: (updatedGift) => {
-        // Add gift to newly selected lists with the selected status
+        // Add gift to newly selected lists with the selected list item status
         selectedListIds.forEach((listId) => {
           createListItem({
             listId,
             data: {
               gift_id: gift.id,
-              status: status,
+              status: listItemStatus,
             },
           });
         });
@@ -163,7 +165,14 @@ export function GiftEditModal({
     });
   };
 
-  const statusOptions = [
+  const giftStatusOptions = [
+    { value: 'idea', label: 'Idea' },
+    { value: 'selected', label: 'Selected' },
+    { value: 'purchased', label: 'Purchased' },
+    { value: 'received', label: 'Received' },
+  ];
+
+  const listItemStatusOptions = [
     { value: 'idea', label: 'Idea' },
     { value: 'selected', label: 'Selected' },
     { value: 'purchased', label: 'Purchased' },
@@ -294,7 +303,7 @@ export function GiftEditModal({
           disabled={isUpdating}
         />
 
-        {/* Priority & Quantity Row */}
+        {/* Priority & Status Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select
             label="Priority"
@@ -307,16 +316,26 @@ export function GiftEditModal({
             ]}
             disabled={isUpdating}
           />
-          <Input
-            label="Quantity"
-            type="number"
-            min={1}
-            value={quantity}
-            onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-            helperText="How many items"
+          <Select
+            label="Gift Status"
+            value={giftStatus}
+            onChange={(value) => setGiftStatus(value as GiftStatus)}
+            options={giftStatusOptions}
             disabled={isUpdating}
+            helperText="Overall status of this gift"
           />
         </div>
+
+        {/* Quantity */}
+        <Input
+          label="Quantity"
+          type="number"
+          min={1}
+          value={quantity}
+          onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+          helperText="How many items"
+          disabled={isUpdating}
+        />
 
         {/* Sale Price */}
         <Input
@@ -369,11 +388,11 @@ export function GiftEditModal({
           </h3>
 
           <Select
-            label="Status"
-            value={status}
-            onChange={(value) => setStatus(value as ListItemStatus)}
-            options={statusOptions}
-            helperText="Status when adding to new lists"
+            label="List Item Status"
+            value={listItemStatus}
+            onChange={(value) => setListItemStatus(value as ListItemStatus)}
+            options={listItemStatusOptions}
+            helperText="Status when adding to new lists below"
           />
 
           {/* List Selection */}

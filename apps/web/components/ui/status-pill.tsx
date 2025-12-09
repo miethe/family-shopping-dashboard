@@ -4,7 +4,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 // All gift status values matching backend schema
-type GiftStatus = 'idea' | 'shortlisted' | 'buying' | 'ordered' | 'purchased' | 'delivered' | 'gifted';
+type GiftStatus = 'idea' | 'selected' | 'purchased' | 'received';
 
 interface StatusPillProps extends React.HTMLAttributes<HTMLSpanElement> {
   status: GiftStatus;
@@ -21,52 +21,31 @@ interface StatusPillProps extends React.HTMLAttributes<HTMLSpanElement> {
 const statusConfig: Record<GiftStatus, { bg: string; text: string; border: string; dot: string; label: string }> = {
   idea: {
     bg: 'bg-status-idea-100',
-    text: 'text-status-idea-900',
-    border: 'border-status-idea-300',
-    dot: 'bg-status-idea-600',
+    text: 'text-status-idea-text',
+    border: 'border-status-idea-500',
+    dot: 'bg-status-idea-700',
     label: 'Idea',
   },
-  shortlisted: {
-    bg: 'bg-status-idea-100',
-    text: 'text-status-idea-900',
-    border: 'border-status-idea-300',
-    dot: 'bg-status-idea-600',
-    label: 'Shortlisted',
-  },
-  buying: {
+  selected: {
     bg: 'bg-status-progress-100',
-    text: 'text-status-progress-900',
-    border: 'border-status-progress-300',
-    dot: 'bg-status-progress-600',
-    label: 'Buying',
-  },
-  ordered: {
-    bg: 'bg-status-progress-100',
-    text: 'text-status-progress-900',
-    border: 'border-status-progress-300',
-    dot: 'bg-status-progress-600',
-    label: 'Ordered',
+    text: 'text-status-progress-700',
+    border: 'border-status-progress-500',
+    dot: 'bg-status-progress-700',
+    label: 'Selected',
   },
   purchased: {
-    bg: 'bg-status-success-100',
-    text: 'text-status-success-900',
-    border: 'border-status-success-300',
-    dot: 'bg-status-success-600',
+    bg: 'bg-status-purchased-100',
+    text: 'text-status-purchased-text',
+    border: 'border-status-purchased-500',
+    dot: 'bg-status-purchased-700',
     label: 'Purchased',
   },
-  delivered: {
+  received: {
     bg: 'bg-status-success-100',
-    text: 'text-status-success-900',
-    border: 'border-status-success-300',
-    dot: 'bg-status-success-600',
-    label: 'Delivered',
-  },
-  gifted: {
-    bg: 'bg-status-success-100',
-    text: 'text-status-success-900',
-    border: 'border-status-success-300',
-    dot: 'bg-status-success-600',
-    label: 'Gifted',
+    text: 'text-status-success-700',
+    border: 'border-status-success-500',
+    dot: 'bg-status-success-700',
+    label: 'Received',
   },
 };
 

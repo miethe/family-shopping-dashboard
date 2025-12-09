@@ -69,12 +69,7 @@ export function GiftCard({
   const handleStatusChange = (newStatus: GiftStatus) => {
     // Optimistically update the status
     updateGiftMutation.mutate({
-      // Only send status in update - we'll need to add this to the Gift type
-      // For now, we'll use extra_data to store status
-      extra_data: {
-        ...gift.extra_data,
-        status: newStatus,
-      },
+      status: newStatus,
     });
   };
 

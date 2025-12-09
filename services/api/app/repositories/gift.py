@@ -4,10 +4,10 @@ from sqlalchemy import asc, delete, desc, distinct, func, or_, select, union
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.gift import Gift
+from app.models.gift import Gift, GiftStatus
 from app.models.gift_person import GiftPerson, GiftPersonRole
 from app.models.list import List
-from app.models.list_item import ListItem, ListItemStatus
+from app.models.list_item import ListItem
 from app.models.store import Store
 from app.models.tag import gift_tags
 from app.repositories.base import BaseRepository
@@ -381,15 +381,11 @@ class GiftRepository(BaseRepository[Gift]):
         if search:
             filters.append(func.lower(self.model.name).contains(func.lower(search)))
 
-        # Filter by list item status - OR logic within group
-        # Include orphaned gifts (no ListItem records) along with matching statuses
+        # Filter by gift status - directly on Gift model
         if statuses:
             # Convert string values to enum (frontend sends strings like 'purchased')
-            enum_statuses = [ListItemStatus(s) for s in statuses]
-            filters.append(or_(
-                ListItem.status.in_(enum_statuses),
-                ListItem.gift_id.is_(None)  # Include gifts without ListItems
-            ))
+            enum_statuses = [GiftStatus(s) for s in statuses]
+            filters.append(self.model.status.in_(enum_statuses))
 
         # Filter by list ID - OR logic within group
         # Include orphaned gifts (no ListItem records) along with matching list_ids

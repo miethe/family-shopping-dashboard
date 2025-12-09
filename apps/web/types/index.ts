@@ -313,6 +313,12 @@ export enum GiftPriority {
 }
 
 /**
+ * Gift status levels
+ * Matches backend GiftStatus enum
+ */
+export type GiftStatus = 'idea' | 'selected' | 'purchased' | 'received';
+
+/**
  * Minimal store information included in gift responses
  */
 export interface StoreMinimal {
@@ -362,6 +368,7 @@ export interface Gift extends TimestampFields {
   description: string | null;
   notes: string | null;
   priority: GiftPriority;
+  status: GiftStatus;
   quantity: number;
   sale_price: number | null;
   purchase_date: string | null; // ISO date string
@@ -388,6 +395,7 @@ export interface GiftCreate {
   description?: string | null;
   notes?: string | null;
   priority?: GiftPriority;
+  status?: GiftStatus;
   quantity?: number;
   sale_price?: number | null;
   purchase_date?: string | null; // ISO date string
@@ -408,6 +416,7 @@ export interface GiftUpdate {
   description?: string | null;
   notes?: string | null;
   priority?: GiftPriority;
+  status?: GiftStatus;
   quantity?: number;
   sale_price?: number | null;
   purchase_date?: string | null; // ISO date string
