@@ -17,6 +17,7 @@ from app.schemas.gift import (
     GiftListItemInfo,
     GiftPersonLink,
     GiftResponse,
+    GiftStatus,
     GiftUpdate,
     MarkPurchasedRequest,
     StoreMinimal,
@@ -367,6 +368,8 @@ class GiftService:
             update_data["additional_urls"] = [
                 url.model_dump() for url in data.additional_urls
             ]
+        if data.status is not None:
+            update_data["status"] = data.status
         # Update gift if there are changes
         if update_data:
             updated_gift = await self.repo.update(gift_id, update_data)
@@ -537,6 +540,7 @@ class GiftService:
         update_payload = {
             "purchase_date": purchase_date,
             "extra_data": extra_data,
+            "status": GiftStatus(derived_status),
         }
         if data.sale_price is not None:
             update_payload["sale_price"] = data.sale_price
