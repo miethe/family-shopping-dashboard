@@ -1,8 +1,8 @@
 ---
 title: "Implementation Plan: Gift Status Fixes"
-description: "Fix inconsistencies in Gift status implementation across all UI locations"
+description: "Fix Gift status persistence bugs and UI inconsistencies"
 audience: [ai-agents, developers]
-tags: [implementation, planning, gift-status, refactoring, ui-fixes]
+tags: [implementation, planning, gift-status, bug-fix, backend, frontend]
 created: 2025-12-09
 updated: 2025-12-09
 category: "product-planning"
@@ -21,82 +21,139 @@ related:
 - **Recent Commit**: `a6096daacd17db324de382bd9215ed17e4e2aecc` (GiftStatus enum refactor)
 
 **Complexity**: Medium
-**Total Estimated Effort**: 21 story points
-**Target Timeline**: 3-4 days
+**Total Estimated Effort**: 26 story points
+**Target Timeline**: 4-5 days
 
 ## Executive Summary
 
-This implementation fixes 8 identified issues with the Gift status system:
-1. Status updates not reflecting correctly across all UI locations
-2. StatusSelector dropdown z-index issues (renders below cards)
-3. Divergent status fields between creation/editing flows
-4. Missing toast notifications on status updates
-5. Status dropdowns not showing current status value
-6. Gift Lists incorrectly having status fields (should not exist)
-7. Status visibility on cards/modals needs improvement
-8. Real-time status sync across components
+**ROOT CAUSE IDENTIFIED**: Gift status updates are not persisting because the backend service stores status in `extra_data` JSON field instead of the actual `Gift.status` database column. This causes:
+- Status filtering returns wrong results (queries `Gift.status` column which is never updated)
+- Status changes appear to work but revert on page refresh
+- "Mark as Purchased" updates `purchase_date` but not `status` column
 
-The work is frontend-focused with no database changes required. The GiftStatus enum is already correctly implemented in the backend.
+This plan addresses:
+1. **CRITICAL**: Backend bugs preventing status persistence (Phase 0)
+2. UI inconsistencies across status update locations (Phases 1-2)
+3. Missing toast notifications (Phase 3)
+4. Status visibility improvements (Phase 4)
+5. Testing and validation (Phase 5)
 
-## Current State Analysis
+## Root Cause Analysis
 
-### Enum Definitions (Correct - No Changes Needed)
+### The Bug
 
-| Location | Values | Status |
-|----------|--------|--------|
-| Backend: `services/api/app/schemas/gift.py:27-33` | IDEA, SELECTED, PURCHASED, RECEIVED | ✅ Correct |
-| Backend: `services/api/app/models/gift.py:30-36` | IDEA, SELECTED, PURCHASED, RECEIVED | ✅ Correct |
-| Frontend: `apps/web/types/index.ts:319` | 'idea', 'selected', 'purchased', 'received' | ✅ Correct |
+```
+Data Flow (BROKEN):
+─────────────────────────────────────────────────────────────────
+Frontend: Update status to "purchased"
+    ↓
+PATCH /gifts/{id} { status: "purchased" }
+    ↓
+Backend: GiftService.update() at services/api/app/services/gift.py:309
+    ├─ Handles: name, url, price, image_url, description, notes, etc.
+    └─ ❌ MISSING: status field NOT handled (silently dropped)
+    ↓
+Database: Gift.status column = "idea" (unchanged)
+    ↓
+Frontend: Receives gift with status="idea" (old value)
+```
 
-### Current Status Update Locations
+```
+Data Flow for Mark as Purchased (BROKEN):
+─────────────────────────────────────────────────────────────────
+Frontend: Mark as Purchased
+    ↓
+POST /gifts/{id}/mark-purchased { quantity_purchased: 1 }
+    ↓
+Backend: GiftService.mark_as_purchased() at services/api/app/services/gift.py:518
+    ├─ Calculates: derived_status = "purchased" ✓
+    ├─ Updates: extra_data["status"] = "purchased" ❌ WRONG FIELD
+    ├─ Updates: purchase_date = today ✓
+    └─ Gift.status column = "idea" (unchanged) ❌
+    ↓
+Filtering: WHERE Gift.status IN ('purchased') → NO RESULTS
+```
 
-| Component | File | Line(s) | Issue(s) |
-|-----------|------|---------|----------|
-| GiftCard StatusSelector | `apps/web/components/gifts/GiftCard.tsx` | 230-240, 355-364 | Z-index renders below other cards |
-| GiftDetailModal StatusSelector | `apps/web/components/modals/GiftDetailModal.tsx` | 518-527 | Works correctly |
-| GiftDetailModal "Mark as Purchased" | `apps/web/components/modals/GiftDetailModal.tsx` | 530-547 | Works correctly |
-| GiftEditModal Status Dropdown | `apps/web/components/gifts/GiftEditModal.tsx` | 319-326 | Different UI than other locations |
-| ManualGiftForm Status | `apps/web/components/gifts/ManualGiftForm.tsx` | 67, 420-426 | Uses ListItemStatus, wrong location |
+### Files With Bugs
 
-### Identified Inconsistencies
+| File | Line(s) | Issue |
+|------|---------|-------|
+| `services/api/app/services/gift.py` | 309-387 | `update()` method ignores `status` field |
+| `services/api/app/services/gift.py` | 518-546 | `mark_as_purchased()` stores status in `extra_data` instead of `status` column |
 
-1. **StatusSelector vs StatusPill Colors**: `StatusSelector` uses same colors for 'purchased' and 'received'; `StatusPill` correctly differentiates them
-2. **ManualGiftForm**: Uses `ListItemStatus` type instead of `GiftStatus`, field positioned incorrectly
-3. **GiftEditModal**: Has different status dropdown UI than StatusSelector component
-4. **No toast notifications**: Status changes don't show success/error feedback
-5. **Z-index issue**: StatusSelector dropdown on GiftCard renders below other cards
+### Evidence
+
+1. **GiftService.update()** (line 343-369): Builds `update_data` dict with all fields EXCEPT `status`
+2. **GiftService.mark_as_purchased()** (line 534): `extra_data["status"] = derived_status` - wrong location
+3. **GiftRepository.get_filtered()** (line 384-388): Correctly filters by `Gift.status` column, but that column is never updated
 
 ## Implementation Strategy
 
 ### Architecture Sequence
 
-This is a frontend-only refactoring:
-1. **UI Components** - Fix StatusSelector, unify status field
-2. **State/Hooks** - Add toast notifications, ensure cache invalidation
-3. **Integration** - Verify status sync across all locations
-4. **Testing** - Unit + visual regression tests
-
-### Parallel Work Opportunities
-
-- Phase 1 (Component Fixes) and Phase 2 (Creation/Edit Flow) can run in parallel
-- Phase 3 (Toast Notifications) can start after either phase
+1. **Backend Service** (CRITICAL) - Fix status persistence bugs
+2. **Frontend UI** - Fix visual inconsistencies
+3. **Integration** - End-to-end validation
+4. **Testing** - Regression + new tests
 
 ### Critical Path
 
-StatusSelector z-index fix → Status field unification → Toast notifications → Testing
+**Backend fixes MUST come first** - no UI work matters until status actually persists.
+
+```
+Phase 0 (Backend) → Phase 1-4 (Frontend, parallel) → Phase 5 (Testing)
+```
 
 ## Phase Breakdown
+
+### Phase 0: Fix Backend Status Persistence (CRITICAL)
+
+**Duration**: 0.5 day
+**Dependencies**: None
+**Assigned Subagent(s)**: python-backend-engineer
+
+| Task ID | Task Name | Description | Acceptance Criteria | Estimate | Subagent(s) | Dependencies |
+|---------|-----------|-------------|-------------------|----------|-------------|--------------|
+| BE-001 | Fix GiftService.update() | Add status field handling to `update()` method in `services/api/app/services/gift.py` | When PATCH includes status, `Gift.status` column is updated | 2 pts | python-backend-engineer | None |
+| BE-002 | Fix GiftService.mark_as_purchased() | Update `mark_as_purchased()` to set `Gift.status` column instead of `extra_data["status"]` | After mark_as_purchased, `Gift.status = 'purchased'` in DB | 2 pts | python-backend-engineer | None |
+| BE-003 | Add backend tests | Add/update tests for status update flows | Tests verify status persists to DB column | 1 pt | python-backend-engineer | BE-001, BE-002 |
+
+**Phase 0 Quality Gates:**
+- [ ] `PATCH /gifts/{id}` with `status` field updates `Gift.status` column
+- [ ] `POST /gifts/{id}/mark-purchased` updates `Gift.status` column to 'purchased'
+- [ ] Filtering by status returns correct gifts
+- [ ] Backend tests pass
+
+**Key Files:**
+- `services/api/app/services/gift.py` (lines 309-387, 518-546)
+
+**Code Changes Required:**
+
+```python
+# BE-001: In update() method around line 366, ADD:
+if data.status is not None:
+    update_data["status"] = data.status
+
+# BE-002: In mark_as_purchased() method around line 537, CHANGE:
+update_payload = {
+    "purchase_date": purchase_date,
+    "extra_data": extra_data,
+    "status": GiftStatus(derived_status),  # ADD THIS LINE
+}
+```
+
+---
 
 ### Phase 1: Fix StatusSelector Component & Card Z-Index
 
 **Duration**: 1 day
-**Dependencies**: None
+**Dependencies**: Phase 0 complete
 **Assigned Subagent(s)**: ui-engineer-enhanced
 
 | Task ID | Task Name | Description | Acceptance Criteria | Estimate | Subagent(s) | Dependencies |
 |---------|-----------|-------------|-------------------|----------|-------------|--------------|
-| UI-001 | Fix StatusSelector color inconsistency | Update `status-selector.tsx` to use correct colors for 'purchased' (distinct from 'received') | Purchased shows unique color (bg-status-purchased-100), matches StatusPill | 2 pts | ui-engineer-enhanced | None |
-| UI-002 | Fix GiftCard z-index issue | Add proper z-index to StatusSelector dropdown on GiftCard so it renders above other cards | Dropdown menu appears above all other elements on page | 3 pts | ui-engineer-enhanced | None |
+| UI-001 | Fix StatusSelector color inconsistency | Update `status-selector.tsx` to use correct colors for 'purchased' (distinct from 'received') | Purchased shows unique color (bg-status-purchased-100), matches StatusPill | 2 pts | ui-engineer-enhanced | BE-003 |
+| UI-002 | Fix GiftCard z-index issue | Add proper z-index to StatusSelector dropdown on GiftCard so it renders above other cards | Dropdown menu appears above all other elements on page | 3 pts | ui-engineer-enhanced | BE-003 |
 | UI-003 | Display current status in dropdown | Ensure StatusSelector shows current status as selected value (not placeholder) | Dropdown trigger displays current gift status with correct color | 1 pt | ui-engineer-enhanced | UI-001 |
 
 **Phase 1 Quality Gates:**
@@ -113,13 +170,13 @@ StatusSelector z-index fix → Status field unification → Toast notifications 
 ### Phase 2: Unify Gift Creation/Edit Status Fields
 
 **Duration**: 1 day
-**Dependencies**: None (can run parallel with Phase 1)
+**Dependencies**: Phase 0 complete (can run parallel with Phase 1)
 **Assigned Subagent(s)**: ui-engineer-enhanced, frontend-developer
 
 | Task ID | Task Name | Description | Acceptance Criteria | Estimate | Subagent(s) | Dependencies |
 |---------|-----------|-------------|-------------------|----------|-------------|--------------|
-| UI-004 | Remove status from ManualGiftForm | Remove status field from ManualGiftForm (status is set on Gift, not during list item creation) | ManualGiftForm has no status field; gifts default to 'idea' | 2 pts | ui-engineer-enhanced | None |
-| UI-005 | Update GiftEditModal status UI | Replace current status dropdown with StatusSelector component between Price and Product URL fields | GiftEditModal uses StatusSelector, field positioned between Price and Product URL | 2 pts | ui-engineer-enhanced | None |
+| UI-004 | Remove status from ManualGiftForm | Remove status field from ManualGiftForm (status is set on Gift, not during list item creation) | ManualGiftForm has no status field; gifts default to 'idea' | 2 pts | ui-engineer-enhanced | BE-003 |
+| UI-005 | Update GiftEditModal status UI | Replace current status dropdown with StatusSelector component between Price and Product URL fields | GiftEditModal uses StatusSelector, field positioned between Price and Product URL | 2 pts | ui-engineer-enhanced | BE-003 |
 | UI-006 | Verify Gift creation flow | Ensure new gifts get default status 'idea' from backend, no frontend status field needed during creation | New gifts created with status='idea', visible on card after creation | 1 pt | frontend-developer | UI-004 |
 
 **Phase 2 Quality Gates:**
@@ -137,13 +194,13 @@ StatusSelector z-index fix → Status field unification → Toast notifications 
 ### Phase 3: Add Toast Notifications
 
 **Duration**: 0.5 day
-**Dependencies**: Phase 1 complete
+**Dependencies**: Phase 0 complete
 **Assigned Subagent(s)**: frontend-developer
 
 | Task ID | Task Name | Description | Acceptance Criteria | Estimate | Subagent(s) | Dependencies |
 |---------|-----------|-------------|-------------------|----------|-------------|--------------|
-| UI-007 | Add toast on GiftCard status change | Show success toast after status update, error toast on failure | Toast appears: "Status updated to [status]" on success, error message on failure | 2 pts | frontend-developer | UI-001 |
-| UI-008 | Add toast on GiftDetailModal status change | Show success toast after status update via dropdown or "Mark as Purchased" | Toast appears for both StatusSelector and Mark as Purchased button | 1 pt | frontend-developer | UI-001 |
+| UI-007 | Add toast on GiftCard status change | Show success toast after status update, error toast on failure | Toast appears: "Status updated to [status]" on success, error message on failure | 2 pts | frontend-developer | BE-003 |
+| UI-008 | Add toast on GiftDetailModal status change | Show success toast after status update via dropdown or "Mark as Purchased" | Toast appears for both StatusSelector and Mark as Purchased button | 1 pt | frontend-developer | BE-003 |
 | UI-009 | Add toast on GiftEditModal save | Show success toast when gift is saved with status change | Toast appears: "Gift updated" on successful save | 1 pt | frontend-developer | UI-005 |
 
 **Phase 3 Quality Gates:**
@@ -180,27 +237,29 @@ StatusSelector z-index fix → Status field unification → Toast notifications 
 
 ---
 
-### Phase 5: Real-Time Status Sync & Testing
+### Phase 5: End-to-End Testing & Validation
 
 **Duration**: 1 day
-**Dependencies**: Phases 1-4 complete
-**Assigned Subagent(s)**: frontend-developer, ui-engineer-enhanced
+**Dependencies**: Phases 0-4 complete
+**Assigned Subagent(s)**: frontend-developer, python-backend-engineer
 
 | Task ID | Task Name | Description | Acceptance Criteria | Estimate | Subagent(s) | Dependencies |
 |---------|-----------|-------------|-------------------|----------|-------------|--------------|
-| UI-012 | Verify React Query cache invalidation | Ensure status updates invalidate all relevant caches (gifts list, gift detail) | Status change on card immediately reflects in modal and vice versa | 2 pts | frontend-developer | UI-007 |
-| UI-013 | Test status filtering integration | Verify /gifts page filter works correctly with all status values | Filtering by each status returns correct gifts | 1 pt | frontend-developer | UI-012 |
-| UI-014 | Visual regression tests | Add/update visual tests for StatusSelector and StatusPill | Visual tests pass for all 4 status states | 2 pts | ui-engineer-enhanced | UI-012 |
+| TEST-001 | Test status filtering | Verify /gifts page filter works correctly with all status values after backend fix | Filtering by each status returns correct gifts | 2 pts | frontend-developer | UI-010 |
+| TEST-002 | Test status persistence | Verify status updates persist across page refresh | Change status → refresh → status is still changed | 1 pt | frontend-developer | TEST-001 |
+| TEST-003 | Test Mark as Purchased flow | Verify Mark as Purchased updates status column and is filterable | Mark as purchased → filter by purchased → gift appears | 1 pt | frontend-developer | TEST-001 |
+| TEST-004 | Visual regression tests | Add/update visual tests for StatusSelector and StatusPill | Visual tests pass for all 4 status states | 2 pts | ui-engineer-enhanced | TEST-001 |
 
 **Phase 5 Quality Gates:**
-- [ ] Status changes reflect immediately across all views
+- [ ] Status changes persist after page refresh
 - [ ] Filtering works correctly for all statuses
+- [ ] Mark as Purchased sets status to 'purchased'
 - [ ] Visual regression tests pass
 - [ ] No page refresh required for status sync
 
 **Key Files:**
-- `apps/web/hooks/useGifts.ts` (or similar)
 - `apps/web/app/gifts/page.tsx`
+- `services/api/tests/` (backend tests)
 - Visual test files
 
 ---
@@ -211,38 +270,39 @@ StatusSelector z-index fix → Status field unification → Toast notifications 
 
 | Risk | Impact | Likelihood | Mitigation Strategy |
 |------|--------|------------|-------------------|
-| Breaking existing status update flows | High | Medium | Test each flow individually before integration |
-| React Query cache invalidation issues | Medium | Medium | Review existing cache keys, test thoroughly |
-| Z-index conflicts with other modals/dropdowns | Low | Medium | Use consistent z-index scale from design system |
+| Backend fix breaks existing data | High | Low | Status column has default 'idea', existing data unaffected |
+| extra_data migration needed | Medium | Low | Keep extra_data for backwards compat, prefer status column |
+| React Query cache stale after fix | Medium | Medium | Force cache invalidation after backend fix deployed |
 
 ### Schedule Risks
 
 | Risk | Impact | Likelihood | Mitigation Strategy |
 |------|--------|------------|-------------------|
-| Discovery of additional status-related bugs | Medium | Medium | Allocate buffer time, prioritize critical fixes |
+| Backend fix takes longer | High | Low | Simple 2-line fixes, well-understood codebase |
 
 ---
 
 ## Resource Requirements
 
 ### Skill Requirements
-- React, TypeScript, Tailwind CSS
+- Python, FastAPI, SQLAlchemy (backend fixes)
+- React, TypeScript, Tailwind CSS (frontend)
 - React Query cache management
-- Radix UI components (DropdownMenu, Toast)
 
 ---
 
 ## Success Metrics
 
-### Delivery Metrics
-- All 8 issues from request resolved
-- Zero regression bugs
-- All existing tests pass
+### Critical Success Criteria (Must Pass)
+- [ ] Status updates persist to database `Gift.status` column
+- [ ] Filtering by status returns correct gifts
+- [ ] Mark as Purchased sets `status = 'purchased'`
+- [ ] Status changes reflect immediately without page refresh
 
-### User Experience Metrics
-- Status visible at all times on cards
-- Status updates provide immediate feedback
-- No Z-index rendering issues
+### Secondary Success Criteria
+- [ ] All 8 UI issues from request resolved
+- [ ] Toast notifications on status changes
+- [ ] Consistent status colors across components
 
 ---
 
@@ -251,6 +311,11 @@ StatusSelector z-index fix → Status field unification → Toast notifications 
 ### Subagent Commands
 
 ```bash
+# Phase 0: Backend fixes (CRITICAL - DO FIRST)
+Task("python-backend-engineer", "Fix GiftService.update() in services/api/app/services/gift.py to handle status field. Around line 366, add: if data.status is not None: update_data['status'] = data.status")
+
+Task("python-backend-engineer", "Fix GiftService.mark_as_purchased() in services/api/app/services/gift.py to update Gift.status column. Around line 537, add 'status': GiftStatus(derived_status) to update_payload dict")
+
 # Phase 1: StatusSelector fixes
 Task("ui-engineer-enhanced", "Fix StatusSelector colors in apps/web/components/ui/status-selector.tsx - update 'purchased' to use bg-status-purchased-100, text-status-purchased-text to match StatusPill")
 
@@ -268,7 +333,7 @@ Task("frontend-developer", "Add toast notifications on status change in GiftCard
 Task("ui-engineer-enhanced", "Enhance status visibility on GiftCard and GiftDetailModal with prominent StatusPill display")
 
 # Phase 5: Testing
-Task("frontend-developer", "Verify React Query cache invalidation on status updates across all components")
+Task("frontend-developer", "Test status filtering on /gifts page - verify all 4 status values filter correctly after backend fix")
 ```
 
 ---
@@ -279,5 +344,5 @@ See `.claude/progress/gift-status-fixes/phase-progress.yaml` (to be created)
 
 ---
 
-**Implementation Plan Version**: 1.0
+**Implementation Plan Version**: 2.0
 **Last Updated**: 2025-12-09
