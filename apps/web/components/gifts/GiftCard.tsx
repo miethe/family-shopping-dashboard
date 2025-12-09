@@ -13,7 +13,7 @@ import { formatPrice, cn } from '@/lib/utils';
 import { useUpdateGift, useAttachPeopleToGift } from '@/hooks/useGifts';
 import { useToast } from '@/components/ui/use-toast';
 import type { Gift } from '@/types';
-import type { GiftStatus } from '@/components/ui/status-pill';
+import { StatusPill, type GiftStatus } from '@/components/ui/status-pill';
 import { LinkedEntityIcons, type LinkedPerson, type LinkedList } from './LinkedEntityIcons';
 import { QuickPurchaseButton, type ListItemInfo } from './QuickPurchaseButton';
 
@@ -284,6 +284,13 @@ export function GiftCard({
             <h3 className="text-base font-semibold text-warm-900 line-clamp-2 mb-2">
               <GiftTitleLink name={gift.name} url={gift.url} />
             </h3>
+
+            {/* Status Badge - Always visible for quick status identification */}
+            {gift.status && (
+              <div className="mb-2">
+                <StatusPill status={gift.status} size="sm" />
+              </div>
+            )}
 
             {/* NEW: Linked Entities - after title, before footer */}
             {(gift.recipients?.length || gift.lists?.length) ? (
