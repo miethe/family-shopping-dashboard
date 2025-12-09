@@ -13,6 +13,8 @@ import { formatPrice, cn } from '@/lib/utils';
 import { useUpdateGift, useAttachPeopleToGift } from '@/hooks/useGifts';
 import type { Gift } from '@/types';
 import type { GiftStatus } from '@/components/ui/status-pill';
+import { LinkedEntityIcons, type LinkedPerson, type LinkedList } from './LinkedEntityIcons';
+import { QuickPurchaseButton, type ListItemInfo } from './QuickPurchaseButton';
 
 export interface GiftCardProps {
   gift: Gift & {
@@ -21,6 +23,10 @@ export interface GiftCardProps {
       name: string;
       avatarUrl?: string;
     };
+    // NEW: Add these for the new components
+    recipients?: LinkedPerson[];  // For LinkedEntityIcons
+    lists?: LinkedList[];         // For LinkedEntityIcons
+    list_items?: ListItemInfo[];  // For QuickPurchaseButton (from API)
   };
   onOpenDetail?: (giftId: string) => void;
   /** Whether bulk selection mode is active */
@@ -29,6 +35,10 @@ export interface GiftCardProps {
   isSelected?: boolean;
   /** Callback when selection checkbox is toggled */
   onToggleSelection?: () => void;
+  /** NEW: Callback when recipient icon is clicked */
+  onRecipientClick?: (personId: number) => void;
+  /** NEW: Callback when list icon is clicked */
+  onListClick?: (listId: number) => void;
 }
 
 /**
@@ -47,6 +57,8 @@ export function GiftCard({
   selectionMode = false,
   isSelected = false,
   onToggleSelection,
+  onRecipientClick,
+  onListClick,
 }: GiftCardProps) {
   const updateGiftMutation = useUpdateGift(gift.id);
   const attachPeopleMutation = useAttachPeopleToGift(gift.id);
@@ -153,9 +165,9 @@ export function GiftCard({
               </div>
             )}
 
-            {/* Quick Actions - Top Right (Desktop Only) */}
+            {/* Quick Actions - Top Right (Both Mobile & Desktop) */}
             {!selectionMode && gift.url && (
-              <div className="absolute top-3 right-3 z-10 hidden md:block">
+              <div className="absolute top-3 right-3 z-10">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
@@ -260,32 +272,45 @@ export function GiftCard({
               <GiftTitleLink name={gift.name} url={gift.url} />
             </h3>
 
-            {/* Footer: Price + Assignee */}
-            <div className="flex items-center justify-between mt-3">
-              {gift.price !== null && gift.price !== undefined ? (
-                <span className="text-sm font-semibold text-primary-600">
-                  ${formatPrice(gift.price)}
-                </span>
-              ) : (
-                <span className="text-sm text-warm-400">No price</span>
-              )}
+            {/* NEW: Linked Entities - after title, before footer */}
+            {(gift.recipients?.length || gift.lists?.length) ? (
+              <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+                <LinkedEntityIcons
+                  recipients={gift.recipients || []}
+                  lists={gift.lists || []}
+                  maxVisible={3}
+                  onRecipientClick={onRecipientClick}
+                  onListClick={onListClick}
+                  size="sm"
+                />
+              </div>
+            ) : null}
 
-              {gift.assignee && (
-                <div className="flex items-center gap-1.5">
-                  <Avatar size="xs">
-                    <AvatarImage
-                      src={gift.assignee.avatarUrl}
-                      alt={gift.assignee.name}
-                    />
-                    <AvatarFallback>
-                      {getInitials(gift.assignee.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-xs text-warm-600">
-                    {gift.assignee.name?.split(' ')[0] || 'User'}
+            {/* Footer: Price + Quick Purchase */}
+            <div className="flex items-center justify-between mt-3">
+              {/* Price - left side */}
+              <div className="flex-1">
+                {gift.price !== null && gift.price !== undefined ? (
+                  <span className="text-sm font-semibold text-primary-600">
+                    ${formatPrice(gift.price)}
                   </span>
+                ) : (
+                  <span className="text-sm text-warm-400">No price</span>
+                )}
+              </div>
+
+              {/* Quick Purchase Button - right side */}
+              {gift.list_items && gift.list_items.length > 0 ? (
+                <div onClick={(e) => e.stopPropagation()}>
+                  <QuickPurchaseButton
+                    giftId={gift.id}
+                    listItems={gift.list_items}
+                    onPurchaseComplete={() => {
+                      // Optionally refresh or notify parent
+                    }}
+                  />
                 </div>
-              )}
+              ) : null}
             </div>
 
             {/* Desktop Quick Actions Bar - Bottom */}

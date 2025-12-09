@@ -14,6 +14,7 @@ from app.repositories.gift import GiftRepository
 from app.schemas.gift import (
     AdditionalUrl,
     GiftCreate,
+    GiftListItemInfo,
     GiftPersonLink,
     GiftResponse,
     GiftUpdate,
@@ -770,6 +771,7 @@ class GiftService:
         stores = getattr(gift, "stores", []) or []
         people = getattr(gift, "people", []) or []
         gift_people_links = getattr(gift, "gift_people_links", []) or []
+        list_items_raw = getattr(gift, "list_items", []) or []
 
         return GiftResponse(
             id=gift.id,
@@ -794,6 +796,15 @@ class GiftService:
             gift_people=[
                 GiftPersonLink(person_id=link.person_id, role=link.role.value)
                 for link in gift_people_links
+            ],
+            list_items=[
+                GiftListItemInfo(
+                    id=li.id,
+                    list_id=li.list_id,
+                    list_name=li.list.name if li.list else f"List {li.list_id}",
+                    status=li.status.value if hasattr(li.status, 'value') else str(li.status)
+                )
+                for li in list_items_raw
             ],
             created_at=gift.created_at,
             updated_at=gift.updated_at,

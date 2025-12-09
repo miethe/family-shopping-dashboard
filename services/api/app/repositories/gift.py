@@ -81,6 +81,7 @@ class GiftRepository(BaseRepository[Gift]):
                 selectinload(self.model.people),
                 selectinload(self.model.stores),
                 selectinload(self.model.gift_people_links),
+                selectinload(self.model.list_items).selectinload(ListItem.list),
             )
             .where(self.model.name.ilike(f"%{query}%"))
             .order_by(self.model.name)
@@ -163,7 +164,7 @@ class GiftRepository(BaseRepository[Gift]):
 
     async def get_with_relations(self, gift_id: int) -> Gift | None:
         """
-        Get a gift with people, stores, and gift_people_links eager loaded.
+        Get a gift with people, stores, gift_people_links, and list_items eager loaded.
         """
         stmt = (
             select(self.model)
@@ -171,6 +172,7 @@ class GiftRepository(BaseRepository[Gift]):
                 selectinload(self.model.people),
                 selectinload(self.model.stores),
                 selectinload(self.model.gift_people_links),
+                selectinload(self.model.list_items).selectinload(ListItem.list),
             )
             .where(self.model.id == gift_id)
         )
@@ -222,7 +224,7 @@ class GiftRepository(BaseRepository[Gift]):
         descending: bool = False,
     ) -> tuple[list[Gift], bool, int | None]:
         """
-        Override base get_multi to eager-load people, stores, and gift_people_links for response shaping.
+        Override base get_multi to eager-load people, stores, gift_people_links, and list_items for response shaping.
         """
         stmt = (
             select(self.model)
@@ -230,6 +232,7 @@ class GiftRepository(BaseRepository[Gift]):
                 selectinload(self.model.people),
                 selectinload(self.model.stores),
                 selectinload(self.model.gift_people_links),
+                selectinload(self.model.list_items).selectinload(ListItem.list),
             )
         )
 
@@ -406,6 +409,7 @@ class GiftRepository(BaseRepository[Gift]):
                 selectinload(self.model.people),
                 selectinload(self.model.stores),
                 selectinload(self.model.gift_people_links),
+                selectinload(self.model.list_items).selectinload(ListItem.list),
             )
             .where(self.model.id.in_(select(id_subquery.c.gift_id)))
         )
@@ -627,6 +631,7 @@ class GiftRepository(BaseRepository[Gift]):
                 selectinload(self.model.people),
                 selectinload(self.model.stores),
                 selectinload(self.model.gift_people_links),
+                selectinload(self.model.list_items).selectinload(ListItem.list),
             )
             .join(GiftPerson, self.model.id == GiftPerson.gift_id)
             .where(GiftPerson.person_id == person_id)
@@ -673,6 +678,7 @@ class GiftRepository(BaseRepository[Gift]):
                 selectinload(self.model.people),
                 selectinload(self.model.stores),
                 selectinload(self.model.gift_people_links),
+                selectinload(self.model.list_items).selectinload(ListItem.list),
             )
             .join(GiftPerson, self.model.id == GiftPerson.gift_id)
             .where(GiftPerson.person_id.in_(person_ids))
@@ -736,6 +742,7 @@ class GiftRepository(BaseRepository[Gift]):
                 selectinload(self.model.people),
                 selectinload(self.model.stores),
                 selectinload(self.model.gift_people_links),
+                selectinload(self.model.list_items).selectinload(ListItem.list),
             )
         )
 
@@ -818,6 +825,7 @@ class GiftRepository(BaseRepository[Gift]):
                 selectinload(self.model.people),
                 selectinload(self.model.stores),
                 selectinload(self.model.gift_people_links),
+                selectinload(self.model.list_items).selectinload(ListItem.list),
             )
             .where(self.model.purchaser_id == purchaser_id)
         )

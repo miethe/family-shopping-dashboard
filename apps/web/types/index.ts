@@ -327,6 +327,27 @@ export interface StoreMinimal {
 export interface Store extends StoreMinimal, TimestampFields {}
 
 /**
+ * Person-gift relationship with role information
+ * Matches backend GiftPersonLink schema
+ */
+export interface GiftPersonLink {
+  person_id: number;
+  role: 'recipient' | 'purchaser' | 'contributor';
+}
+
+/**
+ * List item info for gift (minimal, from API)
+ * Used for QuickPurchaseButton component
+ * Matches backend GiftListItemInfo schema
+ */
+export interface GiftListItemInfo {
+  id: number;           // list_item.id (for API calls)
+  list_id: number;      // Which list
+  list_name: string;    // List display name
+  status: ListItemStatus; // Current status in that list
+}
+
+/**
  * Gift entity with all fields
  * Matches backend GiftResponse schema
  */
@@ -349,6 +370,10 @@ export interface Gift extends TimestampFields {
   person_ids: number[];
   // Additional fields
   extra_data: Record<string, unknown> | null;
+  // NEW: Person relationships with roles
+  gift_people?: GiftPersonLink[];
+  // NEW: List items containing this gift (from API)
+  list_items?: GiftListItemInfo[];
 }
 
 /**

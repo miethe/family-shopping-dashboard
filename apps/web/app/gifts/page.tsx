@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useGifts } from '@/hooks/useGifts';
+import { usePersons } from '@/hooks/usePersons';
 import { useGiftSelection } from '@/hooks/useGiftSelection';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button, Skeleton } from '@/components/ui';
@@ -17,6 +18,8 @@ import {
   type GroupOption,
 } from '@/components/gifts';
 import { GiftDetailModal, useEntityModal } from '@/components/modals';
+import type { LinkedPerson, LinkedList } from '@/components/gifts/LinkedEntityIcons';
+import type { Gift } from '@/types';
 
 /**
  * Loading skeleton for the Gifts page
@@ -69,6 +72,8 @@ interface GiftsPageContentProps {
  * Mobile-first responsive design with loading states.
  * Supports URL query params for initial filter state (e.g., ?status=idea)
  * Includes bulk selection mode with checkbox UI.
+ *
+ * TASK-1.5: Updated to map gift_people and list_items data to GiftCard props
  */
 function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
   const searchParams = useSearchParams();
@@ -105,6 +110,60 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
     list_ids: filters.list_ids.length > 0 ? filters.list_ids : undefined,
     occasion_ids: filters.occasion_ids.length > 0 ? filters.occasion_ids : undefined,
   });
+
+  // Fetch all persons for name resolution
+  const { data: personsData } = usePersons();
+
+  // Create person lookup map for efficient name resolution
+  const personMap = useMemo(() => {
+    if (!personsData?.items) return new Map();
+    return new Map(
+      personsData.items.map((person) => [person.id, person])
+    );
+  }, [personsData]);
+
+  /**
+   * Maps gift data to include recipients and lists for GiftCard
+   * Uses API's gift_people and list_items data
+   */
+  const mapGiftForCard = (gift: Gift) => {
+    // Map gift_people to LinkedPerson format for LinkedEntityIcons
+    const recipients: LinkedPerson[] = gift.gift_people
+      ?.filter((gp) => gp.role === 'recipient')
+      .map((gp) => {
+        const person = personMap.get(gp.person_id);
+        return {
+          id: gp.person_id,
+          display_name: person?.display_name || `Person ${gp.person_id}`,
+          photo_url: person?.photo_url,
+        };
+      }) || [];
+
+    // Map list_items to LinkedList format for LinkedEntityIcons
+    const lists: LinkedList[] = gift.list_items?.map((li) => ({
+      id: li.list_id,
+      name: li.list_name,
+    })) || [];
+
+    return {
+      ...gift,
+      recipients,
+      lists,
+      list_items: gift.list_items,
+    };
+  };
+
+  const handleRecipientClick = (personId: number) => {
+    // TODO: Open person modal/detail view
+    // For now, log to console as per acceptance criteria
+    console.log('Open person modal:', personId);
+  };
+
+  const handleListClick = (listId: number) => {
+    // TODO: Open list modal/detail view
+    // For now, log to console as per acceptance criteria
+    console.log('Open list modal:', listId);
+  };
 
   return (
     <div className="space-y-6">
@@ -186,16 +245,21 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
         </div>
       ) : groupBy === 'none' ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {data.items.map((gift) => (
-            <GiftCard
-              key={gift.id}
-              gift={gift}
-              onOpenDetail={onOpenDetail}
-              selectionMode={selection.isSelectionMode}
-              isSelected={selection.isSelected(gift.id)}
-              onToggleSelection={() => selection.toggleSelection(gift.id)}
-            />
-          ))}
+          {data.items.map((gift) => {
+            const mappedGift = mapGiftForCard(gift);
+            return (
+              <GiftCard
+                key={gift.id}
+                gift={mappedGift}
+                onOpenDetail={onOpenDetail}
+                selectionMode={selection.isSelectionMode}
+                isSelected={selection.isSelected(gift.id)}
+                onToggleSelection={() => selection.toggleSelection(gift.id)}
+                onRecipientClick={handleRecipientClick}
+                onListClick={handleListClick}
+              />
+            );
+          })}
         </div>
       ) : (
         <GiftGroupedView

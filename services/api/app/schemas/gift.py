@@ -177,6 +177,17 @@ class GiftPersonLink(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class GiftListItemInfo(BaseModel):
+    """Minimal list item info for embedding in gift responses."""
+
+    id: int = Field(..., description="List item ID (for QuickPurchaseButton)")
+    list_id: int = Field(..., description="ID of the list containing this gift")
+    list_name: str = Field(..., description="Name of the list containing this gift")
+    status: str = Field(..., description="Status of the gift in this list (idea/selected/purchased/received)")
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class GiftResponse(TimestampSchema):
     """DTO for gift response."""
 
@@ -205,6 +216,10 @@ class GiftResponse(TimestampSchema):
     gift_people: list[GiftPersonLink] = Field(
         default_factory=list,
         description="Person relationships with role information (recipient/purchaser/contributor)",
+    )
+    list_items: list[GiftListItemInfo] = Field(
+        default_factory=list,
+        description="Lists containing this gift with status",
     )
 
     @field_serializer('price')
