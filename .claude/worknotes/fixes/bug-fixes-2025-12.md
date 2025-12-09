@@ -1094,3 +1094,36 @@ Monthly bug tracking for December 2025.
 - **Fix**: Removed invalid status values, keeping only `'purchased'` which is the only valid purchasing-related status.
 - **Commit(s)**: `97e0e8d`
 - **Status**: RESOLVED
+
+---
+
+### GiftCard Purchase Button Only Showing for List-Linked Gifts
+
+**Issue**: Multiple interconnected issues with GiftStatus display and purchase functionality on /gifts page:
+1. QuickPurchaseButton only appeared for gifts linked to lists (had `list_items`)
+2. Clicking QuickPurchaseButton updated `list_item.status` instead of `Gift.status`
+3. StatusSelector dropdown in card footer was redundant with purchase button
+4. No status field in gift creation form (ManualGiftForm)
+5. GiftDetailModal lacked clear status indicator below title
+
+- **Location**: `apps/web/components/gifts/GiftCard.tsx`, `apps/web/components/gifts/ManualGiftForm.tsx`, `apps/web/components/modals/GiftDetailModal.tsx`
+- **Root Cause**:
+  - QuickPurchaseButton (line 323-333) only rendered when `gift.list_items && gift.list_items.length > 0`
+  - QuickPurchaseButton called `listItemApi.updateStatus()` which updates ListItem, not Gift
+  - ManualGiftForm had no status state or field
+- **Fix**:
+  1. Created new `GiftQuickPurchaseButton` component that directly updates `Gift.status` via existing `handleStatusChange('purchased')` mutation
+  2. Changed condition from `gift.list_items?.length > 0` to `gift.status !== 'purchased'` - now shows for ALL unpurchased gifts
+  3. Removed StatusSelector from desktop footer (kept in mobile menu for full status changes)
+  4. Added success checkmark animation that shows for 2 seconds then disappears
+  5. Added `status` state and Select field to ManualGiftForm (defaults to 'idea')
+  6. Added StatusPill with `size="md"` and `withDot` below title in GiftDetailModal
+- **Commit(s)**: See git log
+- **Status**: RESOLVED
+
+**Files Changed**:
+- `apps/web/components/gifts/GiftQuickPurchaseButton.tsx` - NEW: Direct gift status update button
+- `apps/web/components/gifts/GiftCard.tsx` - Updated purchase button logic, removed footer StatusSelector
+- `apps/web/components/gifts/ManualGiftForm.tsx` - Added status field to creation form
+- `apps/web/components/gifts/index.ts` - Added GiftQuickPurchaseButton export
+- `apps/web/components/modals/GiftDetailModal.tsx` - Added status indicator below title

@@ -31,3 +31,4 @@ export {
   type LinkedList,
 } from './LinkedEntityIcons';
 export { QuickPurchaseButton, type QuickPurchaseButtonProps, type ListItemInfo } from './QuickPurchaseButton';
+export { GiftQuickPurchaseButton, type GiftQuickPurchaseButtonProps } from './GiftQuickPurchaseButton';

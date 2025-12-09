@@ -16,6 +16,7 @@ import type { Gift } from '@/types';
 import { StatusPill, type GiftStatus } from '@/components/ui/status-pill';
 import { LinkedEntityIcons, type LinkedPerson, type LinkedList } from './LinkedEntityIcons';
 import { QuickPurchaseButton, type ListItemInfo } from './QuickPurchaseButton';
+import { GiftQuickPurchaseButton } from './GiftQuickPurchaseButton';
 
 export interface GiftCardProps {
   gift: Gift & {
@@ -319,18 +320,17 @@ export function GiftCard({
                 )}
               </div>
 
-              {/* Quick Purchase Button - right side */}
-              {gift.list_items && gift.list_items.length > 0 ? (
+              {/* Quick Purchase Button - right side - shows for all unpurchased gifts */}
+              {gift.status !== 'purchased' && (
                 <div onClick={(e) => e.stopPropagation()}>
-                  <QuickPurchaseButton
+                  <GiftQuickPurchaseButton
                     giftId={gift.id}
-                    listItems={gift.list_items}
-                    onPurchaseComplete={() => {
-                      // Optionally refresh or notify parent
-                    }}
+                    currentStatus={gift.status}
+                    onPurchase={() => handleStatusChange('purchased')}
+                    isPending={updateGiftMutation.isPending}
                   />
                 </div>
-              ) : null}
+              )}
             </div>
 
             {/* Desktop Quick Actions Bar - Bottom */}
@@ -375,18 +375,6 @@ export function GiftCard({
                     </div>
                   )}
                 </div>
-
-                {/* Status Selector */}
-                {gift.status && (
-                  <div className="flex-1 flex justify-end" onClick={(e) => e.stopPropagation()}>
-                    <StatusSelector
-                      status={gift.status}
-                      onChange={handleStatusChange}
-                      size="sm"
-                      disabled={updateGiftMutation.isPending}
-                    />
-                  </div>
-                )}
               </div>
             )}
           </div>

@@ -440,6 +440,11 @@ export function GiftDetailModal({
                     <GiftTitleLink name={gift.name} url={gift.url} showExternalIcon />
                   </h2>
 
+                  {/* Status Indicator - Clear status below title */}
+                  <div className="mt-2">
+                    <StatusPill status={giftStatus as GiftStatus} size="md" withDot />
+                  </div>
+
                   {/* Linked People - Inline Display */}
                   {linkedPeople && linkedPeople.length > 0 && (
                     <div className="flex items-center gap-2 text-sm">

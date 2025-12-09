@@ -39,7 +39,7 @@ import { PeopleMultiSelect } from '@/components/common/PeopleMultiSelect';
 import { ImagePicker } from '@/components/ui/image-picker';
 import { ChevronDown } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
-import type { GiftCreate, GiftPriority } from '@/types';
+import type { GiftCreate, GiftPriority, GiftStatus } from '@/types';
 
 export interface ManualGiftFormProps {
   defaultListId?: number;
@@ -57,6 +57,7 @@ export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps
   const [description, setDescription] = useState('');
   const [notes, setNotes] = useState('');
   const [priority, setPriority] = useState<GiftPriority>('medium' as GiftPriority);
+  const [status, setStatus] = useState<GiftStatus>('idea');
   const [quantity, setQuantity] = useState(1);
   const [salePrice, setSalePrice] = useState('');
   const [purchaseDate, setPurchaseDate] = useState('');
@@ -139,6 +140,7 @@ export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps
       description: description.trim() || undefined,
       notes: notes.trim() || undefined,
       priority: priority,
+      status: status,
       quantity: quantity,
       sale_price: salePrice ? parseFloat(salePrice) : undefined,
       purchase_date: purchaseDate || undefined,
@@ -209,6 +211,27 @@ export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps
           placeholder="e.g., LEGO Star Wars Set"
           disabled={isPending}
         />
+
+        {/* Status Selector */}
+        <div>
+          <label className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide">
+            Status
+          </label>
+          <Select
+            value={status}
+            onChange={(value) => setStatus(value as GiftStatus)}
+            options={[
+              { value: 'idea', label: 'Idea' },
+              { value: 'selected', label: 'Selected' },
+              { value: 'purchased', label: 'Purchased' },
+              { value: 'received', label: 'Received' },
+            ]}
+            disabled={isPending}
+          />
+          <p className="mt-1.5 text-xs text-warm-600">
+            Current status of this gift
+          </p>
+        </div>
 
         {/* URL Input */}
         <Input
