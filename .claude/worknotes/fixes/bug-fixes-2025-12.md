@@ -1082,3 +1082,15 @@ Monthly bug tracking for December 2025.
      - `GiftEditModal.tsx`: Added gift status field (separate from list item status)
 - **Commit(s)**: `b61ba5b`
 - **Status**: RESOLVED
+
+---
+
+### Invalid GiftStatus Values in PURCHASING_STATUSES Array
+
+**Issue**: Build failed with TypeScript error: `Type '"buying"' is not assignable to type 'GiftStatus'`
+
+- **Location**: `apps/web/components/modals/GiftDetailModal.tsx:50`
+- **Root Cause**: The `PURCHASING_STATUSES` array contained invalid status values (`'buying'`, `'ordered'`) that don't exist in the `GiftStatus` type. The valid values are only: `'idea' | 'selected' | 'purchased' | 'received'`.
+- **Fix**: Removed invalid status values, keeping only `'purchased'` which is the only valid purchasing-related status.
+- **Commit(s)**: `97e0e8d`
+- **Status**: RESOLVED
