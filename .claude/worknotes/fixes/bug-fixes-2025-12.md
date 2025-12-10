@@ -1127,3 +1127,21 @@ Monthly bug tracking for December 2025.
 - `apps/web/components/gifts/ManualGiftForm.tsx` - Added status field to creation form
 - `apps/web/components/gifts/index.ts` - Added GiftQuickPurchaseButton export
 - `apps/web/components/modals/GiftDetailModal.tsx` - Added status indicator below title
+
+---
+
+### API Inaccessible When Accessing Web App from Non-Localhost
+
+**Issue**: When accessing the web app via IP address (e.g., `http://10.0.2.218:3030`) instead of localhost, or from another device on the LAN, the web page loads but API calls fail with CORS errors - users cannot login.
+
+- **Location**: `docker-compose.yml:38-39`
+- **Root Cause**: The Docker Compose `api` service hardcoded `CORS_ORIGINS: http://localhost:3030,http://web:3000`, which overrode the `.env` file's `CORS_ORIGINS=*` setting. When browsers accessed the app via the host IP, CORS preflight requests failed because the IP-based origin wasn't in the allowed list.
+- **Fix**: Changed the hardcoded CORS value to use environment variable substitution with a safe fallback:
+  ```yaml
+  CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3030,http://web:3000}
+  ```
+  This allows the `.env` file's `CORS_ORIGINS=*` to take effect for development while maintaining a restrictive default if not set.
+- **Commit(s)**: `1fc74d8`
+- **Status**: RESOLVED
+
+**Note**: After applying this fix, rebuild and restart containers with `docker-compose down && docker-compose up -d --build`
