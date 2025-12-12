@@ -217,18 +217,14 @@ export function GiftEditModal({
 
         {/* Gift Status - positioned between Price and URL per design spec */}
         <div className="space-y-2">
-          <label className="block text-xs font-semibold text-warm-800 uppercase tracking-wide">
-            Gift Status
-          </label>
+          <span className="sr-only">Gift status</span>
           <StatusSelector
             status={giftStatus as 'idea' | 'selected' | 'purchased' | 'received'}
             onChange={(value) => setGiftStatus(value as GiftStatus)}
             size="md"
             disabled={isUpdating}
+            ariaLabel="Gift status"
           />
-          <p className="mt-1.5 text-xs text-warm-600">
-            Overall status of this gift
-          </p>
         </div>
 
         {/* Gift Image Picker */}

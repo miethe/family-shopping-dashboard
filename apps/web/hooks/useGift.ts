@@ -7,6 +7,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { giftApi } from '@/lib/api/endpoints';
+import { syncGiftCaches } from './useGifts';
 import type { Gift, GiftUpdate } from '@/types';
 
 /**
@@ -31,9 +32,7 @@ export function useUpdateGift(id: number) {
   return useMutation({
     mutationFn: (data: GiftUpdate) => giftApi.update(id, data),
     onSuccess: (updatedGift) => {
-      // Update the gift in cache
-      queryClient.setQueryData(['gifts', id], updatedGift);
-      // Invalidate list to reflect changes
+      syncGiftCaches(queryClient, updatedGift);
       queryClient.invalidateQueries({ queryKey: ['gifts'], exact: false });
     },
   });

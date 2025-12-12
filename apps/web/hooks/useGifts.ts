@@ -6,13 +6,35 @@
  * Supports filtering by person, occasion, list, status, and more.
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { giftApi, GiftListParams } from '@/lib/api/endpoints';
+import type { PaginatedResponse } from '@/lib/api/types';
 import type { Gift, GiftCreate, GiftUpdate } from '@/types';
 
 interface UseGiftsOptions {
   enabled?: boolean;
 }
+
+/**
+ * Update all cached queries that contain the given gift.
+ * Ensures list views and detail modals pick up the latest status immediately.
+ */
+export const syncGiftCaches = (queryClient: QueryClient, updatedGift: Gift) => {
+  // Detail cache
+  queryClient.setQueryData(['gifts', updatedGift.id], updatedGift);
+
+  // Any list query with items[]
+  queryClient.setQueriesData<PaginatedResponse<Gift>>(
+    { queryKey: ['gifts'], exact: false },
+    (existing) => {
+      if (!existing || !Array.isArray((existing as any).items)) return existing;
+      const items = existing.items.map((gift) =>
+        gift.id === updatedGift.id ? { ...gift, ...updatedGift } : gift
+      );
+      return { ...existing, items };
+    }
+  );
+};
 
 /**
  * Fetch paginated list of gifts with optional filters
@@ -104,10 +126,8 @@ export function useUpdateGift(id: number) {
   return useMutation({
     mutationFn: (data: GiftUpdate) => giftApi.update(id, data),
     onSuccess: (updatedGift) => {
-      // Update the gift in cache
-      queryClient.setQueryData(['gifts', id], updatedGift);
-      // Invalidate all gift queries to reflect changes
-      // This includes person-filtered queries since they use the same base key
+      syncGiftCaches(queryClient, updatedGift);
+      // Invalidate to stay in sync with any filtered queries
       queryClient.invalidateQueries({ queryKey: ['gifts'], exact: false });
     },
   });
@@ -178,9 +198,7 @@ export function useMarkGiftPurchased(giftId: number) {
   return useMutation({
     mutationFn: (data: { quantity_purchased?: number }) => giftApi.markPurchased(giftId, data),
     onSuccess: (updatedGift) => {
-      // Update the gift in cache
-      queryClient.setQueryData(['gifts', giftId], updatedGift);
-      // Invalidate all gift queries to reflect status changes
+      syncGiftCaches(queryClient, updatedGift);
       queryClient.invalidateQueries({ queryKey: ['gifts'], exact: false });
     },
   });

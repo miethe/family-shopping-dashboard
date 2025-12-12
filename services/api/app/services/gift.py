@@ -787,6 +787,7 @@ class GiftService:
             description=getattr(gift, "description", None),
             notes=getattr(gift, "notes", None),
             priority=getattr(gift, "priority", None),
+            status=GiftStatus(getattr(gift, "status", GiftStatus.IDEA)),
             quantity=getattr(gift, "quantity", 1),
             sale_price=getattr(gift, "sale_price", None),
             purchase_date=getattr(gift, "purchase_date", None),

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown } from '@/components/ui/icons';
+import { ChevronDown, Check } from '@/components/ui/icons';
 
 // All gift status values matching backend schema
 type GiftStatus = 'idea' | 'selected' | 'purchased' | 'received';
@@ -232,6 +232,13 @@ export function StatusSelector({
                 >
                   {optionConfig.label}
                 </span>
+                <Check
+                  className={cn(
+                    'ml-auto h-4 w-4 text-primary-600 transition-opacity',
+                    isSelected ? 'opacity-100' : 'opacity-0'
+                  )}
+                  aria-hidden="true"
+                />
               </button>
             );
           })}

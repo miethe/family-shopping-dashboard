@@ -559,13 +559,13 @@ export function GiftDetailModal({
 
                   {/* Status Selector */}
                   {giftStatus ? (
-                    <div>
-                      <p className="text-sm text-warm-600 mb-2">Status</p>
+                    <div className="flex flex-col gap-2">
                       <StatusSelector
                         status={giftStatus as GiftStatus}
                         onChange={handleStatusChange}
                         size="md"
                         disabled={updateGiftMutation.isPending}
+                        ariaLabel="Gift status"
                       />
                     </div>
                   ) : null}

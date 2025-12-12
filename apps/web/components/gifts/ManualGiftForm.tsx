@@ -30,6 +30,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select } from '@/components/ui/select';
+import { StatusSelector } from '@/components/ui/status-selector';
 import { useToast } from '@/components/ui/use-toast';
 import { BudgetWarningCard } from '@/components/budget/BudgetWarningCard';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -213,24 +214,14 @@ export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps
         />
 
         {/* Status Selector */}
-        <div>
-          <label className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide">
-            Status
-          </label>
-          <Select
-            value={status}
+        <div className="space-y-2">
+          <span className="sr-only">Status</span>
+          <StatusSelector
+            status={status}
             onChange={(value) => setStatus(value as GiftStatus)}
-            options={[
-              { value: 'idea', label: 'Idea' },
-              { value: 'selected', label: 'Selected' },
-              { value: 'purchased', label: 'Purchased' },
-              { value: 'received', label: 'Received' },
-            ]}
             disabled={isPending}
+            ariaLabel="Gift status"
           />
-          <p className="mt-1.5 text-xs text-warm-600">
-            Current status of this gift
-          </p>
         </div>
 
         {/* URL Input */}
