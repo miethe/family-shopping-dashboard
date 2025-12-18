@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
  * - Active state with white highlight
  * - Material Symbols icons
  * - WCAG 2.1 AA compliant with aria-current support
+ * - Safe area handled via CSS utility class
  */
 
 interface NavItem {
@@ -57,9 +58,10 @@ export function MobileNav() {
         // Warm terracotta/rust background matching sidebar
         'bg-[#B67352]',
         // Fixed positioning
-        'fixed bottom-0 left-0 right-0 z-50'
+        'fixed bottom-0 left-0 right-0 z-50',
+        // Safe area bottom padding + horizontal for landscape
+        'safe-area-fixed-bottom'
       )}
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       role="navigation"
       aria-label="Main navigation"
     >

@@ -21,7 +21,7 @@ interface AppLayoutProps {
  * - Fade-in animation on content load
  *
  * Mobile (< md):
- * - Top header with safe-area-top
+ * - Top header with safe-area-top (applied to wrapper)
  * - Bottom fixed navigation bar with safe-area-bottom
  * - Content area with proper padding
  * - 44px minimum touch targets
@@ -57,8 +57,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Mobile Layout Container - Full height flex column */}
       <div className="flex flex-col flex-1 md:ml-20 lg:ml-24 h-screen-safe">
-        {/* Mobile Header - Sticky top with safe-area, Hidden on desktop */}
-        <div className="md:hidden sticky top-0 z-50 bg-surface-primary/80 dark:bg-background-dark/80 backdrop-blur-md safe-area-top border-b border-border-subtle dark:border-white/10 shadow-subtle">
+        {/* Mobile Header - Sticky top with safe-area-fixed-top, Hidden on desktop */}
+        <div className="md:hidden sticky top-0 z-50 bg-surface-primary/80 dark:bg-background-dark/80 backdrop-blur-md safe-area-fixed-top border-b border-border-subtle dark:border-white/10 shadow-subtle">
           <Header />
         </div>
 
@@ -74,7 +74,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         </main>
 
         {/* Mobile Bottom Navigation - Fixed bottom with safe-area, Hidden on desktop */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+        <div className="md:hidden">
           <MobileNav />
         </div>
       </div>

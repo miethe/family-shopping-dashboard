@@ -166,7 +166,11 @@ body {
     'opsz' 24;
 }
 
-/* Safe area utilities */
+/* ============================================
+   Safe Area Utilities - iOS Notch/Home Indicator
+   ============================================ */
+
+/* Basic Safe Area Padding */
 .safe-area-inset {
   padding-top: env(safe-area-inset-top);
   padding-left: env(safe-area-inset-left);
@@ -188,6 +192,31 @@ body {
 
 .safe-area-right {
   padding-right: env(safe-area-inset-right);
+}
+
+/* Horizontal Safe Areas for Landscape Mode */
+.safe-area-horizontal {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Combined Safe Area for Fixed Elements */
+.safe-area-fixed-top {
+  padding-top: calc(0.75rem + env(safe-area-inset-top));
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.safe-area-fixed-bottom {
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Full-Width Background Safe Areas */
+.safe-area-full-bleed {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
 }
 
 /* Dynamic viewport height for iOS */

@@ -9,7 +9,7 @@ import { SearchInput } from './SearchInput';
 /**
  * Mobile header component
  * - Sticky to top with glassmorphism
- * - Safe area top padding for iOS
+ * - Safe area padding handled by parent wrapper in AppLayout
  * - Quick actions: search toggle, notifications, quick add, user menu
  * - Expandable search bar
  * - Design System V2 styled
@@ -24,10 +24,7 @@ export function Header() {
   };
 
   return (
-    <header
-      className="sticky top-0 z-40 bg-white/70 dark:bg-warm-900/70 backdrop-blur-xl border-b border-white/20 dark:border-warm-700/20 shadow-glass"
-      style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top))' }}
-    >
+    <header className="bg-white/70 dark:bg-warm-900/70 backdrop-blur-xl border-b border-white/20 dark:border-warm-700/20 shadow-glass">
       {/* Main header bar */}
       <div className="flex items-center justify-between px-4 py-3">
         {/* App Title */}

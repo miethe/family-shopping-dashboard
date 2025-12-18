@@ -85,9 +85,8 @@ export function SearchInput({
             type="button"
             onClick={handleClear}
             className="
-              absolute right-3
-              min-w-[24px] min-h-[24px]
-              w-6 h-6
+              absolute right-1
+              min-w-[44px] min-h-[44px]
               flex items-center justify-center
               text-warm-500 hover:text-warm-700
               dark:text-warm-400 dark:hover:text-warm-200

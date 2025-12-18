@@ -187,7 +187,7 @@ export function GiftCard({
                     <button
                       onClick={handleOpenUrl}
                       className={cn(
-                        'w-8 h-8 flex items-center justify-center rounded-medium',
+                        'min-w-[44px] min-h-[44px] flex items-center justify-center rounded-medium',
                         'bg-white/90 backdrop-blur-sm border border-warm-200',
                         'hover:bg-warm-50 hover:border-warm-300',
                         'transition-all duration-150 ease-out',
@@ -209,12 +209,11 @@ export function GiftCard({
                 <button
                   onClick={handleMobileMenuToggle}
                   className={cn(
-                    'w-8 h-8 flex items-center justify-center rounded-medium',
+                    'min-w-[44px] min-h-[44px] flex items-center justify-center rounded-medium',
                     'bg-white/90 backdrop-blur-sm border border-warm-200',
                     'hover:bg-warm-50 hover:border-warm-300',
                     'transition-all duration-150 ease-out',
-                    'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1',
-                    'min-h-[44px] min-w-[44px]'
+                    'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1'
                   )}
                   aria-label="More actions"
                   aria-expanded={showMobileMenu}

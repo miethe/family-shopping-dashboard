@@ -14,27 +14,32 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
 
     return (
       <div className="flex items-start gap-3">
-        <input
-          type="checkbox"
-          id={inputId}
-          className={cn(
-            // Base - larger for touch targets
-            'w-5 h-5 mt-0.5 flex-shrink-0',
-            'min-w-[20px] min-h-[20px]',
-            // Colors
-            'text-primary-600 bg-white border-2 border-border-medium rounded',
-            // Focus
-            'focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500',
-            // Transitions
-            'transition-all duration-200 ease-out',
-            // Disabled
-            'disabled:bg-warm-100 disabled:border-warm-300 disabled:cursor-not-allowed',
-            className
-          )}
-          ref={ref}
-          aria-describedby={helperText ? helperId : undefined}
-          {...props}
-        />
+        {/* Wrapper for touch target - label extends hit area */}
+        <label
+          htmlFor={inputId}
+          className="flex items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer flex-shrink-0"
+        >
+          <input
+            type="checkbox"
+            id={inputId}
+            className={cn(
+              // Base - visual size (20px) with accessible touch target from wrapper
+              'w-5 h-5 flex-shrink-0',
+              // Colors
+              'text-primary-600 bg-white border-2 border-border-medium rounded',
+              // Focus
+              'focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500',
+              // Transitions
+              'transition-all duration-200 ease-out',
+              // Disabled
+              'disabled:bg-warm-100 disabled:border-warm-300 disabled:cursor-not-allowed',
+              className
+            )}
+            ref={ref}
+            aria-describedby={helperText ? helperId : undefined}
+            {...props}
+          />
+        </label>
         {(label || helperText) && (
           <div className="flex-1">
             {label && (

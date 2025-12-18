@@ -20,7 +20,7 @@ const buttonVariants = cva(
       },
       size: {
         default: 'px-6 py-3 text-base font-semibold rounded-large h-11',
-        sm: 'px-4 py-2 text-sm rounded-medium h-8',
+        sm: 'px-4 py-2 text-sm rounded-medium h-11', // Changed from h-8 to h-11 (44px) for touch target
         md: 'px-6 py-3 text-base font-semibold rounded-large h-11',
         lg: 'px-8 py-4 text-lg rounded-xlarge h-13',
         xl: 'px-10 py-5 text-xl font-bold rounded-2xlarge h-16',
