@@ -16,15 +16,15 @@ const cardVariants = cva(
       },
       padding: {
         none: 'p-0',
-        sm: 'p-4',
-        default: 'p-6',
-        md: 'p-6',
-        lg: 'p-8',
+        sm: 'p-4',      // 16px - mobile minimum
+        default: 'p-4 md:p-6',  // 16px mobile, 24px desktop
+        md: 'p-4 md:p-6',       // 16px mobile, 24px desktop
+        lg: 'p-5 md:p-8',       // 20px mobile, 32px desktop
       },
     },
     defaultVariants: {
       variant: 'default',
-      padding: 'md',
+      padding: 'default',  // Changed to use responsive default
     },
   }
 );

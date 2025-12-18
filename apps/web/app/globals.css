@@ -80,11 +80,15 @@
   --radius-3xlarge: 3rem;
   /* 48px */
 
-  /* Typography */
+  /* Typography - Mobile-first sizes (minimum readable on small screens) */
   --font-family-base: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, 'Nunito', sans-serif;
-  --font-size-display-large: 3.5rem;
-  --font-size-heading-1: 1.75rem;
-  --font-size-body-large: 1.0625rem;
+  --font-size-display-large: 2.5rem;    /* 40px mobile */
+  --font-size-heading-1: 1.5rem;        /* 24px mobile */
+  --font-size-heading-2: 1.25rem;       /* 20px mobile */
+  --font-size-heading-3: 1.125rem;      /* 18px mobile */
+  --font-size-body-large: 1rem;         /* 16px */
+  --font-size-body-medium: 0.875rem;    /* 14px minimum */
+  --font-size-body-small: 0.875rem;     /* 14px minimum */
 
   /* Animation Durations (from Design Tokens) */
   --duration-fast: 150ms;
@@ -99,7 +103,17 @@
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-
+/* Desktop Typography Scale-up */
+@media (min-width: 768px) {
+  :root {
+    --font-size-display-large: 3.5rem;    /* 56px desktop */
+    --font-size-heading-1: 1.75rem;       /* 28px desktop */
+    --font-size-heading-2: 1.5rem;        /* 24px desktop */
+    --font-size-heading-3: 1.25rem;       /* 20px desktop */
+    --font-size-body-large: 1.0625rem;    /* 17px desktop */
+    --font-size-body-medium: 0.9375rem;   /* 15px desktop */
+  }
+}
 
 * {
   box-sizing: border-box;
@@ -185,6 +199,14 @@ body {
 .touch-target {
   min-height: 44px;
   min-width: 44px;
+}
+
+.min-w-touch {
+  min-width: 44px;
+}
+
+.min-h-touch {
+  min-height: 44px;
 }
 
 /* ============================================
@@ -713,6 +735,36 @@ body {
     transform: translateZ(0);
     backface-visibility: hidden;
     perspective: 1000px;
+  }
+
+  /* ========================================
+     MOBILE TYPOGRAPHY UTILITIES
+     Ensure readable text on mobile devices
+     ======================================== */
+  .mobile-readable {
+    @apply text-body-medium leading-relaxed;
+    min-font-size: 14px;
+  }
+
+  .mobile-heading {
+    @apply text-heading-3 leading-snug;
+    min-font-size: 18px;
+  }
+}
+
+/* ============================================
+   MOBILE-FIRST SPACING
+   Ensure minimum spacing on small screens
+   ============================================ */
+@media (max-width: 767px) {
+  /* Ensure minimum padding on sections */
+  .section-spacing {
+    @apply space-y-4;
+  }
+
+  /* Ensure minimum gap in grids */
+  .grid-spacing {
+    @apply gap-4;
   }
 }
 

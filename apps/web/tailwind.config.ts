@@ -166,17 +166,24 @@ const config: Config = {
       },
 
       fontSize: {
-        'display-large': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '800' }],
-        'display-medium': ['2.5rem', { lineHeight: '1.15', letterSpacing: '-0.015em', fontWeight: '800' }],
-        'display-small': ['2rem', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }],
-        'heading-1': ['1.75rem', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }],
-        'heading-2': ['1.5rem', { lineHeight: '1.3', letterSpacing: '-0.01em', fontWeight: '600' }],
-        'heading-3': ['1.25rem', { lineHeight: '1.4', letterSpacing: '-0.005em', fontWeight: '600' }],
-        'body-large': ['1.0625rem', { lineHeight: '1.6', fontWeight: '400' }],
-        'body-medium': ['0.9375rem', { lineHeight: '1.5', fontWeight: '400' }],
-        'body-small': ['0.8125rem', { lineHeight: '1.4', fontWeight: '500' }],
-        'label-large': ['0.9375rem', { lineHeight: '1.4', fontWeight: '600' }],
-        'label-small': ['0.75rem', { lineHeight: '1.3', fontWeight: '600', letterSpacing: '0.01em' }],
+        // Display sizes - mobile-first with responsive scaling
+        'display-large': ['2.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '800' }], // 40px mobile -> 56px desktop
+        'display-medium': ['2rem', { lineHeight: '1.15', letterSpacing: '-0.015em', fontWeight: '800' }], // 32px mobile -> 40px desktop
+        'display-small': ['1.75rem', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }], // 28px mobile -> 32px desktop
+
+        // Headings - ensure 18px+ on mobile
+        'heading-1': ['1.5rem', { lineHeight: '1.25', letterSpacing: '-0.01em', fontWeight: '700' }], // 24px mobile (was 28px)
+        'heading-2': ['1.25rem', { lineHeight: '1.3', letterSpacing: '-0.01em', fontWeight: '600' }], // 20px mobile (was 24px)
+        'heading-3': ['1.125rem', { lineHeight: '1.4', letterSpacing: '-0.005em', fontWeight: '600' }], // 18px mobile (was 20px)
+
+        // Body text - minimum 14px on mobile
+        'body-large': ['1rem', { lineHeight: '1.625', fontWeight: '400' }], // 16px (increased from 17px)
+        'body-medium': ['0.875rem', { lineHeight: '1.5', fontWeight: '400' }], // 14px (increased from 15px)
+        'body-small': ['0.875rem', { lineHeight: '1.5', fontWeight: '500' }], // 14px (increased from 13px)
+
+        // Labels - keep readable on mobile
+        'label-large': ['0.875rem', { lineHeight: '1.4', fontWeight: '600' }], // 14px (reduced from 15px for consistency)
+        'label-small': ['0.75rem', { lineHeight: '1.3', fontWeight: '600', letterSpacing: '0.01em' }], // 12px (keep small for metadata)
       },
 
       boxShadow: {
