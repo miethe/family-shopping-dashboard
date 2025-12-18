@@ -41,7 +41,7 @@ interface AppLayoutProps {
  */
 export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className="flex min-h-screen bg-cream dark:bg-background-dark text-text-main dark:text-text-main-dark transition-colors duration-300">
+    <div className="flex h-screen-safe bg-cream dark:bg-background-dark text-text-main dark:text-text-main-dark transition-colors duration-300">
       {/* ACCESSIBILITY: Skip to main content link for keyboard navigation */}
       <a
         href="#main-content"
@@ -50,30 +50,33 @@ export function AppLayout({ children }: AppLayoutProps) {
         Skip to main content
       </a>
 
-      {/* Mobile Header - Hidden on desktop */}
-      <div className="md:hidden sticky top-0 z-50 bg-surface-primary/80 dark:bg-background-dark/80 backdrop-blur-md safe-area-top border-b border-border-subtle dark:border-white/10 shadow-subtle">
-        <Header />
-      </div>
-
       {/* Desktop Sidebar - Fixed position handled in DesktopNav component */}
       <div className="hidden md:block">
         <DesktopNav />
       </div>
 
-      {/* Main Content Area */}
-      <main
-        id="main-content"
-        className="flex-1 ml-0 md:ml-20 lg:ml-24 overflow-y-auto h-screen scroll-smooth transition-[margin] duration-300 ease-in-out"
-      >
-        {/* Max-width container with fade-in animation */}
-        <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8 py-6 pb-20 md:pb-8 min-h-screen fade-in">
-          {children}
+      {/* Mobile Layout Container - Full height flex column */}
+      <div className="flex flex-col flex-1 md:ml-20 lg:ml-24 h-screen-safe">
+        {/* Mobile Header - Sticky top with safe-area, Hidden on desktop */}
+        <div className="md:hidden sticky top-0 z-50 bg-surface-primary/80 dark:bg-background-dark/80 backdrop-blur-md safe-area-top border-b border-border-subtle dark:border-white/10 shadow-subtle">
+          <Header />
         </div>
-      </main>
 
-      {/* Mobile Bottom Navigation - Hidden on desktop */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
-        <MobileNav />
+        {/* Main Content Area - Scrollable with flex-1 */}
+        <main
+          id="main-content"
+          className="flex-1 min-h-0 overflow-y-auto scroll-smooth"
+        >
+          {/* Max-width container with fade-in animation */}
+          <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8 py-6 pb-20 md:pb-8 fade-in">
+            {children}
+          </div>
+        </main>
+
+        {/* Mobile Bottom Navigation - Fixed bottom with safe-area, Hidden on desktop */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
+          <MobileNav />
+        </div>
       </div>
 
       {/* Quick Add FAB - Available on all authenticated pages */}
