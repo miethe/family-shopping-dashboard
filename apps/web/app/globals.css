@@ -224,6 +224,10 @@ body {
   height: 100dvh;
 }
 
+.min-h-screen-safe {
+  min-height: 100dvh;
+}
+
 /* Touch target enforcement */
 .touch-target {
   min-height: 44px;

@@ -25,7 +25,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen-safe items-center justify-center">
         <div className="text-gray-600">Loading...</div>
       </div>
     );
