@@ -1186,3 +1186,24 @@ Monthly bug tracking for December 2025.
 **Files Changed**:
 - `apps/web/components/people/AddPersonModal.tsx` - Added ImagePicker with error handling
 - `apps/web/components/modals/PersonQuickCreateModal.tsx` - Added ImagePicker with error handling
+
+---
+
+### PersonDetailModal Missing ImagePicker in Edit Mode
+
+**Issue**: PersonDetailModal edit mode used a plain text input for photo URL while AddPersonModal used the full ImagePicker component. Additionally, users had no way to quickly edit a person's photo without entering full edit mode.
+
+- **Location**: `apps/web/components/modals/PersonDetailModal.tsx:777-782`
+- **Root Cause**: Initial implementation used simple `<Input>` for photo_url field instead of the reusable ImagePicker component. No clickable avatar functionality existed for quick photo editing.
+- **Fix**:
+  1. Created `ImageEditDialog` component - focused modal for quick image editing with ImagePicker
+  2. Replaced text input with ImagePicker in edit mode (lines 791-807)
+  3. Made avatar clickable in view mode - opens ImageEditDialog for quick photo updates
+  4. Added hover effects (ring color change, overlay, edit icon) for avatar discoverability
+  5. ImageEditDialog directly updates person via mutation with success/error toast feedback
+- **Commit(s)**: `2a937a2`
+- **Status**: RESOLVED
+
+**Files Changed**:
+- `apps/web/components/modals/ImageEditDialog.tsx` - NEW: Focused dialog for image editing
+- `apps/web/components/modals/PersonDetailModal.tsx` - Added ImagePicker, clickable avatar, ImageEditDialog integration

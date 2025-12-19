@@ -30,6 +30,8 @@ import { PersonBudgetsTab } from '@/components/people/PersonBudgetsTab';
 import type { AdvancedInterests, SizeEntry } from '@/types';
 import { CommentThread } from '@/components/comments';
 import { useAuth } from '@/hooks/useAuth';
+import { ImagePicker } from '@/components/ui/image-picker';
+import { ImageEditDialog } from './ImageEditDialog';
 
 interface PersonDetailModalProps {
   personId: string | null;
@@ -50,6 +52,7 @@ export function PersonDetailModal({
   const [activeTab, setActiveTab] = React.useState("overview");
   const [isEditingGroups, setIsEditingGroups] = React.useState(false);
   const [editingGroupIds, setEditingGroupIds] = React.useState<number[]>([]);
+  const [showImageDialog, setShowImageDialog] = React.useState(false);
 
   const { loading: authLoading } = useAuth();
 
@@ -116,6 +119,7 @@ export function PersonDetailModal({
       setActiveTab("overview");
       setIsEditingGroups(false);
       setFormData({});
+      setShowImageDialog(false);
     }
   }, [open]);
 
@@ -343,17 +347,27 @@ export function PersonDetailModal({
                   "rounded-2xl border border-orange-100"
                 )}
               >
-                <Avatar
-                  size="xl"
-                  className="ring-4 ring-white shadow-xl mb-4"
+                <button
+                  type="button"
+                  onClick={() => setShowImageDialog(true)}
+                  className="relative group cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-full"
+                  aria-label="Edit photo"
                 >
-                  {person.photo_url && (
-                    <AvatarImage src={person.photo_url} alt={person.display_name} />
-                  )}
-                  <AvatarFallback>
-                    {getInitials(person.display_name)}
-                  </AvatarFallback>
-                </Avatar>
+                  <Avatar
+                    size="xl"
+                    className="ring-4 ring-white shadow-xl mb-4 group-hover:ring-orange-200 transition-all"
+                  >
+                    {person.photo_url && (
+                      <AvatarImage src={person.photo_url} alt={person.display_name} />
+                    )}
+                    <AvatarFallback>
+                      {getInitials(person.display_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 rounded-full transition-all mb-4">
+                    <Edit className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </button>
 
                 <h2 className="text-3xl font-bold text-warm-900 mb-2">
                   {person.display_name}
@@ -774,13 +788,23 @@ export function PersonDetailModal({
                     onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
                   />
 
-                  <Input
-                    label="Photo URL"
-                    value={formData.photo_url || ""}
-                    onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
-                    placeholder="https://example.com/photo.jpg"
-                  />
-
+                  <div>
+                    <label className="block mb-2 text-xs font-semibold text-warm-800 uppercase tracking-wide">
+                      Photo
+                    </label>
+                    <ImagePicker
+                      value={formData.photo_url || null}
+                      onChange={(url) => setFormData({ ...formData, photo_url: url || '' })}
+                      onError={(error) => {
+                        toast({
+                          title: 'Image upload failed',
+                          description: error,
+                          variant: 'error',
+                        });
+                      }}
+                      disabled={updateMutation.isPending}
+                    />
+                  </div>
 
                   <div>
                     <Input
@@ -899,6 +923,30 @@ export function PersonDetailModal({
           existingListIds={lists.map((list) => list.id)}
         />
       )}
+
+      <ImageEditDialog
+        open={showImageDialog}
+        onOpenChange={setShowImageDialog}
+        value={person?.photo_url || null}
+        onSave={async (url) => {
+          try {
+            await updateMutation.mutateAsync({ photo_url: url || '' });
+            toast({
+              title: 'Success',
+              description: 'Photo updated successfully',
+            });
+            setShowImageDialog(false);
+          } catch (error) {
+            toast({
+              title: 'Error',
+              description: error instanceof Error ? error.message : 'Failed to update photo',
+              variant: 'error',
+            });
+          }
+        }}
+        disabled={updateMutation.isPending}
+        title={`Edit ${person?.display_name}'s Photo`}
+      />
     </EntityModal>
   );
 }
