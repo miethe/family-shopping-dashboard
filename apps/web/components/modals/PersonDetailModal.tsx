@@ -238,6 +238,7 @@ export function PersonDetailModal({
   };
 
   return (
+    <>
     <EntityModal
       open={open}
       onOpenChange={onOpenChange}
@@ -923,30 +924,31 @@ export function PersonDetailModal({
           existingListIds={lists.map((list) => list.id)}
         />
       )}
-
-      <ImageEditDialog
-        open={showImageDialog}
-        onOpenChange={setShowImageDialog}
-        value={person?.photo_url || null}
-        onSave={async (url) => {
-          try {
-            await updateMutation.mutateAsync({ photo_url: url || '' });
-            toast({
-              title: 'Success',
-              description: 'Photo updated successfully',
-            });
-            setShowImageDialog(false);
-          } catch (error) {
-            toast({
-              title: 'Error',
-              description: error instanceof Error ? error.message : 'Failed to update photo',
-              variant: 'error',
-            });
-          }
-        }}
-        disabled={updateMutation.isPending}
-        title={`Edit ${person?.display_name}'s Photo`}
-      />
     </EntityModal>
+
+    <ImageEditDialog
+      open={showImageDialog}
+      onOpenChange={setShowImageDialog}
+      value={person?.photo_url || null}
+      onSave={async (url) => {
+        try {
+          await updateMutation.mutateAsync({ photo_url: url || '' });
+          toast({
+            title: 'Success',
+            description: 'Photo updated successfully',
+          });
+          setShowImageDialog(false);
+        } catch (error) {
+          toast({
+            title: 'Error',
+            description: error instanceof Error ? error.message : 'Failed to update photo',
+            variant: 'error',
+          });
+        }
+      }}
+      disabled={updateMutation.isPending}
+      title={`Edit ${person?.display_name}'s Photo`}
+    />
+  </>
   );
 }

@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     JWT_SECRET_KEY: str = "dev-secret-key-change-in-production"
     CORS_ORIGINS: str = "http://localhost:3000"
-    UPLOAD_DIR: str = "uploads"
+    UPLOAD_DIR: str = "/tmp/uploads"
     MAX_UPLOAD_MB: int = 10
     CDN_BASE_URL: str | None = None
 

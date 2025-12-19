@@ -48,6 +48,8 @@ services:
     # ports: external:internal (sourced from .env)
     ports:
       - "${API_EXTERNAL_PORT:-8030}:8000"
+    volumes:
+      - ./uploads:/tmp/uploads
     depends_on:
       postgres:
         condition: service_healthy

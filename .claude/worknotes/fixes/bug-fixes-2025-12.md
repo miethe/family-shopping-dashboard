@@ -1207,3 +1207,29 @@ Monthly bug tracking for December 2025.
 **Files Changed**:
 - `apps/web/components/modals/ImageEditDialog.tsx` - NEW: Focused dialog for image editing
 - `apps/web/components/modals/PersonDetailModal.tsx` - Added ImagePicker, clickable avatar, ImageEditDialog integration
+
+---
+
+### ImageEditDialog Not Opening When Clicking Avatar
+
+**Issue**: Clicking the avatar in PersonDetailModal view mode did not open the ImageEditDialog as expected. The click handler was attached but the dialog never appeared.
+
+- **Location**: `apps/web/components/modals/PersonDetailModal.tsx:927-950`
+- **Root Cause**: The ImageEditDialog was rendered INSIDE the EntityModal. When a Radix Dialog is nested inside another Dialog/Portal, z-index stacking context issues prevent the inner dialog from opening properly.
+- **Fix**: Moved ImageEditDialog OUTSIDE EntityModal by wrapping the return in a React Fragment (`<>...</>`) and rendering ImageEditDialog as a sibling after EntityModal's closing tag. This allows both dialogs to render in separate portals at the same level.
+- **Commit(s)**: `1458fb2`
+- **Status**: RESOLVED
+
+---
+
+### Image Upload Permission Denied in Docker
+
+**Issue**: Uploading local files failed with `PermissionError: [Errno 13] Permission denied: 'uploads'` when the API attempted to create the uploads directory.
+
+- **Location**: `services/api/app/core/config.py:14`, `docker-compose.yml:51-52`
+- **Root Cause**: `UPLOAD_DIR` defaulted to `"uploads"` (relative path), which resolved to `/app/uploads` in the Docker container. The `/app` directory is owned by root and not writable by the application user.
+- **Fix**:
+  1. Changed `UPLOAD_DIR` default from `"uploads"` to `"/tmp/uploads"` - `/tmp` is always writable in containers
+  2. Added volume mount `./uploads:/tmp/uploads` to docker-compose.yml for persistence
+- **Commit(s)**: `1458fb2`
+- **Status**: RESOLVED
