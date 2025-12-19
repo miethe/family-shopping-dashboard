@@ -13,6 +13,7 @@ import * as React from 'react';
 import { EntityModal } from '@/components/modals/EntityModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ImagePicker } from '@/components/ui/image-picker';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreatePerson } from '@/hooks/usePersons';
 import type { Person, PersonCreate } from '@/types';
@@ -139,13 +140,26 @@ export function PersonQuickCreateModal({
           </select>
         </div>
 
-        <Input
-          label="Photo URL (optional)"
-          type="url"
-          value={photoUrl}
-          onChange={(e) => setPhotoUrl(e.target.value)}
-          placeholder="https://example.com/photo.jpg"
-        />
+        <div>
+          <label className="block text-xs font-semibold text-warm-800 uppercase tracking-wide mb-2">
+            Photo (optional)
+          </label>
+          <ImagePicker
+            value={photoUrl || null}
+            onChange={(url) => setPhotoUrl(url || '')}
+            onError={(error) => {
+              toast({
+                title: 'Image upload failed',
+                description: error,
+                variant: 'error',
+              });
+            }}
+            disabled={createMutation.isPending}
+          />
+          <p className="mt-1 text-xs text-warm-600">
+            Upload or link to a photo of this person
+          </p>
+        </div>
 
         {/* Form Actions */}
         <div className="flex gap-3 justify-end pt-4 border-t border-warm-200">

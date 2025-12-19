@@ -11,8 +11,8 @@ import { apiClient } from './client';
  * Response from image upload endpoint
  */
 export interface UploadImageResponse {
-  url: string;
-  thumbnail_url: string;
+  image_url: string;
+  filename: string | null;
 }
 
 /**

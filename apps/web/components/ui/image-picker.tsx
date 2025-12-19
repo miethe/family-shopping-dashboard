@@ -102,7 +102,7 @@ export function ImagePicker({
 
     try {
       const response = await uploadApi.uploadImage(file);
-      onChange(response.url);
+      onChange(response.image_url);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to upload image';
       handleError(errorMessage);
@@ -125,7 +125,7 @@ export function ImagePicker({
 
     try {
       const response = await uploadApi.uploadImageFromUrl(url.trim());
-      onChange(response.url);
+      onChange(response.image_url);
       setUrlInput('');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to import image from URL';

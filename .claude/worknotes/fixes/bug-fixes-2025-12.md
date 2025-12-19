@@ -1145,3 +1145,44 @@ Monthly bug tracking for December 2025.
 - **Status**: RESOLVED
 
 **Note**: After applying this fix, rebuild and restart containers with `docker-compose down && docker-compose up -d --build`
+
+---
+
+### Image Paste Not Working in Gift Form - Upload API Response Mismatch
+
+**Issue**: When pasting or uploading images in the Gift form's ImagePicker component, the image would not render or save. The upload appeared to complete but the image preview never showed.
+
+- **Location**: `apps/web/lib/api/upload.ts:13-16`, `apps/web/components/ui/image-picker.tsx:105,128`
+- **Root Cause**: Field name mismatch between frontend and backend:
+  - Frontend expected: `{ url: string, thumbnail_url: string }`
+  - Backend returned: `{ image_url: string, filename: string | null }`
+  - The ImagePicker called `onChange(response.url)` which was `undefined` since the backend returns `image_url`
+- **Fix**:
+  1. Updated `UploadImageResponse` interface to match backend: `image_url: string, filename: string | null`
+  2. Changed ImagePicker to use `response.image_url` instead of `response.url` (lines 105 and 128)
+- **Commit(s)**: See git log
+- **Status**: RESOLVED
+
+**Files Changed**:
+- `apps/web/lib/api/upload.ts` - Fixed response interface field names
+- `apps/web/components/ui/image-picker.tsx` - Updated to use `image_url` field
+
+---
+
+### Person Modals Missing ImagePicker - URL Only Input
+
+**Issue**: AddPersonModal and PersonQuickCreateModal only had a URL input field for photos, while the GiftForm had full ImagePicker support (drag-drop, paste, file upload). This created an inconsistent UX where users couldn't upload or paste images when creating persons/recipients.
+
+- **Location**: `apps/web/components/people/AddPersonModal.tsx:255-261`, `apps/web/components/modals/PersonQuickCreateModal.tsx:142-148`
+- **Root Cause**: These modals were created with simple `<Input type="url">` fields instead of the reusable ImagePicker component that provides full image upload functionality.
+- **Fix**:
+  1. Added ImagePicker import to both modals
+  2. Replaced URL input with ImagePicker component in AddPersonModal (used in main person add flow)
+  3. Replaced URL input with ImagePicker component in PersonQuickCreateModal (used in PersonDropdown quick-add flow)
+  4. Both implementations include proper error handling with toast notifications
+- **Commit(s)**: See git log
+- **Status**: RESOLVED
+
+**Files Changed**:
+- `apps/web/components/people/AddPersonModal.tsx` - Added ImagePicker with error handling
+- `apps/web/components/modals/PersonQuickCreateModal.tsx` - Added ImagePicker with error handling
