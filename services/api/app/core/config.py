@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "/tmp/uploads"
     MAX_UPLOAD_MB: int = 10
     CDN_BASE_URL: str | None = None
+    PUBLIC_API_URL: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

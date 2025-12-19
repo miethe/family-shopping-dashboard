@@ -60,4 +60,8 @@ def _build_public_url(filename: str) -> str:
     if settings.CDN_BASE_URL:
         base = settings.CDN_BASE_URL.rstrip("/")
         return f"{base}/uploads/{filename}"
+    if settings.PUBLIC_API_URL:
+        base = settings.PUBLIC_API_URL.rstrip("/")
+        return f"{base}/uploads/{filename}"
+    # Fallback to relative (only works if frontend proxies /uploads)
     return f"/uploads/{filename}"

@@ -43,6 +43,9 @@ services:
       JWT_ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRE_MINUTES: 1440
 
+      # Uploads - public URL for image serving (uses external port)
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8030}
+
       # Python
       PYTHONUNBUFFERED: 1
     # ports: external:internal (sourced from .env)

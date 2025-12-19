@@ -1233,3 +1233,23 @@ Monthly bug tracking for December 2025.
   2. Added volume mount `./uploads:/tmp/uploads` to docker-compose.yml for persistence
 - **Commit(s)**: `1458fb2`
 - **Status**: RESOLVED
+
+---
+
+### Uploaded Images Return 404 - Relative URL Issue
+
+**Issue**: Images uploaded via the API saved correctly to disk but returned 404 when rendered on the web page. Browser console showed errors like `75ceca395545414d9a391dd33a089c6d.jpg:1 Failed to load resource: 404`
+
+- **Location**:
+  - `services/api/app/core/storage.py:59-63`
+  - `services/api/app/core/config.py:16`
+  - `apps/web/next.config.ts:24-34`
+  - `docker-compose.yml:46-47`
+- **Root Cause**: The API's `_build_public_url()` function returned relative URLs like `/uploads/filename.jpg`. The frontend Next.js app (port 3000/3030) tried to load these images from its own server, but images are served by FastAPI (port 8000/8030). The relative URL resolved to the wrong host.
+- **Fix**:
+  1. Added `PUBLIC_API_URL` setting to `config.py` - public URL where API is accessible (e.g., `http://localhost:8030`)
+  2. Updated `_build_public_url()` to use `PUBLIC_API_URL` for absolute URLs when CDN is not configured
+  3. Added localhost to Next.js `remotePatterns` to allow Next.js Image component to load from localhost
+  4. Added `PUBLIC_API_URL` environment variable to docker-compose.yml with default `http://localhost:8030`
+- **Commit(s)**: `129795b`
+- **Status**: RESOLVED
