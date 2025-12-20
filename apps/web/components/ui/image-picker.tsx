@@ -10,6 +10,7 @@
  * Features:
  * - Image preview
  * - File validation (size, type)
+ * - Optional image cropping (circle/square)
  * - Clear error messages
  * - Mobile-friendly (44px touch targets)
  * - Soft Modernity design system
@@ -24,6 +25,7 @@ import { Upload, Link, Image as ImageIcon, X, AlertCircle } from './icons';
 import { Button } from './button';
 import { Input } from './input';
 import { uploadApi } from '@/lib/api/upload';
+import { ImageCropDialog } from './image-crop-dialog';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heif', 'image/heic'];
 const MAX_SIZE_MB = 10;
@@ -35,6 +37,7 @@ export interface ImagePickerProps {
   onError?: (error: string) => void;
   className?: string;
   disabled?: boolean;
+  cropShape?: 'circle' | 'square' | 'none';
 }
 
 type InputMode = 'file' | 'url';
@@ -44,13 +47,17 @@ export function ImagePicker({
   onChange,
   onError,
   className,
-  disabled = false
+  disabled = false,
+  cropShape = 'none'
 }: ImagePickerProps) {
   const [inputMode, setInputMode] = React.useState<InputMode>('file');
   const [urlInput, setUrlInput] = React.useState('');
   const [isUploading, setIsUploading] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [showCropDialog, setShowCropDialog] = React.useState(false);
+  const [imageToCrop, setImageToCrop] = React.useState<string | null>(null);
+  const [pendingFile, setPendingFile] = React.useState<File | null>(null);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -112,6 +119,42 @@ export function ImagePicker({
   }, [onChange, handleError]);
 
   /**
+   * Handle file for crop workflow
+   */
+  const handleFileForCrop = React.useCallback((file: File) => {
+    const validationError = validateFile(file);
+    if (validationError) {
+      handleError(validationError);
+      return;
+    }
+
+    // Create data URL for cropping
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageToCrop(reader.result as string);
+      setPendingFile(file);
+      setShowCropDialog(true);
+    };
+    reader.readAsDataURL(file);
+  }, [handleError]);
+
+  /**
+   * Handle crop complete callback
+   */
+  const handleCropComplete = React.useCallback(async (croppedBlob: Blob) => {
+    setShowCropDialog(false);
+    setImageToCrop(null);
+
+    // Create a File from the Blob with the original filename
+    const fileName = pendingFile?.name || 'cropped-image.jpg';
+    const croppedFile = new File([croppedBlob], fileName, { type: 'image/jpeg' });
+
+    // Upload the cropped file
+    await uploadFile(croppedFile);
+    setPendingFile(null);
+  }, [pendingFile, uploadFile]);
+
+  /**
    * Upload from URL
    */
   const uploadFromUrl = async (url: string) => {
@@ -141,7 +184,11 @@ export function ImagePicker({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      uploadFile(file);
+      if (cropShape && cropShape !== 'none') {
+        handleFileForCrop(file);
+      } else {
+        uploadFile(file);
+      }
     }
   };
 
@@ -186,7 +233,11 @@ export function ImagePicker({
 
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      uploadFile(file);
+      if (cropShape && cropShape !== 'none') {
+        handleFileForCrop(file);
+      } else {
+        uploadFile(file);
+      }
     } else {
       handleError('Please drop an image file');
     }
@@ -207,12 +258,16 @@ export function ImagePicker({
         e.preventDefault();
         const file = item.getAsFile();
         if (file) {
-          uploadFile(file);
+          if (cropShape && cropShape !== 'none') {
+            handleFileForCrop(file);
+          } else {
+            uploadFile(file);
+          }
         }
         break;
       }
     }
-  }, [disabled, isUploading, inputMode, uploadFile]);
+  }, [disabled, isUploading, inputMode, cropShape, uploadFile, handleFileForCrop]);
 
   /**
    * Add paste event listener when in file mode
@@ -379,6 +434,23 @@ export function ImagePicker({
           <AlertCircle className="h-5 w-5 text-status-warning-600 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-status-warning-700">{error}</p>
         </div>
+      )}
+
+      {/* Image Crop Dialog */}
+      {cropShape && cropShape !== 'none' && imageToCrop && (
+        <ImageCropDialog
+          open={showCropDialog}
+          onOpenChange={(open) => {
+            if (!open) {
+              setShowCropDialog(false);
+              setImageToCrop(null);
+              setPendingFile(null);
+            }
+          }}
+          imageSrc={imageToCrop}
+          cropShape={cropShape}
+          onCropComplete={handleCropComplete}
+        />
       )}
     </div>
   );
