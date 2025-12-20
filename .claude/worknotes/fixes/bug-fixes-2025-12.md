@@ -1283,8 +1283,10 @@ Monthly bug tracking for December 2025.
   4. Supports circle cropping (avatars) and square cropping (other images)
   5. Mobile-first with touch gestures (pinch-zoom, pan)
   6. Output: 512x512px JPEG at 90% quality
-- **Commit(s)**: `ec989ba`
+- **Commit(s)**: `ec989ba`, `3154d17`
 - **Status**: RESOLVED
+
+**Integration**: Circle cropping enabled for Person avatars, square cropping for Gift images.
 
 **Usage**:
 ```tsx
