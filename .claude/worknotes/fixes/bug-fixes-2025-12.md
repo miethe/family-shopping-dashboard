@@ -1253,3 +1253,47 @@ Monthly bug tracking for December 2025.
   4. Added `PUBLIC_API_URL` environment variable to docker-compose.yml with default `http://localhost:8030`
 - **Commit(s)**: `129795b`
 - **Status**: RESOLVED
+
+---
+
+### Person Modal Avatar Not Updating After Photo Upload
+
+**Issue**: When a user adds a picture to a Person via the modal, the modal avatar doesn't update until manual refresh, while the catalog view updates immediately.
+
+- **Location**: `apps/web/components/modals/PersonDetailModal.tsx:60`
+- **Root Cause**: QueryKey mismatch - modal used `["people", personId]` but `useUpdatePerson` hook updates cache at `["persons", id]`. Different keys meant the modal never saw cache updates.
+- **Fix**: Changed queryKey from `["people", personId]` to `["persons", Number(personId)]` to match the cache key used by the update mutation.
+- **Commit(s)**: `3518deb`
+- **Status**: RESOLVED
+
+---
+
+### Image Cropping Feature
+
+**Issue**: Users couldn't crop images when adding them to entities (Person avatars, Gift images, etc.), limiting their ability to adjust image framing and composition.
+
+- **Location**:
+  - `apps/web/components/ui/image-crop-dialog.tsx` (NEW)
+  - `apps/web/components/ui/image-picker.tsx` (modified)
+- **Root Cause**: N/A - Feature request
+- **Fix**:
+  1. Created `ImageCropDialog` component using `react-easy-crop` library
+  2. Added `cropShape` prop to `ImagePicker` ('circle' | 'square' | 'none')
+  3. Integrated crop workflow: file selection → crop dialog → apply crop → upload
+  4. Supports circle cropping (avatars) and square cropping (other images)
+  5. Mobile-first with touch gestures (pinch-zoom, pan)
+  6. Output: 512x512px JPEG at 90% quality
+- **Commit(s)**: `ec989ba`
+- **Status**: RESOLVED
+
+**Usage**:
+```tsx
+// Circle crop for avatars
+<ImagePicker cropShape="circle" value={url} onChange={setUrl} />
+
+// Square crop for product images
+<ImagePicker cropShape="square" value={url} onChange={setUrl} />
+
+// No cropping (default, backward compatible)
+<ImagePicker value={url} onChange={setUrl} />
+```
