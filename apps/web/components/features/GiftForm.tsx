@@ -456,6 +456,7 @@ export function GiftForm({ gift, onSuccess, onCancel }: GiftFormProps) {
             Gift Image
           </label>
           <ImagePicker
+            cropShape="square"
             value={formData.image_url || null}
             onChange={(url) => handleFieldChange('image_url', url || '')}
             onError={(error) => {

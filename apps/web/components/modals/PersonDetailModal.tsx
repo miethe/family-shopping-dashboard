@@ -794,6 +794,7 @@ export function PersonDetailModal({
                       Photo
                     </label>
                     <ImagePicker
+                      cropShape="circle"
                       value={formData.photo_url || null}
                       onChange={(url) => setFormData({ ...formData, photo_url: url || '' })}
                       onError={(error) => {
@@ -927,6 +928,7 @@ export function PersonDetailModal({
     </EntityModal>
 
     <ImageEditDialog
+      cropShape="circle"
       open={showImageDialog}
       onOpenChange={setShowImageDialog}
       value={person?.photo_url || null}

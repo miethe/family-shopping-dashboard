@@ -145,6 +145,7 @@ export function PersonQuickCreateModal({
             Photo (optional)
           </label>
           <ImagePicker
+            cropShape="circle"
             value={photoUrl || null}
             onChange={(url) => setPhotoUrl(url || '')}
             onError={(error) => {

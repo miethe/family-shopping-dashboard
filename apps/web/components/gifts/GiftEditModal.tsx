@@ -233,6 +233,7 @@ export function GiftEditModal({
             Gift Image
           </label>
           <ImagePicker
+            cropShape="square"
             value={imageUrl || null}
             onChange={(url) => setImageUrl(url || '')}
             onError={(error) => {

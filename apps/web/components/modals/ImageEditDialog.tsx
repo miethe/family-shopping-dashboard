@@ -13,6 +13,7 @@ interface ImageEditDialogProps {
   onSave: (url: string | null) => void;
   title?: string;
   disabled?: boolean;
+  cropShape?: 'circle' | 'square' | 'none';
 }
 
 export function ImageEditDialog({
@@ -22,6 +23,7 @@ export function ImageEditDialog({
   onSave,
   title = "Edit Photo",
   disabled = false,
+  cropShape = 'none',
 }: ImageEditDialogProps) {
   const { toast } = useToast();
   const [imageUrl, setImageUrl] = React.useState<string | null>(value);
@@ -79,6 +81,7 @@ export function ImageEditDialog({
             });
           }}
           disabled={disabled}
+          cropShape={cropShape}
         />
         <p className="text-xs text-warm-600">
           Upload or link to a photo
