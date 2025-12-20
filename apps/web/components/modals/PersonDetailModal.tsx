@@ -57,7 +57,7 @@ export function PersonDetailModal({
   const { loading: authLoading } = useAuth();
 
   const { data: person, isLoading } = useQuery<Person>({
-    queryKey: ["people", personId],
+    queryKey: ["persons", Number(personId)],
     queryFn: () => personApi.get(Number(personId)),
     enabled: !!personId && open && !authLoading,
   });
