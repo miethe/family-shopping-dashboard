@@ -242,6 +242,11 @@ from app.api import upload
 
 app.include_router(upload.router, prefix=API_V1_PREFIX)
 
+# Field options routes (admin-configurable field options)
+from app.api import field_options
+
+app.include_router(field_options.router, prefix=API_V1_PREFIX)
+
 # Serve uploaded media if stored locally
 app.mount(
     "/uploads",

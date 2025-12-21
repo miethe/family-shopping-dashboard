@@ -3,6 +3,7 @@
 from app.models.base import BaseModel, TimestampMixin
 from app.models.comment import Comment, CommentParentType
 from app.models.entity_budget import EntityBudget
+from app.models.field_option import FieldOption
 from app.models.gift import Gift, GiftPriority
 from app.models.gift_person import GiftPerson, GiftPersonRole
 from app.models.group import Group, PersonGroup
@@ -31,6 +32,7 @@ __all__ = [
     "Tag",
     "Comment",
     "EntityBudget",
+    "FieldOption",
     "PersonOccasion",
     "GiftPerson",
     "GiftPersonRole",
