@@ -12,9 +12,11 @@ import { defineConfig, devices } from '@playwright/test';
  * - Screenshot on failure
  * - HTML reporter
  * - Local dev server integration
+ * - Accessibility testing with axe-core
  */
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './__tests__',
+  testMatch: ['**/*.spec.ts', '**/*.e2e.ts'],
 
   // Parallel execution for faster test runs
   fullyParallel: true,
