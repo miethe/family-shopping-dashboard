@@ -1299,3 +1299,23 @@ Monthly bug tracking for December 2025.
 // No cropping (default, backward compatible)
 <ImagePicker value={url} onChange={setUrl} />
 ```
+
+---
+
+### MissingGreenlet Error When Updating Gift Source or Image
+
+**Issue**: Setting the `source` or `image_url` field on an existing gift fails with `sqlalchemy.exc.MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here.`
+
+- **Location**: `services/api/app/repositories/gift.py:165-180` (`get_with_relations()` method)
+- **Root Cause**: The `get_with_relations()` method was not eagerly loading all 6 relationships on the Gift model. It loaded `people`, `stores`, `gift_people_links`, and `list_items`, but was missing `tags` and `purchaser`. When `_to_response()` accessed these lazy-loaded relationships after the session committed, SQLAlchemy attempted async lazy loading outside the greenlet context.
+- **Fix**: Added `selectinload(self.model.tags)` and `selectinload(self.model.purchaser)` to all 8 GiftRepository query methods that return Gift objects:
+  - `get_with_relations()`
+  - `search_by_name()`
+  - `get_multi()` (overridden)
+  - `get_filtered()`
+  - `get_by_linked_person()`
+  - `get_by_linked_persons()`
+  - `get_multi_with_linked_person_filter()`
+  - `get_by_purchaser_id()`
+- **Commit(s)**: `fd6512e`
+- **Status**: RESOLVED
