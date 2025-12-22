@@ -1319,3 +1319,24 @@ Monthly bug tracking for December 2025.
   - `get_by_purchaser_id()`
 - **Commit(s)**: `fd6512e`
 - **Status**: RESOLVED
+
+---
+
+### MissingGreenlet Error in set_stores() Relationship Assignment
+
+**Issue**: Setting stores on a gift via `set_stores()` fails with `MissingGreenlet` error when assigning to `gift.stores = []` or `gift.stores = stores`
+
+- **Location**: `services/api/app/repositories/gift.py:593` (`set_stores()` method)
+- **Root Cause**: The method used `await self.get(gift_id)` which doesn't eagerly load the `stores` relationship. When assigning to `gift.stores`, SQLAlchemy needs to check existing stores before replacement, triggering a lazy load in async context.
+- **Fix**: Changed initial fetch to eagerly load `stores` relationship before modification:
+  ```python
+  stmt = select(Gift).where(Gift.id == gift_id).options(
+      selectinload(Gift.stores)
+  )
+  result = await self.session.execute(stmt)
+  gift = result.scalar_one_or_none()
+  ```
+- **Commit(s)**: `91e3156`
+- **Status**: RESOLVED
+
+**Note**: `set_people()` uses SQL DELETE directly and doesn't access the ORM relationship, so it's not affected. `update_purchaser()` only updates the FK column, not the relationship.

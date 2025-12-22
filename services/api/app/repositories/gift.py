@@ -588,9 +588,14 @@ class GiftRepository(BaseRepository[Gift]):
             Updated Gift with stores relationship loaded, or None if not found
 
         Note:
-            Re-fetches gift with eager-loaded stores to avoid lazy loading in async context.
+            Must eager-load stores BEFORE modification to avoid lazy loading in async context.
         """
-        gift = await self.get(gift_id)
+        # Eager load stores relationship before modifying it
+        stmt = select(Gift).where(Gift.id == gift_id).options(
+            selectinload(Gift.stores)
+        )
+        result = await self.session.execute(stmt)
+        gift = result.scalar_one_or_none()
         if gift is None:
             return None
 
