@@ -1,1 +1,1 @@
-"""Data modules for standard templates and fixtures."""
+"""Seed data and reference values."""

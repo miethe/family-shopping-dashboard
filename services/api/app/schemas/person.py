@@ -24,12 +24,12 @@ NOTE_MAX = 2000
 ADVANCED_NOTE_MAX = 500
 SIZE_FIELD_MAX = 60
 
-WINE_TYPES = {"red", "white", "rose", "sparkling", "natural_orange", "dessert_fortified"}
-BEVERAGE_PREFS = {"coffee", "tea", "cocktails", "beer", "spirits", "mocktails"}
-COFFEE_STYLES = {"espresso_latte", "pour_over", "cold_brew", "decaf", "none"}
-TEA_STYLES = {"black_green", "herbal", "chai", "iced", "none"}
-SPIRITS = {"whiskey", "gin", "tequila", "rum", "vodka", "amaro_liqueurs"}
-DIETARY = {
+WINE_TYPES = frozenset({"red", "white", "rose", "sparkling", "natural_orange", "dessert_fortified"})
+BEVERAGE_PREFS = frozenset({"coffee", "tea", "cocktails", "beer", "spirits", "mocktails"})
+COFFEE_STYLES = frozenset({"espresso_latte", "pour_over", "cold_brew", "decaf", "none"})
+TEA_STYLES = frozenset({"black_green", "herbal", "chai", "iced", "none"})
+SPIRITS = frozenset({"whiskey", "gin", "tequila", "rum", "vodka", "amaro_liqueurs"})
+DIETARY = frozenset({
     "vegetarian",
     "vegan",
     "gluten_free",
@@ -38,8 +38,8 @@ DIETARY = {
     "kosher",
     "low_sugar",
     "none",
-}
-CUISINES = {
+})
+CUISINES = frozenset({
     "italian",
     "mexican",
     "japanese",
@@ -51,10 +51,10 @@ CUISINES = {
     "korean",
     "middle_eastern",
     "other",
-}
-SWEET_SAVORY = {"sweet", "savory", "balanced"}
-PREFERRED_METALS = {"gold", "silver", "rose_gold", "platinum", "mixed", "none"}
-FRAGRANCE_NOTES = {
+})
+SWEET_SAVORY = frozenset({"sweet", "savory", "balanced"})
+PREFERRED_METALS = frozenset({"gold", "silver", "rose_gold", "platinum", "mixed", "none"})
+FRAGRANCE_NOTES = frozenset({
     "citrus",
     "floral",
     "woody",
@@ -62,8 +62,8 @@ FRAGRANCE_NOTES = {
     "warm_spice",
     "gourmand",
     "clean",
-}
-ACCESSORY_PREFS = {
+})
+ACCESSORY_PREFS = frozenset({
     "bags_totes",
     "wallets",
     "belts",
@@ -71,8 +71,8 @@ ACCESSORY_PREFS = {
     "hats",
     "sunglasses",
     "watches",
-}
-HOBBIES = {
+})
+HOBBIES = frozenset({
     "cooking",
     "baking",
     "gardening",
@@ -84,16 +84,16 @@ HOBBIES = {
     "running",
     "cycling",
     "hiking_camping",
-}
-CREATIVE_OUTLETS = {
+})
+CREATIVE_OUTLETS = frozenset({
     "music_instrument",
     "singing",
     "writing",
     "podcasting_streaming",
     "woodworking",
     "sewing_knitting",
-}
-SPORTS_PLAYED = {
+})
+SPORTS_PLAYED = frozenset({
     "basketball",
     "soccer",
     "football",
@@ -102,8 +102,8 @@ SPORTS_PLAYED = {
     "tennis_pickleball",
     "ski_snowboard",
     "swimming",
-}
-READING_GENRES = {
+})
+READING_GENRES = frozenset({
     "mystery_thriller",
     "sci_fi",
     "fantasy",
@@ -113,8 +113,8 @@ READING_GENRES = {
     "biography",
     "business",
     "self_help",
-}
-MUSIC_GENRES = {
+})
+MUSIC_GENRES = frozenset({
     "indie_alt",
     "pop",
     "rock",
@@ -124,11 +124,11 @@ MUSIC_GENRES = {
     "classical",
     "country_folk",
     "edm",
-}
-TECH_ECOSYSTEM = {"apple", "android", "windows", "chromeos"}
-GAMING_PLATFORMS = {"playstation", "xbox", "nintendo", "pc", "mobile", "vr"}
-SMART_HOME = {"homekit", "google_home", "alexa", "none"}
-TRAVEL_STYLES = {
+})
+TECH_ECOSYSTEM = frozenset({"apple", "android", "windows", "chromeos"})
+GAMING_PLATFORMS = frozenset({"playstation", "xbox", "nintendo", "pc", "mobile", "vr"})
+SMART_HOME = frozenset({"homekit", "google_home", "alexa", "none"})
+TRAVEL_STYLES = frozenset({
     "city_breaks",
     "beaches",
     "national_parks",
@@ -136,8 +136,8 @@ TRAVEL_STYLES = {
     "luxury_stays",
     "boutique_hotels",
     "camping_glamping",
-}
-EXPERIENCE_TYPES = {
+})
+EXPERIENCE_TYPES = frozenset({
     "concerts",
     "theater",
     "comedy",
@@ -146,10 +146,10 @@ EXPERIENCE_TYPES = {
     "spa_wellness",
     "outdoor_adventures",
     "courses_workshops",
-}
-EVENT_PREFERENCES = {"morning", "afternoon", "evening", "weekend_only"}
-COLLECTS = {"vinyl", "books", "sneakers", "watches", "art_prints", "figurines", "cards", "plants"}
-AVOID_CATEGORIES = {
+})
+EVENT_PREFERENCES = frozenset({"morning", "afternoon", "evening", "weekend_only"})
+COLLECTS = frozenset({"vinyl", "books", "sneakers", "watches", "art_prints", "figurines", "cards", "plants"})
+AVOID_CATEGORIES = frozenset({
     "fragrances",
     "skincare",
     "tech_gadgets",
@@ -158,8 +158,8 @@ AVOID_CATEGORIES = {
     "kitchen_gear",
     "alcohol",
     "experiences",
-}
-BUDGET_COMFORT = {"budget", "mid", "splurge"}
+})
+BUDGET_COMFORT = frozenset({"budget", "mid", "splurge"})
 
 
 def _normalize_slug(value: str) -> str:

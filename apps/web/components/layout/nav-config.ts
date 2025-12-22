@@ -40,4 +40,9 @@ export const navItems = [
     label: 'Lists',
     icon: 'list_alt'
   },
+  {
+    href: '/admin',
+    label: 'Admin',
+    icon: 'settings'
+  },
 ] as const satisfies readonly NavItem[];
