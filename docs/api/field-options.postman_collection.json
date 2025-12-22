@@ -1,0 +1,459 @@
+{
+  "info": {
+    "name": "Field Options API",
+    "description": "Admin API for managing dynamic dropdown field options across entities (person, gift, occasion, list)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "field-options-api-v1"
+  },
+  "item": [
+    {
+      "name": "List Options",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options?entity=person&field_name=wine_types&limit=50",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options"
+          ],
+          "query": [
+            {
+              "key": "entity",
+              "value": "person",
+              "description": "Entity type (person, gift, occasion, list)"
+            },
+            {
+              "key": "field_name",
+              "value": "wine_types",
+              "description": "Field name within entity"
+            },
+            {
+              "key": "include_inactive",
+              "value": "false",
+              "disabled": true,
+              "description": "Include soft-deleted options"
+            },
+            {
+              "key": "skip",
+              "value": "0",
+              "disabled": true,
+              "description": "Pagination offset"
+            },
+            {
+              "key": "limit",
+              "value": "50",
+              "description": "Maximum records to return (1-1000)"
+            }
+          ]
+        },
+        "description": "Get paginated list of field options for a specific entity/field combination"
+      },
+      "response": []
+    },
+    {
+      "name": "List Options - With Inactive",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options?entity=person&field_name=wine_types&include_inactive=true",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options"
+          ],
+          "query": [
+            {
+              "key": "entity",
+              "value": "person"
+            },
+            {
+              "key": "field_name",
+              "value": "wine_types"
+            },
+            {
+              "key": "include_inactive",
+              "value": "true",
+              "description": "Include soft-deleted options"
+            }
+          ]
+        },
+        "description": "Get field options including soft-deleted ones"
+      },
+      "response": []
+    },
+    {
+      "name": "List Gift Priority Options",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options?entity=gift&field_name=priority&limit=10",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options"
+          ],
+          "query": [
+            {
+              "key": "entity",
+              "value": "gift"
+            },
+            {
+              "key": "field_name",
+              "value": "priority"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Get priority levels for gifts"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Option - Wine Type",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"entity\": \"person\",\n  \"field_name\": \"wine_types\",\n  \"value\": \"sparkling_wine\",\n  \"display_label\": \"Sparkling Wine\",\n  \"display_order\": 3\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options"
+          ]
+        },
+        "description": "Create a new wine type option"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Option - Gift Priority",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"entity\": \"gift\",\n  \"field_name\": \"priority\",\n  \"value\": \"critical\",\n  \"display_label\": \"Critical/Must Have\",\n  \"display_order\": 0\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options"
+          ]
+        },
+        "description": "Create a new gift priority level"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Option - Tea Style",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"entity\": \"person\",\n  \"field_name\": \"tea_style\",\n  \"value\": \"herbal_blend\",\n  \"display_label\": \"Herbal Blends\",\n  \"display_order\": 2\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options"
+          ]
+        },
+        "description": "Create a tea style preference option"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Option by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options",
+            "1"
+          ]
+        },
+        "description": "Get a specific field option by its ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Option - Label Only",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"display_label\": \"Champagne & Sparkling Wine\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options",
+            "1"
+          ]
+        },
+        "description": "Update only the display label of an option"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Option - Order Only",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"display_order\": 1\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options",
+            "1"
+          ]
+        },
+        "description": "Update only the display order of an option"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Option - Both Fields",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"display_label\": \"Champagne & Sparkling Wine\",\n  \"display_order\": 1\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options",
+            "1"
+          ]
+        },
+        "description": "Update both display label and order"
+      },
+      "response": []
+    },
+    {
+      "name": "Soft Delete Option",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options/1",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options",
+            "1"
+          ]
+        },
+        "description": "Soft delete an option (sets is_active=false, preserves data)"
+      },
+      "response": []
+    },
+    {
+      "name": "Hard Delete Option",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/field-options/1?hard_delete=true",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "field-options",
+            "1"
+          ],
+          "query": [
+            {
+              "key": "hard_delete",
+              "value": "true",
+              "description": "If true, permanently delete the option"
+            }
+          ]
+        },
+        "description": "Permanently delete an option (cannot be undone)"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "YOUR_JWT_TOKEN_HERE",
+      "type": "string"
+    }
+  ]
+}
