@@ -9,7 +9,7 @@ from app.models.gift_person import GiftPerson, GiftPersonRole
 from app.models.list import List
 from app.models.list_item import ListItem
 from app.models.person import Person
-from app.models.store import Store
+from app.models.store import GiftStore, Store
 from app.models.tag import Tag, gift_tags
 from app.repositories.base import BaseRepository
 
@@ -588,39 +588,26 @@ class GiftRepository(BaseRepository[Gift]):
             Updated Gift with stores relationship loaded, or None if not found
 
         Note:
-            Must eager-load stores BEFORE modification to avoid lazy loading in async context.
+            Uses direct association table updates to avoid lazy loading in async context.
         """
-        # Eager load stores relationship before modifying it
-        stmt = select(Gift).where(Gift.id == gift_id).options(
-            selectinload(Gift.stores)
-        )
-        result = await self.session.execute(stmt)
-        gift = result.scalar_one_or_none()
+        gift = await self.get(gift_id)
         if gift is None:
             return None
 
-        if not store_ids:
-            gift.stores = []
-            await self.session.commit()
-            # Re-fetch with explicit eager loading to avoid lazy load in async context
-            stmt = select(Gift).where(Gift.id == gift_id).options(
-                selectinload(Gift.stores)
-            )
-            result = await self.session.execute(stmt)
-            return result.scalar_one_or_none()
-
-        stmt = select(Store).where(Store.id.in_(store_ids))
-        result = await self.session.execute(stmt)
-        stores = list(result.scalars().all())
-        gift.stores = stores
-        await self.session.commit()
-
-        # Re-fetch with explicit eager loading to avoid lazy load in async context
-        stmt = select(Gift).where(Gift.id == gift_id).options(
-            selectinload(Gift.stores)
+        # Remove all existing links
+        await self.session.execute(
+            delete(GiftStore).where(GiftStore.gift_id == gift_id)
         )
-        result = await self.session.execute(stmt)
-        return result.scalar_one_or_none()
+
+        if store_ids:
+            stmt = select(Store.id).where(Store.id.in_(store_ids))
+            result = await self.session.execute(stmt)
+            existing_store_ids = [row[0] for row in result.all()]
+            for store_id in existing_store_ids:
+                self.session.add(GiftStore(gift_id=gift_id, store_id=store_id))
+
+        await self.session.commit()
+        return await self.get_with_relations(gift_id)
 
     async def get_by_linked_person(self, person_id: int) -> list[Gift]:
         """
