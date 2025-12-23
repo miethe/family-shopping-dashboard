@@ -97,12 +97,14 @@ class PersonGroup(BaseModel):
         "Person",
         foreign_keys=[person_id],
         lazy="select",
+        overlaps="groups",
     )
 
     group: Mapped["Group"] = relationship(
         "Group",
         foreign_keys=[group_id],
         lazy="select",
+        overlaps="members",
     )
 
     __table_args__ = (

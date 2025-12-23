@@ -65,13 +65,16 @@ class GiftPerson(BaseModel):
     gift: Mapped["Gift"] = relationship(
         "Gift",
         foreign_keys=[gift_id],
+        back_populates="gift_people_links",
         lazy="select",
+        overlaps="people",
     )
 
     person: Mapped["Person"] = relationship(
         "Person",
         foreign_keys=[person_id],
         lazy="select",
+        overlaps="gifts",
     )
 
     __table_args__ = (
