@@ -5,7 +5,7 @@ from datetime import date
 from decimal import Decimal
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import JSON, Date, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import JSON, Boolean, Date, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -58,6 +58,7 @@ class Gift(BaseModel):
         sale_price: Optional sale/discounted price in currency
         purchase_date: Optional date when the gift was purchased
         additional_urls: Optional array of additional related URLs
+        from_santa: Boolean flag indicating if the gift is from Santa (defaults to False)
         extra_data: JSON field for extensible data (uses JSONB for PostgreSQL)
         created_at: Timestamp of creation (inherited from BaseModel)
         updated_at: Timestamp of last update (inherited from BaseModel)
@@ -142,6 +143,13 @@ class Gift(BaseModel):
     additional_urls: Mapped[Optional[list[dict[str, str]]]] = mapped_column(
         JSON,
         nullable=True,
+    )
+
+    from_santa: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default="false",
     )
 
     extra_data: Mapped[dict] = mapped_column(

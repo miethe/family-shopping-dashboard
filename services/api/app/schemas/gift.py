@@ -146,6 +146,10 @@ class GiftCreate(BaseModel):
         default_factory=list,
         description="Optional person IDs to link",
     )
+    from_santa: bool = Field(
+        default=False,
+        description="Mark gift as from Santa for surprise/personalization",
+    )
 
 
 class GiftUpdate(BaseModel):
@@ -166,6 +170,7 @@ class GiftUpdate(BaseModel):
     additional_urls: list[AdditionalUrl] | None = None
     store_ids: list[int] | None = None
     person_ids: list[int] | None = None
+    from_santa: bool | None = None
 
 
 class StoreMinimal(BaseModel):
@@ -220,6 +225,10 @@ class GiftResponse(TimestampSchema):
     purchase_date: date | None = None
     additional_urls: list[AdditionalUrl] = Field(default_factory=list)
     extra_data: dict = Field(default_factory=dict)
+    from_santa: bool = Field(
+        default=False,
+        description="Gift is marked as from Santa",
+    )
     stores: list[StoreMinimal] = Field(
         default_factory=list,
         description="Stores where this gift is available",
