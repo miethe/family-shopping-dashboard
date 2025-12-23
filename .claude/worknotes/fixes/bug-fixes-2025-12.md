@@ -1340,3 +1340,53 @@ Monthly bug tracking for December 2025.
 - **Status**: RESOLVED
 
 **Note**: `set_people()` uses SQL DELETE directly and doesn't access the ORM relationship, so it's not affected. `update_purchaser()` only updates the FK column, not the relationship.
+
+---
+
+### Missing activity_logs Table Causes 500 Error
+
+**Issue**: API returns 500 error with `relation "activity_logs" does not exist` when viewing or updating Gifts
+
+- **Location**: Database schema / `services/api/alembic/versions/be6fd164193f_add_activity_logs_table.py`
+- **Root Cause**: The `activity_logs` migration (`be6fd164193f`) exists and is in the migration chain ancestry of the current head (`a9a8b7496861`), but the table was never created in the database. The `alembic_version` table shows the database is at head, but the schema is inconsistent—likely due to a corrupted migration state during a previous branch merge or manual intervention.
+- **Fix**: Manually executed the DDL from the migration to create the `activity_logs` table with all required columns (id, action, actor_id, entity_type, entity_id, entity_name, extra_data, created_at, updated_at) and indexes (action, actor_id, entity_type, created_at, composite actor_id+entity_type).
+- **Commit(s)**: N/A (database fix only, no code changes)
+- **Status**: RESOLVED
+
+**Prevention**: When migration branching/merging issues occur, validate schema consistency by comparing actual tables against expected models.
+
+---
+
+### SQLAlchemy Relationship Overlap Warnings Crashing API
+
+**Issue**: API crashes with SQLAlchemy warnings about overlapping relationships: `GiftPerson.gift`, `GiftPerson.person`, `PersonGroup.person`, `PersonGroup.group`
+
+- **Location**: `services/api/app/models/gift_person.py`, `services/api/app/models/group.py`
+- **Root Cause**: Association table models (`GiftPerson`, `PersonGroup`) have relationships that write to the same foreign key columns as the many-to-many relationships on parent models (e.g., `Gift.people` uses `gift_people` secondary table, but `GiftPerson.gift` also references that table). SQLAlchemy requires explicit `overlaps` parameter to acknowledge this is intentional.
+- **Fix**: Added `overlaps` parameters to association table relationships:
+  - `GiftPerson.gift`: added `back_populates="gift_people_links"` + `overlaps="people"`
+  - `GiftPerson.person`: added `overlaps="gifts"`
+  - `PersonGroup.person`: added `overlaps="groups"`
+  - `PersonGroup.group`: added `overlaps="members"`
+- **Commit(s)**: `c3ac2a0`
+- **Status**: RESOLVED
+
+---
+
+### Next.js Image Optimization 500 Error for API-Hosted Images
+
+**Issue**: Pasting images in gift forms resulted in `GET /_next/image?url=http://localhost:8030/uploads/... 500 (Internal Server Error)`
+
+- **Location**: `apps/web/next.config.ts:33-35`
+- **Root Cause**: The `remotePatterns` config for localhost was missing the `port` specification. Pattern `{ protocol: 'http', hostname: 'localhost' }` does NOT match `http://localhost:8030`. Next.js Image Optimization strictly validates URLs against remotePatterns before proxying.
+- **Fix**: Added `port: '8030'` and `pathname: '/uploads/**'` to the localhost remote pattern:
+  ```typescript
+  {
+    protocol: 'http',
+    hostname: 'localhost',
+    port: '8030',
+    pathname: '/uploads/**',
+  }
+  ```
+- **Commit(s)**: `a50aea9`
+- **Status**: RESOLVED
