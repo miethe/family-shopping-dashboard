@@ -32,4 +32,27 @@ deployed_at = "2025-11-26T13:14:33.354857"
 artifact_path = "agents/supabase-realtime-optimizer.md.md"
 content_hash = "8f4a5f1d157cd92b3d66e54b636cc9e47a29b3df73358f89c2cb73761aa77fb8"
 local_modifications = false
+version_lineage = [
+    "8f4a5f1d157cd92b3d66e54b636cc9e47a29b3df73358f89c2cb73761aa77fb8",
+]
 collection_sha = "8f4a5f1d157cd92b3d66e54b636cc9e47a29b3df73358f89c2cb73761aa77fb8"
+
+[[deployed]]
+artifact_name = "frontend-dev-guidelines"
+artifact_type = "skill"
+from_collection = "default"
+deployed_at = "2025-12-17T15:18:46.280717"
+artifact_path = "skills/frontend-development"
+content_hash = "2ac3d769211abc5bc10d0af3989b3d0379f1f99830e33d5d5f945daf44e35a29"
+local_modifications = false
+collection_sha = "2ac3d769211abc5bc10d0af3989b3d0379f1f99830e33d5d5f945daf44e35a29"
+
+[[deployed]]
+artifact_name = "implementing-websocket-realtime"
+artifact_type = "skill"
+from_collection = "default"
+deployed_at = "2025-12-17T15:18:46.281554"
+artifact_path = "skills/implementing-websocket-realtime"
+content_hash = "ebbf2338248a052c100dd1fe058f36c07f3bd7908d16fc6383912f484f4da41c"
+local_modifications = false
+collection_sha = "ebbf2338248a052c100dd1fe058f36c07f3bd7908d16fc6383912f484f4da41c"
