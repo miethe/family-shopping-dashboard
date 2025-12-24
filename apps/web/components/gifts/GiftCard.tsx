@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Image from 'next/image';
-import { Card, Avatar, AvatarImage, AvatarFallback, getInitials, Check } from '@/components/ui';
+import { Card, Avatar, AvatarImage, AvatarFallback, getInitials, Check, Button } from '@/components/ui';
 import { StatusSelector } from '@/components/ui/status-selector';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { PersonDropdown } from '@/components/common/PersonDropdown';
@@ -17,6 +17,9 @@ import { StatusPill, type GiftStatus } from '@/components/ui/status-pill';
 import { LinkedEntityIcons, type LinkedPerson, type LinkedList } from './LinkedEntityIcons';
 import { QuickPurchaseButton, type ListItemInfo } from './QuickPurchaseButton';
 import { GiftQuickPurchaseButton } from './GiftQuickPurchaseButton';
+import { StatusButton } from './StatusButton';
+import { ListPickerDropdown } from './ListPickerDropdown';
+import { PriceEditDialog } from './PriceEditDialog';
 
 export interface GiftCardProps {
   gift: Gift & {
@@ -37,6 +40,8 @@ export interface GiftCardProps {
   isSelected?: boolean;
   /** Callback when selection checkbox is toggled */
   onToggleSelection?: () => void;
+  /** NEW: Callback when status chip is clicked */
+  onStatusFilter?: (status: GiftStatus) => void;
   /** NEW: Callback when recipient icon is clicked */
   onRecipientClick?: (personId: number) => void;
   /** NEW: Callback when list icon is clicked */
@@ -59,6 +64,7 @@ export function GiftCard({
   selectionMode = false,
   isSelected = false,
   onToggleSelection,
+  onStatusFilter,
   onRecipientClick,
   onListClick,
 }: GiftCardProps) {
@@ -67,6 +73,7 @@ export function GiftCard({
   const { toast } = useToast();
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
   const [showRecipientPicker, setShowRecipientPicker] = React.useState(false);
+  const [isPriceDialogOpen, setIsPriceDialogOpen] = React.useState(false);
   const mobileMenuRef = React.useRef<HTMLDivElement>(null);
 
   const handleStatusChange = (newStatus: GiftStatus) => {
@@ -145,6 +152,22 @@ export function GiftCard({
     // Stop propagation to prevent card click
     e.stopPropagation();
     onToggleSelection?.();
+  };
+
+  const handleToggleSanta = async () => {
+    try {
+      await updateGiftMutation.mutateAsync({
+        from_santa: !gift.from_santa,
+      });
+      toast({
+        description: gift.from_santa ? 'Unmarked as from Santa' : 'Marked as from Santa',
+      });
+    } catch {
+      toast({
+        variant: 'error',
+        description: 'Failed to update gift',
+      });
+    }
   };
 
   return (
@@ -243,6 +266,19 @@ export function GiftCard({
                       <UserPlus className="w-4 h-4 text-warm-600" />
                       <span>Assign Recipient</span>
                     </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleSanta();
+                        setShowMobileMenu(false);
+                      }}
+                      disabled={updateGiftMutation.isPending}
+                      className="w-full px-4 py-3 flex items-center gap-3 text-sm text-warm-900 hover:bg-warm-100 transition-colors min-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label={gift.from_santa ? 'Unmark as from Santa' : 'Mark as from Santa'}
+                    >
+                      <span className="text-base" role="img" aria-hidden="true">🎅</span>
+                      <span>{gift.from_santa ? 'Unmark as from Santa' : 'Mark as from Santa'}</span>
+                    </button>
                     <div className="px-4 py-2 border-t border-warm-200">
                       <div className="text-xs font-semibold text-warm-600 mb-2">Change Status</div>
                       {gift.status && (
@@ -263,7 +299,7 @@ export function GiftCard({
             )}
 
             {/* Image */}
-            <div className="aspect-square rounded-large overflow-hidden bg-warm-100 mb-3">
+            <div className="aspect-square rounded-large overflow-hidden bg-warm-100 mb-3 relative">
               {gift.image_url ? (
                 <Image
                   src={gift.image_url}
@@ -278,6 +314,18 @@ export function GiftCard({
                   <GiftIcon className="w-10 h-10 text-warm-300" />
                 </div>
               )}
+
+              {/* From Santa Icon */}
+              {gift.from_santa && (
+                <div
+                  className="absolute top-2 right-2 text-2xl z-10 bg-white/90 backdrop-blur-sm rounded-full w-10 h-10 flex items-center justify-center shadow-soft"
+                  title="From Santa"
+                  role="img"
+                  aria-label="This gift is from Santa"
+                >
+                  🎅
+                </div>
+              )}
             </div>
 
             {/* Title */}
@@ -288,7 +336,22 @@ export function GiftCard({
             {/* Status Badge - Always visible for quick status identification */}
             {gift.status && (
               <div className="mb-2">
-                <StatusPill status={gift.status} size="sm" />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onStatusFilter?.(gift.status!);
+                      }}
+                      className="cursor-pointer hover:ring-2 hover:ring-primary-300 rounded-medium transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+                      aria-label={`Filter by status: ${gift.status}`}
+                      type="button"
+                    >
+                      <StatusPill status={gift.status} size="sm" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>Click to filter by {gift.status}</TooltipContent>
+                </Tooltip>
               </div>
             )}
 
@@ -308,8 +371,15 @@ export function GiftCard({
 
             {/* Footer: Price + Quick Purchase */}
             <div className="flex items-center justify-between mt-3">
-              {/* Price - left side */}
-              <div className="flex-1">
+              {/* Price - left side - clickable to edit */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsPriceDialogOpen(true);
+                }}
+                className="flex items-center gap-1 cursor-pointer hover:opacity-75 transition-opacity min-h-[44px]"
+                aria-label={`Edit price: ${gift.price ? `$${formatPrice(gift.price)}` : 'Not set'}`}
+              >
                 {gift.price !== null && gift.price !== undefined ? (
                   <span className="text-sm font-semibold text-primary-600">
                     ${formatPrice(gift.price)}
@@ -317,7 +387,7 @@ export function GiftCard({
                 ) : (
                   <span className="text-sm text-warm-400">No price</span>
                 )}
-              </div>
+              </button>
 
               {/* Quick Purchase Button - right side - shows for all unpurchased gifts */}
               {gift.status !== 'purchased' && (
@@ -347,7 +417,8 @@ export function GiftCard({
                           'hover:bg-warm-100 hover:border-warm-300',
                           'transition-all duration-150 ease-out',
                           'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1',
-                          'text-xs font-medium text-warm-700'
+                          'text-xs font-medium text-warm-700',
+                          'min-h-[44px]'
                         )}
                         aria-label="Assign recipient"
                       >
@@ -374,10 +445,62 @@ export function GiftCard({
                     </div>
                   )}
                 </div>
+
+                {/* Status Button */}
+                <div onClick={(e) => e.stopPropagation()}>
+                  <StatusButton
+                    giftId={gift.id}
+                    currentStatus={gift.status || 'idea'}
+                    onStatusChange={handleStatusChange}
+                  />
+                </div>
+
+                {/* List Picker Dropdown */}
+                <div onClick={(e) => e.stopPropagation()}>
+                  <ListPickerDropdown
+                    giftId={gift.id}
+                    currentListIds={gift.list_items?.map(li => li.list_id) || []}
+                  />
+                </div>
+
+                {/* From Santa Toggle */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleSanta();
+                      }}
+                      disabled={updateGiftMutation.isPending}
+                      className={cn(
+                        'min-h-[44px] px-3',
+                        gift.from_santa
+                          ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                          : 'bg-warm-100 text-warm-600 hover:bg-warm-200'
+                      )}
+                      aria-label={gift.from_santa ? 'Unmark as from Santa' : 'Mark as from Santa'}
+                    >
+                      🎅 {gift.from_santa ? 'From Santa' : 'Santa'}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {gift.from_santa ? 'Unmark as from Santa' : 'Mark as from Santa'}
+                  </TooltipContent>
+                </Tooltip>
               </div>
             )}
           </div>
         </Card>
+
+        {/* Price Edit Dialog */}
+        <PriceEditDialog
+          open={isPriceDialogOpen}
+          onOpenChange={setIsPriceDialogOpen}
+          giftId={gift.id}
+          currentPrice={gift.price ?? null}
+        />
       </button>
     </TooltipProvider>
   );

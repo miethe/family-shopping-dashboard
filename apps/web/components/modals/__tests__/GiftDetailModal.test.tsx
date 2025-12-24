@@ -127,13 +127,15 @@ describe('GiftDetailModal - Mark as Purchased Flow', () => {
     image_url: 'https://example.com/lego.jpg',
     quantity: 2,
     priority: GiftPriority.HIGH,
+    status: 'idea',
+    from_santa: false,
     source: 'Amazon',
     notes: 'Check for sales',
     person_ids: [1],
     stores: [],
     additional_urls: [],
     purchase_date: null,
-    extra_data: { status: 'idea' }, // Valid status: idea | selected | purchased | received
+    extra_data: {},
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
   };
@@ -141,7 +143,7 @@ describe('GiftDetailModal - Mark as Purchased Flow', () => {
   const mockPurchasedGift: Gift = {
     ...mockGift,
     purchase_date: '2024-01-15T00:00:00Z',
-    extra_data: { status: 'purchased' },
+    status: 'purchased',
   };
 
   beforeEach(() => {
@@ -192,7 +194,7 @@ describe('GiftDetailModal - Mark as Purchased Flow', () => {
     const giftWithPurchasedStatus: Gift = {
       ...mockGift,
       purchase_date: null,
-      extra_data: { status: 'purchased' },
+      status: 'purchased',
     };
 
     mockUseQuery.mockReturnValue({
@@ -531,6 +533,8 @@ describe('GiftDetailModal - General Functionality', () => {
     image_url: null,
     quantity: 1,
     priority: GiftPriority.MEDIUM,
+    status: 'idea',
+    from_santa: false,
     source: null,
     notes: null,
     person_ids: [],

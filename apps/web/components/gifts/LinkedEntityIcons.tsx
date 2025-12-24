@@ -185,7 +185,7 @@ export function LinkedEntityIcons({
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <span className="text-xs">{person.display_name}</span>
+              <span className="text-xs">Click to filter: {person.display_name}</span>
             </TooltipContent>
           </Tooltip>
         ))}
@@ -217,7 +217,7 @@ export function LinkedEntityIcons({
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <span className="text-xs">{list.name}</span>
+              <span className="text-xs">Click to filter: {list.name}</span>
             </TooltipContent>
           </Tooltip>
         ))}

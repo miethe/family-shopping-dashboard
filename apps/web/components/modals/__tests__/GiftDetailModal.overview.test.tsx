@@ -84,13 +84,15 @@ const createMockGift = (overrides?: Partial<Gift>): Gift => ({
   description: 'A wonderful test gift',
   notes: 'Gift notes here',
   priority: 'medium' as GiftPriority,
+  status: 'idea',
+  from_santa: false,
   quantity: 2,
   sale_price: 40.00,
   purchase_date: null,
   additional_urls: [],
   stores: [],
   person_ids: [],
-  extra_data: { status: 'idea' },
+  extra_data: {},
   created_at: '2025-01-01T00:00:00Z',
   updated_at: '2025-01-01T00:00:00Z',
   ...overrides,
@@ -404,7 +406,6 @@ describe('GiftDetailModal - Overview Tab', () => {
         image_url: 'https://example.com/image.jpg',
         price: 50.00,
         quantity: 2,
-        extra_data: { status: 'idea' },
       });
       queryClient.setQueryData(['gifts', 1], gift);
 
@@ -457,7 +458,7 @@ describe('GiftDetailModal - Overview Tab', () => {
     it('displays status pill in overlay', () => {
       const gift = createMockGift({
         image_url: 'https://example.com/image.jpg',
-        extra_data: { status: 'idea' },
+        status: 'idea',
       });
       queryClient.setQueryData(['gifts', 1], gift);
 
@@ -475,7 +476,6 @@ describe('GiftDetailModal - Overview Tab', () => {
       const gift = createMockGift({
         image_url: 'https://example.com/image.jpg',
         price: 30.00,
-        extra_data: { status: 'idea' },
       });
       queryClient.setQueryData(['gifts', 1], gift);
 

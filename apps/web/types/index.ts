@@ -377,6 +377,7 @@ export interface Gift extends TimestampFields {
   person_ids: number[];
   // Additional fields
   extra_data: Record<string, unknown> | null;
+  from_santa: boolean;
   // NEW: Person relationships with roles
   gift_people?: GiftPersonLink[];
   // NEW: List items containing this gift (from API)
@@ -402,6 +403,7 @@ export interface GiftCreate {
   additional_urls?: { label: string; url: string }[];
   store_ids?: number[];
   person_ids?: number[];
+  from_santa?: boolean;
 }
 
 /**
@@ -424,6 +426,7 @@ export interface GiftUpdate {
   store_ids?: number[];
   person_ids?: number[];
   extra_data?: Record<string, unknown>;
+  from_santa?: boolean;
 }
 
 /**

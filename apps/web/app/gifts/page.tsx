@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, Suspense, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, Suspense, useMemo, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGifts } from '@/hooks/useGifts';
 import { usePersons } from '@/hooks/usePersons';
@@ -19,7 +19,8 @@ import {
 } from '@/components/gifts';
 import { GiftDetailModal, useEntityModal } from '@/components/modals';
 import type { LinkedPerson, LinkedList } from '@/components/gifts/LinkedEntityIcons';
-import type { Gift } from '@/types';
+import type { Gift, GiftStatus } from '@/types';
+import { X } from '@/components/ui/icons';
 
 /**
  * Loading skeleton for the Gifts page
@@ -74,9 +75,11 @@ interface GiftsPageContentProps {
  * Includes bulk selection mode with checkbox UI.
  *
  * TASK-1.5: Updated to map gift_people and list_items data to GiftCard props
+ * TASK-3.4: Added filter callbacks that update URL query params
  */
 function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortOption>('recent');
   const [groupBy, setGroupBy] = useState<GroupOption>('none');
@@ -94,12 +97,15 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
   // Initialize filters from URL query params on mount
   useEffect(() => {
     const statusParam = searchParams.get('status');
-    if (statusParam) {
-      setFilters((prev) => ({
-        ...prev,
-        statuses: [statusParam],
-      }));
-    }
+    const personIdsParam = searchParams.getAll('person_id').map(Number);
+    const listIdParam = searchParams.get('list_id');
+
+    setFilters((prev) => ({
+      ...prev,
+      statuses: statusParam ? [statusParam] : [],
+      person_ids: personIdsParam.length > 0 ? personIdsParam : [],
+      list_ids: listIdParam ? [Number(listIdParam)] : [],
+    }));
   }, [searchParams]);
 
   const { data, isLoading, error, refetch } = useGifts({
@@ -153,17 +159,60 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
     };
   };
 
-  const handleRecipientClick = (personId: number) => {
-    // TODO: Open person modal/detail view
-    // For now, log to console as per acceptance criteria
-    console.log('Open person modal:', personId);
-  };
+  /**
+   * TASK-3.4: Filter handler - toggles status filter via URL params
+   */
+  const handleStatusFilter = useCallback((status: GiftStatus) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (params.get('status') === status) {
+      params.delete('status'); // Toggle off if already active
+    } else {
+      params.set('status', status);
+    }
+    router.push(`/gifts?${params.toString()}`);
+  }, [searchParams, router]);
 
-  const handleListClick = (listId: number) => {
-    // TODO: Open list modal/detail view
-    // For now, log to console as per acceptance criteria
-    console.log('Open list modal:', listId);
-  };
+  /**
+   * TASK-3.4: Filter handler - toggles recipient filter via URL params
+   * Supports multi-select (OR logic)
+   */
+  const handleRecipientFilter = useCallback((personId: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const personIds = params.getAll('person_id');
+
+    if (personIds.includes(String(personId))) {
+      // Remove from filter
+      params.delete('person_id');
+      personIds
+        .filter(id => id !== String(personId))
+        .forEach(id => params.append('person_id', id));
+    } else {
+      // Add to filter
+      params.append('person_id', String(personId));
+    }
+    router.push(`/gifts?${params.toString()}`);
+  }, [searchParams, router]);
+
+  /**
+   * TASK-3.4: Filter handler - toggles list filter via URL params
+   * Single-select (exclusive)
+   */
+  const handleListFilter = useCallback((listId: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (params.get('list_id') === String(listId)) {
+      params.delete('list_id'); // Toggle off if already active
+    } else {
+      params.set('list_id', String(listId)); // Replace (exclusive)
+    }
+    router.push(`/gifts?${params.toString()}`);
+  }, [searchParams, router]);
+
+  /**
+   * TASK-3.4: Clear all active filters
+   */
+  const clearAllFilters = useCallback(() => {
+    router.push('/gifts');
+  }, [router]);
 
   return (
     <div className="space-y-6">
@@ -200,6 +249,66 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
           >
             Clear Selection
           </Button>
+        </div>
+      )}
+
+      {/* TASK-3.4: Active Filters Bar - shows when any filters are active */}
+      {(filters.statuses.length > 0 || filters.person_ids.length > 0 || filters.list_ids.length > 0) && (
+        <div className="flex flex-wrap gap-2 items-center p-3 bg-warm-50 rounded-large border border-warm-200">
+          <span className="text-sm font-medium text-warm-600">Active filters:</span>
+
+          {/* Status Filter Badge */}
+          {filters.statuses.map((status) => (
+            <button
+              key={status}
+              onClick={() => handleStatusFilter(status as GiftStatus)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-primary-100 text-primary-700 rounded-medium hover:bg-primary-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 min-h-[32px]"
+              aria-label={`Remove status filter: ${status}`}
+            >
+              <span className="font-medium">Status: {status}</span>
+              <X className="w-3 h-3" />
+            </button>
+          ))}
+
+          {/* Recipient Filter Badges */}
+          {filters.person_ids.map((personId) => {
+            const person = personMap.get(personId);
+            return (
+              <button
+                key={personId}
+                onClick={() => handleRecipientFilter(personId)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-secondary-100 text-secondary-700 rounded-medium hover:bg-secondary-200 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-1 min-h-[32px]"
+                aria-label={`Remove recipient filter: ${person?.display_name || `Person ${personId}`}`}
+              >
+                <span className="font-medium">
+                  Recipient: {person?.display_name || `Person ${personId}`}
+                </span>
+                <X className="w-3 h-3" />
+              </button>
+            );
+          })}
+
+          {/* List Filter Badge */}
+          {filters.list_ids.map((listId) => (
+            <button
+              key={listId}
+              onClick={() => handleListFilter(listId)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-accent-100 text-accent-700 rounded-medium hover:bg-accent-200 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-1 min-h-[32px]"
+              aria-label={`Remove list filter: ${listId}`}
+            >
+              <span className="font-medium">List: {listId}</span>
+              <X className="w-3 h-3" />
+            </button>
+          ))}
+
+          {/* Clear All Button */}
+          <button
+            onClick={clearAllFilters}
+            className="ml-auto text-xs text-warm-500 hover:text-warm-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 rounded px-2 py-1 min-h-[32px]"
+            aria-label="Clear all filters"
+          >
+            Clear all
+          </button>
         </div>
       )}
 
@@ -255,8 +364,9 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
                 selectionMode={selection.isSelectionMode}
                 isSelected={selection.isSelected(gift.id)}
                 onToggleSelection={() => selection.toggleSelection(gift.id)}
-                onRecipientClick={handleRecipientClick}
-                onListClick={handleListClick}
+                onStatusFilter={handleStatusFilter}
+                onRecipientClick={handleRecipientFilter}
+                onListClick={handleListFilter}
               />
             );
           })}

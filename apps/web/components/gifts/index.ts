@@ -32,3 +32,4 @@ export {
 } from './LinkedEntityIcons';
 export { QuickPurchaseButton, type QuickPurchaseButtonProps, type ListItemInfo } from './QuickPurchaseButton';
 export { GiftQuickPurchaseButton, type GiftQuickPurchaseButtonProps } from './GiftQuickPurchaseButton';
+export { PriceEditDialog, type PriceEditDialogProps } from './PriceEditDialog';
