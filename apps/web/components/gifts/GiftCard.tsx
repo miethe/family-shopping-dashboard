@@ -174,10 +174,10 @@ export function GiftCard({
     <TooltipProvider>
       <button
         onClick={handleCardClick}
-        className="w-full text-left relative"
+        className="w-full text-left relative h-full"
       >
-        <Card variant="interactive" padding="none">
-          <div className="p-4">
+        <Card variant="interactive" padding="none" className="h-full">
+          <div className="p-4 h-full flex flex-col">
             {/* Selection Checkbox - Overlays the card in top-left */}
             {selectionMode && (
               <div
@@ -328,46 +328,49 @@ export function GiftCard({
               )}
             </div>
 
-            {/* Title */}
-            <h3 className="text-base font-semibold text-warm-900 line-clamp-2 mb-2">
-              <GiftTitleLink name={gift.name} url={gift.url} />
-            </h3>
+            {/* Content Area - grows to fill space */}
+            <div className="flex-grow min-h-0 overflow-hidden">
+              {/* Title */}
+              <h3 className="text-base font-semibold text-warm-900 line-clamp-2 mb-2">
+                <GiftTitleLink name={gift.name} url={gift.url} />
+              </h3>
 
-            {/* Status Badge - Always visible for quick status identification */}
-            {gift.status && (
-              <div className="mb-2">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onStatusFilter?.(gift.status!);
-                      }}
-                      className="cursor-pointer hover:ring-2 hover:ring-primary-300 rounded-medium transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
-                      aria-label={`Filter by status: ${gift.status}`}
-                      type="button"
-                    >
-                      <StatusPill status={gift.status} size="sm" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>Click to filter by {gift.status}</TooltipContent>
-                </Tooltip>
-              </div>
-            )}
+              {/* Status Badge - Always visible for quick status identification */}
+              {gift.status && (
+                <div className="mb-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onStatusFilter?.(gift.status!);
+                        }}
+                        className="cursor-pointer hover:ring-2 hover:ring-primary-300 rounded-medium transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
+                        aria-label={`Filter by status: ${gift.status}`}
+                        type="button"
+                      >
+                        <StatusPill status={gift.status} size="sm" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Click to filter by {gift.status}</TooltipContent>
+                  </Tooltip>
+                </div>
+              )}
 
-            {/* NEW: Linked Entities - after title, before footer */}
-            {(gift.recipients?.length || gift.lists?.length) ? (
-              <div className="mt-2" onClick={(e) => e.stopPropagation()}>
-                <LinkedEntityIcons
-                  recipients={gift.recipients || []}
-                  lists={gift.lists || []}
-                  maxVisible={3}
-                  onRecipientClick={onRecipientClick}
-                  onListClick={onListClick}
-                  size="sm"
-                />
-              </div>
-            ) : null}
+              {/* NEW: Linked Entities - after title, before footer */}
+              {(gift.recipients?.length || gift.lists?.length) ? (
+                <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+                  <LinkedEntityIcons
+                    recipients={gift.recipients || []}
+                    lists={gift.lists || []}
+                    maxVisible={3}
+                    onRecipientClick={onRecipientClick}
+                    onListClick={onListClick}
+                    size="sm"
+                  />
+                </div>
+              ) : null}
+            </div>
 
             {/* Footer: Price + Quick Purchase */}
             <div className="flex items-center justify-between mt-3">
@@ -404,7 +407,7 @@ export function GiftCard({
 
             {/* Desktop Quick Actions Bar - Bottom */}
             {!selectionMode && (
-              <div className="hidden md:flex items-center gap-2 mt-3 pt-3 border-t border-warm-200">
+              <div className="hidden md:flex items-center gap-2 mt-auto pt-3 border-t border-warm-200">
                 {/* Assign Recipient Button */}
                 <div className="relative flex-shrink-0">
                   <Tooltip>
@@ -412,18 +415,17 @@ export function GiftCard({
                       <button
                         onClick={handleRecipientClick}
                         className={cn(
-                          'flex items-center gap-1.5 px-3 py-1.5 rounded-medium',
+                          'flex items-center justify-center px-2.5 py-1.5 rounded-medium',
                           'border border-warm-200 bg-warm-50',
                           'hover:bg-warm-100 hover:border-warm-300',
                           'transition-all duration-150 ease-out',
                           'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1',
-                          'text-xs font-medium text-warm-700',
+                          'text-warm-700',
                           'min-h-[44px]'
                         )}
                         aria-label="Assign recipient"
                       >
                         <UserPlus className="w-3.5 h-3.5" />
-                        <span>Assign</span>
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>Assign recipient</TooltipContent>
@@ -475,14 +477,14 @@ export function GiftCard({
                       }}
                       disabled={updateGiftMutation.isPending}
                       className={cn(
-                        'min-h-[44px] px-3',
+                        'min-h-[44px] min-w-[44px] px-2.5',
                         gift.from_santa
                           ? 'bg-red-100 text-red-700 hover:bg-red-200'
                           : 'bg-warm-100 text-warm-600 hover:bg-warm-200'
                       )}
                       aria-label={gift.from_santa ? 'Unmark as from Santa' : 'Mark as from Santa'}
                     >
-                      🎅 {gift.from_santa ? 'From Santa' : 'Santa'}
+                      🎅
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>

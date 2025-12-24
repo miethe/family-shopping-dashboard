@@ -27,6 +27,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { AddListModal } from '@/components/lists/AddListModal';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { GiftList } from '@/types';
 
@@ -214,33 +215,41 @@ export function ListPickerDropdown({
     <>
       <div className={cn('relative', className)} ref={dropdownRef}>
         {/* Trigger Button */}
-        <button
-          type="button"
-          onClick={handleToggle}
-          disabled={isLoading}
-          className={cn(
-            'inline-flex items-center gap-2 px-4 py-2.5',
-            'min-h-[44px] min-w-[44px]',
-            'rounded-medium border-2 border-warm-300',
-            'bg-white text-warm-900 font-medium text-sm',
-            'transition-all duration-200',
-            'hover:border-warm-400 hover:bg-warm-50',
-            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
-            isOpen && 'border-primary-500 bg-warm-50'
-          )}
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-          aria-label="Add to lists"
-        >
-          <Plus className="w-4 h-4" />
-          <span>List</span>
-          {selectedCount > 0 && (
-            <span className="inline-flex items-center justify-center px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold min-w-[20px]">
-              {selectedCount}
-            </span>
-          )}
-        </button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={handleToggle}
+                disabled={isLoading}
+                className={cn(
+                  'inline-flex items-center justify-center px-2.5 py-2.5',
+                  'min-h-[44px] min-w-[44px]',
+                  'rounded-medium border-2 border-warm-300',
+                  'bg-white text-warm-900 font-medium text-sm',
+                  'transition-all duration-200',
+                  'hover:border-warm-400 hover:bg-warm-50',
+                  'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500',
+                  'disabled:opacity-50 disabled:cursor-not-allowed',
+                  isOpen && 'border-primary-500 bg-warm-50'
+                )}
+                aria-haspopup="listbox"
+                aria-expanded={isOpen}
+                aria-label="Add to lists"
+              >
+                <Plus className="w-4 h-4" />
+                {selectedCount > 0 && (
+                  <span className="inline-flex items-center justify-center px-2 py-0.5 bg-primary-100 text-primary-700 rounded-full text-xs font-semibold min-w-[20px] ml-1">
+                    {selectedCount}
+                  </span>
+                )}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Add to lists</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         {/* Dropdown Menu */}
         {isOpen && (

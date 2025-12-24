@@ -17,7 +17,7 @@ import * as React from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { ChevronDown, Check } from '@/components/ui/icons';
+import { ChevronDown, Check, Lightbulb, Star, ShoppingBag, Package } from '@/components/ui/icons';
 import { useUpdateGift } from '@/hooks/useGifts';
 import { cn } from '@/lib/utils';
 import type { GiftStatus } from '@/types';
@@ -32,11 +32,11 @@ export interface StatusButtonProps {
 
 // ==================== Constants ====================
 
-const STATUS_OPTIONS: { label: string; value: GiftStatus }[] = [
-  { label: 'Idea', value: 'idea' },
-  { label: 'Selected', value: 'selected' },
-  { label: 'Purchased', value: 'purchased' },
-  { label: 'Received', value: 'received' },
+const STATUS_OPTIONS: { label: string; value: GiftStatus; icon: React.ComponentType<{ className?: string }> }[] = [
+  { label: 'Idea', value: 'idea', icon: Lightbulb },
+  { label: 'Selected', value: 'selected', icon: Star },
+  { label: 'Purchased', value: 'purchased', icon: ShoppingBag },
+  { label: 'Received', value: 'received', icon: Package },
 ];
 
 /**
@@ -95,6 +95,8 @@ export function StatusButton({
   };
 
   const currentLabel = capitalize(currentStatus);
+  const currentOption = STATUS_OPTIONS.find(opt => opt.value === currentStatus);
+  const StatusIcon = currentOption?.icon || Lightbulb;
 
   return (
     <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
@@ -104,9 +106,9 @@ export function StatusButton({
           disabled={isPending}
           className={cn(
             // Base styles
-            'inline-flex items-center gap-2',
-            'px-3 py-2',
-            'min-h-[44px]',
+            'inline-flex items-center gap-1.5',
+            'px-2.5 py-2',
+            'min-h-[44px] min-w-[44px]',
             'rounded-medium',
             'font-medium text-sm',
             'border-2',
@@ -128,10 +130,10 @@ export function StatusButton({
           aria-haspopup="menu"
           aria-expanded={isOpen}
         >
-          <span>{currentLabel}</span>
+          <StatusIcon className="w-4 h-4" aria-hidden />
           <ChevronDown
             className={cn(
-              'w-4 h-4 transition-transform duration-200',
+              'w-3 h-3 transition-transform duration-200',
               isOpen && 'rotate-180'
             )}
             aria-hidden
@@ -160,6 +162,7 @@ export function StatusButton({
         >
           {STATUS_OPTIONS.map((option) => {
             const isSelected = option.value === currentStatus;
+            const OptionIcon = option.icon;
 
             return (
               <DropdownMenu.Item
@@ -191,7 +194,10 @@ export function StatusButton({
                 role="menuitem"
                 aria-label={`Set status to ${option.label}`}
               >
-                <span>{option.label}</span>
+                <div className="flex items-center gap-2">
+                  <OptionIcon className="w-4 h-4" aria-hidden />
+                  <span>{option.label}</span>
+                </div>
                 {isSelected && (
                   <Check
                     className="w-4 h-4 text-primary-600 dark:text-primary-300"

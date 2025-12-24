@@ -1390,3 +1390,24 @@ Monthly bug tracking for December 2025.
   ```
 - **Commit(s)**: `a50aea9`
 - **Status**: RESOLVED
+
+---
+
+### Gift Card Action Bar Overflow and Inconsistent Heights
+
+**Issue**: Gift card action bar buttons extended beyond card boundaries, creating messy appearance. Additionally, cards had inconsistent heights based on content.
+
+- **Location**:
+  - `apps/web/components/gifts/GiftCard.tsx:406-494`
+  - `apps/web/components/gifts/StatusButton.tsx`
+  - `apps/web/components/gifts/ListPickerDropdown.tsx`
+  - `apps/web/components/ui/icons.tsx`
+- **Root Cause**: Action bar buttons included text labels ("Assign", "Purchased", "+ List", "🎅 From Santa") which made buttons too wide to fit within card bounds. Card layout lacked fixed height constraints.
+- **Fix**:
+  1. **StatusButton**: Converted to icon-only with status-specific icons (Lightbulb=idea, Star=selected, ShoppingBag=purchased, Package=received). Removed text label from trigger, kept icons+text in dropdown items.
+  2. **GiftCard action bar**: Removed text from Assign button (icon only), removed text from Santa button (emoji only). All buttons now have tooltips.
+  3. **ListPickerDropdown**: Removed "List" text, shows Plus icon + count badge only. Added tooltip wrapper.
+  4. **Card height**: Added `h-full` to wrapper/Card, `flex flex-col` to content container, `flex-grow` to content area, `mt-auto` to action bar to push it to bottom.
+  5. **New Star icon**: Added to icons.tsx for "selected" status
+- **Commit(s)**: `648120f`
+- **Status**: RESOLVED
