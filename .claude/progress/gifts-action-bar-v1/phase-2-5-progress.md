@@ -16,8 +16,8 @@ overall_progress: 100
 completion_estimate: "complete"
 
 # Task Counts
-total_tasks: 13
-completed_tasks: 13
+total_tasks: 15
+completed_tasks: 15
 in_progress_tasks: 0
 blocked_tasks: 0
 at_risk_tasks: 0
@@ -92,6 +92,24 @@ tasks:
     estimated_effort: "2pt"
     priority: "high"
     commit: "8e2fd8b"
+
+  - id: "TASK-3.5"
+    description: "Add Select All button and group select buttons"
+    status: "completed"
+    assigned_to: ["ui-engineer-enhanced"]
+    dependencies: []
+    estimated_effort: "3pt"
+    priority: "medium"
+    commit: "8e2fd8b"
+
+  - id: "TASK-3.6"
+    description: "Visual polish and refinement"
+    status: "completed"
+    assigned_to: ["ui-engineer-enhanced"]
+    dependencies: ["TASK-3.5"]
+    estimated_effort: "2pt"
+    priority: "low"
+    commit: "pending"
 
   # Phase 4: Price Edit Dialog
   - id: "TASK-4.1"
@@ -268,7 +286,7 @@ files_modified:
 | TASK-2.2 | Create ListPickerDropdown | ✅ Complete | 8e2fd8b |
 | TASK-2.3 | Integrate into GiftCard | ✅ Complete | 8e2fd8b |
 
-### Phase 3: Clickable Filters (6 pts)
+### Phase 3: Clickable Filters & Selection (11 pts)
 
 | ID | Task | Status | Commit |
 |----|------|--------|--------|
@@ -276,6 +294,8 @@ files_modified:
 | TASK-3.2 | Person avatars clickable | ✅ Complete | 8e2fd8b |
 | TASK-3.3 | List badges clickable | ✅ Complete | 8e2fd8b |
 | TASK-3.4 | Page filter handling | ✅ Complete | 8e2fd8b |
+| TASK-3.5 | Select All + Group Select buttons | ✅ Complete | 8e2fd8b |
+| TASK-3.6 | Visual polish | ✅ Complete | pending |
 
 ### Phase 4: Price Edit Dialog (5 pts)
 

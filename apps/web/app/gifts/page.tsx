@@ -339,13 +339,17 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
       />
 
       {/* Select All Button - appears in selection mode */}
-      <SelectAllButton
-        isSelectionMode={selection.isSelectionMode}
-        selectedCount={selection.selectedIds.size}
-        totalCount={data?.items?.length || 0}
-        onSelectAll={() => selection.selectAll(data?.items?.map(g => g.id) || [])}
-        onDeselectAll={selection.clearSelection}
-      />
+      {selection.isSelectionMode && data?.items && data.items.length > 0 && (
+        <div className="flex items-center animate-in fade-in duration-200">
+          <SelectAllButton
+            isSelectionMode={selection.isSelectionMode}
+            selectedCount={selection.selectedIds.size}
+            totalCount={data.items.length}
+            onSelectAll={() => selection.selectAll(data.items.map(g => g.id))}
+            onDeselectAll={selection.clearSelection}
+          />
+        </div>
+      )}
 
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

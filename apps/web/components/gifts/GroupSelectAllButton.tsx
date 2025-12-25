@@ -57,8 +57,10 @@ export function GroupSelectAllButton({
       onClick={handleClick}
       className={cn(
         'min-h-[44px] px-3',
-        'text-xs font-medium',
-        'hover:bg-warm-200/50'
+        'text-xs font-medium text-warm-600',
+        'hover:bg-warm-200/50 hover:text-warm-900',
+        'rounded-medium',
+        'transition-colors duration-150'
       )}
     >
       {isAllGroupSelected

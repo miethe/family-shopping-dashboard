@@ -52,7 +52,7 @@ export function SelectAllButton({
     <Button
       variant="outline"
       onClick={isAllSelected ? onDeselectAll : onSelectAll}
-      className="min-h-[44px]"
+      className="min-h-[44px] w-full sm:w-auto transition-colors duration-200"
     >
       {isAllSelected ? 'Deselect All' : `Select All (${totalCount})`}
     </Button>
