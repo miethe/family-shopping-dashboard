@@ -15,6 +15,7 @@
 
 import { useMemo, useState } from 'react';
 import { GiftCard } from './GiftCard';
+import { GroupSelectAllButton } from './GroupSelectAllButton';
 import { Icon } from '@/components/ui/icon';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
@@ -33,6 +34,18 @@ export interface GiftGroupedViewProps {
   emptyMessage?: string;
   hideEmptySections?: boolean;
   onOpenDetail?: (giftId: string) => void;
+  /** Whether bulk selection mode is active */
+  selectionMode?: boolean;
+  /** Check if a gift is selected */
+  isSelected?: (id: number) => boolean;
+  /** Toggle selection for a gift */
+  onToggleSelection?: (id: number) => void;
+  /** For GroupSelectAllButton: current selected IDs as Set */
+  selectedIds?: Set<number>;
+  /** For GroupSelectAllButton: select multiple gifts at once */
+  onSelectMultiple?: (ids: number[]) => void;
+  /** For GroupSelectAllButton: deselect multiple gifts at once */
+  onDeselectMultiple?: (ids: number[]) => void;
 }
 
 // Status configuration with icons and colors
@@ -128,6 +141,12 @@ export function GiftGroupedView({
   emptyMessage = 'No gifts found',
   hideEmptySections = true,
   onOpenDetail,
+  selectionMode = false,
+  isSelected,
+  onToggleSelection,
+  selectedIds,
+  onSelectMultiple,
+  onDeselectMultiple,
 }: GiftGroupedViewProps) {
   // Group gifts by status
   const groupedGifts = useMemo(() => {
@@ -216,6 +235,18 @@ export function GiftGroupedView({
                   >
                     {sectionGifts.length}
                   </span>
+
+                  {/* Group Select All Button */}
+                  {selectedIds && onSelectMultiple && onDeselectMultiple && (
+                    <GroupSelectAllButton
+                      statusLabel={config.label}
+                      groupGiftIds={sectionGifts.map(g => g.id)}
+                      selectedIds={selectedIds}
+                      isSelectionMode={selectionMode}
+                      onSelectGroup={onSelectMultiple}
+                      onDeselectGroup={onDeselectMultiple}
+                    />
+                  )}
                 </div>
 
                 {/* Collapse Trigger */}
@@ -254,7 +285,14 @@ export function GiftGroupedView({
                   )}
                 >
                   {sectionGifts.map(gift => (
-                    <GiftCard key={gift.id} gift={gift} onOpenDetail={onOpenDetail} />
+                    <GiftCard
+                      key={gift.id}
+                      gift={gift}
+                      onOpenDetail={onOpenDetail}
+                      selectionMode={selectionMode}
+                      isSelected={isSelected?.(gift.id) ?? false}
+                      onToggleSelection={onToggleSelection ? () => onToggleSelection(gift.id) : undefined}
+                    />
                   ))}
                 </div>
               </CollapsibleContent>

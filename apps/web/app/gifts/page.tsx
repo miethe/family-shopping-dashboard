@@ -13,6 +13,8 @@ import {
   GiftToolbar,
   GiftGroupedView,
   AddGiftModal,
+  BulkActionBar,
+  SelectAllButton,
   type SortOption,
   type GiftFilterValues,
   type GroupOption,
@@ -214,8 +216,30 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
     router.push('/gifts');
   }, [router]);
 
+  /**
+   * TASK-2.5: Handler for selecting all gifts in a group
+   * Merges current selections with new IDs (additive)
+   */
+  const handleSelectMultiple = useCallback((ids: number[]) => {
+    // Merge current selections with new IDs
+    const currentIds = Array.from(selection.selectedIds);
+    const newIds = [...new Set([...currentIds, ...ids])];
+    selection.selectAll(newIds);
+  }, [selection]);
+
+  /**
+   * TASK-2.5: Handler for deselecting all gifts in a group
+   * Removes specified IDs from current selection
+   */
+  const handleDeselectMultiple = useCallback((ids: number[]) => {
+    // Remove specified IDs from current selection
+    const idsToRemove = new Set(ids);
+    const remainingIds = Array.from(selection.selectedIds).filter(id => !idsToRemove.has(id));
+    selection.selectAll(remainingIds);
+  }, [selection]);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24">
       <PageHeader
         title="Gift Catalog"
         subtitle="Browse and manage gift ideas"
@@ -234,22 +258,13 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
         }
       />
 
-      {/* Selection Bar - shows when items are selected */}
+      {/* Bulk Action Bar - shows when items are selected */}
       {selection.isSelectionMode && selection.selectedIds.size > 0 && (
-        <div className="bg-primary-50 border border-primary-200 rounded-large p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-warm-900">
-              {selection.selectedIds.size} selected
-            </span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={selection.clearSelection}
-          >
-            Clear Selection
-          </Button>
-        </div>
+        <BulkActionBar
+          selectedIds={selection.selectedIds}
+          onClear={selection.clearSelection}
+          onActionComplete={() => refetch()}
+        />
       )}
 
       {/* TASK-3.4: Active Filters Bar - shows when any filters are active */}
@@ -323,6 +338,15 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
         onGroupByChange={setGroupBy}
       />
 
+      {/* Select All Button - appears in selection mode */}
+      <SelectAllButton
+        isSelectionMode={selection.isSelectionMode}
+        selectedCount={selection.selectedIds.size}
+        totalCount={data?.items?.length || 0}
+        onSelectAll={() => selection.selectAll(data?.items?.map(g => g.id) || [])}
+        onDeselectAll={selection.clearSelection}
+      />
+
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
@@ -377,6 +401,12 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
           groupBy={groupBy}
           emptyMessage="No gifts match your search."
           onOpenDetail={onOpenDetail}
+          selectionMode={selection.isSelectionMode}
+          isSelected={selection.isSelected}
+          onToggleSelection={selection.toggleSelection}
+          selectedIds={selection.selectedIds}
+          onSelectMultiple={handleSelectMultiple}
+          onDeselectMultiple={handleDeselectMultiple}
         />
       )}
 
