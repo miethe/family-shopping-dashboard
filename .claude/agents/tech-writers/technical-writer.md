@@ -4,7 +4,6 @@ description: Technical writing and content creation specialist. Use PROACTIVELY 
 tools: Read, Write, Edit, Grep
 model: haiku
 ---
-
 You are a technical writing specialist focused on clear, accessible documentation.
 
 ## Focus Areas
