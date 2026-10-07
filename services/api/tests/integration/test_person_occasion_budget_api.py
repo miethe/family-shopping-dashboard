@@ -9,9 +9,27 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.gift import Gift
+from app.models.gift_person import GiftPerson, GiftPersonRole
+from app.models.list import List, ListType, ListVisibility
 from app.models.list_item import ListItem, ListItemStatus
 from app.models.occasion import Occasion, OccasionType
 from app.models.person import Person, PersonOccasion
+from app.models.user import User
+
+
+async def _occasion_list(session: AsyncSession, user: User, occasion: Occasion) -> List:
+    """Create a list bound to the occasion - spending is scoped through list_items -> lists."""
+    gift_list = List(
+        name="Occasion List",
+        type=ListType.ideas,
+        visibility=ListVisibility.family,
+        user_id=user.id,
+        occasion_id=occasion.id,
+    )
+    session.add(gift_list)
+    await session.commit()
+    await session.refresh(gift_list)
+    return gift_list
 
 
 @pytest.mark.asyncio
@@ -46,7 +64,7 @@ class TestGetPersonOccasionBudget:
 
         # Execute
         response = await client.get(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
         )
 
@@ -80,7 +98,7 @@ class TestGetPersonOccasionBudget:
 
         # Execute - person and occasion exist but not linked
         response = await client.get(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
         )
 
@@ -94,6 +112,7 @@ class TestGetPersonOccasionBudget:
         client: AsyncClient,
         async_session: AsyncSession,
         auth_headers: dict[str, str],
+        test_user: User,
     ) -> None:
         """Test that spending amounts are calculated correctly from gifts."""
         # Setup: Create person, occasion, link them
@@ -126,38 +145,36 @@ class TestGetPersonOccasionBudget:
         await async_session.commit()
         await async_session.refresh(gift_to)
 
-        # Link gift as recipient
-        list_item_recipient = ListItem(
-            gift_id=gift_to.id,
-            status=ListItemStatus.purchased,
-            for_person_id=person.id,
-            for_occasion_id=occasion.id,
+        # Link gift as recipient (gift_people role) on an occasion-bound list
+        gift_list = await _occasion_list(async_session, test_user, occasion)
+        async_session.add(
+            GiftPerson(gift_id=gift_to.id, person_id=person.id, role=GiftPersonRole.RECIPIENT)
         )
-        async_session.add(list_item_recipient)
+        async_session.add(
+            ListItem(gift_id=gift_to.id, list_id=gift_list.id, status=ListItemStatus.purchased)
+        )
 
         # Gift BY this person (purchaser_spent)
         gift_by = Gift(
             name="Gift By Person",
             price=Decimal("40.25"),
             source="Test",
+            purchaser_id=person.id,
+            purchase_date=date(2025, 6, 1),
         )
         async_session.add(gift_by)
         await async_session.commit()
         await async_session.refresh(gift_by)
 
-        # Link gift as purchaser
-        list_item_purchaser = ListItem(
-            gift_id=gift_by.id,
-            status=ListItemStatus.purchased,
-            purchased_by_person_id=person.id,
-            for_occasion_id=occasion.id,
+        # Purchaser spend is Gift.purchaser_id + purchase_date, scoped by the list
+        async_session.add(
+            ListItem(gift_id=gift_by.id, list_id=gift_list.id, status=ListItemStatus.purchased)
         )
-        async_session.add(list_item_purchaser)
         await async_session.commit()
 
         # Execute
         response = await client.get(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
         )
 
@@ -175,6 +192,7 @@ class TestGetPersonOccasionBudget:
         client: AsyncClient,
         async_session: AsyncSession,
         auth_headers: dict[str, str],
+        test_user: User,
     ) -> None:
         """Test that progress percentage is calculated correctly (spent/budget * 100)."""
         # Setup
@@ -202,18 +220,18 @@ class TestGetPersonOccasionBudget:
         await async_session.commit()
         await async_session.refresh(gift)
 
-        list_item = ListItem(
-            gift_id=gift.id,
-            status=ListItemStatus.purchased,
-            for_person_id=person.id,
-            for_occasion_id=occasion.id,
+        gift_list = await _occasion_list(async_session, test_user, occasion)
+        async_session.add(
+            GiftPerson(gift_id=gift.id, person_id=person.id, role=GiftPersonRole.RECIPIENT)
         )
-        async_session.add(list_item)
+        async_session.add(
+            ListItem(gift_id=gift.id, list_id=gift_list.id, status=ListItemStatus.purchased)
+        )
         await async_session.commit()
 
         # Execute
         response = await client.get(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
         )
 
@@ -253,7 +271,7 @@ class TestGetPersonOccasionBudget:
 
         # Execute
         response = await client.get(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
         )
 
@@ -282,7 +300,7 @@ class TestGetPersonOccasionBudget:
 
         # Execute WITHOUT auth headers
         response = await client.get(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget"
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget"
         )
 
         # Assert
@@ -321,7 +339,7 @@ class TestUpdatePersonOccasionBudget:
 
         # Execute - update both budgets
         response = await client.put(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
             json={
                 "recipient_budget_total": 200.00,
@@ -358,7 +376,7 @@ class TestUpdatePersonOccasionBudget:
 
         # Execute - try to update budget for non-existent link
         response = await client.put(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
             json={
                 "recipient_budget_total": 200.00,
@@ -398,7 +416,7 @@ class TestUpdatePersonOccasionBudget:
 
         # Execute - set budgets to None (remove limits)
         response = await client.put(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
             json={
                 "recipient_budget_total": None,
@@ -442,7 +460,7 @@ class TestUpdatePersonOccasionBudget:
 
         # Execute - set budget to 0
         response = await client.put(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
             json={
                 "recipient_budget_total": 0.00,
@@ -481,7 +499,7 @@ class TestUpdatePersonOccasionBudget:
 
         # Execute - try to set negative budget
         response = await client.put(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
             json={
                 "recipient_budget_total": -100.00,
@@ -509,7 +527,7 @@ class TestUpdatePersonOccasionBudget:
 
         # Execute WITHOUT auth headers
         response = await client.put(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             json={
                 "recipient_budget_total": 200.00,
                 "purchaser_budget_total": 50.00,
@@ -546,7 +564,7 @@ class TestUpdatePersonOccasionBudget:
 
         # Execute - update only recipient budget
         response = await client.put(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
             json={
                 "recipient_budget_total": 150.00,
@@ -561,7 +579,7 @@ class TestUpdatePersonOccasionBudget:
 
         # Execute - update only purchaser budget
         response = await client.put(
-            f"/persons/{person.id}/occasions/{occasion.id}/budget",
+            f"/api/v1/persons/{person.id}/occasions/{occasion.id}/budget",
             headers=auth_headers,
             json={
                 "purchaser_budget_total": 75.00,

@@ -76,8 +76,11 @@ class OccasionService:
         # Link persons if provided
         if person_ids:
             await self.repo.link_persons(occasion.id, person_ids)
-            # Reload occasion with persons
-            occasion = await self.repo.get_with_persons(occasion.id)
+
+        # Always reload with persons: the fresh instance's `persons` collection is
+        # unloaded, and touching it in _to_response would lazy-load outside the
+        # async greenlet (MissingGreenlet -> 500 on create without person_ids)
+        occasion = await self.repo.get_with_persons(occasion.id) or occasion
 
         # Convert ORM model to DTO
         return self._to_response(occasion)

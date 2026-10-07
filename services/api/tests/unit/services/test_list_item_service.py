@@ -1,14 +1,28 @@
 """Unit tests for ListItemService with status state machine validation."""
 
+from datetime import datetime, timezone
+from typing import Any
 from unittest.mock import AsyncMock, patch
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.gift import Gift
 from app.models.list_item import ListItem, ListItemStatus
 from app.repositories.list_item import ListItemRepository
 from app.schemas.list_item import ListItemCreate, ListItemResponse, ListItemUpdate
 from app.services.list_item import ListItemService
+
+
+_NOW = datetime(2025, 1, 1, tzinfo=timezone.utc)
+
+
+def _item(**fields: Any) -> ListItem:
+    """Build a ListItem as the DB would return it (insert-time defaults applied)."""
+    fields.setdefault("quantity", 1)
+    fields.setdefault("created_at", _NOW)
+    fields.setdefault("updated_at", _NOW)
+    return ListItem(**fields)
 
 
 @pytest.fixture
@@ -45,7 +59,7 @@ class TestListItemService:
             notes="Test notes",
         )
 
-        mock_item = ListItem(
+        mock_item = _item(
             id=10,
             gift_id=1,
             list_id=2,
@@ -71,7 +85,7 @@ class TestListItemService:
     ) -> None:
         """Test getting an existing list item."""
         # Arrange
-        mock_item = ListItem(
+        mock_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.idea
         )
         mock_list_item_repo.get.return_value = mock_item
@@ -105,8 +119,14 @@ class TestListItemService:
         """Test getting all items for a list."""
         # Arrange
         mock_items = [
-            ListItem(id=1, gift_id=1, list_id=5, status=ListItemStatus.idea),
-            ListItem(id=2, gift_id=2, list_id=5, status=ListItemStatus.selected),
+            _item(
+                id=1, gift_id=1, list_id=5, status=ListItemStatus.idea,
+                gift=Gift(id=1, name="Gift 1"),
+            ),
+            _item(
+                id=2, gift_id=2, list_id=5, status=ListItemStatus.selected,
+                gift=Gift(id=2, name="Gift 2"),
+            ),
         ]
         mock_list_item_repo.get_by_list.return_value = mock_items
 
@@ -128,10 +148,10 @@ class TestListItemService:
     ) -> None:
         """Test valid status transition: IDEA → SELECTED."""
         # Arrange
-        current_item = ListItem(
+        current_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.idea
         )
-        updated_item = ListItem(
+        updated_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.selected
         )
 
@@ -158,10 +178,10 @@ class TestListItemService:
     ) -> None:
         """Test valid status transition: SELECTED → PURCHASED."""
         # Arrange
-        current_item = ListItem(
+        current_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.selected
         )
-        updated_item = ListItem(
+        updated_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.purchased
         )
 
@@ -187,10 +207,10 @@ class TestListItemService:
     ) -> None:
         """Test valid status transition: PURCHASED → RECEIVED."""
         # Arrange
-        current_item = ListItem(
+        current_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.purchased
         )
-        updated_item = ListItem(
+        updated_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.received
         )
 
@@ -212,10 +232,10 @@ class TestListItemService:
     ) -> None:
         """Test any status can transition back to IDEA (reset)."""
         # Arrange
-        current_item = ListItem(
+        current_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.received
         )
-        updated_item = ListItem(
+        updated_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.idea
         )
 
@@ -233,55 +253,38 @@ class TestListItemService:
         assert result.status == ListItemStatus.idea
 
     @pytest.mark.asyncio
-    async def test_update_status_invalid_transition_idea_to_purchased(
-        self, list_item_service: ListItemService, mock_list_item_repo: AsyncMock
+    @pytest.mark.parametrize(
+        ("current", "target"),
+        [
+            (ListItemStatus.idea, ListItemStatus.purchased),
+            (ListItemStatus.idea, ListItemStatus.received),
+            (ListItemStatus.selected, ListItemStatus.received),
+        ],
+    )
+    @patch("app.services.list_item.manager.broadcast_event")
+    async def test_update_status_skip_transition_allowed(
+        self,
+        mock_broadcast: AsyncMock,
+        list_item_service: ListItemService,
+        mock_list_item_repo: AsyncMock,
+        current: ListItemStatus,
+        target: ListItemStatus,
     ) -> None:
-        """Test invalid status transition: IDEA → PURCHASED (should fail)."""
-        # Arrange
-        current_item = ListItem(
-            id=1, gift_id=1, list_id=1, status=ListItemStatus.idea
+        """Skipping lifecycle steps is allowed: any-to-any for the Kanban board (784b755)."""
+        mock_list_item_repo.get.return_value = _item(
+            id=1, gift_id=1, list_id=1, status=current
         )
-        mock_list_item_repo.get.return_value = current_item
-
-        # Act & Assert
-        with pytest.raises(ValueError, match="Invalid status transition"):
-            await list_item_service.update_status(
-                item_id=1, status=ListItemStatus.purchased, user_id=42
-            )
-
-    @pytest.mark.asyncio
-    async def test_update_status_invalid_transition_idea_to_received(
-        self, list_item_service: ListItemService, mock_list_item_repo: AsyncMock
-    ) -> None:
-        """Test invalid status transition: IDEA → RECEIVED (should fail)."""
-        # Arrange
-        current_item = ListItem(
-            id=1, gift_id=1, list_id=1, status=ListItemStatus.idea
+        mock_list_item_repo.update_status.return_value = _item(
+            id=1, gift_id=1, list_id=1, status=target
         )
-        mock_list_item_repo.get.return_value = current_item
 
-        # Act & Assert
-        with pytest.raises(ValueError, match="Invalid status transition"):
-            await list_item_service.update_status(
-                item_id=1, status=ListItemStatus.received, user_id=42
-            )
-
-    @pytest.mark.asyncio
-    async def test_update_status_invalid_transition_selected_to_received(
-        self, list_item_service: ListItemService, mock_list_item_repo: AsyncMock
-    ) -> None:
-        """Test invalid status transition: SELECTED → RECEIVED (should fail)."""
-        # Arrange
-        current_item = ListItem(
-            id=1, gift_id=1, list_id=1, status=ListItemStatus.selected
+        result = await list_item_service.update_status(
+            item_id=1, status=target, user_id=42
         )
-        mock_list_item_repo.get.return_value = current_item
 
-        # Act & Assert
-        with pytest.raises(ValueError, match="Invalid status transition"):
-            await list_item_service.update_status(
-                item_id=1, status=ListItemStatus.received, user_id=42
-            )
+        assert result is not None
+        assert result.status == target
+        mock_list_item_repo.update_status.assert_called_once_with(1, target)
 
     @pytest.mark.asyncio
     async def test_update_status_same_status_no_validation(
@@ -289,7 +292,7 @@ class TestListItemService:
     ) -> None:
         """Test updating to same status doesn't trigger validation."""
         # Arrange
-        current_item = ListItem(
+        current_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.idea
         )
         mock_list_item_repo.get.return_value = current_item
@@ -315,7 +318,7 @@ class TestListItemService:
     ) -> None:
         """Test assigning list item to a user."""
         # Arrange
-        updated_item = ListItem(
+        updated_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.idea, assigned_to=123
         )
         mock_list_item_repo.update.return_value = updated_item
@@ -340,10 +343,10 @@ class TestListItemService:
     ) -> None:
         """Test general update validates status transitions."""
         # Arrange
-        existing_item = ListItem(
+        existing_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.idea
         )
-        updated_item = ListItem(
+        updated_item = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.selected, notes="New notes"
         )
 
@@ -365,21 +368,27 @@ class TestListItemService:
         assert result.notes == "New notes"
 
     @pytest.mark.asyncio
-    async def test_update_list_item_invalid_status_transition(
-        self, list_item_service: ListItemService, mock_list_item_repo: AsyncMock
+    @patch("app.services.list_item.manager.broadcast_event")
+    async def test_update_list_item_skip_status_allowed(
+        self,
+        mock_broadcast: AsyncMock,
+        list_item_service: ListItemService,
+        mock_list_item_repo: AsyncMock,
     ) -> None:
-        """Test general update with invalid status transition raises error."""
-        # Arrange
-        existing_item = ListItem(
+        """General update also allows skipping lifecycle steps (784b755)."""
+        mock_list_item_repo.get.return_value = _item(
             id=1, gift_id=1, list_id=1, status=ListItemStatus.idea
         )
-        mock_list_item_repo.get.return_value = existing_item
+        mock_list_item_repo.update.return_value = _item(
+            id=1, gift_id=1, list_id=1, status=ListItemStatus.purchased
+        )
 
-        update_data = ListItemUpdate(status=ListItemStatus.purchased)
+        result = await list_item_service.update(
+            item_id=1, data=ListItemUpdate(status=ListItemStatus.purchased), user_id=42
+        )
 
-        # Act & Assert
-        with pytest.raises(ValueError, match="Invalid status transition"):
-            await list_item_service.update(item_id=1, data=update_data, user_id=42)
+        assert result is not None
+        assert result.status == ListItemStatus.purchased
 
     @pytest.mark.asyncio
     @patch("app.services.list_item.manager.broadcast_event")
@@ -391,7 +400,7 @@ class TestListItemService:
     ) -> None:
         """Test deleting a list item."""
         # Arrange
-        item_to_delete = ListItem(
+        item_to_delete = _item(
             id=1, gift_id=1, list_id=2, status=ListItemStatus.idea
         )
         mock_list_item_repo.get.return_value = item_to_delete

@@ -1,11 +1,10 @@
 /**
- * Date Utilities Manual Tests
- *
- * Run with: node -r esbuild-register lib/__tests__/date-utils.test.ts
- * Or manually verify the functions work correctly.
+ * Date Utilities Tests
  *
  * These tests verify timezone-safe date formatting and calculations.
  */
+
+import { describe, expect, it } from 'vitest';
 
 import {
   parseLocalDate,
@@ -17,96 +16,89 @@ import {
   formatRelativeTime,
 } from '../date-utils';
 
-// Test helper
-function assert(condition: boolean, message: string) {
-  if (!condition) {
-    console.error(`❌ FAILED: ${message}`);
-    throw new Error(message);
-  }
-  console.log(`✅ PASSED: ${message}`);
+/** YYYY-MM-DD for a Date in LOCAL time (toISOString would use UTC and shift the day). */
+function localDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
-console.log('\n🧪 Testing Date Utilities\n');
+function offsetDays(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return localDateString(date);
+}
 
-// Test parseLocalDate
-console.log('Testing parseLocalDate...');
-const date1 = parseLocalDate('2025-01-15');
-assert(date1.getFullYear() === 2025, 'parseLocalDate: year should be 2025');
-assert(date1.getMonth() === 0, 'parseLocalDate: month should be 0 (January)');
-assert(date1.getDate() === 15, 'parseLocalDate: date should be 15');
+describe('parseLocalDate', () => {
+  it('parses YYYY-MM-DD as a local date', () => {
+    const date = parseLocalDate('2025-01-15');
+    expect(date.getFullYear()).toBe(2025);
+    expect(date.getMonth()).toBe(0);
+    expect(date.getDate()).toBe(15);
+  });
 
-// Test leap year
-const leapDate = parseLocalDate('2024-02-29');
-assert(leapDate.getFullYear() === 2024, 'parseLocalDate: leap year should be 2024');
-assert(leapDate.getMonth() === 1, 'parseLocalDate: leap month should be 1 (February)');
-assert(leapDate.getDate() === 29, 'parseLocalDate: leap date should be 29');
+  it('handles leap days', () => {
+    const date = parseLocalDate('2024-02-29');
+    expect(date.getFullYear()).toBe(2024);
+    expect(date.getMonth()).toBe(1);
+    expect(date.getDate()).toBe(29);
+  });
 
-// Test end of month
-const endOfMonth = parseLocalDate('2025-01-31');
-assert(endOfMonth.getDate() === 31, 'parseLocalDate: end of month should be 31');
+  it('handles end of month', () => {
+    expect(parseLocalDate('2025-01-31').getDate()).toBe(31);
+  });
 
-// Test formatDate
-console.log('\nTesting formatDate...');
-const formatted1 = formatDate('2025-01-15');
-assert(formatted1 === 'January 15, 2025', `formatDate: should be "January 15, 2025" but got "${formatted1}"`);
-
-// Test formatDateCustom
-console.log('\nTesting formatDateCustom...');
-const formatted2 = formatDateCustom('2025-01-15', {
-  month: 'short',
-  day: 'numeric',
+  it('does not shift the date across timezones (CRITICAL)', () => {
+    const date = parseLocalDate('2025-01-15');
+    expect([date.getFullYear(), date.getMonth(), date.getDate()]).toEqual([2025, 0, 15]);
+  });
 });
-assert(formatted2 === 'Jan 15', `formatDateCustom: should be "Jan 15" but got "${formatted2}"`);
 
-// Test getAge
-console.log('\nTesting getAge...');
-const age = getAge('2000-01-15');
-assert(age !== null, 'getAge: should return a number');
-assert(age! >= 20 && age! <= 50, `getAge: should be reasonable (20-50) but got ${age}`);
+describe('formatDate / formatDateCustom', () => {
+  it('formats a long date', () => {
+    expect(formatDate('2025-01-15')).toBe('January 15, 2025');
+  });
 
-const invalidAge = getAge('invalid-date');
-assert(invalidAge === null, 'getAge: should return null for invalid date');
+  it('formats with custom options', () => {
+    expect(formatDateCustom('2025-01-15', { month: 'short', day: 'numeric' })).toBe('Jan 15');
+  });
+});
 
-// Test getNextBirthday
-console.log('\nTesting getNextBirthday...');
-const nextBday = getNextBirthday('2000-06-15');
-assert(nextBday !== null, 'getNextBirthday: should return result');
-assert(nextBday!.daysUntil >= 0, 'getNextBirthday: daysUntil should be >= 0');
-assert(nextBday!.isPast === false, 'getNextBirthday: isPast should be false');
+describe('getAge', () => {
+  it('returns a reasonable age', () => {
+    const age = getAge('2000-01-15');
+    expect(age).not.toBeNull();
+    expect(age!).toBeGreaterThanOrEqual(20);
+    expect(age!).toBeLessThanOrEqual(50);
+  });
 
-const invalidBday = getNextBirthday('invalid-date');
-assert(invalidBday === null, 'getNextBirthday: should return null for invalid date');
+  it('returns null for an invalid date', () => {
+    expect(getAge('invalid-date')).toBeNull();
+  });
+});
 
-// Test getDaysUntil
-console.log('\nTesting getDaysUntil...');
-const today = new Date();
-const todayString = today.toISOString().split('T')[0];
-const daysToToday = getDaysUntil(todayString);
-assert(daysToToday === 0, `getDaysUntil: should be 0 for today but got ${daysToToday}`);
+describe('getNextBirthday', () => {
+  it('returns the next upcoming birthday', () => {
+    const next = getNextBirthday('2000-06-15');
+    expect(next).not.toBeNull();
+    expect(next!.daysUntil).toBeGreaterThanOrEqual(0);
+    expect(next!.isPast).toBe(false);
+  });
 
-// Test formatRelativeTime
-console.log('\nTesting formatRelativeTime...');
-const relToday = formatRelativeTime(todayString);
-assert(relToday === 'Today', `formatRelativeTime: should be "Today" but got "${relToday}"`);
+  it('returns null for an invalid date', () => {
+    expect(getNextBirthday('invalid-date')).toBeNull();
+  });
+});
 
-const tomorrow = new Date(today);
-tomorrow.setDate(tomorrow.getDate() + 1);
-const tomorrowString = tomorrow.toISOString().split('T')[0];
-const relTomorrow = formatRelativeTime(tomorrowString);
-assert(relTomorrow === 'Tomorrow', `formatRelativeTime: should be "Tomorrow" but got "${relTomorrow}"`);
+describe('getDaysUntil / formatRelativeTime', () => {
+  it('is 0 days until today', () => {
+    expect(getDaysUntil(offsetDays(0))).toBe(0);
+  });
 
-const yesterday = new Date(today);
-yesterday.setDate(yesterday.getDate() - 1);
-const yesterdayString = yesterday.toISOString().split('T')[0];
-const relYesterday = formatRelativeTime(yesterdayString);
-assert(relYesterday === 'Yesterday', `formatRelativeTime: should be "Yesterday" but got "${relYesterday}"`);
-
-// Critical timezone test
-console.log('\n🔍 Testing timezone edge case (CRITICAL)...');
-const criticalDate = parseLocalDate('2025-01-15');
-assert(
-  criticalDate.getDate() === 15 && criticalDate.getMonth() === 0 && criticalDate.getFullYear() === 2025,
-  'CRITICAL: parseLocalDate should not shift date across timezones'
-);
-
-console.log('\n✨ All tests passed!\n');
+  it('formats today, tomorrow and yesterday', () => {
+    expect(formatRelativeTime(offsetDays(0))).toBe('Today');
+    expect(formatRelativeTime(offsetDays(1))).toBe('Tomorrow');
+    expect(formatRelativeTime(offsetDays(-1))).toBe('Yesterday');
+  });
+});

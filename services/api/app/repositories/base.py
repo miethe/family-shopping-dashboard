@@ -2,7 +2,7 @@
 
 from typing import Any, Generic, TypeVar
 
-from sqlalchemy import asc, desc, select
+from sqlalchemy import asc, desc, inspect, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.base import BaseModel
@@ -204,8 +204,13 @@ class BaseRepository(Generic[T]):
 
         # Commit changes
         await self.session.commit()
-        # Don't refresh - avoids lazy loading in async context (greenlet error)
-        # Caller should re-fetch with proper eager loading if needed
+        # Server-side onupdate values (e.g. updated_at = func.now()) are expired by
+        # the flush; reading them later would lazy-load outside the greenlet
+        # (MissingGreenlet). Reload only those expired columns - a full refresh
+        # would also unload relationships the caller may still rely on.
+        expired = inspect(db_obj).expired_attributes
+        if expired:
+            await self.session.refresh(db_obj, attribute_names=list(expired))
         return db_obj
 
     async def delete(self, id: int) -> bool:

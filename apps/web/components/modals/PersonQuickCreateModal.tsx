@@ -47,6 +47,7 @@ export function PersonQuickCreateModal({
 }: PersonQuickCreateModalProps) {
   const [displayName, setDisplayName] = React.useState('');
   const [relationship, setRelationship] = React.useState('');
+  const relationshipId = React.useId();
   const [photoUrl, setPhotoUrl] = React.useState('');
 
   const createMutation = useCreatePerson();
@@ -123,10 +124,14 @@ export function PersonQuickCreateModal({
         />
 
         <div>
-          <label className="block text-xs font-semibold text-warm-800 uppercase tracking-wide mb-2">
+          <label
+            htmlFor={relationshipId}
+            className="block text-xs font-semibold text-warm-800 uppercase tracking-wide mb-2"
+          >
             Relationship (optional)
           </label>
           <select
+            id={relationshipId}
             value={relationship}
             onChange={(e) => setRelationship(e.target.value)}
             className="w-full px-4 py-3 min-h-[44px] border border-border-light rounded-medium text-warm-900 bg-warm-50 text-sm focus:outline-none focus:ring-2 focus:ring-warm-200 focus:border-warm-400 transition-all duration-200"
