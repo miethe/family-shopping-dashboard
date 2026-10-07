@@ -1,21 +1,41 @@
 """Unit tests for GiftService."""
 
+from datetime import datetime, timezone
 from decimal import Decimal
+from typing import Any
 from unittest.mock import AsyncMock, patch
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.gift import Gift
+from app.models.gift import Gift, GiftPriority, GiftStatus
 from app.repositories.gift import GiftRepository
 from app.schemas.gift import GiftCreate, GiftResponse, GiftUpdate
 from app.services.gift import GiftService
 
 
+_NOW = datetime(2025, 1, 1, tzinfo=timezone.utc)
+
+
+def _gift(**fields: Any) -> Gift:
+    """Build a Gift as the DB would return it (insert-time defaults applied)."""
+    fields.setdefault("status", GiftStatus.IDEA)
+    fields.setdefault("priority", GiftPriority.MEDIUM)
+    fields.setdefault("quantity", 1)
+    fields.setdefault("extra_data", {})
+    fields.setdefault("created_at", _NOW)
+    fields.setdefault("updated_at", _NOW)
+    return Gift(**fields)
+
+
 @pytest.fixture
 def mock_gift_repo() -> AsyncMock:
     """Create mock GiftRepository."""
-    return AsyncMock(spec=GiftRepository)
+    repo = AsyncMock(spec=GiftRepository)
+    # The service reloads via get_with_relations and falls back to the plain
+    # object when it returns None; default to the fallback path.
+    repo.get_with_relations.return_value = None
+    return repo
 
 
 @pytest.fixture
@@ -43,7 +63,7 @@ class TestGiftService:
             source="Amazon",
         )
 
-        mock_gift = Gift(
+        mock_gift = _gift(
             id=1,
             name="LEGO Star Wars",
             url="https://amazon.com/product",
@@ -70,7 +90,7 @@ class TestGiftService:
         # Arrange
         gift_data = GiftCreate(name="Simple Gift")
 
-        mock_gift = Gift(id=2, name="Simple Gift")
+        mock_gift = _gift(id=2, name="Simple Gift")
         mock_gift_repo.create.return_value = mock_gift
 
         # Act
@@ -87,7 +107,7 @@ class TestGiftService:
     ) -> None:
         """Test getting an existing gift."""
         # Arrange
-        mock_gift = Gift(id=1, name="Test Gift")
+        mock_gift = _gift(id=1, name="Test Gift")
         mock_gift_repo.get.return_value = mock_gift
 
         # Act
@@ -119,8 +139,8 @@ class TestGiftService:
         """Test listing gifts with pagination."""
         # Arrange
         mock_gifts = [
-            Gift(id=1, name="Gift 1"),
-            Gift(id=2, name="Gift 2"),
+            _gift(id=1, name="Gift 1"),
+            _gift(id=2, name="Gift 2"),
         ]
         mock_gift_repo.get_multi.return_value = (mock_gifts, True, 2)
 
@@ -140,8 +160,8 @@ class TestGiftService:
         """Test searching gifts by name."""
         # Arrange
         mock_gifts = [
-            Gift(id=1, name="LEGO Star Wars"),
-            Gift(id=2, name="LEGO Harry Potter"),
+            _gift(id=1, name="LEGO Star Wars"),
+            _gift(id=2, name="LEGO Harry Potter"),
         ]
         mock_gift_repo.search_by_name.return_value = mock_gifts
 
@@ -159,8 +179,8 @@ class TestGiftService:
     ) -> None:
         """Test updating a gift."""
         # Arrange
-        existing = Gift(id=1, name="Old Name", price=Decimal("50.00"))
-        updated = Gift(id=1, name="New Name", price=Decimal("59.99"))
+        existing = _gift(id=1, name="Old Name", price=Decimal("50.00"))
+        updated = _gift(id=1, name="New Name", price=Decimal("59.99"))
 
         mock_gift_repo.get.return_value = existing
         mock_gift_repo.update.return_value = updated
@@ -297,7 +317,7 @@ class TestGiftService:
             "image_url": "https://example.com/img.jpg",
         }
 
-        mock_gift = Gift(
+        mock_gift = _gift(
             id=1,
             name="Extracted Product",
             url=url,

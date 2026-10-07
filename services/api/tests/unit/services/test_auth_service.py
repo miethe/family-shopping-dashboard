@@ -92,8 +92,12 @@ class TestAuthService:
         user_id = 42
         token = auth_service.create_access_token(user_id=user_id)
 
-        # Tamper with token (change last character)
-        tampered_token = token[:-1] + ("A" if token[-1] != "A" else "B")
+        # Tamper with the signature's FIRST character: the last base64url char of a
+        # 32-byte HS256 signature carries padding bits, so swapping A<->B/C/D there
+        # can decode to identical bytes and leave the signature valid (~1/16 flake).
+        header, payload, signature = token.split(".")
+        signature = ("A" if signature[0] != "A" else "B") + signature[1:]
+        tampered_token = f"{header}.{payload}.{signature}"
 
         # Should return None for invalid signature
         assert auth_service.decode_token(tampered_token) is None

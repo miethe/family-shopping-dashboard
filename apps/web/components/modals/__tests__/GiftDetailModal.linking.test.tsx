@@ -17,6 +17,19 @@ import type { Gift } from '@/types';
 import { GiftPriority } from '@/types';
 
 // Mock hooks only - don't mock components
+// GiftDetailModal gates its query on auth loading (2f8ef4c); provide a settled session
+vi.mock('@/lib/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 1, email: 'test@example.com' },
+    token: 'test-token',
+    loading: false,
+    isAuthenticated: true,
+    login: vi.fn(),
+    register: vi.fn(),
+    logout: vi.fn(),
+  }),
+}));
+
 vi.mock('@/hooks/useGifts');
 vi.mock('@/hooks/usePersons');
 vi.mock('@/hooks/useLists');

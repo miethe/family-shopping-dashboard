@@ -13,7 +13,7 @@ async def test_create_gift(
     client: AsyncClient, auth_headers: dict[str, str], sample_gift_data: dict[str, Any]
 ) -> None:
     """Test creating a gift."""
-    response = await client.post("/gifts", json=sample_gift_data, headers=auth_headers)
+    response = await client.post("/api/v1/gifts", json=sample_gift_data, headers=auth_headers)
 
     assert response.status_code == 201
     data = response.json()
@@ -25,7 +25,7 @@ async def test_get_gift(
     client: AsyncClient, auth_headers: dict[str, str], test_gift: Gift
 ) -> None:
     """Test getting a gift by ID."""
-    response = await client.get(f"/gifts/{test_gift.id}", headers=auth_headers)
+    response = await client.get(f"/api/v1/gifts/{test_gift.id}", headers=auth_headers)
 
     assert response.status_code == 200
     data = response.json()
@@ -38,7 +38,7 @@ async def test_get_gift_not_found(
     client: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
     """Test getting non-existent gift returns 404."""
-    response = await client.get("/gifts/99999", headers=auth_headers)
+    response = await client.get("/api/v1/gifts/99999", headers=auth_headers)
     assert response.status_code == 404
 
 
@@ -47,10 +47,10 @@ async def test_list_gifts(
     client: AsyncClient, auth_headers: dict[str, str], test_gift: Gift
 ) -> None:
     """Test listing gifts."""
-    response = await client.get("/gifts", headers=auth_headers)
+    response = await client.get("/api/v1/gifts", headers=auth_headers)
 
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["items"]  # PaginatedResponse envelope
     assert isinstance(data, list)
     assert len(data) > 0
 
@@ -61,11 +61,11 @@ async def test_search_gifts(
 ) -> None:
     """Test searching gifts by name."""
     response = await client.get(
-        f"/gifts/search?q={test_gift.name}", headers=auth_headers
+        f"/api/v1/gifts/search?q={test_gift.name}", headers=auth_headers
     )
 
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["items"]  # PaginatedResponse envelope
     assert isinstance(data, list)
 
 
@@ -77,7 +77,7 @@ async def test_update_gift(
     update_data = {"name": "Updated Gift Name"}
 
     response = await client.patch(
-        f"/gifts/{test_gift.id}", json=update_data, headers=auth_headers
+        f"/api/v1/gifts/{test_gift.id}", json=update_data, headers=auth_headers
     )
 
     assert response.status_code == 200
@@ -90,5 +90,5 @@ async def test_delete_gift(
     client: AsyncClient, auth_headers: dict[str, str], test_gift: Gift
 ) -> None:
     """Test deleting a gift."""
-    response = await client.delete(f"/gifts/{test_gift.id}", headers=auth_headers)
+    response = await client.delete(f"/api/v1/gifts/{test_gift.id}", headers=auth_headers)
     assert response.status_code == 204

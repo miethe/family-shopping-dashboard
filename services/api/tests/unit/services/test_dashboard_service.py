@@ -40,7 +40,7 @@ class TestDashboardService:
         mock_people = [
             PersonSummary(
                 id=1,
-                name="Mom",
+                display_name="Mom",
                 pending_gifts=3,
                 photo_url="https://example.com/mom.jpg",
                 next_occasion="2025-12-25",
@@ -48,7 +48,7 @@ class TestDashboardService:
             ),
             PersonSummary(
                 id=2,
-                name="Dad",
+                display_name="Dad",
                 pending_gifts=2,
                 photo_url=None,
                 next_occasion="2025-12-25",
@@ -236,7 +236,7 @@ class TestDashboardService:
 
         # Assert
         assert len(result) == 2
-        assert result[0].name == "Alice"
+        assert result[0].display_name == "Alice"
         assert result[0].pending_gifts == 5
         assert result[0].photo_url == "https://example.com/alice.jpg"
         assert result[0].next_occasion == "2025-12-25"
@@ -244,7 +244,7 @@ class TestDashboardService:
         assert result[0].gift_counts["needed"] == 3
         assert result[0].gift_counts["purchased"] == 0
 
-        assert result[1].name == "Bob"
+        assert result[1].display_name == "Bob"
         assert result[1].pending_gifts == 3
         assert result[1].photo_url is None
         assert result[1].next_occasion is None

@@ -65,6 +65,9 @@ export function getAge(birthdate: string | null | undefined): number | null {
   try {
     const today = new Date();
     const birth = parseLocalDate(birthdate);
+    if (Number.isNaN(birth.getTime())) {
+      return null; // Unparseable input yields an Invalid Date, not an exception
+    }
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
 
@@ -96,6 +99,9 @@ export function getNextBirthday(birthdate: string | null | undefined): {
     today.setHours(0, 0, 0, 0);
 
     const birth = parseLocalDate(birthdate);
+    if (Number.isNaN(birth.getTime())) {
+      return null; // Unparseable input yields an Invalid Date, not an exception
+    }
     const thisYear = today.getFullYear();
 
     let nextBirthday = new Date(thisYear, birth.getMonth(), birth.getDate());

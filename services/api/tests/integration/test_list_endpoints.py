@@ -25,7 +25,7 @@ async def test_create_list(
         "occasion_id": test_occasion.id,
     }
 
-    response = await client.post("/lists", json=list_data, headers=auth_headers)
+    response = await client.post("/api/v1/lists", json=list_data, headers=auth_headers)
 
     assert response.status_code == 201
     data = response.json()
@@ -38,7 +38,7 @@ async def test_get_list(
     client: AsyncClient, auth_headers: dict[str, str], test_list: List
 ) -> None:
     """Test getting a list by ID."""
-    response = await client.get(f"/lists/{test_list.id}", headers=auth_headers)
+    response = await client.get(f"/api/v1/lists/{test_list.id}", headers=auth_headers)
 
     assert response.status_code == 200
     data = response.json()
@@ -51,10 +51,10 @@ async def test_list_all_lists(
     client: AsyncClient, auth_headers: dict[str, str], test_list: List
 ) -> None:
     """Test listing all lists."""
-    response = await client.get("/lists", headers=auth_headers)
+    response = await client.get("/api/v1/lists", headers=auth_headers)
 
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["items"]  # PaginatedResponse envelope
     assert isinstance(data, list)
     assert len(data) > 0
 
@@ -65,11 +65,11 @@ async def test_filter_lists_by_person(
 ) -> None:
     """Test filtering lists by person."""
     response = await client.get(
-        f"/lists?person_id={test_list.person_id}", headers=auth_headers
+        f"/api/v1/lists?person_id={test_list.person_id}", headers=auth_headers
     )
 
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["items"]  # PaginatedResponse envelope
     assert isinstance(data, list)
 
 
@@ -80,8 +80,8 @@ async def test_update_list(
     """Test updating a list."""
     update_data = {"name": "Updated List Name"}
 
-    response = await client.patch(
-        f"/lists/{test_list.id}", json=update_data, headers=auth_headers
+    response = await client.put(
+        f"/api/v1/lists/{test_list.id}", json=update_data, headers=auth_headers
     )
 
     assert response.status_code == 200
@@ -94,5 +94,5 @@ async def test_delete_list(
     client: AsyncClient, auth_headers: dict[str, str], test_list: List
 ) -> None:
     """Test deleting a list."""
-    response = await client.delete(f"/lists/{test_list.id}", headers=auth_headers)
+    response = await client.delete(f"/api/v1/lists/{test_list.id}", headers=auth_headers)
     assert response.status_code == 204

@@ -1,6 +1,7 @@
 """Unit tests for OccasionService."""
 
-from datetime import date
+from datetime import date, datetime, timezone
+from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
@@ -10,6 +11,18 @@ from app.models.occasion import Occasion, OccasionType
 from app.repositories.occasion import OccasionRepository
 from app.schemas.occasion import OccasionCreate, OccasionResponse, OccasionUpdate
 from app.services.occasion import OccasionService
+
+
+_NOW = datetime(2025, 1, 1, tzinfo=timezone.utc)
+
+
+def _occ(**fields: Any) -> Occasion:
+    """Build an Occasion as the DB would return it (timestamps + loaded persons)."""
+    fields.setdefault("created_at", _NOW)
+    fields.setdefault("updated_at", _NOW)
+    fields.setdefault("persons", [])
+    fields.setdefault("is_active", True)
+    return Occasion(**fields)
 
 
 @pytest.fixture
@@ -37,19 +50,20 @@ class TestOccasionService:
         # Arrange
         occasion_data = OccasionCreate(
             name="Christmas 2025",
-            type=OccasionType.holiday,
+            type=OccasionType.HOLIDAY,
             date=date(2025, 12, 25),
             description="Christmas celebration",
         )
 
-        mock_occasion = Occasion(
+        mock_occasion = _occ(
             id=1,
             name="Christmas 2025",
-            type=OccasionType.holiday,
+            type=OccasionType.HOLIDAY,
             date=date(2025, 12, 25),
             description="Christmas celebration",
         )
         mock_occasion_repo.create.return_value = mock_occasion
+        mock_occasion_repo.get_with_persons.return_value = mock_occasion
 
         # Act
         result = await occasion_service.create(occasion_data)
@@ -58,7 +72,7 @@ class TestOccasionService:
         assert isinstance(result, OccasionResponse)
         assert result.id == 1
         assert result.name == "Christmas 2025"
-        assert result.type == OccasionType.holiday
+        assert result.type == OccasionType.HOLIDAY
         assert result.date == date(2025, 12, 25)
         assert result.description == "Christmas celebration"
 
@@ -70,18 +84,19 @@ class TestOccasionService:
         # Arrange
         occasion_data = OccasionCreate(
             name="Birthday",
-            type=OccasionType.birthday,
+            type=OccasionType.RECURRING,
             date=date(2025, 6, 15),
         )
 
-        mock_occasion = Occasion(
+        mock_occasion = _occ(
             id=2,
             name="Birthday",
-            type=OccasionType.birthday,
+            type=OccasionType.RECURRING,
             date=date(2025, 6, 15),
             description=None,
         )
         mock_occasion_repo.create.return_value = mock_occasion
+        mock_occasion_repo.get_with_persons.return_value = mock_occasion
 
         # Act
         result = await occasion_service.create(occasion_data)
@@ -96,10 +111,10 @@ class TestOccasionService:
     ) -> None:
         """Test getting an existing occasion."""
         # Arrange
-        mock_occasion = Occasion(
-            id=1, name="Christmas", type=OccasionType.holiday, date=date(2025, 12, 25)
+        mock_occasion = _occ(
+            id=1, name="Christmas", type=OccasionType.HOLIDAY, date=date(2025, 12, 25)
         )
-        mock_occasion_repo.get.return_value = mock_occasion
+        mock_occasion_repo.get_with_persons.return_value = mock_occasion
 
         # Act
         result = await occasion_service.get(occasion_id=1)
@@ -108,7 +123,7 @@ class TestOccasionService:
         assert result is not None
         assert result.id == 1
         assert result.name == "Christmas"
-        mock_occasion_repo.get.assert_called_once_with(1)
+        mock_occasion_repo.get_with_persons.assert_called_once_with(1)
 
     @pytest.mark.asyncio
     async def test_get_occasion_not_found(
@@ -116,7 +131,7 @@ class TestOccasionService:
     ) -> None:
         """Test getting non-existent occasion returns None."""
         # Arrange
-        mock_occasion_repo.get.return_value = None
+        mock_occasion_repo.get_with_persons.return_value = None
 
         # Act
         result = await occasion_service.get(occasion_id=999)
@@ -131,8 +146,8 @@ class TestOccasionService:
         """Test listing occasions with pagination."""
         # Arrange
         mock_occasions = [
-            Occasion(id=1, name="Occasion 1", type=OccasionType.birthday, date=date(2025, 1, 1)),
-            Occasion(id=2, name="Occasion 2", type=OccasionType.holiday, date=date(2025, 2, 1)),
+            _occ(id=1, name="Occasion 1", type=OccasionType.RECURRING, date=date(2025, 1, 1)),
+            _occ(id=2, name="Occasion 2", type=OccasionType.HOLIDAY, date=date(2025, 2, 1)),
         ]
         mock_occasion_repo.get_multi.return_value = (mock_occasions, True, 2)
 
@@ -152,14 +167,14 @@ class TestOccasionService:
         """Test getting upcoming occasions."""
         # Arrange
         mock_occasions = [
-            Occasion(
-                id=1, name="Birthday", type=OccasionType.birthday, date=date(2025, 6, 15)
+            _occ(
+                id=1, name="Birthday", type=OccasionType.RECURRING, date=date(2025, 6, 15)
             ),
-            Occasion(
-                id=2, name="Anniversary", type=OccasionType.anniversary, date=date(2025, 7, 1)
+            _occ(
+                id=2, name="Anniversary", type=OccasionType.RECURRING, date=date(2025, 7, 1)
             ),
         ]
-        mock_occasion_repo.get_upcoming.return_value = mock_occasions
+        mock_occasion_repo.get_upcoming_by_next_occurrence.return_value = mock_occasions
 
         # Act
         result = await occasion_service.get_upcoming(limit=5)
@@ -168,7 +183,9 @@ class TestOccasionService:
         assert len(result) == 2
         assert result[0].name == "Birthday"
         assert result[1].name == "Anniversary"
-        mock_occasion_repo.get_upcoming.assert_called_once_with(days=30)
+        mock_occasion_repo.get_upcoming_by_next_occurrence.assert_called_once_with(
+            within_days=90
+        )
 
     @pytest.mark.asyncio
     async def test_get_upcoming_respects_limit(
@@ -177,10 +194,10 @@ class TestOccasionService:
         """Test upcoming occasions respects limit."""
         # Arrange
         mock_occasions = [
-            Occasion(id=i, name=f"Occasion {i}", type=OccasionType.birthday, date=date(2025, i, 1))
+            _occ(id=i, name=f"Occasion {i}", type=OccasionType.RECURRING, date=date(2025, i, 1))
             for i in range(1, 11)
         ]
-        mock_occasion_repo.get_upcoming.return_value = mock_occasions
+        mock_occasion_repo.get_upcoming_by_next_occurrence.return_value = mock_occasions
 
         # Act
         result = await occasion_service.get_upcoming(limit=3)
@@ -194,15 +211,16 @@ class TestOccasionService:
     ) -> None:
         """Test updating an occasion."""
         # Arrange
-        existing = Occasion(
-            id=1, name="Old Name", type=OccasionType.birthday, date=date(2025, 1, 1)
+        existing = _occ(
+            id=1, name="Old Name", type=OccasionType.RECURRING, date=date(2025, 1, 1)
         )
-        updated = Occasion(
-            id=1, name="New Name", type=OccasionType.birthday, date=date(2025, 2, 1)
+        updated = _occ(
+            id=1, name="New Name", type=OccasionType.RECURRING, date=date(2025, 2, 1)
         )
 
         mock_occasion_repo.get.return_value = existing
         mock_occasion_repo.update.return_value = updated
+        mock_occasion_repo.get_with_persons.return_value = updated
 
         update_data = OccasionUpdate(name="New Name", date=date(2025, 2, 1))
 
@@ -237,10 +255,11 @@ class TestOccasionService:
     ) -> None:
         """Test updating occasion with no changes."""
         # Arrange
-        existing = Occasion(
-            id=1, name="Name", type=OccasionType.birthday, date=date(2025, 1, 1)
+        existing = _occ(
+            id=1, name="Name", type=OccasionType.RECURRING, date=date(2025, 1, 1)
         )
         mock_occasion_repo.get.return_value = existing
+        mock_occasion_repo.get_with_persons.return_value = existing
 
         update_data = OccasionUpdate()
 
