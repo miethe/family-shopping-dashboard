@@ -18,6 +18,23 @@ import type { Person } from '@/types';
 
 // Mock hooks
 vi.mock('@/hooks/usePersons');
+// The photo field is an ImagePicker (c149819), covered by its own suite; stub it
+// with a labelled URL input so this suite can drive the value into the payload.
+vi.mock('@/components/ui/image-picker', () => ({
+  ImagePicker: ({
+    value,
+    onChange,
+  }: {
+    value?: string | null;
+    onChange: (url: string | null) => void;
+  }) => (
+    <input
+      aria-label="Photo URL"
+      value={value ?? ''}
+      onChange={(e) => onChange(e.target.value || null)}
+    />
+  ),
+}));
 vi.mock('@/components/ui/use-toast', () => ({
   useToast: () => ({
     toast: vi.fn(),
@@ -343,7 +360,8 @@ describe('PersonQuickCreateModal', () => {
 
     const nameInput = screen.getByLabelText(/display name/i);
     expect(nameInput).toHaveAttribute('required');
-    expect(nameInput).toHaveAttribute('autofocus');
+    // React applies autoFocus by focusing the element; it never renders the attribute
+    expect(nameInput).toHaveFocus();
   });
 
   it('shows all relationship options', () => {

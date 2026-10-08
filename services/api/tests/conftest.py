@@ -362,7 +362,8 @@ def sample_occasion_data() -> dict[str, Any]:
     """
     return {
         "name": "Sample Birthday",
-        "type": "birthday",
+        "type": "recurring",  # birthdays are recurring + subtype (a03e9ec)
+        "subtype": "birthday",
         "date": "2025-06-15",
         "description": "Sample description",
     }

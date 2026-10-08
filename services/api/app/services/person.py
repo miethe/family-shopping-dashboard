@@ -460,12 +460,29 @@ class PersonService:
 
         Returns updated budget response with progress, or None if link doesn't exist.
         """
+        # Partial update: the web client saves one field at a time, so a field
+        # omitted from the request keeps its stored value; an explicit null clears it.
+        current = await self.repo.get_person_occasion_budget(person_id, occasion_id)
+        if current is None:
+            return None
+        provided = data.model_fields_set
+        recipient_budget_total = (
+            data.recipient_budget_total
+            if "recipient_budget_total" in provided
+            else current.recipient_budget_total
+        )
+        purchaser_budget_total = (
+            data.purchaser_budget_total
+            if "purchaser_budget_total" in provided
+            else current.purchaser_budget_total
+        )
+
         try:
             await self.repo.update_person_occasion_budget(
                 person_id,
                 occasion_id,
-                data.recipient_budget_total,
-                data.purchaser_budget_total
+                recipient_budget_total,
+                purchaser_budget_total
             )
         except ValueError:
             return None

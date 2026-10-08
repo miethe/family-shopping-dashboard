@@ -16,7 +16,7 @@ async def test_create_occasion(
 ) -> None:
     """Test creating an occasion."""
     response = await client.post(
-        "/occasions", json=sample_occasion_data, headers=auth_headers
+        "/api/v1/occasions", json=sample_occasion_data, headers=auth_headers
     )
 
     assert response.status_code == 201
@@ -30,7 +30,7 @@ async def test_get_occasion(
     client: AsyncClient, auth_headers: dict[str, str], test_occasion: Occasion
 ) -> None:
     """Test getting an occasion by ID."""
-    response = await client.get(f"/occasions/{test_occasion.id}", headers=auth_headers)
+    response = await client.get(f"/api/v1/occasions/{test_occasion.id}", headers=auth_headers)
 
     assert response.status_code == 200
     data = response.json()
@@ -43,7 +43,7 @@ async def test_get_occasion_not_found(
     client: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
     """Test getting non-existent occasion returns 404."""
-    response = await client.get("/occasions/99999", headers=auth_headers)
+    response = await client.get("/api/v1/occasions/99999", headers=auth_headers)
     assert response.status_code == 404
 
 
@@ -52,10 +52,10 @@ async def test_list_occasions(
     client: AsyncClient, auth_headers: dict[str, str], test_occasion: Occasion
 ) -> None:
     """Test listing occasions."""
-    response = await client.get("/occasions", headers=auth_headers)
+    response = await client.get("/api/v1/occasions", headers=auth_headers)
 
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["items"]  # PaginatedResponse envelope
     assert isinstance(data, list)
     assert len(data) > 0
 
@@ -67,8 +67,8 @@ async def test_update_occasion(
     """Test updating an occasion."""
     update_data = {"name": "Updated Occasion"}
 
-    response = await client.patch(
-        f"/occasions/{test_occasion.id}", json=update_data, headers=auth_headers
+    response = await client.put(
+        f"/api/v1/occasions/{test_occasion.id}", json=update_data, headers=auth_headers
     )
 
     assert response.status_code == 200
@@ -82,6 +82,6 @@ async def test_delete_occasion(
 ) -> None:
     """Test deleting an occasion."""
     response = await client.delete(
-        f"/occasions/{test_occasion.id}", headers=auth_headers
+        f"/api/v1/occasions/{test_occasion.id}", headers=auth_headers
     )
     assert response.status_code == 204

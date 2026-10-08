@@ -15,7 +15,7 @@ async def test_create_person(
     """Test creating a person."""
     # Act
     response = await client.post(
-        "/persons", json=sample_person_data, headers=auth_headers
+        "/api/v1/persons", json=sample_person_data, headers=auth_headers
     )
 
     # Assert
@@ -23,7 +23,10 @@ async def test_create_person(
     data = response.json()
     assert data["display_name"] == sample_person_data["display_name"]
     assert data["interests"] == sample_person_data["interests"]
-    assert data["size_profile"] == sample_person_data["size_profile"]
+    # SizeEntry also serializes its optional fit/brand/notes fields (as null)
+    assert [
+        {"type": e["type"], "value": e["value"]} for e in data["size_profile"]
+    ] == sample_person_data["size_profile"]
     assert data["sizes"] == {"Shirt": "L", "Pants": "32x32"}
     assert data["advanced_interests"]["gift_preferences"]["gift_card_ok"] is False
     assert "id" in data
@@ -35,7 +38,7 @@ async def test_create_person_unauthenticated(
 ) -> None:
     """Test creating person without authentication returns 401."""
     # Act
-    response = await client.post("/persons", json=sample_person_data)
+    response = await client.post("/api/v1/persons", json=sample_person_data)
 
     # Assert
     assert response.status_code in [401, 403]
@@ -47,7 +50,7 @@ async def test_get_person(
 ) -> None:
     """Test getting a person by ID."""
     # Act
-    response = await client.get(f"/persons/{test_person.id}", headers=auth_headers)
+    response = await client.get(f"/api/v1/persons/{test_person.id}", headers=auth_headers)
 
     # Assert
     assert response.status_code == 200
@@ -64,7 +67,7 @@ async def test_get_person_not_found(
 ) -> None:
     """Test getting non-existent person returns 404."""
     # Act
-    response = await client.get("/persons/99999", headers=auth_headers)
+    response = await client.get("/api/v1/persons/99999", headers=auth_headers)
 
     # Assert
     assert response.status_code == 404
@@ -76,7 +79,7 @@ async def test_list_persons(
 ) -> None:
     """Test listing persons."""
     # Act
-    response = await client.get("/persons", headers=auth_headers)
+    response = await client.get("/api/v1/persons", headers=auth_headers)
 
     # Assert
     assert response.status_code == 200
@@ -100,8 +103,8 @@ async def test_update_person(
     }
 
     # Act
-    response = await client.patch(
-        f"/persons/{test_person.id}", json=update_data, headers=auth_headers
+    response = await client.put(
+        f"/api/v1/persons/{test_person.id}", json=update_data, headers=auth_headers
     )
 
     # Assert
@@ -121,8 +124,8 @@ async def test_update_person_not_found(
     update_data = {"display_name": "New Name"}
 
     # Act
-    response = await client.patch(
-        "/persons/99999", json=update_data, headers=auth_headers
+    response = await client.put(
+        "/api/v1/persons/99999", json=update_data, headers=auth_headers
     )
 
     # Assert
@@ -135,7 +138,7 @@ async def test_delete_person(
 ) -> None:
     """Test deleting a person."""
     # Act
-    response = await client.delete(f"/persons/{test_person.id}", headers=auth_headers)
+    response = await client.delete(f"/api/v1/persons/{test_person.id}", headers=auth_headers)
 
     # Assert
     assert response.status_code == 204
@@ -147,7 +150,7 @@ async def test_delete_person_not_found(
 ) -> None:
     """Test deleting non-existent person returns 404."""
     # Act
-    response = await client.delete("/persons/99999", headers=auth_headers)
+    response = await client.delete("/api/v1/persons/99999", headers=auth_headers)
 
     # Assert
     assert response.status_code == 404

@@ -27,6 +27,19 @@ const mockUseQuery = vi.fn();
 const mockUseListsForGift = vi.fn();
 const mockUsePersons = vi.fn();
 
+// GiftDetailModal gates its query on auth loading (2f8ef4c); provide a settled session
+vi.mock('@/lib/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 1, email: 'test@example.com' },
+    token: 'test-token',
+    loading: false,
+    isAuthenticated: true,
+    login: vi.fn(),
+    register: vi.fn(),
+    logout: vi.fn(),
+  }),
+}));
+
 vi.mock('@tanstack/react-query', async () => {
   const actual = await vi.importActual('@tanstack/react-query');
   return {

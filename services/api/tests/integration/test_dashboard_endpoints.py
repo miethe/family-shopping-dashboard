@@ -7,7 +7,7 @@ from httpx import AsyncClient
 @pytest.mark.asyncio
 async def test_get_dashboard(client: AsyncClient, auth_headers: dict[str, str]) -> None:
     """Test getting dashboard data."""
-    response = await client.get("/dashboard", headers=auth_headers)
+    response = await client.get("/api/v1/dashboard", headers=auth_headers)
 
     assert response.status_code == 200
     data = response.json()
@@ -29,5 +29,5 @@ async def test_get_dashboard(client: AsyncClient, auth_headers: dict[str, str]) 
 @pytest.mark.asyncio
 async def test_get_dashboard_unauthenticated(client: AsyncClient) -> None:
     """Test getting dashboard without authentication returns 401."""
-    response = await client.get("/dashboard")
+    response = await client.get("/api/v1/dashboard")
     assert response.status_code in [401, 403]

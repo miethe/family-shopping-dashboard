@@ -103,8 +103,8 @@ describe('ImagePicker', () => {
       const mockFile = new File(['image content'], 'test.jpg', { type: 'image/jpeg' });
 
       vi.mocked(uploadApi.uploadImage).mockResolvedValue({
-        url: 'https://cdn.example.com/uploaded.jpg',
-        thumbnail_url: 'https://cdn.example.com/uploaded-thumb.jpg',
+        image_url: 'https://cdn.example.com/uploaded.jpg',
+        filename: null,
       });
 
       render(
@@ -132,8 +132,8 @@ describe('ImagePicker', () => {
       // Delay the upload to capture loading state
       vi.mocked(uploadApi.uploadImage).mockImplementation(
         () => new Promise(resolve => setTimeout(() => resolve({
-          url: 'https://cdn.example.com/uploaded.jpg',
-          thumbnail_url: 'https://cdn.example.com/uploaded-thumb.jpg',
+          image_url: 'https://cdn.example.com/uploaded.jpg',
+          filename: null,
         }), 100))
       );
 
@@ -231,8 +231,8 @@ describe('ImagePicker', () => {
       const mockFile = new File(['image content'], 'test.jpg', { type: 'image/jpeg' });
 
       vi.mocked(uploadApi.uploadImage).mockResolvedValue({
-        url: 'https://cdn.example.com/uploaded.jpg',
-        thumbnail_url: 'https://cdn.example.com/uploaded-thumb.jpg',
+        image_url: 'https://cdn.example.com/uploaded.jpg',
+        filename: null,
       });
 
       render(
@@ -296,8 +296,8 @@ describe('ImagePicker', () => {
       const mockFile = new File(['image content'], 'pasted.png', { type: 'image/png' });
 
       vi.mocked(uploadApi.uploadImage).mockResolvedValue({
-        url: 'https://cdn.example.com/pasted.png',
-        thumbnail_url: 'https://cdn.example.com/pasted-thumb.png',
+        image_url: 'https://cdn.example.com/pasted.png',
+        filename: null,
       });
 
       render(
@@ -376,8 +376,8 @@ describe('ImagePicker', () => {
       const user = userEvent.setup();
 
       vi.mocked(uploadApi.uploadImageFromUrl).mockResolvedValue({
-        url: 'https://cdn.example.com/imported.jpg',
-        thumbnail_url: 'https://cdn.example.com/imported-thumb.jpg',
+        image_url: 'https://cdn.example.com/imported.jpg',
+        filename: null,
       });
 
       render(
@@ -458,8 +458,8 @@ describe('ImagePicker', () => {
       const user = userEvent.setup();
 
       vi.mocked(uploadApi.uploadImageFromUrl).mockResolvedValue({
-        url: 'https://cdn.example.com/imported.jpg',
-        thumbnail_url: 'https://cdn.example.com/imported-thumb.jpg',
+        image_url: 'https://cdn.example.com/imported.jpg',
+        filename: null,
       });
 
       render(
@@ -555,8 +555,8 @@ describe('ImagePicker', () => {
       const validFile = new File(['content'], `test.${name.toLowerCase()}`, { type: mimeType });
 
       vi.mocked(uploadApi.uploadImage).mockResolvedValue({
-        url: 'https://cdn.example.com/uploaded.jpg',
-        thumbnail_url: 'https://cdn.example.com/uploaded-thumb.jpg',
+        image_url: 'https://cdn.example.com/uploaded.jpg',
+        filename: null,
       });
 
       render(
@@ -659,8 +659,8 @@ describe('ImagePicker', () => {
       // Now upload a valid file
       const validFile = new File(['content'], 'test.jpg', { type: 'image/jpeg' });
       vi.mocked(uploadApi.uploadImage).mockResolvedValue({
-        url: 'https://cdn.example.com/uploaded.jpg',
-        thumbnail_url: 'https://cdn.example.com/uploaded-thumb.jpg',
+        image_url: 'https://cdn.example.com/uploaded.jpg',
+        filename: null,
       });
 
       // Manually set valid file and trigger change
@@ -871,8 +871,8 @@ describe('ImagePicker', () => {
       const validFile = new File(['content'], 'test.jpg', { type: 'image/jpeg' });
 
       vi.mocked(uploadApi.uploadImage).mockResolvedValue({
-        url: 'https://cdn.example.com/uploaded.jpg',
-        thumbnail_url: 'https://cdn.example.com/uploaded-thumb.jpg',
+        image_url: 'https://cdn.example.com/uploaded.jpg',
+        filename: null,
       });
 
       render(
