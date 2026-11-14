@@ -1,0 +1,37 @@
+Traceback (most recent call last):
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/run.py", line 32, in <module>
+    if status!=200:raise RuntimeError('Demo login failed')
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Demo login failed
+{
+  "capture_exit": null,
+  "error": "Demo login failed",
+  "api": [
+    [
+      "/health",
+      200
+    ],
+    [
+      "/api/v1/auth/register",
+      201
+    ],
+    [
+      "/api/v1/auth/login",
+      500
+    ]
+  ],
+  "processes": [
+    {
+      "name": "api",
+      "pid": 27966,
+      "exit": -15,
+      "stopped": true
+    },
+    {
+      "name": "postgres",
+      "pid": 27781,
+      "exit": 0,
+      "stopped": true
+    }
+  ]
+}

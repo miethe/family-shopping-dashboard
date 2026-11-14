@@ -1,0 +1,55 @@
+2026-11-14 14:10:22.147 EST [16349] LOG:  starting PostgreSQL 16.4 on x86_64-apple-darwin20.6.0, compiled by Apple clang version 12.0.5 (clang-1205.0.22.9), 64-bit
+
+2026-11-14 14:10:22.148 EST [16349] LOG:  listening on IPv4 address "127.0.0.1", port 15442
+
+2026-11-14 14:10:22.151 EST [16362] LOG:  database system was shut down at 2026-11-14 14:10:05 EST
+
+2026-11-14 14:10:22.156 EST [16349] LOG:  database system is ready to accept connections
+
+$ .venv/bin/alembic upgrade head
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> e5d8200343c6, initial_schema
+INFO  [alembic.runtime.migration] Running upgrade e5d8200343c6 -> 39be0dfc7e1d, add person fields per PRD
+INFO  [alembic.runtime.migration] Running upgrade 39be0dfc7e1d -> be6fd164193f, add activity_logs table
+INFO  [alembic.runtime.migration] Running upgrade be6fd164193f -> 6e0330de314e, add price, discount_price, quantity to list_items
+INFO  [alembic.runtime.migration] Running upgrade be6fd164193f -> 0cacb55807d0, add budget_total to occasions
+INFO  [alembic.runtime.migration] Running upgrade 0cacb55807d0, 6e0330de314e -> 59b95e08971c, merge_heads
+INFO  [alembic.runtime.migration] Running upgrade 59b95e08971c -> 37835ac72a46, create_entity_budgets_table
+INFO  [alembic.runtime.migration] Running upgrade 37835ac72a46 -> e5004eebd18f, create_stores_table
+INFO  [alembic.runtime.migration] Running upgrade e5004eebd18f -> 268c9faeabe7, gift_people_link
+INFO  [alembic.runtime.migration] Running upgrade 268c9faeabe7 -> e21fa4490d9d, groups_and_person_groups
+INFO  [alembic.runtime.migration] Running upgrade 268c9faeabe7 -> cf29065501d1, gift_model_expansion
+INFO  [alembic.runtime.migration] Running upgrade 37835ac72a46 -> 001_occasion_recurrence, Add recurrence fields and update OccasionType enum
+INFO  [alembic.runtime.migration] Running upgrade 001_occasion_recurrence -> 002_person_occasions, Create person_occasions join table for person-occasion many-to-many relationship
+INFO  [alembic.runtime.migration] Running upgrade 002_person_occasions -> 003_person_anniversary, Add anniversary field to persons table
+INFO  [alembic.runtime.migration] Running upgrade 003_person_anniversary, cf29065501d1, e21fa4490d9d -> ca7196997ff4, merge_all_heads
+INFO  [alembic.runtime.migration] Running upgrade ca7196997ff4 -> 7a6f30d7b2b2, add person advanced interests and size profile
+INFO  [alembic.runtime.migration] Running upgrade 7a6f30d7b2b2 -> 1d2e5f3c4b21, add comment visibility and gift parent type
+INFO  [alembic.runtime.migration] Running upgrade ca7196997ff4 -> f0d1f6c21c8f, Change gift.additional_urls to JSON for labeled links.
+INFO  [alembic.runtime.migration] Running upgrade f0d1f6c21c8f, 1d2e5f3c4b21 -> 8b7f5d2e1c5a, Merge heads after additional_urls JSON and comments visibility.
+INFO  [alembic.runtime.migration] Running upgrade 8b7f5d2e1c5a -> b1b18e1a4691, Add updated_at to gift_people join table.
+INFO  [alembic.runtime.migration] Running upgrade b1b18e1a4691 -> b2b770469096, add_purchaser_id_and_gift_person_role
+INFO  [alembic.runtime.migration] Running upgrade b2b770469096 -> 5d80cbe06073, Add budget fields to PersonOccasion
+INFO  [alembic.runtime.migration] Running upgrade 5d80cbe06073 -> d7b9b25e3eda, add_status_field_to_gift
+INFO  [alembic.runtime.migration] Running upgrade d7b9b25e3eda -> 3905b0fc62cd, create field_options table
+INFO  [alembic.runtime.migration] Running upgrade 3905b0fc62cd -> df8e08cce5fd, seed field_options with existing values
+INFO  [alembic.runtime.migration] Running upgrade df8e08cce5fd -> a9a8b7496861, add gift from_santa field
+/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/services/api/.venv/lib/python3.14/site-packages/alembic/ddl/postgresql.py:192: UserWarning: autoincrement and existing_autoincrement only make sense for MySQL
+  super().alter_column(
+
+EXIT 0
+2026-11-14 14:10:27.004 EST [16349] LOG:  received fast shutdown request
+
+2026-11-14 14:10:27.004 EST [16349] LOG:  aborting any active transactions
+
+2026-11-14 14:10:27.005 EST [16349] LOG:  background worker "logical replication launcher" (PID 16365) exited with exit code 1
+
+2026-11-14 14:10:27.005 EST [16360] LOG:  shutting down
+
+2026-11-14 14:10:27.006 EST [16360] LOG:  checkpoint starting: shutdown immediate
+
+2026-11-14 14:10:27.112 EST [16360] LOG:  checkpoint complete: wrote 1024 buffers (6.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.058 s, sync=0.047 s, total=0.108 s; sync files=501, longest=0.002 s, average=0.001 s; distance=5342 kB, estimate=5342 kB; lsn=0/1A44C28, redo lsn=0/1A44C28
+
+2026-11-14 14:10:27.115 EST [16349] LOG:  database system is shut down
+

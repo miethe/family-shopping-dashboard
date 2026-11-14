@@ -1,0 +1,32 @@
+{
+  "pinned_head": "5df108b9461089567205b98d0eabadf35a0fe459",
+  "historical_feature_cutoff": "2025-12-25 selection-mode improvements; not the last application-code modification",
+  "later_application_changes": "44ffb78 (2026-10-07) changes production web/API code alongside tests; later integration merges continue through 2026-10-18",
+  "pause_reason": "No explicit stopping rationale found in reviewed historical records. Do not infer one from the calendar.",
+  "root_cause": {
+    "symptom": "Freshly migrated local instance registers a fake user but login returns 500.",
+    "migration": "services/api/alembic/versions/a9a8b7496861_add_gift_from_santa_field.py:26 drops activity_logs",
+    "reader": "services/api/app/models/user.py:66 eager/selectin activity_logs relationship; UserRepository.get_by_email triggers it",
+    "runtime": "api.log contains psycopg.errors.UndefinedTable relation activity_logs does not exist"
+  },
+  "coverage": {
+    "inventory": "read-inventory.json",
+    "full_file_local_scan": "read-index.json",
+    "symbol_audit": "source-audit.json",
+    "method": "All inventoried text bodies were read by local scanner; outlines, status/requirement lines and code symbols guided focused source inspection. This is not a claim that every line was manually reviewed or every historical test rerun.",
+    "binary_reference_review": "Archived gift-selection screenshot inspected; other binary reference assets are not certified as manually reviewed."
+  },
+  "visual_review": {
+    "login-error.png": "Readable split login; error says Failed to fetch; missing external icon font exposes icon words. No horizontal overflow. The direct API trace identifies the underlying database error.",
+    "register.png": "Plain compact registration card, materially different styling from login; no clipping or horizontal overflow. Form appearance is not proof of successful automatic login.",
+    "component-library.png": "Working component specimen page; rounded coral buttons and large inputs. Page continues vertically. This is a component gallery, not the live family dashboard."
+  },
+  "run_environment": {
+    "database": "Temporary PostgreSQL 16.4 bound only to 127.0.0.1:15442; data retained under archaeology directory",
+    "api": "uv sync --frozen; .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8030",
+    "web": "pnpm install --frozen-lockfile --ignore-scripts; unchanged sources copied under .aos-archaeology/web-runtime, then pnpm dev --hostname 127.0.0.1 --port 3030",
+    "browser": "Existing Chromium cache, @playwright/test; external requests blocked, 1440x900 deviceScaleFactor 1",
+    "cleanup": "All supervisor-owned API/web/Postgres process groups stopped; no containers created.",
+    "scope": "Source-preserving runtime copy keeps Next-generated artifacts inside the allowed directory."
+  }
+}

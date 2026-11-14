@@ -1,0 +1,47 @@
+{
+  "fake_data_only": true,
+  "api": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "body": {
+        "status": "healthy",
+        "db": "connected"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "status": 400,
+      "body": "{\"error\":{\"code\":\"DUPLICATE_EMAIL\",\"message\":\"Email already registered: archaeology-demo@example.invalid\",\"trace_id\":\"0e5fc171-bcfd-48d8-bf53-6a3f5ff4ebd5\"}}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 500,
+      "body": "{\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred. Please try again later.\",\"trace_id\":\"c5c40448-ac3d-4a83-b19e-d173da8832bd\"}}"
+    }
+  ],
+  "capture_exit": 0,
+  "processes": [
+    {
+      "name": "web",
+      "pid": 42992,
+      "exit": 0,
+      "stopped": true
+    },
+    {
+      "name": "api",
+      "pid": 42433,
+      "exit": -15,
+      "stopped": true
+    },
+    {
+      "name": "postgres",
+      "pid": 42243,
+      "exit": 0,
+      "stopped": true
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+UI Component Library
+
+FE-007: Base Components - Mobile-first, accessible UI components
+
+Buttons
+
+Various button variants with 44px touch targets
+
+Default
+Destructive
+Outline
+Secondary
+Ghost
+Link
+Small
+Default
+Large
+Loading State
+Disabled
+Input Fields
+
+Form inputs with labels, errors, and helper text
+
+EMAIL
+PASSWORD*
+
+Must be at least 8 characters
+
+ERROR STATE
+
+This field is required
+
+DISABLED
+Default Card
+
+Standard card with border
+
+This is the default card variant.
+
+Elevated Card
+
+Card with shadow
+
+This card has a shadow elevation.
+
+Interactive Card
+
+Hover to see effect
+
+This card responds to hover.
+
+Loading Spinners
+
+Various sizes and colors
+
+Dialog Modal
+
+Accessible modal dialogs with Radix UI
+
+Open Dialog
+Toast Notifications
+
+Temporary notifications with variants
+
+Default Toast
+Success Toast
+Error Toast
+Warning Toast
+Info Toast
+Avatars
+
+User avatars with fallbacks
+
+JD
+JS
+BW
+AJ
+Badges
+
+Status and tag badges
+
+Default
+Success
+Warning
+Error
+Info
+Primary
+Small
+Default
+Large
+Loading Skeletons
+
+Placeholder UI while content loads
+
+Text Skeleton
+Circle Skeleton
+Card Skeleton
+Custom Skeleton
+
+All components are mobile-first with 44px minimum touch targets
+
+Built with Radix UI primitives, Tailwind CSS, and class-variance-authority

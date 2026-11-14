@@ -1,0 +1,10 @@
+# Shared Components Directory
+
+This directory will contain shared layout and utility components.
+
+Examples:
+- Header.tsx
+- Navigation.tsx
+- Footer.tsx
+- Loading.tsx
+- ErrorBoundary.tsx

@@ -1,0 +1,3134 @@
+e498daf87d71660361319549f930770cf7beae2f 2026-10-18 09:26:57 -0400 Merge pull request #15 from miethe/development
+95dadf0dab9efb7abe400c4724295bb3868c8157 2026-10-17 13:18:49 -0400 chore(integration): development → main, 2026-10-16 (#14)
+87e25bb72bd4332839b5fef7efc9bfcfa9cac9ba 2026-10-15 23:04:47 -0400 chore(integration): development → main, 2026-10-15 (#13)
+00bf72de2566d7a488fc871f3a3ca5215ac7aa9e 2026-10-14 23:09:44 -0400 chore(integration): development → main, 2026-10-13 (#12)
+c5a2804186ab7ff1633e23b04ee5d381e2a42aab 2026-10-11 23:18:38 -0400 chore(integration): development → main, 2026-10-11 (#11)
+2928820f9f81c3206e7889822c2e7bae0c67d3ee 2026-10-08 16:37:38 -0400 chore(integration): development → main, 2026-10-07 (#10)
+
+apps/web/components/modals/PersonQuickCreateModal.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.linking.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.overview.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.test.tsx
+apps/web/components/modals/__tests__/PersonQuickCreateModal.test.tsx
+apps/web/components/people/__tests__/PersonBudgetBar.test.tsx
+apps/web/components/ui/__tests__/image-picker.test.tsx
+apps/web/lib/__tests__/date-utils.test.ts
+apps/web/lib/date-utils.ts
+apps/web/vitest.config.ts
+services/api/app/repositories/base.py
+services/api/app/services/occasion.py
+services/api/app/services/person.py
+services/api/tests/conftest.py
+services/api/tests/integration/test_auth_endpoints.py
+services/api/tests/integration/test_dashboard_endpoints.py
+services/api/tests/integration/test_gift_endpoints.py
+services/api/tests/integration/test_list_endpoints.py
+services/api/tests/integration/test_list_item_endpoints.py
+services/api/tests/integration/test_occasion_endpoints.py
+services/api/tests/integration/test_person_endpoints.py
+services/api/tests/integration/test_person_occasion_budget_api.py
+services/api/tests/unit/services/test_auth_service.py
+services/api/tests/unit/services/test_dashboard_service.py
+services/api/tests/unit/services/test_gift_service.py
+services/api/tests/unit/services/test_list_item_service.py
+services/api/tests/unit/services/test_list_service.py
+services/api/tests/unit/services/test_occasion_service.py
+5df108b9461089567205b98d0eabadf35a0fe459 2026-10-07 11:21:00 -0400 fix(tests): repair local suite — GREEN 278 API / 613 web (node_01M49BWFSBFT6664FAMR9YPN8H) (#9)
+
+apps/web/components/modals/PersonQuickCreateModal.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.linking.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.overview.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.test.tsx
+apps/web/components/modals/__tests__/PersonQuickCreateModal.test.tsx
+apps/web/components/people/__tests__/PersonBudgetBar.test.tsx
+apps/web/components/ui/__tests__/image-picker.test.tsx
+apps/web/lib/__tests__/date-utils.test.ts
+apps/web/lib/date-utils.ts
+apps/web/vitest.config.ts
+services/api/app/repositories/base.py
+services/api/app/services/occasion.py
+services/api/app/services/person.py
+services/api/tests/conftest.py
+services/api/tests/integration/test_auth_endpoints.py
+services/api/tests/integration/test_dashboard_endpoints.py
+services/api/tests/integration/test_gift_endpoints.py
+services/api/tests/integration/test_list_endpoints.py
+services/api/tests/integration/test_list_item_endpoints.py
+services/api/tests/integration/test_occasion_endpoints.py
+services/api/tests/integration/test_person_endpoints.py
+services/api/tests/integration/test_person_occasion_budget_api.py
+services/api/tests/unit/services/test_auth_service.py
+services/api/tests/unit/services/test_dashboard_service.py
+services/api/tests/unit/services/test_gift_service.py
+services/api/tests/unit/services/test_list_item_service.py
+services/api/tests/unit/services/test_list_service.py
+services/api/tests/unit/services/test_occasion_service.py
+44ffb78db78d220fc62a8702d90d2c29dc71f29b 2026-10-07 11:07:08 -0400 fix(tests): repair local suite — GREEN 278 API / 613 web (node_01M49BWFSBFT6664FAMR9YPN8H)
+
+apps/web/components/modals/PersonQuickCreateModal.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.linking.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.overview.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.test.tsx
+apps/web/components/modals/__tests__/PersonQuickCreateModal.test.tsx
+apps/web/components/people/__tests__/PersonBudgetBar.test.tsx
+apps/web/components/ui/__tests__/image-picker.test.tsx
+apps/web/lib/__tests__/date-utils.test.ts
+apps/web/lib/date-utils.ts
+apps/web/vitest.config.ts
+services/api/app/repositories/base.py
+services/api/app/services/occasion.py
+services/api/app/services/person.py
+services/api/tests/conftest.py
+services/api/tests/integration/test_auth_endpoints.py
+services/api/tests/integration/test_dashboard_endpoints.py
+services/api/tests/integration/test_gift_endpoints.py
+services/api/tests/integration/test_list_endpoints.py
+services/api/tests/integration/test_list_item_endpoints.py
+services/api/tests/integration/test_occasion_endpoints.py
+services/api/tests/integration/test_person_endpoints.py
+services/api/tests/integration/test_person_occasion_budget_api.py
+services/api/tests/unit/services/test_auth_service.py
+services/api/tests/unit/services/test_dashboard_service.py
+services/api/tests/unit/services/test_gift_service.py
+services/api/tests/unit/services/test_list_item_service.py
+services/api/tests/unit/services/test_list_service.py
+services/api/tests/unit/services/test_occasion_service.py
+640ab8522c34842b6db0aff66022c6a799094614 2026-10-05 10:20:09 -0400 chore(integration): development → main, 2026-10-04 (#8)
+90d3be5a7c177a19d8a2493b36e10c781df1f4ed 2026-10-04 09:25:25 -0400 chore(aos): declare artifacts manifest for fleet visibility (#5) (#7)
+7931866555dc43842909511d90e8daef60052764 2026-09-29 23:38:44 -0400 chore(aos): declare artifacts manifest for fleet visibility (#5) (#6)
+
+.claude/aos-artifacts.yaml
+ba2899d5bdf75b1b5bba753eaa7d97bccd145849 2026-09-28 10:32:06 -0400 chore(aos): declare artifacts manifest for fleet visibility (#5)
+
+.claude/aos-artifacts.yaml
+82e5b07e5ebacff34b90254adaad2e1f2bd0ec5f 2026-08-05 15:45:43 -0400 fix(artifact-tracking): remove duplicate YAML keys from the artifact schemas
+
+.claude/skills/artifact-tracking/schemas/context.schema.yaml
+.claude/skills/artifact-tracking/schemas/progress.schema.yaml
+695cce3d901016ae5997a92679c9de4f9e161c2c 2026-08-05 15:42:17 -0400 chore(aos): sync deployed AOS artifacts to canonical
+
+.claude/agents/ai/agent-expert.md
+.claude/agents/ai/ai-artifacts-engineer.md
+.claude/agents/ai/ai-engineer.md
+.claude/agents/ai/codebase-explorer.md
+.claude/agents/ai/command-creator.md
+.claude/agents/ai/prompt-engineer.md
+.claude/agents/ai/search-specialist.md
+.claude/agents/ai/symbols-engineer.md
+.claude/agents/architects/backend-architect.md
+.claude/agents/architects/backend-typescript-architect.md
+.claude/agents/architects/data-layer-expert.md
+.claude/agents/architects/frontend-architect.md
+.claude/agents/architects/lead-architect.md
+.claude/agents/architects/nextjs-architecture-expert.md
+.claude/agents/architects/system-architect.md
+.claude/agents/dev-team/frontend/ui-engineer-enhanced.md
+.claude/agents/dev-team/python-backend-engineer.md
+.claude/agents/fix-team/refactoring-expert.md
+.claude/agents/pm/feature-planner.md
+.claude/agents/pm/implementation-planner.md
+.claude/agents/pm/lead-pm.md
+.claude/agents/pm/prd-writer.md
+.claude/agents/pm/spike-writer.md
+.claude/agents/pm/task-decomposition-expert.md
+.claude/agents/prd-writer.md
+.claude/agents/reviewers/code-reviewer.md
+.claude/agents/reviewers/karen.md
+.claude/agents/reviewers/senior-code-reviewer.md
+.claude/agents/reviewers/task-completion-validator.md
+.claude/agents/tech-writers/api-documenter.md
+.claude/agents/tech-writers/changelog-generator.md
+.claude/agents/tech-writers/documentation-complex.md
+.claude/agents/tech-writers/documentation-expert.md
+.claude/agents/tech-writers/documentation-planner.md
+.claude/agents/tech-writers/documentation-writer.md
+.claude/agents/tech-writers/openapi-expert.md
+.claude/agents/tech-writers/technical-writer.md
+.claude/agents/ui-ux/ui-designer.md
+.claude/agents/ui-ux/ui-engineer.md
+.claude/skills/artifact-tracking/CHANGELOG.md
+.claude/skills/artifact-tracking/SKILL.md
+.claude/skills/artifact-tracking/agents/artifact-query.md
+.claude/skills/artifact-tracking/agents/artifact-tracker-full.md
+.claude/skills/artifact-tracking/agents/artifact-tracker.md
+.claude/skills/artifact-tracking/best-practices.md
+.claude/skills/artifact-tracking/common-patterns.md
+.claude/skills/artifact-tracking/creating-artifacts.md
+.claude/skills/artifact-tracking/format-specification.md
+.claude/skills/artifact-tracking/intenttree-sync.md
+.claude/skills/artifact-tracking/plan-status-management.md
+.claude/skills/artifact-tracking/recovery-optimized-schema.md
+.claude/skills/artifact-tracking/schemas/SCHEMAS-INDEX.md
+.claude/skills/artifact-tracking/schemas/bug-fix.schema.yaml
+.claude/skills/artifact-tracking/schemas/context.schema.yaml
+.claude/skills/artifact-tracking/schemas/design-spec.schema.yaml
+.claude/skills/artifact-tracking/schemas/envelope.schema.yaml
+.claude/skills/artifact-tracking/schemas/feature-contract.schema.yaml
+.claude/skills/artifact-tracking/schemas/field-reference.md
+.claude/skills/artifact-tracking/schemas/implementation-plan.schema.yaml
+.claude/skills/artifact-tracking/schemas/meta-plan.schema.yaml
+.claude/skills/artifact-tracking/schemas/observation.schema.yaml
+.claude/skills/artifact-tracking/schemas/phase-plan.schema.yaml
+.claude/skills/artifact-tracking/schemas/prd.schema.yaml
+.claude/skills/artifact-tracking/schemas/progress.schema.yaml
+.claude/skills/artifact-tracking/schemas/quick-feature.schema.yaml
+.claude/skills/artifact-tracking/schemas/report.schema.yaml
+.claude/skills/artifact-tracking/schemas/spike.schema.yaml
+.claude/skills/artifact-tracking/scripts/README.md
+.claude/skills/artifact-tracking/scripts/_evidence_refs.py
+.claude/skills/artifact-tracking/scripts/_itt_client.py
+.claude/skills/artifact-tracking/scripts/_slug_resolution.py
+.claude/skills/artifact-tracking/scripts/_status_aliases.py
+.claude/skills/artifact-tracking/scripts/ac-coverage-report.py
+.claude/skills/artifact-tracking/scripts/backfill-node-evidence.py
+.claude/skills/artifact-tracking/scripts/check-plan-authoring.py
+.claude/skills/artifact-tracking/scripts/intenttree_capture.py
+.claude/skills/artifact-tracking/scripts/intenttree_sync.py
+.claude/skills/artifact-tracking/scripts/manage-exploration-status.py
+.claude/skills/artifact-tracking/scripts/manage-plan-status.py
+.claude/skills/artifact-tracking/scripts/migrate-frontmatter.py
+.claude/skills/artifact-tracking/scripts/migrate-plan-layout.py
+.claude/skills/artifact-tracking/scripts/query_artifacts.py
+.claude/skills/artifact-tracking/scripts/stamp-node-slug.py
+.claude/skills/artifact-tracking/scripts/stamp-plan-binding.py
+.claude/skills/artifact-tracking/scripts/tests/__init__.py
+.claude/skills/artifact-tracking/scripts/tests/test_backfill_node_evidence.py
+.claude/skills/artifact-tracking/scripts/tests/test_check_plan_authoring.py
+.claude/skills/artifact-tracking/scripts/tests/test_delivery_quality_scripts.py
+.claude/skills/artifact-tracking/scripts/tests/test_evidence_refs.py
+.claude/skills/artifact-tracking/scripts/tests/test_intenttree_capture_slug.py
+.claude/skills/artifact-tracking/scripts/tests/test_manage_exploration_status.py
+.claude/skills/artifact-tracking/scripts/tests/test_migrate_plan_layout.py
+.claude/skills/artifact-tracking/scripts/tests/test_stamp_node_slug.py
+.claude/skills/artifact-tracking/scripts/tests/test_stamp_plan_binding.py
+.claude/skills/artifact-tracking/scripts/tests/test_update_field.py
+.claude/skills/artifact-tracking/scripts/tests/test_validate_plan_frontmatter.py
+.claude/skills/artifact-tracking/scripts/tests/test_what_shipped.py
+.claude/skills/artifact-tracking/scripts/update-batch.py
+.claude/skills/artifact-tracking/scripts/update-field.py
+.claude/skills/artifact-tracking/scripts/update-status.py
+.claude/skills/artifact-tracking/scripts/validate-phase-completion.py
+.claude/skills/artifact-tracking/scripts/validate-plan-frontmatter.py
+.claude/skills/artifact-tracking/scripts/validate_artifact.py
+.claude/skills/artifact-tracking/scripts/verify-slug-roundtrip.py
+.claude/skills/artifact-tracking/scripts/what-shipped.py
+.claude/skills/artifact-tracking/templates/progress-template.md
+.claude/skills/artifact-tracking/updating-artifacts.md
+.claude/skills/planning/CHANGELOG.md
+.claude/skills/planning/README.md
+.claude/skills/planning/SKILL.md
+.claude/skills/planning/references/deferred-items-and-findings.md
+.claude/skills/planning/references/file-structure.md
+.claude/skills/planning/references/plan-doctrine.md
+.claude/skills/planning/references/plan-frontmatter-schema.md
+.claude/skills/planning/references/planning-review-board.md
+.claude/skills/planning/references/required-artifacts-guidance.md
+.claude/skills/planning/scripts/README.md
+.claude/skills/planning/templates/feature-contract-template.md
+.claude/skills/planning/templates/human-brief-template.md
+.claude/skills/planning/templates/implementation-plan-template.md
+.claude/skills/planning/templates/milestone-plan-template.md
+18a762ac7c61239c95d028f2566e749dab6f090e 2026-07-30 13:23:07 -0400 chore(artifacts): refresh planning + dev-execution to workflow-set v4
+
+.claude/commands/plan/plan-feature.md
+.claude/skills/planning/CHANGELOG.md
+.claude/skills/planning/README.md
+.claude/skills/planning/SKILL.md
+.claude/skills/planning/references/ac-schema.md
+.claude/skills/planning/references/deferred-items-and-findings.md
+.claude/skills/planning/references/doc-finalization-guidance.md
+.claude/skills/planning/references/estimation-heuristics.md
+.claude/skills/planning/references/exploration-legs-catalog.md
+.claude/skills/planning/references/multi-model-guidance.md
+.claude/skills/planning/references/plan-doctrine.md
+.claude/skills/planning/references/plan-frontmatter-schema.md
+.claude/skills/planning/references/planning-review-board.md
+.claude/skills/planning/references/required-artifacts-guidance.md
+.claude/skills/planning/references/subagent-assignments.md
+.claude/skills/planning/references/ui-extraction-guidance.md
+.claude/skills/planning/references/wave-plan-guidance.md
+.claude/skills/planning/scripts/enrich_frontmatter.py
+.claude/skills/planning/templates/decisions-block-template.md
+.claude/skills/planning/templates/exploration-charter-template.md
+.claude/skills/planning/templates/feasibility-brief-template.md
+.claude/skills/planning/templates/feature-contract-template.md
+.claude/skills/planning/templates/human-brief-template.md
+.claude/skills/planning/templates/implementation-plan-template.md
+.claude/skills/planning/templates/milestone-plan-template.md
+.claude/skills/planning/templates/phase-breakdown-template.md
+.claude/skills/planning/templates/prd-template.md
+9891e17c4f51fa417b5ff9c87515ca842acc176e 2025-12-25 16:46:34 -0500 docs: update progress tracking for completed phase 1-3
+
+.claude/progress/gift-select-enhancements-v1/phase-1-3-progress.md
+defa294a626d2e9c69096e854e47376e9542dccd 2025-12-25 16:45:40 -0500 test(web): add unit tests for SelectAll button components
+
+apps/web/components/gifts/__tests__/GroupSelectAllButton.test.tsx
+apps/web/components/gifts/__tests__/SelectAllButton.test.tsx
+22139cdb8dbab6ca8c1fb2ce76e9f125fc45b2b7 2025-12-25 16:43:55 -0500 feat(web): apply visual polish to selection mode buttons
+
+.claude/progress/gifts-action-bar-v1/phase-2-5-progress.md
+.claude/progress/gifts-action-bar-v1/phase-3-6-visual-polish-summary.md
+apps/web/app/gifts/page.tsx
+apps/web/components/gifts/GroupSelectAllButton.tsx
+apps/web/components/gifts/SelectAllButton.tsx
+a91c6653a5ad376ea610d3828f3d8be1240cda03 2025-12-25 16:40:10 -0500 feat(web): implement gift selection mode enhancements (Phase 1-2)
+
+.claude/progress/gift-select-enhancements-v1/phase-1-3-progress.md
+.claude/progress/gifts-action-bar-v1/phase-2-5-progress.md
+apps/web/app/gifts/page.tsx
+apps/web/components/gifts/GiftGroupedView.tsx
+apps/web/components/gifts/GroupSelectAllButton.tsx
+apps/web/components/gifts/SelectAllButton.tsx
+apps/web/components/gifts/index.ts
+docs/designs/renders/select-mode-all.png
+docs/designs/screenshots/gift-action-bar.png
+docs/designs/screenshots/gifts-by-recipient.png
+docs/designs/screenshots/gifts-select-mode.png
+docs/project_plans/implementation_plans/features/gift-select-enhancements-v1.md
+16b8f41c46584fad481bde4c5602f36805a80787 2025-12-24 12:14:35 -0500 fix(web): make gift card action bar icon-only and fix height consistency
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/gifts/ListPickerDropdown.tsx
+apps/web/components/gifts/StatusButton.tsx
+apps/web/components/ui/icons.tsx
+8e2fd8bed31be930706f0ab6704ec9e478ae5089 2025-12-23 20:41:43 -0500 feat(web): implement gift action bar enhancements (Phase 2-5)
+
+apps/web/app/gifts/page.tsx
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/gifts/LinkedEntityIcons.tsx
+apps/web/components/gifts/ListPickerDropdown.tsx
+apps/web/components/gifts/PriceEditDialog.tsx
+apps/web/components/gifts/StatusButton.tsx
+apps/web/components/gifts/index.ts
+apps/web/components/modals/__tests__/GiftDetailModal.linking.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.overview.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.test.tsx
+apps/web/types/index.ts
+5f7364773e187b7323386efff529f5b18772ac14 2025-12-23 16:23:31 -0500 fix(web): add port to Next.js image remotePatterns for API uploads
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/next.config.ts
+c3ac2a0e252e219260a407b414a00874911c85d0 2025-12-23 16:17:23 -0500 fix(api): resolve SQLAlchemy relationship overlap warnings
+
+services/api/app/models/gift_person.py
+services/api/app/models/group.py
+24e1870c3a78273559122639758ea4c555dfe2aa 2025-12-23 14:54:20 -0500 plan: admin field options
+
+.claude/.skillmeat-deployed.toml
+docs/project_plans/PRDs/features/admin-field-options-v1.md
+docs/project_plans/implementation_plans/features/README.md
+docs/project_plans/implementation_plans/features/admin-field-options-v1.md
+docs/project_plans/implementation_plans/features/admin-field-options-v1/phase-1-4-backend.md
+docs/project_plans/implementation_plans/features/admin-field-options-v1/phase-5-8-frontend.md
+docs/project_plans/implementation_plans/features/admin-field-options-v1/phase-9-10-testing.md
+docs/project_plans/requests/done/enhance-12-06/implementation-plan.md
+docs/project_plans/requests/done/gift-status.md
+a1750d7451aaf257a4ed90a01d8b244cf7641557 2025-12-22 21:00:30 -0500 docs(progress): mark Phase 1 of gifts-action-bar-v1 as complete
+
+.claude/progress/gifts-action-bar-v1/phase-1-progress.md
+04eedd24418bfaab3948dd2009cda1fa059a1c4f 2025-12-22 20:59:32 -0500 feat(api): add from_santa field to gift model and schemas
+
+services/api/alembic/versions/a9a8b7496861_add_gift_from_santa_field.py
+services/api/app/models/gift.py
+services/api/app/schemas/gift.py
+2f845696e585728490c55e62312ce78c8e9460bb 2025-12-22 20:55:25 -0500 fix(api): avoid async lazy load when updating gift stores
+
+services/api/app/repositories/gift.py
+eff36236077b20ab7b394212506e769e35286450 2025-12-22 15:07:17 -0500 fix(api): eager load stores before relationship assignment in set_stores()
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+services/api/app/repositories/gift.py
+76c7614f60d282282a7d121627c9939201fbf1f4 2025-12-22 14:27:30 -0500 docs(planning): add Gifts Action Bar v1 PRD, implementation plan, and progress tracking
+
+.claude/progress/gifts-action-bar-v1/phase-1-progress.md
+.claude/progress/gifts-action-bar-v1/phase-2-5-progress.md
+.claude/progress/gifts-action-bar-v1/phase-6-progress.md
+.claude/worknotes/gifts-action-bar-v1/context.md
+docs/project_plans/PRDs/features/gifts-action-bar-v1.md
+docs/project_plans/requests/gifts-action-bar-v1.md
+ee6e8a26eff7ecb7af213f309c14c4d645743b90 2025-12-22 14:22:28 -0500 docs(planning): create implementation plan for gifts action bar v1
+
+docs/project_plans/implementation_plans/features/gifts-action-bar-v1.md
+docs/project_plans/implementation_plans/features/gifts-action-bar-v1/phase-1-backend.md
+docs/project_plans/implementation_plans/features/gifts-action-bar-v1/phase-2-5-frontend.md
+docs/project_plans/implementation_plans/features/gifts-action-bar-v1/phase-6-testing.md
+59ddc8c7a484272cae09696906ad0aab5bf2893b 2025-12-22 14:16:45 -0500 fix(api): add missing eager loading for tags and purchaser relationships
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+services/api/app/repositories/gift.py
+d4fa5c54985b4c74b10d60106e3ff0390db0d78f 2025-12-22 13:41:59 -0500 test+docs: complete admin field options phases 9-10
+
+.claude/progress/admin-field-options-v1/TASK-10.5-accessibility-audit-summary.md
+.claude/progress/admin-field-options-v1/phase-9-10-progress.md
+apps/web/__tests__/a11y/README.md
+apps/web/__tests__/a11y/admin-accessibility.spec.ts
+apps/web/playwright.config.ts
+apps/web/tests/e2e/admin-field-options.spec.ts
+docs/audits/admin-field-options-accessibility-audit.md
+docs/audits/field-options-performance-report.md
+docs/deployment/admin-field-options-deployment-checklist.md
+docs/guides/admin-field-options-user-guide.md
+docs/guides/developers/field-options-extension-guide.md
+services/api/tests/integration/test_field_options_migration.py
+services/api/tests/performance/README.md
+services/api/tests/performance/__init__.py
+services/api/tests/performance/test_field_options_perf.py
+services/api/tests/unit/repositories/test_field_option_repository.py
+services/api/tests/unit/services/test_field_option_service.py
+b96b16113c61709df2fb30614bff404ab8824a8d 2025-12-22 13:27:32 -0500 test(web): add comprehensive tests for admin field options components
+
+apps/web/__tests__/components/admin/AddOptionModal.test.tsx
+apps/web/__tests__/components/admin/AdminPage.test.tsx
+apps/web/__tests__/components/admin/DeleteConfirmationModal.test.tsx
+apps/web/__tests__/components/admin/EditOptionModal.test.tsx
+apps/web/__tests__/components/admin/FieldsList.test.tsx
+apps/web/__tests__/components/admin/OptionsList.test.tsx
+apps/web/__tests__/components/admin/README.md
+5721650f187f76d13d38a6cb39f4966b5fcc9185 2025-12-22 13:15:03 -0500 docs(api): create comprehensive field options API documentation
+
+docs/api/field-options-api.md
+docs/api/field-options.postman_collection.json
+4fd617aba5d14883667b6d16ae0609495bc3633f 2025-12-21 22:01:02 -0500 feat(web): implement admin field options frontend (phases 5-8)
+
+.claude/progress/admin-field-options/context.md
+.claude/progress/admin-field-options/phase-1-4-progress.md
+.claude/progress/admin-field-options/phase-5-8-progress.md
+.claude/progress/admin-field-options/phase-9-10-progress.md
+apps/web/app/admin/layout.tsx
+apps/web/app/admin/page.tsx
+apps/web/components/features/admin/AddOptionModal.tsx
+apps/web/components/features/admin/AdminPage.tsx
+apps/web/components/features/admin/DeleteConfirmationModal.tsx
+apps/web/components/features/admin/EditOptionModal.tsx
+apps/web/components/features/admin/EntityTab.tsx
+apps/web/components/features/admin/FieldsList.tsx
+apps/web/components/features/admin/OptionsList.tsx
+apps/web/components/features/admin/index.ts
+apps/web/components/layout/nav-config.ts
+apps/web/components/ui/index.ts
+apps/web/components/ui/label.tsx
+apps/web/hooks/useFieldOptions.ts
+apps/web/hooks/useFieldOptionsMutation.ts
+apps/web/lib/api/field-options.ts
+services/api/app/data/__init__.py
+services/api/app/data/field_options_seed.py
+services/api/app/schemas/person.py
+services/api/app/schemas/validation_helpers.py
+services/api/tests/unit/schemas/test_validation_helpers.py
+7b42cac923814ce9d18ec23f148cd75f40382fb3 2025-12-21 15:26:41 -0500 feat(api): implement admin field options backend (phases 1-4)
+
+services/api/alembic/versions/3905b0fc62cd_create_field_options_table.py
+services/api/alembic/versions/df8e08cce5fd_seed_field_options_with_existing_values.py
+services/api/app/api/field_options.py
+services/api/app/main.py
+services/api/app/models/__init__.py
+services/api/app/models/field_option.py
+services/api/app/repositories/field_option.py
+services/api/app/schemas/field_option.py
+services/api/app/services/field_option.py
+services/api/tests/integration/test_field_option_endpoints.py
+42e2b835988de43368d20b1af9224ed2b7f6f83f 2025-12-19 23:30:03 -0500 docs: update bug-fixes with cropping integration commit
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+3154d17b74e6c93adfe4331d7163e2836af3efb8 2025-12-19 23:29:45 -0500 feat(web): integrate image cropping into Person and Gift workflows
+
+apps/web/components/features/GiftForm.tsx
+apps/web/components/gifts/GiftEditModal.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/modals/ImageEditDialog.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/components/modals/PersonQuickCreateModal.tsx
+apps/web/components/people/AddPersonModal.tsx
+apps/web/components/people/PersonForm.tsx
+105810b9b8c5100ce7dbcdb837c8c758b933c49a 2025-12-19 21:30:55 -0500 docs: update bug-fixes with avatar refresh fix and image cropping
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+ec989ba674bdfca826c54f8d9ac573ba6c905aa7 2025-12-19 21:30:36 -0500 feat(web): add image cropping support to ImagePicker
+
+apps/web/components/ui/image-crop-dialog.tsx
+apps/web/components/ui/image-picker.tsx
+apps/web/package.json
+apps/web/pnpm-lock.yaml
+3518deb05f8389c3154474efea440523dc5325a9 2025-12-19 21:30:27 -0500 fix(web): fix modal avatar not updating after photo upload
+
+apps/web/components/modals/PersonDetailModal.tsx
+1795fc11b35196ce7865c5928c4eecb30b53eee8 2025-12-19 14:56:22 -0500 fix(api,web): fix image 404 by using absolute URLs for uploads
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+.gitignore
+apps/web/next.config.ts
+docker-compose.yml
+services/api/app/core/config.py
+services/api/app/core/storage.py
+92e868a30a5b2a1a5faf92e1b19be996f9e6d435 2025-12-19 14:12:27 -0500 fix(web,api): fix ImageEditDialog portal issue and upload permissions
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/modals/PersonDetailModal.tsx
+docker-compose.yml
+services/api/app/core/config.py
+ef9895d06965de1cd3c3f1450cf69753df607895 2025-12-19 11:18:42 -0500 fix(web): add ImagePicker to PersonDetailModal and clickable avatar for photo editing
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/modals/ImageEditDialog.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+c14981922db9ea0316a0aefa0a16cba93a3b9b3d 2025-12-19 09:57:21 -0500 fix(web): resolve image upload/paste issues and add ImagePicker to person modals
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/modals/PersonQuickCreateModal.tsx
+apps/web/components/people/AddPersonModal.tsx
+apps/web/components/ui/image-picker.tsx
+apps/web/lib/api/upload.ts
+bab9c2ad22e4427d9a0ba20463a6c6384c839d3e 2025-12-17 21:24:43 -0500 docs: add mobile-first redesign implementation plan and progress tracking
+
+.claude/progress/mobile-first-redesign/phase-1-progress.md
+.claude/progress/mobile-first-redesign/phase-2-progress.md
+.claude/progress/mobile-first-redesign/phase-3-progress.md
+.claude/progress/mobile-first-redesign/phase-4-progress.md
+.claude/progress/mobile-first-redesign/phase-5-progress.md
+.claude/worknotes/mobile-first-redesign/context.md
+docs/project_plans/implementation_plans/features/mobile-first-redesign-v1.md
+1245ee4bb412ea6d8179840cdc2c31d97667e53e 2025-12-17 21:22:06 -0500 fix(web): use 100dvh for auth route loading spinners
+
+apps/web/app/globals.css
+apps/web/components/auth/ProtectedRoute.tsx
+apps/web/components/auth/PublicRoute.tsx
+a909d68dda4ee89d9cedeb5a31f9af2585a5d122 2025-12-17 21:18:58 -0500 fix(web): touch targets, safe areas, and typography for mobile
+
+apps/web/app/globals.css
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/layout/AppLayout.tsx
+apps/web/components/layout/Header.tsx
+apps/web/components/layout/MobileNav.tsx
+apps/web/components/layout/SearchInput.tsx
+apps/web/components/ui/button.tsx
+apps/web/components/ui/checkbox.tsx
+5fa953c53d054021234f7f237b19e644093073cc 2025-12-17 21:16:23 -0500 feat(web): Improve mobile typography and spacing (MOB-106)
+
+apps/web/app/globals.css
+apps/web/components/ui/card.tsx
+apps/web/tailwind.config.ts
+3f91ee8a9f12889a472ed78319eac69c21c53386 2025-12-17 21:12:40 -0500 fix(web): restructure AppLayout for mobile-first with 100dvh viewport
+
+apps/web/components/layout/AppLayout.tsx
+73ed0b859dffb123e9cf02efb7f0020a88b965b8 2025-12-12 09:47:13 -0500 docs(prd): Mobile-first redesign PRD v1
+
+docs/project_plans/PRDs/features/mobile-first-redesign-v1.md
+168ab8154dbfed8f52f7d5a33d2a981494e6e04b 2025-12-12 09:47:05 -0500 fix(web): Improve gift status UI consistency and cache sync
+
+apps/web/components/gifts/GiftEditModal.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/ui/status-selector.tsx
+apps/web/hooks/useGift.ts
+apps/web/hooks/useGifts.ts
+services/api/app/services/gift.py
+8c8826741bdd1412469472e92e81b96bde933bf2 2025-12-11 22:04:17 -0500 docs(spike): Comprehensive mobile-first redesign research and analysis
+
+docs/project_plans/Research/MOBILE-FIRST-SPIKE-SUMMARY.md
+docs/project_plans/Research/mobile-first-redesign-spike.md
+287ffd2f1de10799d6c281ad06cac0f0d954040c 2025-12-09 23:02:24 -0500 fix(docker): Allow CORS_ORIGINS from .env for LAN access
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+docker-compose.yml
+286ca520331c34e0568c6cabf5843ea07c844c35 2025-12-09 12:01:14 -0500 fix(web): Fix GiftStatus display and purchase button issues
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/gifts/GiftQuickPurchaseButton.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/gifts/index.ts
+apps/web/components/modals/GiftDetailModal.tsx
+37199402e7f8543b922dbc9cac73e32121995d40 2025-12-09 10:31:57 -0500 feat(web): Enhance status visibility on GiftCard
+
+apps/web/components/gifts/GiftCard.tsx
+1cebc2fd804019bd8b6cb8bb30bb584662c7b2d5 2025-12-09 10:31:19 -0500 feat(web): Improve Gift status UI consistency and feedback
+
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/gifts/GiftEditModal.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/ui/status-selector.tsx
+e8f3a9a6c9a54e73cac44e7322184df6b1e1672c 2025-12-09 10:27:10 -0500 fix(api): Persist Gift.status to database column
+
+services/api/app/services/gift.py
+2ddba44db3284f5e4169ed5d33af44ecadc2f24d 2025-12-09 10:21:54 -0500 docs(plans): Add backend root cause to Gift Status plan
+
+docs/project_plans/implementation_plans/harden-polish/gift-status-fixes-v1.md
+02eda08be7a8e64357eb12e18eef51585d55fba8 2025-12-09 09:51:08 -0500 docs(plans): Add Gift Status implementation plan
+
+docs/project_plans/implementation_plans/harden-polish/gift-status-fixes-v1.md
+docs/project_plans/requests/gift-status.md
+2645e59396a5128cbd8729dcb14bd468ff8b0692 2025-12-08 23:01:22 -0500 docs(fixes): Document GiftStatus type error fix
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+97e0e8d1d95f1ac051bb334482b465f1525b91b6 2025-12-08 23:01:00 -0500 fix(web): Use valid GiftStatus values in PURCHASING_STATUSES
+
+apps/web/components/modals/GiftDetailModal.tsx
+a6096daacd17db324de382bd9215ed17e4e2aecc 2025-12-08 22:34:29 -0500 feat(api,web): Add status field to Gift model for proper filtering
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/gifts/GiftEditModal.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/ui/status-pill.tsx
+apps/web/components/ui/status-selector.tsx
+apps/web/types/index.ts
+services/api/alembic/versions/d7b9b25e3eda_add_status_field_to_gift.py
+services/api/app/models/gift.py
+services/api/app/repositories/gift.py
+services/api/app/schemas/gift.py
+8b5b5e1cf9acebac526a325654dea8e0d87e7423 2025-12-08 22:03:15 -0500 fix(api): Use LEFT JOIN for gift filters to include orphaned gifts
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+services/api/app/repositories/gift.py
+bcbcea977556b0d030d06bdaa04ee36cdae06555 2025-12-08 21:04:42 -0500 docs(designs): Add component specifications for gift card enhancements
+
+docs/designs/components/LinkedEntityIcons-spec.md
+docs/designs/components/LinkedEntityIcons-visual-guide.md
+docs/designs/components/quick-purchase-button-spec.md
+4e8b95eebed2d3bb6ae7cd6a0748bd1afb084764 2025-12-08 19:27:29 -0500 feat(web,api): Complete gift card enhancements with linked entities and quick purchase
+
+.claude/progress/gift-card-enhancements/phase-1-progress.md
+apps/web/__tests__/components/gifts/LinkedEntityIcons.test.tsx
+apps/web/__tests__/components/gifts/QuickPurchaseButton.test.tsx
+apps/web/app/gifts/page.tsx
+apps/web/components/gifts/GiftCard.tsx
+apps/web/types/index.ts
+services/api/app/repositories/gift.py
+services/api/app/schemas/gift.py
+services/api/app/services/gift.py
+988c8946e2bce64c4895a1116d032c01c6761c15 2025-12-08 18:32:25 -0500 feat(web): Add gift card enhancement planning and components
+
+.claude/progress/gift-card-enhancements/phase-1-progress.md
+apps/web/components/gifts/LinkedEntityIcons.tsx
+apps/web/components/gifts/QuickPurchaseButton.tsx
+apps/web/components/gifts/index.ts
+docs/project_plans/implementation_plans/enhancements/gift-card-enhancements-v1.md
+docs/project_plans/requests/12-8-v2.md
+docs/project_plans/requests/done/12-8-v1.md
+5e9210c103f0bff77bde25d17b83f789df432e76 2025-12-08 18:20:46 -0500 fix(api): Fix gift status filter by adding SQLEnum with native_enum
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+services/api/app/models/list_item.py
+237fb113f96adeb5b58189587ad4d0881254a462 2025-12-08 18:12:23 -0500 chore: reorg
+
+docs/project_plans/requests/12-8-v1.md
+docs/project_plans/requests/done/12-1-enhancements.md
+docs/project_plans/requests/done/12-1-implementation-plan.md
+docs/project_plans/requests/done/enhance-12-03-12-04-implementation-plan.md
+docs/project_plans/requests/done/enhance-12-03.md
+docs/project_plans/requests/done/enhance-12-04.md
+docs/project_plans/requests/done/enhance-12-06.md
+docs/project_plans/requests/done/for-people-ui-enhancement.md
+docs/project_plans/requests/done/gift-linking-v1.md
+docs/project_plans/requests/done/planned-v1.md
+647c5d00db81d0bc492ad46cea7a5c075fb50baf 2025-12-08 17:11:13 -0500 fix(api): Fix dashboard occasion query and gift status filters
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+services/api/app/repositories/gift.py
+services/api/app/repositories/occasion.py
+560b38f4e2a03705862a5db2c5fc89b07635f88a 2025-12-08 16:40:31 -0500 docs(fixes): Update commit hash in 12-8 bug fix entry
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+cbc549f8b0f9c8224e739100d9861cebbf04946f 2025-12-08 16:40:09 -0500 fix(web): Fix groups API type mismatch causing /people page crash
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/app/people/page.tsx
+apps/web/components/common/GroupMultiSelect.tsx
+apps/web/lib/api/endpoints.ts
+54e7ce613e9308eb70be18661bcf6c6bc0b0c34b 2025-12-08 16:15:45 -0500 docs(fixes): Document 12-8 bug fixes
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+2f8ef4c5dd18febd792f02232b036dd8687de7bb 2025-12-08 16:15:24 -0500 fix(web): Fix 401 unauthorized on entity modals
+
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+028fe23d8724b12cdf9c5ff703c6e1fc730cebcd 2025-12-08 16:15:17 -0500 feat(api): Add groups API endpoint
+
+services/api/app/api/groups.py
+services/api/app/main.py
+services/api/app/repositories/group_repository.py
+services/api/app/services/group_service.py
+eeda14409fd690e568ead971be4c9d3715dc68e2 2025-12-08 16:05:57 -0500 fix(api): Fix field name mismatch in dashboard PersonSummary schema
+
+services/api/app/schemas/dashboard.py
+services/api/app/services/dashboard.py
+1104fb63864dd80dde245067e8a7769a157d5a29 2025-12-08 13:13:34 -0500 docs(fixes): Document React hooks build errors remediation
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+4e4f07ad19a56f7012e22d0a2501e9e2367aa1bf 2025-12-08 13:13:23 -0500 fix(web): Fix React hooks build errors from for-people-ui-enhancement
+
+apps/web/components/budgets/__tests__/PersonOccasionBudgetCard.test.tsx
+apps/web/components/common/PersonDropdown.tsx
+apps/web/components/people/PersonBudgetBar.tsx
+apps/web/components/ui/image-picker.tsx
+15d31f380083acd1e0dcafc3cce41624d0783bb0 2025-12-08 13:10:02 -0500 fix(web): Fix React hooks exhaustive-deps warnings in confirm-dialog
+
+apps/web/components/ui/confirm-dialog.tsx
+2d2e617a6f201da0d7a488689b55a47109699ca4 2025-12-08 12:49:37 -0500 docs(progress): Mark Phase 6 (Testing & Polish) complete for person-occasion-budgets-v1
+
+.claude/progress/person-occasion-budgets-v1/phase-6-testing-progress.md
+e4d71349df40b362a2106c1b7aac008196af17a0 2025-12-08 12:49:06 -0500 test(web): Add comprehensive E2E and accessibility tests for person-occasion budgets
+
+.claude/worknotes/person-occasion-budgets-v1/accessibility-audit.md
+.claude/worknotes/person-occasion-budgets-v1/performance-report.md
+.claude/worknotes/person-occasion-budgets-v1/uat-testing.md
+apps/web/package.json
+apps/web/pnpm-lock.yaml
+apps/web/tests/e2e/accessibility.spec.ts
+apps/web/tests/e2e/person-occasion-budgets.spec.ts
+caf198a3653a97757121b5de8374f07646f54a18 2025-12-08 12:48:25 -0500 fix(web): Apply accessibility and performance fixes to person-occasion budget components
+
+apps/web/components/people/PersonBudgetBar.tsx
+apps/web/components/people/PersonBudgetsTab.tsx
+5cd23b450d90ad57d99f88b2ca62bc3790ca9660 2025-12-08 12:17:31 -0500 feat(web): Implement Phase 5 UI components for person-occasion budgets
+
+.claude/progress/person-occasion-budgets-v1/phase-5-ui-progress.md
+apps/web/components/budgets/PersonOccasionBudgetCard.tsx
+apps/web/components/budgets/__tests__/PersonOccasionBudgetCard.test.tsx
+apps/web/components/budgets/index.ts
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/components/occasions/OccasionRecipientsSection.tsx
+apps/web/components/people/PersonBudgetBar.tsx
+apps/web/components/people/PersonBudgetsTab.tsx
+apps/web/components/people/__tests__/PersonBudgetsTab.test.tsx
+apps/web/components/ui/icons.tsx
+apps/web/components/ui/stacked-progress-bar.tsx
+5b580b27b39decbafeab70a927f43630bf713809 2025-12-08 11:57:50 -0500 docs(progress): Mark phases 3-4 complete for person-occasion-budgets-v1
+
+.claude/progress/person-occasion-budgets-v1/phase-3-api-progress.md
+.claude/progress/person-occasion-budgets-v1/phase-4-hooks-progress.md
+6443a7db85390f7b2fce4e7c808d2eb4cfbb3fe5 2025-12-08 11:56:58 -0500 feat(api,web): Add person-occasion budget API and React Query hooks
+
+apps/web/hooks/usePersonOccasionBudget.ts
+apps/web/lib/api/endpoints.ts
+apps/web/types/budget.ts
+services/api/app/api/persons.py
+services/api/app/schemas/person.py
+services/api/app/services/person.py
+services/api/tests/integration/test_person_occasion_budget_api.py
+efda52e39791d9003283e8fde846d14e9b94524d 2025-12-07 22:05:08 -0500 feat(api): Add person-occasion budget fields and repository methods
+
+.claude/findings/INDEX.md
+.claude/findings/SUMMARY.md
+.claude/findings/code-snippets-reference.md
+.claude/findings/gift-person-data-flow.txt
+.claude/findings/gift-person-linking-exploration.md
+.claude/findings/person-budget-feature-checklist.md
+.claude/findings/person-occasion-budget-data-flow.md
+.claude/findings/person-occasion-budget-exploration.md
+.claude/findings/quick-reference-gift-person-linking.md
+.claude/progress/person-occasion-budgets-v1/phase-1-database-progress.md
+.claude/progress/person-occasion-budgets-v1/phase-2-repository-progress.md
+.claude/progress/person-occasion-budgets-v1/phase-3-api-progress.md
+.claude/progress/person-occasion-budgets-v1/phase-4-hooks-progress.md
+.claude/progress/person-occasion-budgets-v1/phase-5-ui-progress.md
+.claude/progress/person-occasion-budgets-v1/phase-6-testing-progress.md
+.claude/worknotes/person-occasion-budgets-v1/context.md
+docs/designs/components/person-occasion-budget-ui.md
+docs/project_plans/PRDs/features/person-occasion-budgets-v1.md
+docs/project_plans/implementation_plans/features/person-occasion-budgets-v1.md
+docs/project_plans/implementation_plans/features/person-occasion-budgets-v1/phase-1-2-backend.md
+docs/project_plans/implementation_plans/features/person-occasion-budgets-v1/phase-3-4-api-hooks.md
+docs/project_plans/implementation_plans/features/person-occasion-budgets-v1/phase-5-ui.md
+docs/project_plans/implementation_plans/features/person-occasion-budgets-v1/phase-6-testing.md
+services/api/alembic/versions/5d80cbe06073_add_budget_fields_to_personoccasion.py
+services/api/app/models/occasion.py
+services/api/app/models/person.py
+services/api/app/models/tag.py
+services/api/app/models/user.py
+services/api/app/repositories/person.py
+services/api/tests/conftest.py
+services/api/tests/unit/repositories/test_person_repository.py
+a4d5f299cfc513c062896e7153eefdbc563fbc9f 2025-12-07 15:32:44 -0500 docs(progress): Mark gift-linking-v1 implementation as complete
+
+.claude/progress/gift-linking-v1/all-phases-progress.md
+fa048153d3ee4f0204a362bec33fbcaece1afa2f 2025-12-07 15:32:13 -0500 feat(api): Add gift_people relationship info to gift responses
+
+services/api/app/models/gift.py
+services/api/app/repositories/gift.py
+services/api/app/schemas/gift.py
+services/api/app/services/gift.py
+8652b230e96511771dbec31389846d95c49bbebe 2025-12-07 15:31:51 -0500 feat(web): Add showHeaders prop to StackedProgressBar
+
+apps/web/components/ui/stacked-progress-bar.tsx
+e9be3f4bd953b3f055b80097449d6df4bb02011f 2025-12-07 15:25:34 -0500 feat(web): Add conditional budget display to PersonBudgetBar
+
+.claude/progress/gift-linking-v1/all-phases-progress.md
+apps/web/components/people/PersonBudgetBar.tsx
+docs/designs/PERSON-BUDGET-BAR-SPEC.md
+c58c7d4efbb4d3410a212abadafadf1b0e44ee1d 2025-12-07 15:24:37 -0500 feat(api): Enhance get_filtered() to include GiftPerson-linked gifts
+
+services/api/app/api/gifts.py
+services/api/app/repositories/gift.py
+services/api/app/services/gift.py
+d3e23cb4b440a2ba11d6942b650b7536ec16f5ce 2025-12-07 15:19:38 -0500 fix(api): Replace session.refresh() with selectinload in gift repository
+
+services/api/app/repositories/gift.py
+ce169326ee082ac9142f9e446a20e7c7325938df 2025-12-07 15:17:32 -0500 fix(api): Remove session.refresh() from base repository to prevent greenlet errors
+
+services/api/app/repositories/base.py
+f8f29b983c150c2f67e905a6d780e4733b68a938 2025-12-07 15:11:23 -0500 docs(plans): Add gift-linking-v1 implementation plan and progress tracking
+
+.claude/progress/gift-linking-v1/all-phases-progress.md
+docs/project_plans/implementation_plans/bugs/gift-linking-v1.md
+95ca7cfd023d3c521aa47e3382a2b0993f5e6a1d 2025-12-07 15:02:08 -0500 chore: add pending project and test files
+
+.claude/commands/plan/plan-feature.md
+apps/web/components/common/GiftTitleLink.tsx
+apps/web/components/layout/__tests__/Breadcrumb.test.tsx
+apps/web/components/ui/IMAGE-PICKER.md
+apps/web/components/ui/__tests__/confirm-dialog.test.tsx
+apps/web/components/ui/__tests__/image-picker.test.tsx
+apps/web/components/ui/confirm-dialog.tsx
+apps/web/components/ui/image-picker.example.tsx
+apps/web/components/ui/image-picker.tsx
+apps/web/lib/api/upload.ts
+docs/designs/renders/Gift-modal.png
+docs/designs/specs/planned-v1-components.md
+docs/project_plans/requests/dashboard-overhaul-v1.md
+docs/project_plans/requests/enhance-12-06.md
+docs/project_plans/requests/gift-linking-v1.md
+docs/project_plans/requests/planned-v1.md
+services/api/alembic/versions/b1b18e1a4691_add_updated_at_to_gift_people.py
+7c4699e37ac249fbd3ddd9bba73ebeb462cf5d1d 2025-12-07 14:57:18 -0500 chore(deps): Update API dependencies
+
+services/api/uv.lock
+98e9fa48ab6499869a3ba87c1fc1365dc193dc52 2025-12-07 14:57:15 -0500 chore(ai): Update codebase-explorer agent
+
+.claude/agents/ai/codebase-explorer.md
+56d30b8d6505eed65e50a8137a99160212f8eb5d 2025-12-07 14:57:12 -0500 feat(web): Update components for gift and person management
+
+apps/web/components/assignments/AssignmentCard.tsx
+apps/web/components/comments/CommentCard.tsx
+apps/web/components/comments/__tests__/CommentCard.test.tsx
+apps/web/components/common/UrlListInput.tsx
+apps/web/components/gifts/GiftDetail.tsx
+apps/web/components/lists/ListItemRow.tsx
+apps/web/components/lists/TableView.tsx
+apps/web/components/people/PersonBudgetBar.tsx
+apps/web/components/people/PersonForm.tsx
+990c23bdc9668044ef7a19858f004107a059d7f5 2025-12-07 14:57:07 -0500 feat(web): Update pages for gift relationship management
+
+apps/web/app/gifts/[id]/page.tsx
+apps/web/app/gifts/new/page.tsx
+apps/web/app/lists/[id]/page.tsx
+apps/web/app/occasions/new/page.tsx
+apps/web/app/people/[id]/page.tsx
+apps/web/app/people/new/page.tsx
+b4511600b7da1ba7f6334df637fd475c08562214 2025-12-07 14:56:58 -0500 feat(web): Add gift relationship and purchase mutations
+
+apps/web/hooks/useGifts.ts
+apps/web/lib/api/client.ts
+apps/web/lib/api/index.ts
+bf4ab44bb5fb367d7a2696179d4a61d572895a40 2025-12-07 13:47:11 -0500 feat(web): Add StackedProgressBar with hover tooltips for PersonCard
+
+apps/web/components/people/PersonBudgetBar.tsx
+apps/web/components/ui/STACKED-PROGRESS-BAR.md
+apps/web/components/ui/__tests__/stacked-progress-bar.test.tsx
+apps/web/components/ui/stacked-progress-bar.example.tsx
+apps/web/components/ui/stacked-progress-bar.tsx
+apps/web/types/budget.ts
+142b8a8a46f16d53460dd461ea932a785412c6ff 2025-12-07 13:46:34 -0500 feat(api): Extend PersonBudget with detailed purchase breakdown
+
+services/api/app/repositories/person.py
+services/api/app/schemas/person.py
+5c5261e6fa597f5eb368f834aaa7400dc6889d20 2025-12-06 23:04:57 -0500 feat(web): Enhance "For (People)" field with chip-based person selection
+
+apps/web/components/common/PersonChip.example.tsx
+apps/web/components/common/PersonChip.tsx
+apps/web/components/common/PersonMultiSelect.tsx
+apps/web/components/common/PersonSnapshotCard.tsx
+apps/web/components/common/__tests__/PersonChip.test.tsx
+apps/web/components/gifts/GiftEditModal.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+docs/project_plans/requests/for-people-ui-enhancement.md
+264d58c90dfa93abafcfd71a4068e45ec5937ebe 2025-12-06 22:19:14 -0500 feat(web): Phase 4 - Person & Occasion UI enhancements
+
+.claude/progress/planned-v1/phase-4-progress.md
+apps/web/app/occasions/[id]/page.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/components/occasions/OccasionRecipientsSection.tsx
+apps/web/components/occasions/index.ts
+apps/web/components/people/LinkedGiftsSection.tsx
+apps/web/components/people/PersonBudgetBar.tsx
+apps/web/components/people/__tests__/PersonBudgetBar.test.tsx
+apps/web/hooks/usePersonBudget.ts
+apps/web/lib/api/endpoints.ts
+apps/web/types/budget.ts
+c1cff2300bb3ec3effc234523e5c28874ce763f8 2025-12-06 22:15:40 -0500 feat(web): Add gift counts with interactive tooltips to PersonCard
+
+apps/web/components/common/MiniCardTooltip.tsx
+apps/web/components/people/PersonCard.tsx
+c55b8ba311cc2f3e1d9ebd0ff52770017ad7639c 2025-12-06 22:01:03 -0500 feat(web): Phase 3 - Gift UI enhancements
+
+.claude/progress/planned-v1/phase-3-progress.md
+apps/web/app/gifts/page.tsx
+apps/web/components/common/PERSON-DROPDOWN-README.md
+apps/web/components/common/PersonDropdown.example.tsx
+apps/web/components/common/PersonDropdown.tsx
+apps/web/components/common/__tests__/PersonDropdown.test.tsx
+apps/web/components/features/GiftForm.tsx
+apps/web/components/gifts/BULK-ACTION-BAR-USAGE.md
+apps/web/components/gifts/BulkActionBar.tsx
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/PersonQuickCreateModal.tsx
+apps/web/components/modals/PurchaserAssignDialog.tsx
+apps/web/components/modals/SeparateSharedDialog.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.linking.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.overview.test.tsx
+apps/web/components/modals/__tests__/GiftDetailModal.test.tsx
+apps/web/components/modals/__tests__/PersonQuickCreateModal.test.tsx
+apps/web/components/modals/__tests__/README.md
+apps/web/components/modals/index.ts
+apps/web/components/ui/icons.tsx
+apps/web/components/ui/index.ts
+apps/web/components/ui/status-pill.tsx
+apps/web/components/ui/status-selector.tsx
+apps/web/hooks/useGiftSelection.ts
+apps/web/lib/api/endpoints.ts
+apps/web/types/index.ts
+20c6eec692024c4cbcb151fb556c5b6c0a2faeba 2025-12-06 21:35:12 -0500 docs(progress): Mark Phase 2 as completed
+
+.claude/progress/planned-v1/phase-2-progress.md
+99b79dcdc10ddfd906e6e097ffa2379959b9ff30 2025-12-06 21:34:34 -0500 feat(api): Phase 2 - Add repository & service layer for purchaser/budgets
+
+services/api/app/api/gifts.py
+services/api/app/api/persons.py
+services/api/app/repositories/gift.py
+services/api/app/schemas/gift.py
+services/api/app/schemas/person.py
+services/api/app/services/gift.py
+services/api/app/services/person.py
+d73be3f53abed34a0ef799f04c733be506e4dc57 2025-12-06 21:12:40 -0500 feat(api): Phase 1 - Add purchaser tracking and budget calculations
+
+.claude/progress/planned-v1/phase-1-progress.md
+docs/project_plans/implementation_plans/enhancements/planned-v1.md
+services/api/alembic/versions/b2b770469096_add_purchaser_id_and_gift_person_role.py
+services/api/app/models/__init__.py
+services/api/app/models/gift.py
+services/api/app/models/gift_person.py
+services/api/app/models/person.py
+services/api/app/repositories/person.py
+81482e0c86c19e89c7e6b7ea776b79c9b7ca9cb3 2025-12-06 17:30:55 -0500 Add python-multipart dependency for uploads
+
+services/api/pyproject.toml
+c80f00a43a254bb3045013eec77e122e34f003b1 2025-12-06 17:21:47 -0500 Add alembic head merge for gift branches
+
+services/api/alembic/versions/8b7f5d2e1c5a_merge_gift_heads.py
+68b45b1f6afd44a7fb987ebbeb16f17e6ee49916 2025-12-06 15:08:27 -0500 Add gift backend enhancements and upload docs
+
+docs/api/gift-entity-spec.md
+docs/project_plans/enhance-12-06/implementation-plan.md
+services/api/alembic/versions/f0d1f6c21c8f_additional_urls_json.py
+services/api/app/api/gifts.py
+services/api/app/api/upload.py
+services/api/app/core/config.py
+services/api/app/core/storage.py
+services/api/app/main.py
+services/api/app/models/gift.py
+services/api/app/repositories/gift.py
+services/api/app/schemas/gift.py
+services/api/app/schemas/upload.py
+services/api/app/services/gift.py
+ea7b181fbb892248e595ea1a4e5ce33007dc48c4 2025-12-06 14:32:53 -0500 Complete discovery for enhance-12-06
+
+docs/project_plans/enhance-12-06/implementation-plan.md
+f005784f8cdaf70f4211c6ad97b552515ef00614 2025-12-06 10:26:35 -0500 feat(web): add Group edit modal with member management
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/common/PersonMultiSelect.tsx
+apps/web/components/groups/GroupEditModal.tsx
+apps/web/components/groups/index.ts
+8124ed5cd1dfd3514802f54b432a7bf9b22e11e3 2025-12-06 10:22:47 -0500 fix(web): use PATCH instead of PUT for gift updates
+
+apps/web/lib/api/endpoints.ts
+2408606b987c11f316a205a226f8f089712d5867 2025-12-06 10:19:10 -0500 Add comment visibility and endpoints
+
+services/api/app/api/comments.py
+services/api/app/main.py
+services/api/app/models/comment.py
+services/api/app/repositories/comment.py
+services/api/app/schemas/comment.py
+services/api/app/services/comment.py
+services/api/tests/unit/services/test_comment_service.py
+6d499a9a5c4ad1923d1e96a81ba29f63bcea22c7 2025-12-06 10:13:57 -0500 fix(api): correct index name in comment visibility migration
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+services/api/alembic/versions/1d2e5f3c4b21_add_comment_visibility_and_gift.py
+04094c2898fc9d9035f896d6f219abc9314b04f3 2025-12-06 10:06:42 -0500 docs(plan): mark all Frontend and QA tasks complete
+
+docs/project_plans/entity-comments-feature/implementation-plan.md
+d9665666566978966b92d01127d480b46f862d1a 2025-12-06 10:06:04 -0500 feat(web): implement entity comments UI with visibility and editing
+
+apps/web/components/comments/CommentCard.tsx
+apps/web/components/comments/CommentForm.tsx
+apps/web/components/comments/CommentsTab.tsx
+apps/web/components/comments/__tests__/CommentCard.test.tsx
+apps/web/components/comments/__tests__/CommentForm.test.tsx
+apps/web/components/comments/__tests__/CommentsTab.test.tsx
+apps/web/components/comments/index.ts
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/hooks/useComments.ts
+apps/web/lib/api/endpoints.ts
+apps/web/types/index.ts
+apps/web/vitest.setup.ts
+c789ac6b3bda07d5e4b62937a951f9d157d5ec91 2025-12-05 18:03:06 -0500 plan: new enhancements
+
+.claude/skills/chrome-devtools/scripts/package-lock.json
+docs/api/person-entity-spec.md
+docs/designs/person-advanced-interests-tab.md
+6da9151fafebbce70be14b9fabb827846ae5f558 2025-12-05 17:32:14 -0500 docs(plan): mark all Frontend and QA tasks complete
+
+docs/project_plans/implementation_plans/features/person-advanced-interests.md
+d4f566d6a925ef1b2a0f92640a2a5bdf00971fa5 2025-12-05 17:31:40 -0500 feat(web): implement Person Advanced Interests frontend UI
+
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/components/people/AddPersonModal.tsx
+apps/web/components/people/AdvancedInterestsEdit.tsx
+apps/web/components/people/AdvancedInterestsView.tsx
+apps/web/components/ui/chip-input.tsx
+apps/web/components/ui/icons.tsx
+apps/web/components/ui/index.ts
+apps/web/components/ui/switch.tsx
+apps/web/pnpm-lock.yaml
+apps/web/types/index.ts
+3bdf819486c9bd526cdf932f25cf3bc8d9e6a2e4 2025-12-05 17:10:55 -0500 test(web): add Vitest infrastructure and Person Advanced Interests tests
+
+apps/web/components/people/__tests__/AdvancedInterestsEdit.test.tsx
+apps/web/components/people/__tests__/AdvancedInterestsView.test.tsx
+apps/web/components/ui/__tests__/chip-input.test.tsx
+apps/web/components/ui/__tests__/switch.test.tsx
+apps/web/package.json
+apps/web/vitest.config.ts
+apps/web/vitest.setup.ts
+e50455eb32502007694370db956d46931e5d7342 2025-12-05 15:49:06 -0500 Mark backend tasks complete in person advanced interests plan
+
+docs/project_plans/implementation_plans/features/person-advanced-interests.md
+f6aff5d64ea3fcfc8dd2fede7e383ca2986f7dc4 2025-12-05 15:47:28 -0500 Update person tests for advanced interests and size profiles
+
+services/api/tests/conftest.py
+services/api/tests/integration/test_person_endpoints.py
+services/api/tests/unit/schemas/test_person_schema.py
+services/api/tests/unit/services/test_person_service.py
+969d75d96cf3bb316f25251f3878d5a05157a777 2025-12-05 15:47:20 -0500 Add advanced interests schema and size profile handling
+
+services/api/app/models/person.py
+services/api/app/repositories/person.py
+services/api/app/schemas/person.py
+services/api/app/services/person.py
+ce73a7c7a0fd9cb50b25e3e75044bfded5374edc 2025-12-05 15:35:13 -0500 Add migration for person advanced interests and size profile
+
+services/api/alembic/versions/7a6f30d7b2b2_add_person_advanced_interests_and_size.py
+0f9db1c410394dcbbd9a1a2ceb4fb8a4e92c2d34 2025-12-05 10:50:35 -0500 docs(ai): add OccasionType, PersonResponse, and date-utils fixes
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+d1acb8ae328ac34e81c4fdc72a20d1770398fd3a 2025-12-05 10:50:05 -0500 fix(web): add null safety to date utility functions
+
+apps/web/lib/date-utils.ts
+5bcc99195c2b9a9aebb89d2067249d63b5fbb796 2025-12-05 10:48:18 -0500 fix(api): fix OccasionType enum and PersonResponse groups loading
+
+services/api/app/models/occasion.py
+services/api/app/repositories/person.py
+32f742c9a2230328f9265b6254ece7df4963e91e 2025-12-05 10:38:31 -0500 fix(api): use native PostgreSQL enum for GiftPriority with values_callable
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+services/api/app/models/gift.py
+9b0d77966483574de91a249b5acb4f583fe78393 2025-12-05 10:38:18 -0500 docs(ai): add GiftPriority enum fix to bug-fixes
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+0bf2fdac320efd5b30b9450576dc98a3dade68da 2025-12-05 10:37:46 -0500 fix(api): use native PostgreSQL enum for GiftPriority
+
+services/api/app/models/gift.py
+fd315e56b57b2bfc712f484a6838e997168fe9cd 2025-12-05 10:33:49 -0500 fix(api): merge multiple alembic heads into single migration path
+
+services/api/alembic/versions/ca7196997ff4_merge_all_heads.py
+6402351e86fa605f26a1c32ac92751c9f954bfb8 2025-12-05 10:30:42 -0500 docs(ai): add progress tracking for enhance-12-03-12-04 implementation
+
+.claude/progress/enhance-12-03-12-04/phase-1-progress.md
+d7a6f3dec7524ff154ffa85d96b31f31558792d1 2025-12-05 10:30:35 -0500 feat(web): update pages for enhanced features
+
+apps/web/app/gifts/[id]/edit/page.tsx
+apps/web/app/occasions/new/page.tsx
+apps/web/app/people/page.tsx
+cd81a86569947b95f0cd2b2e5dca0b2de6a2e27b 2025-12-05 10:30:28 -0500 feat(web): update UI components for enhanced features
+
+apps/web/components/common/GiftImage.tsx
+apps/web/components/common/GroupMultiSelect.tsx
+apps/web/components/common/PeopleMultiSelect.tsx
+apps/web/components/common/UrlListInput.tsx
+apps/web/components/dashboard/DashboardHeader.tsx
+apps/web/components/features/GiftForm.tsx
+apps/web/components/gifts/StoreMultiSelect.tsx
+apps/web/components/gifts/index.ts
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/components/occasions/AddOccasionModal.tsx
+apps/web/components/occasions/OccasionCard.tsx
+apps/web/components/occasions/OccasionDetail.tsx
+apps/web/components/people/AddPersonModal.tsx
+apps/web/components/people/PersonCard.tsx
+apps/web/components/ui/icons.tsx
+2de99c67372376668082b71eff3152966285350b 2025-12-05 10:30:17 -0500 feat(web): add TypeScript types and React Query hooks
+
+apps/web/hooks/useGifts.ts
+apps/web/hooks/useGroups.ts
+apps/web/hooks/useOccasions.ts
+apps/web/hooks/usePersons.ts
+apps/web/hooks/useStores.ts
+apps/web/lib/__tests__/DATE_FIX_SUMMARY.md
+apps/web/lib/__tests__/date-utils.test.ts
+apps/web/lib/api/endpoints.ts
+apps/web/lib/date-utils.ts
+apps/web/types/index.ts
+0bbc3c403dc94a7bdabd87f30d800f2467a80a58 2025-12-05 10:30:08 -0500 feat(api): add services, repositories, and API endpoints
+
+services/api/app/api/gifts.py
+services/api/app/api/occasions.py
+services/api/app/api/persons.py
+services/api/app/api/stores.py
+services/api/app/data/__init__.py
+services/api/app/data/holidays.py
+services/api/app/main.py
+services/api/app/repositories/gift.py
+services/api/app/repositories/occasion.py
+services/api/app/repositories/person.py
+services/api/app/repositories/store.py
+services/api/app/services/dashboard.py
+services/api/app/services/gift.py
+services/api/app/services/holiday_seeder.py
+services/api/app/services/occasion.py
+services/api/app/services/person.py
+services/api/app/services/person_occasion_hooks.py
+services/api/app/services/store.py
+services/api/app/utils/__init__.py
+services/api/app/utils/recurrence.py
+services/api/tests/unit/services/test_dashboard_service.py
+a03e9ecf10c2bbdc827598594a356c851775139f 2025-12-05 10:29:57 -0500 feat(api): add models and schemas for enhanced features
+
+services/api/app/models/__init__.py
+services/api/app/models/gift.py
+services/api/app/models/gift_person.py
+services/api/app/models/group.py
+services/api/app/models/occasion.py
+services/api/app/models/person.py
+services/api/app/models/store.py
+services/api/app/schemas/gift.py
+services/api/app/schemas/group.py
+services/api/app/schemas/occasion.py
+services/api/app/schemas/person.py
+services/api/app/schemas/store.py
+adaa5dc1d24d9278f21787f71458c6e22223bb3a 2025-12-05 10:29:50 -0500 feat(api): add database migrations for enhanced schema
+
+services/api/alembic/versions/001_occasion_recurrence_and_type.py
+services/api/alembic/versions/002_person_occasions_join.py
+services/api/alembic/versions/003_person_anniversary.py
+services/api/alembic/versions/268c9faeabe7_gift_people_link.py
+services/api/alembic/versions/cf29065501d1_gift_model_expansion.py
+services/api/alembic/versions/e21fa4490d9d_groups_and_person_groups.py
+services/api/alembic/versions/e5004eebd18f_create_stores_table.py
+d5f2f3777f8af3fa9ef328200b0ffef28cdeb3e0 2025-12-04 21:00:19 -0500 Add implementation plan for 12-03 and 12-04 enhancements
+
+.claude/prompt-blocks/debug-stub.md
+docs/project_plans/bugs/bugs-12-04-2.md
+docs/project_plans/requests/enhance-12-03-12-04-implementation-plan.md
+docs/project_plans/requests/enhance-12-03.md
+docs/project_plans/requests/enhance-12-04.md
+11f1d477d16edfb8c894667fdf477eabdf0d0fce 2025-12-04 20:46:10 -0500 Document gift edit route fix
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+111f449ee951f3faf7646442fe1afd1a46022395 2025-12-04 20:45:58 -0500 Add gifts edit route rendering existing edit modal
+
+apps/web/app/gifts/[id]/edit/page.tsx
+111952b438fb1af7c39b44c917e749ef9c083143 2025-12-04 18:34:08 -0500 Fix lint errors for font rule, img fallback, and occasion linker typings
+
+apps/web/app/layout.tsx
+apps/web/components/common/GiftImage.tsx
+apps/web/components/occasions/AddOccasionModal.tsx
+41f10ae085b8835ee64483e4e1a3965973025f40 2025-12-04 18:01:09 -0500 Log December bug fixes
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+b8efaabf5828e8c0989aeeac69f718c9478cc395 2025-12-04 18:00:02 -0500 Add spacing between recent list activity cards
+
+apps/web/app/lists/page.tsx
+92d226ef79aeec7bf23fa261dee1d9cdefbc0fa5 2025-12-04 17:59:56 -0500 Add linked-entity modals and support linking gifts to multiple lists
+
+apps/web/components/gifts/LinkGiftToListsModal.tsx
+apps/web/components/lists/AddListItemModal.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/LinkEntityToListModal.tsx
+apps/web/components/modals/LinkListsToContextModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/types/index.ts
+992fd0146fa3df65aa8f45fc6bace2d68d805ea6 2025-12-04 17:59:45 -0500 Fix list deletion await and return complete list item payloads
+
+services/api/app/repositories/base.py
+services/api/app/services/list.py
+services/api/app/services/list_item.py
+7cccc37b445bdaf6ddb56ea8cddf30fc5006a52b 2025-12-04 17:10:10 -0500 Fix list budget parsing crash
+
+apps/web/app/lists/[id]/page.tsx
+a806193298fac2b244a17c89623f02278ba02458 2025-12-04 17:01:49 -0500 Docs: budget progress and exploration notes
+
+.claude/exploration-reports/budget-components-quick-ref.md
+.claude/exploration-reports/frontend-budget-patterns-exploration.md
+.claude/progress/budget-progression-meter/phase-4-6-api-frontend-progress.md
+.claude/worknotes/observation-log-2025-12.md
+c207d2a89345c0268ffc69a76d9b2cd019baab05 2025-12-04 17:01:37 -0500 Fix occasion budget persistence
+
+apps/web/components/occasions/AddOccasionModal.tsx
+e3e446d5f31c4e2e7f86185ab29ba46c265ef3f8 2025-12-04 17:01:09 -0500 New Components
+
+apps/web/components/people/AddPersonModal.tsx
+af4bb06b88823ba0fba3376a57eee7c85486e6bd 2025-12-04 17:01:03 -0500 Edit Button Fixes
+
+apps/web/app/lists/[id]/page.tsx
+apps/web/app/occasions/[id]/page.tsx
+apps/web/app/people/[id]/page.tsx
+3178f84da5aba4dedbfd98f00f9452064dc5c1a7 2025-12-04 17:00:53 -0500 Budget Field in Occasion Form
+
+apps/web/components/occasions/AddOccasionModal.tsx
+apps/web/components/ui/currency-input.tsx
+apps/web/types/index.ts
+92179418aa514e91ac45e306afed50c0bd1a2f31 2025-12-04 15:57:26 -0500 feat(budget): implement Phase 4-6 - API endpoints and frontend integration
+
+apps/web/app/dashboard/page.tsx
+apps/web/app/lists/[id]/page.tsx
+apps/web/app/occasions/[id]/page.tsx
+apps/web/components/budget/BudgetMeter.example.tsx
+apps/web/components/budget/BudgetMeter.tsx
+apps/web/components/budget/BudgetMeterSkeleton.tsx
+apps/web/components/budget/BudgetTooltip.example.tsx
+apps/web/components/budget/BudgetTooltip.tsx
+apps/web/components/budget/BudgetWarningCard.tsx
+apps/web/components/budget/README.md
+apps/web/components/budget/index.ts
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/gifts/UrlGiftForm.tsx
+apps/web/components/lists/KanbanColumn.tsx
+apps/web/hooks/useBudgetMeter.ts
+apps/web/lib/api/endpoints.ts
+apps/web/types/budget.ts
+apps/web/types/index.ts
+services/api/app/api/budgets.py
+services/api/app/main.py
+47ddea25116cc6347b8a44b5a3da618b53c0de08 2025-12-04 14:41:25 -0500 docs(progress): mark Phase 1-3 backend foundation complete
+
+.claude/progress/budget-progression-meter/phase-1-3-backend-progress.md
+.claude/progress/budget-progression-meter/phase-4-6-api-frontend-progress.md
+.claude/progress/budget-progression-meter/phase-7-8-testing-docs-progress.md
+e77aff2f19686ee77ec92134b89dcbf7d8b10d60 2025-12-04 14:40:43 -0500 fix(api): resolve lint and type errors in budget module
+
+services/api/app/models/entity_budget.py
+services/api/app/repositories/budget.py
+f4aa06f7f8fc6ae239a48e2dc4c579404855b044 2025-12-04 14:39:25 -0500 feat(api): implement BudgetService and DTOs for budget tracking
+
+services/api/app/schemas/__init__.py
+services/api/app/schemas/budget.py
+services/api/app/services/__init__.py
+services/api/app/services/budget.py
+5d1b49c645e8f9e2325ef80bc68953537a573095 2025-12-04 14:33:42 -0500 feat(api): implement BudgetRepository for budget calculations
+
+services/api/app/repositories/__init__.py
+services/api/app/repositories/budget.py
+624ff906098270f89a54995b3a8808697a6a25de 2025-12-04 14:27:42 -0500 feat(api): add database schema for budget progression meter
+
+services/api/alembic/versions/0cacb55807d0_add_budget_total_to_occasions.py
+services/api/alembic/versions/37835ac72a46_create_entity_budgets_table.py
+services/api/alembic/versions/59b95e08971c_merge_heads.py
+services/api/alembic/versions/6e0330de314e_add_price_discount_quantity_to_list_items.py
+services/api/app/models/__init__.py
+services/api/app/models/entity_budget.py
+services/api/app/models/list_item.py
+services/api/app/models/occasion.py
+services/api/app/schemas/list_item.py
+a634faabdf7db9353b89a7b3921a280df14f47c9 2025-12-04 14:10:27 -0500 Merge pull request #4 from miethe/claude/add-budget-progression-meter-01FWZNj15F8qcBV4MYoszpBv
+f73470c0b08658682cf8a1488ac9312bc3b84b3f 2025-12-04 18:22:18 +0000 docs(planning): add budget progression meter PRD and implementation plan
+
+docs/designs/budget-progression-meter-ui-spec.md
+docs/project_plans/PRDs/features/budget-progression-meter-v1.md
+docs/project_plans/implementation_plans/features/budget-progression-meter-v1.md
+docs/project_plans/implementation_plans/features/budget-progression-meter-v1/phase-1-3-backend.md
+docs/project_plans/implementation_plans/features/budget-progression-meter-v1/phase-4-6-api-frontend.md
+docs/project_plans/implementation_plans/features/budget-progression-meter-v1/phase-7-8-testing-docs.md
+cfcc0ef14dfab1c2f5565114ba13271c28ed10e5 2025-12-04 12:18:25 -0500 Merge pull request #3 from miethe/feat/implementation-v1
+a17e42896c6baafe12985ca740ed4f61ea2f4add 2025-12-04 12:17:24 -0500 Merge pull request #2 from miethe/feat/ui-overhaul
+33bb7bbacaa589deeb0e87a86628349c967a0979 2025-12-04 12:15:20 -0500 Merge pull request #1 from miethe/feat/websocket-simplification
+a843f20b2a867af493420e158e45d7c4eb1a7800 2025-12-04 12:11:11 -0500 docs: record hash for list modal nav fix
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+a7b3e66b3327cc275a7492dd87b0a8e3f913df8c 2025-12-04 12:10:57 -0500 fix: gate list detail nested modals to stop nav crash
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/modals/ListDetailModal.tsx
+docs/project_plans/bugs/bugs-12-04.md
+0b800ec2ae336c76bd657e9890c5bd3bde8e4613 2025-12-04 11:32:15 -0500 plan: fix attempt
+
+docs/project_plans/bugs/bugs-12-04.md
+c1a314cde9e521eed4293f952d9367fffddbbd98 2025-12-04 11:30:14 -0500 fix(web): move GiftDetailModal outside Suspense to prevent navigation crash
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/app/gifts/page.tsx
+3bc497180b9e6e65ec6fff93f3de305938b130d1 2025-12-04 11:03:50 -0500 docs: document Suspense boundary navigation crash fix
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+18d58c8c9541c9120e21eaa164d53a10f6746a9c 2025-12-04 11:03:40 -0500 plan: creating bug doc with recommendations
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+docs/project_plans/bugs/bugs-12-04.md
+775d41d2a7a6bdc1060bac9a929580ccc93211c1 2025-12-04 11:03:21 -0500 fix(web): add Suspense boundary for useSearchParams in /gifts page
+
+apps/web/app/gifts/page.tsx
+337dcc699be01b7f0a9e47c49a6a7fd2f9b875a0 2025-12-04 10:41:40 -0500 docs: note nav prefetch disable and gift list fan-out guard
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+7cdf812f4a8dfbd7b7c3632880226ab79e63fd58 2025-12-04 10:41:21 -0500 chore(web): curb nav prefetch and instrument gift list fan-out
+
+apps/web/components/layout/DesktopNav.tsx
+apps/web/components/layout/MobileNav.tsx
+apps/web/hooks/useLists.ts
+ae1f4121af4b3a63fa6642a75bf9adb6985c8ee2 2025-12-03 20:45:23 -0500 docs: update architecture for kanban-only websockets
+
+CLAUDE.md
+apps/web/WEBSOCKET-INTEGRATION-GUIDE.md
+apps/web/WEBSOCKET-QUICK-REFERENCE.md
+apps/web/lib/websocket/README.md
+c8d62c4d3037e5dcedde9ba4c89cebb3b1b0e52d 2025-12-03 20:42:35 -0500 refactor(web): delete useGiftsRealtime example file
+
+apps/web/hooks/useGiftsRealtime.ts
+65f5cbf67ebe599647e96fa529edcc4beb4e429f 2025-12-03 20:40:12 -0500 refactor(web): replace websocket with polling in useIdeas
+
+apps/web/hooks/useIdeas.ts
+f6c70269ea0d62cf78afa6168f5d2d5ea7b12259 2025-12-03 20:38:39 -0500 refactor(web): remove websocket from data hooks (gifts, lists, persons, occasions)
+
+apps/web/app/lists/new/page.tsx
+apps/web/app/lists/page.tsx
+apps/web/app/people/page.tsx
+apps/web/components/gifts/GiftToolbar.tsx
+apps/web/hooks/useGifts.ts
+apps/web/hooks/useLists.ts
+apps/web/hooks/useOccasions.ts
+apps/web/hooks/usePersons.ts
+1569167b22db854005a87e9f1ffdae6cd7ee882a 2025-12-03 19:52:13 -0500 chore(ai): create websocket simplification progress tracking
+
+.claude/progress/websocket-simplification/README.md
+.claude/progress/websocket-simplification/phase-1-progress.md
+.claude/progress/websocket-simplification/phase-2-progress.md
+.claude/progress/websocket-simplification/phase-3-progress.md
+.claude/progress/websocket-simplification/phase-4-progress.md
+.claude/progress/websocket-simplification/phase-5-progress.md
+fd8de28d5e32e0c62fc090542ed64cc31152c88b 2025-12-03 19:46:46 -0500 chore(docs): clean up deprecated design specs and add websocket guide
+
+docs/designs/components/image-uploader-spec.md
+docs/guides/websockets.md
+b252a867fe34203a5eb06d9a07e564f4bb91475c 2025-12-03 18:09:10 -0500 plan(web): websocket simplification - implementation plan and progress tracking
+
+.claude/progress/websocket-simplification/all-phases-progress.md
+docs/project_plans/implementation_plans/refactors/websocket-simplification-v1.md
+4468986d0c0b86fa1c448964f08b80bb2166573b 2025-12-03 17:03:54 -0500 docs: update bug-fixes with Phase 3 WebSocket fixes
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+f31847ee1c632ec636a2279a9c75f242f7497037 2025-12-03 17:03:32 -0500 fix(web): gate specialized list hooks and detail modals with enabled option
+
+apps/web/app/lists/new/page.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/hooks/useLists.ts
+0f6bf5802eb89d1439dd30ed16c8b0c9305d7473 2025-12-03 16:06:17 -0500 docs: update bug-fixes with Phase 2 WebSocket subscription fixes
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+ef7d2f9d7a804119fd5231e550f0ebe08e873ad1 2025-12-03 16:05:17 -0500 fix(web): resolve WebSocket subscription conflicts causing crashes
+
+apps/web/app/lists/page.tsx
+apps/web/app/people/page.tsx
+apps/web/components/quick-add/QuickAddModal.tsx
+401567f3d98a1faa2d449839ea4e21ce9c18a55d 2025-12-03 15:19:03 -0500 docs: document /gifts page WebSocket subscription storm fix
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+df0abf7313ca0ed909c9e7ccb9b90eecce466e81 2025-12-03 15:18:31 -0500 perf(web): parallelize useListsForGift API calls
+
+apps/web/hooks/useLists.ts
+fa79df13068b6e024473f5edf5995a9adcc3ae66 2025-12-03 15:16:44 -0500 fix(web): prevent WebSocket subscription storm in /gifts page
+
+apps/web/components/gifts/GiftToolbar.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/hooks/useLists.ts
+apps/web/hooks/useOccasions.ts
+apps/web/hooks/usePersons.ts
+7616d400c4037712e0eac4bcf3840462fcc68442 2025-12-03 14:45:53 -0500 fix(web): import useMemo in GiftEditModal
+
+apps/web/components/gifts/GiftEditModal.tsx
+0b38f38377eed53420c396be96f021f0583dcf15 2025-12-03 14:31:40 -0500 fix(web): allow disabling useLists to support lazy modals
+
+apps/web/hooks/useLists.ts
+b7c1d544d7c7f0aa2ce514148e1bc6acb488cccd 2025-12-03 14:28:24 -0500 fix(web): keep hooks stable while lazy-rendering modals
+
+apps/web/components/gifts/AddGiftModal.tsx
+apps/web/components/gifts/GiftEditModal.tsx
+apps/web/components/modals/AddToListModal.tsx
+apps/web/components/quick-add/QuickAddModal.tsx
+8f877dfdfbc846de54588ce1a490507ca15d0ef3 2025-12-03 14:24:19 -0500 ai: update artifacts
+
+.claude/CLAUDE.md
+.claude/agents/ai/ai-artifacts-engineer.md
+.claude/agents/tech-writers/technical-writer.md
+AGENT.md
+GEMINI.md
+docs/project_plans/requests/enhance-12-03.md
+e0edc21a1d3941a0fae416d4999700c4e5a56424 2025-12-03 14:22:37 -0500 docs: log gifts page modal lazy-mount fix
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+c73e10a9338ee40189432a33b1b80c219ad5552f 2025-12-03 14:22:25 -0500 fix(web): lazy-mount modals to avoid gifts page hangs
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/gifts/AddGiftModal.tsx
+apps/web/components/gifts/GiftEditModal.tsx
+apps/web/components/modals/AddToListModal.tsx
+apps/web/components/quick-add/QuickAddModal.tsx
+7479bf6693e4d5d09b60cfb8caf961d87191ed0b 2025-12-03 13:26:12 -0500 fix(web): centralize GiftDetailModal to prevent infinite API calls
+
+apps/web/app/gifts/page.tsx
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/gifts/GiftGroupedView.tsx
+docs/project_plans/bugs/bug-fixes-2025-12.md
+dbbcb9e1b00c498b04b1989faeca2c082cd44f11 2025-12-03 13:18:23 -0500 fix(api): label subquery column for proper reference
+
+services/api/app/repositories/gift.py
+b120708622fb64b3c5e5d0303f7bdcd710c3cdd0 2025-12-03 12:57:58 -0500 fix(api): resolve PostgreSQL JSON DISTINCT error in gift repository
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+services/api/app/repositories/gift.py
+52dddcbe37fdb1b89a5d6b487909d38ed5a0c60a 2025-12-03 11:02:39 -0500 docs: add build error fixes to bug-fixes-2025-12
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+d1b062d8412d62184232ba742a0855e25906c1bd 2025-12-03 11:02:06 -0500 fix(web): align status values with backend ListItemStatus enum
+
+apps/web/app/lists/[id]/page.tsx
+apps/web/components/lists/KanbanCard.tsx
+apps/web/components/lists/KanbanColumn.tsx
+apps/web/components/lists/KanbanView.tsx
+apps/web/components/lists/ListItemGroup.tsx
+apps/web/components/lists/ListItemRow.tsx
+apps/web/components/lists/ListSummary.tsx
+apps/web/components/lists/TableView.tsx
+apps/web/types/index.ts
+6a3ea9a2730e63b9bf8f09118717e83436eb4994 2025-12-03 11:02:00 -0500 fix(web): resolve import path errors for AddPersonModal and icons
+
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/ui/icons.tsx
+apps/web/components/ui/status-selector.tsx
+69ff0b73e33d17a1e98c7988f612d85b09295b86 2025-12-03 10:25:29 -0500 fix(web): align ListItemStatus type with backend enum
+
+apps/web/types/index.ts
+3adbf61437c4f0b6f81e72e0e90bdb82540046de 2025-12-03 10:25:18 -0500 feat(web): add interactive status selector to gift cards and modal
+
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/ui/index.ts
+apps/web/components/ui/status-selector.tsx
+c3d6ac6574f3939d67b2f934e34e8ee9ba3dc5ec 2025-12-03 10:25:09 -0500 feat(web): add status selector to gift create/edit forms
+
+apps/web/components/gifts/GiftEditModal.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/gifts/UrlGiftForm.tsx
+apps/web/components/ui/select.tsx
+apps/web/components/ui/status-pill.tsx
+9736230439c69ef0df8ec15e9e9f23b67cb32468 2025-12-03 10:24:56 -0500 feat(web): make dashboard stat cards navigate to gifts with filter
+
+apps/web/app/gifts/page.tsx
+apps/web/components/dashboard/StatsCards.tsx
+80ecb0a19dc9d9eb091e3e5767ab1636a7605337 2025-12-03 10:24:50 -0500 feat(web): add '+' cards to linked entities tabs in modals
+
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+df7aa0f7e587c59728f879080d459d171c35a4e8 2025-12-03 10:24:42 -0500 feat(web): make upcoming occasions cards clickable on people page
+
+apps/web/app/people/page.tsx
+d90c610c3a3219d228d8dc65bf16ba52e19a11e4 2025-12-02 21:27:10 -0500 docs(image-upload): add implementation plan, design spec, and progress tracking
+
+.claude/progress/image-upload/all-phases-progress.md
+docs/design/components/image-uploader-spec.md
+docs/project_plans/implementation_plans/features/image-upload-v1.md
+5e37b729e75da16a9b1af1f55a060d08a7b38a74 2025-12-02 19:13:07 -0500 feat(web): redesign gift filter bar with inline toolbar and grouping
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/app/gifts/page.tsx
+apps/web/components/gifts/GiftGroupedView.tsx
+apps/web/components/gifts/GiftToolbar.tsx
+apps/web/components/gifts/index.ts
+apps/web/components/ui/icon.tsx
+fc7014d8328a035041551268fc7d1b8a160eee0f 2025-12-02 18:50:57 -0500 docs: correct websocket crash fix entry
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+77d88b98f361421577f28ec03a44f39df9f8dfe8 2025-12-02 18:50:44 -0500 fix(web): gate modal data fetches to reduce ws load
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/components/lists/AddListItemModal.tsx
+apps/web/components/lists/AddListModal.tsx
+apps/web/hooks/useGifts.ts
+apps/web/hooks/useOccasions.ts
+apps/web/hooks/usePersons.ts
+3cd7069ace8fc8b46469e9b2989ffc30106468a0 2025-12-02 16:34:22 -0500 docs: add websocket crash fix entry
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+88e2188781db9cd7b9adbf9c504774ae258c4a59 2025-12-02 16:33:14 -0500 fix(web): stabilize websocket subscriptions
+
+apps/web/hooks/useRealtimeSync.ts
+aa5b07bb8cdcb5717b16509604f2306c41134d68 2025-12-02 16:06:55 -0500 docs(web): update WebSocket reference with anti-patterns
+
+apps/web/WEBSOCKET-QUICK-REFERENCE.md
+e451b9d70471501e7ceaf3a98e5e4e311d05b68c 2025-12-02 15:56:36 -0500 docs: update bug-fix commit hash
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+ab0d8f04538b0ab94ba36dada4d5fae7492076bf 2025-12-02 15:56:00 -0500 fix(web): use WebSocket context in ConnectionIndicator
+
+apps/web/components/websocket/ConnectionIndicator.tsx
+671a3c11bcc44bca6ccf2cb51a24abbc4a003943 2025-12-02 15:27:24 -0500 fix(web): prevent infinite re-subscription loop causing browser crash
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/hooks/useRealtimeSync.ts
+7bc264a31e4307de8d3b8ef380daa54714d69edb 2025-12-02 14:23:49 -0500 fix(web): resolve WebSocket connection leak in useRealtimeSync
+
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+apps/web/hooks/useRealtimeSync.ts
+a39be8cc3103484c9ae90f01b01e680742d017d1 2025-12-02 14:06:55 -0500 docs: update bug-fix commit hash
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+784b755a5163e35d9bf04c2650c51656a7915c62 2025-12-02 14:06:19 -0500 fix(kanban): resolve drag-and-drop status update failures
+
+apps/web/components/lists/KanbanView.tsx
+docs/project_plans/bugs/bug-fixes-2025-12.md
+services/api/app/services/list_item.py
+650f7cc1476ee211ec9208efc6c8166c8e6bdae3 2025-12-02 13:43:47 -0500 fix(api): resolve List opening error and Gift edit failure
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+services/api/app/api/gifts.py
+services/api/app/schemas/list.py
+services/api/app/schemas/list_item.py
+d19878e996d94b77051821492a4700b2966d3dfb 2025-12-02 12:48:40 -0500 fix(web): resolve TypeScript errors in modals and hooks
+
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/hooks/useLists.ts
+810818d188ae479db780795bf025ef58002248c8 2025-12-02 12:45:18 -0500 feat(web): add collapse behavior to GiftFilters
+
+apps/web/components/gifts/GiftFilters.tsx
+7a78240b64c621f2264053425b4e8013eca2ada9 2025-12-02 12:43:45 -0500 feat(web): make FilterBar and FilterGroup collapsible
+
+apps/web/components/ui/filter-bar.tsx
+24a51010c42d368248f855ccb8785c5b37b68fa1 2025-12-02 12:41:23 -0500 feat(web): add Collapsible UI component
+
+apps/web/components/ui/collapsible.tsx
+apps/web/tailwind.config.ts
+f4fd8a17e8e7d9a1ba5b0ba866d4ab3aba33bb55 2025-12-02 12:39:49 -0500 chore(web): add @radix-ui/react-collapsible package
+
+apps/web/package.json
+apps/web/pnpm-lock.yaml
+05a8a815fcbe2d42e85bb86b1324b55d1bf40586 2025-12-02 12:39:18 -0500 refactor(web): simplify GiftDetailModal list navigation state
+
+apps/web/components/modals/GiftDetailModal.tsx
+113fbbc525155f15c62ea811a7aa6f92c204a666 2025-12-02 12:37:58 -0500 feat(web): implement linked entities tabs in detail modals
+
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+7466a744a849cce63c27eb93318689df004ede56 2025-12-02 12:34:51 -0500 feat(web): add hooks for querying lists by linked entity
+
+apps/web/hooks/useLists.ts
+bd03dfb13ae6c086038bc12204748e73190b034d 2025-12-02 12:32:15 -0500 fix(web): add null safety to ListDetailModal gift accesses
+
+apps/web/components/modals/ListDetailModal.tsx
+62700346e5a0f24b61655a5ac5f7af12ec193177 2025-12-02 12:29:59 -0500 refactor(web): wire up /people page to use PersonCard component
+
+apps/web/app/people/page.tsx
+22f2e99558851f3dc1f186f4724505c360d81c95 2025-12-02 12:25:34 -0500 plan: bug fixes
+
+.claude/progress/bugs-12-02-remediation/all-phases-progress.md
+.claude/worknotes/fixes/bug-fixes-2025-11.md
+.claude/worknotes/fixes/bug-fixes-2025-12.md
+docs/project_plans/bugs/bugs-12-02.md
+docs/project_plans/implementation_plans/bugs-12-02-remediation.md
+67681624f7fd52984692eabfefb497810b08d710 2025-12-02 11:56:11 -0500 refactor(docker): consolidate env vars to single .env file
+
+.env.example
+apps/web/Dockerfile
+docker-compose.yml
+2655cd203884335787833a1751803e74d6a6513e 2025-12-02 11:48:46 -0500 fix(docker): add /api/v1 path to NEXT_PUBLIC_API_URL
+
+apps/web/Dockerfile
+docker-compose.yml
+docs/project_plans/bugs/bug-fixes-2025-12.md
+039543c8941af6a60ddce56b1fe6727e4ac87777 2025-12-02 11:41:14 -0500 fix(web,docker): fix NEXT_PUBLIC_* not passed to Docker build
+
+apps/web/.env.example
+apps/web/Dockerfile
+apps/web/hooks/useWebSocket.ts
+apps/web/lib/api/client.ts
+apps/web/lib/auth/api.ts
+docker-compose.yml
+docs/project_plans/bugs/bug-fixes-2025-12.md
+e7043ae7edf7bbd0b1a5320ac36e1578b3519ea5 2025-12-02 11:20:25 -0500 fix(web): fix Badge variant type error in GiftUsage
+
+apps/web/components/gifts/GiftUsage.tsx
+062c1c3624461b11c18df330c77846c1452d9a55 2025-12-02 11:10:58 -0500 docs(bugs): add 7 bug fixes to bug-fixes-2025-12
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+42e88bd556241d7ad0b477a5a7c10cccb1ec6e59 2025-12-02 11:09:54 -0500 feat(web): add Edit/Delete functionality to OccasionDetailModal
+
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/occasions/AddOccasionModal.tsx
+b791cf900db725e1a540475714f2fd64e4cd2085 2025-12-02 11:06:05 -0500 feat(web): add Gift attachments and standardized tabbed modal design
+
+apps/web/app/gifts/[id]/page.tsx
+apps/web/components/gifts/GiftEditModal.tsx
+apps/web/components/gifts/GiftUsage.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/gifts/UrlGiftForm.tsx
+apps/web/components/gifts/index.ts
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+23cf12d19437b33c1726a1f4ac5033f99bfe3c4a 2025-12-02 11:00:34 -0500 feat(api,web): implement /gifts page filtering by recipient, status, list, occasion
+
+apps/web/app/gifts/page.tsx
+apps/web/components/gifts/GiftFilters.tsx
+apps/web/components/gifts/index.ts
+apps/web/lib/api/client.ts
+apps/web/lib/api/endpoints.ts
+services/api/app/api/gifts.py
+services/api/app/repositories/gift.py
+services/api/app/services/gift.py
+9a6f11f80cab29ad5d2bb5676b5b7aa7dac1a37f 2025-12-02 10:56:27 -0500 feat(web): add List-Recipient-Occasion attachment UI
+
+apps/web/components/lists/AddListModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+555275b7996b5ebe915de3689a77f9ae74bca745 2025-12-02 10:52:59 -0500 feat(web): enhance PersonCard with age, birthday, gift count, and lists
+
+apps/web/components/people/PersonCard.tsx
+01ae2fba78428e893699da2c55dc5ecf208fa62e 2025-12-02 10:49:20 -0500 fix(web): increase PersonDetailModal Hero section height to prevent avatar cutoff
+
+apps/web/components/modals/PersonDetailModal.tsx
+98184ec84ad4915523b94db555b444c3003ef8f0 2025-12-02 10:00:41 -0500 docs(bugs): add 5 bug fixes to bug-fixes-2025-12
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+5bed9e7acbab1c9199e9b357f56fd106c198381e 2025-12-02 09:59:55 -0500 fix(web): fix 5 UI bugs - icons, backgrounds, modal catalog, kanban drops, gift clicks
+
+apps/web/app/dashboard/page.tsx
+apps/web/app/globals.css
+apps/web/app/lists/[id]/page.tsx
+apps/web/components/dashboard/RecentActivity.tsx
+apps/web/components/layout/AppLayout.tsx
+apps/web/components/lists/KanbanCard.tsx
+apps/web/components/lists/KanbanColumn.tsx
+apps/web/components/lists/KanbanView.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/tailwind.config.ts
+41bccaa0bbc394e662927e07ff556c1807e507e7 2025-12-01 22:44:06 -0500 docs(bugs): update commit hash for list modal items fix
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+48599a4bec2d76d769b30dbcb0e4745f63e86ccf 2025-12-01 22:43:54 -0500 feat(web,api): implement 12-1 dashboard enhancements and bug fixes
+
+apps/web/components/common/GiftImage.tsx
+apps/web/components/common/README.md
+apps/web/components/common/index.ts
+apps/web/components/dashboard/IdeaInbox.tsx
+apps/web/components/dashboard/RecentActivity.tsx
+apps/web/components/lists/KanbanCard.tsx
+apps/web/components/lists/KanbanColumn.tsx
+apps/web/components/modals/AddToListModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/ui/icons.tsx
+apps/web/hooks/useActivity.ts
+apps/web/hooks/useIdeas.ts
+apps/web/lib/api/endpoints.ts
+apps/web/lib/date-utils.ts
+apps/web/types/index.ts
+docs/project_plans/bugs/bug-fixes-2025-12.md
+docs/project_plans/requests/12-1-enhancements.md
+docs/project_plans/requests/12-1-implementation-plan.md
+services/api/alembic/versions/be6fd164193f_add_activity_logs_table.py
+services/api/app/api/activity.py
+services/api/app/api/ideas.py
+services/api/app/api/lists.py
+services/api/app/main.py
+services/api/app/models/activity.py
+services/api/app/models/user.py
+services/api/app/repositories/activity.py
+services/api/app/repositories/list.py
+services/api/app/schemas/activity.py
+services/api/app/schemas/idea.py
+services/api/app/services/activity_service.py
+services/api/app/services/idea_service.py
+services/api/app/services/list.py
+53e33285bb7a0273dc2a71617fc8f68df4f34e67 2025-12-01 21:00:43 -0500 docs(bugs): add Material Symbols icon fix to bug-fixes-2025-12
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+e30b76a418ed01e5479dfc8f6293949dc674398d 2025-12-01 21:00:17 -0500 fix(web): fix Material Symbols icon font loading
+
+apps/web/app/globals.css
+apps/web/app/layout.tsx
+45083025554fa0cc43b62ae6e5a77a6e33a7e4ad 2025-12-01 16:36:44 -0500 fix(web): UI fixes - nav design, kanban drag, add modals
+
+apps/web/app/gifts/page.tsx
+apps/web/app/lists/page.tsx
+apps/web/app/occasions/page.tsx
+apps/web/app/people/page.tsx
+apps/web/components/gifts/AddGiftModal.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/gifts/UrlGiftForm.tsx
+apps/web/components/gifts/index.ts
+apps/web/components/layout/DesktopNav.tsx
+apps/web/components/layout/MobileNav.tsx
+apps/web/components/lists/KanbanCard.tsx
+apps/web/components/lists/ListItemGroup.tsx
+apps/web/components/occasions/AddOccasionModal.tsx
+apps/web/components/occasions/index.ts
+apps/web/components/people/AddPersonModal.tsx
+apps/web/components/people/index.ts
+docs/project_plans/bugs/bug-fixes-2025-12.md
+8457b1bf038b6713fff6b21f8e4163553cf98b28 2025-12-01 16:07:18 -0500 docs(bugs): document Docker ENOSPC fix for December 2025
+
+docs/project_plans/bugs/bug-fixes-2025-12.md
+75fab0671ae84b44dd87e1f5fb4d7573a2a82bdf 2025-12-01 15:46:23 -0500 docs(progress): mark Phase 6 Polish & Testing as complete
+
+.claude/progress/ui-overhaul-v2/phase-6-progress.md
+f2aa3e3b29c0527960f330919acc0887e19fb067 2025-12-01 15:45:07 -0500 test(web): add comprehensive E2E test suite with Playwright (PT-005)
+
+apps/web/tests/PT-005-E2E-TEST-SUITE.md
+apps/web/tests/QUICK-START.md
+apps/web/tests/e2e/auth.spec.ts
+apps/web/tests/e2e/gift-management.spec.ts
+apps/web/tests/e2e/list-management.spec.ts
+apps/web/tests/e2e/navigation.spec.ts
+apps/web/tests/e2e/realtime-updates.spec.ts
+fc067d8f10e88b1d0c528b55967563cfbc6edbf9 2025-12-01 15:37:45 -0500 fix(web): responsive design fixes for all breakpoints (PT-002)
+
+apps/web/app/dashboard/page.tsx
+apps/web/app/globals.css
+apps/web/app/lists/page.tsx
+apps/web/app/people/page.tsx
+1f5477bbe53b09395f91113768b0bcc8301f5311 2025-12-01 15:32:51 -0500 perf(web): optimize React Query cache and convert img to Image (PT-004)
+
+apps/web/PERFORMANCE_OPTIMIZATION.md
+apps/web/app/people/page.tsx
+apps/web/components/dashboard/IdeaInbox.tsx
+apps/web/components/layout/DesktopNav.tsx
+apps/web/components/lists/AddListItemModal.tsx
+apps/web/components/lists/KanbanCard.tsx
+apps/web/components/lists/TableView.tsx
+apps/web/hooks/useGifts.ts
+apps/web/hooks/useLists.ts
+apps/web/hooks/useOccasions.ts
+apps/web/lib/query-client.ts
+apps/web/next.config.ts
+35e872ec155f55e60d4aed84185b390b61d8eb99 2025-12-01 15:32:51 -0500 fix(web): accessibility improvements for WCAG AA compliance (PT-003)
+
+apps/web/app/(auth)/login/page.tsx
+apps/web/components/layout/AppLayout.tsx
+apps/web/components/layout/MobileNav.tsx
+apps/web/components/ui/avatar.tsx
+apps/web/components/ui/badge.tsx
+apps/web/components/ui/dialog.tsx
+apps/web/components/ui/status-pill.tsx
+50b1e0bbcb1f2541d05bad1be4966bb3a37eac5b 2025-12-01 15:32:51 -0500 feat(web): add comprehensive animation system (PT-001)
+
+apps/web/ANIMATIONS.md
+apps/web/PHASE-6-PT-001-SUMMARY.md
+apps/web/app/globals.css
+apps/web/app/test-animations/page.tsx
+apps/web/components/examples/AnimationExamples.tsx
+b779d12e906bd204dd4a9c4b336628f41a7b5418 2025-12-01 15:11:09 -0500 docs(progress): mark Phase 5 Feature Components & Backend Integration as complete
+
+.claude/progress/ui-overhaul-v2/phase-5-progress.md
+221f194873f7742ad1fcc2a1915168e81a5a715d 2025-12-01 15:10:30 -0500 feat(web): complete Phase 5 Feature Components & Backend Integration
+
+apps/web/app/lists/[id]/page.tsx
+apps/web/app/occasions/page.tsx
+apps/web/app/people/page.tsx
+apps/web/components/features/GiftForm.tsx
+apps/web/components/lists/AddListModal.tsx
+apps/web/components/lists/KanbanCard.tsx
+apps/web/components/lists/KanbanColumn.tsx
+apps/web/components/lists/KanbanView.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/components/ui/icons.tsx
+apps/web/hooks/useGifts.ts
+apps/web/hooks/useOccasions.ts
+apps/web/hooks/usePersons.ts
+b0ca2c50861879476744ef1fe5276bb7fad8c142 2025-12-01 12:37:40 -0500 docs(progress): mark Phase 4 Page Implementations as complete
+
+.claude/progress/ui-overhaul-v2/phase-4-progress.md
+e906a4c39818cccc8a9003d703764b22cd5b508a 2025-12-01 12:37:02 -0500 feat(web): complete Phase 4 Page Implementations
+
+apps/web/app/(auth)/login/page.tsx
+apps/web/app/lists/[id]/page.tsx
+apps/web/app/lists/page.tsx
+apps/web/app/people/page.tsx
+apps/web/components/lists/KanbanCard.tsx
+apps/web/components/lists/KanbanColumn.tsx
+apps/web/components/lists/KanbanView.tsx
+apps/web/components/lists/ListItemGroup.tsx
+apps/web/components/lists/ListItemRow.tsx
+apps/web/components/lists/ListSummary.tsx
+apps/web/components/lists/TableView.tsx
+apps/web/components/lists/index.ts
+apps/web/types/index.ts
+c3d3cb2bb7f9202da0e00c98917708d8b1fb413e 2025-12-01 11:59:32 -0500 docs(progress): mark Phase 3 UI Component Library as complete
+
+.claude/progress/ui-overhaul-v2/phase-3-progress.md
+755b22bd00bfc4aa2374b112adf0e02800c706a1 2025-12-01 11:58:05 -0500 feat(web): complete Phase 3 UI Component Library
+
+apps/web/app/global-error.tsx
+apps/web/app/not-found.tsx
+apps/web/components/ui/avatar.tsx
+apps/web/components/ui/filter-bar.tsx
+apps/web/components/ui/index.ts
+apps/web/components/ui/stats-card.tsx
+apps/web/components/ui/table.tsx
+apps/web/components/ui/timeline.tsx
+eb45e6c3e9eab6e52a8848aeb216ce1949b4c3b3 2025-12-01 11:44:59 -0500 feat(web): complete Phase 2 Layout & Navigation
+
+.claude/progress/ui-overhaul-v2/phase-2-progress.md
+apps/web/app/assignments/layout.tsx
+apps/web/app/dashboard/layout.tsx
+apps/web/app/gifts/layout.tsx
+apps/web/app/lists/[id]/page.tsx
+apps/web/app/lists/layout.tsx
+apps/web/app/occasions/layout.tsx
+apps/web/app/people/layout.tsx
+apps/web/components/layout/AppLayout.tsx
+apps/web/components/layout/Breadcrumb.tsx
+apps/web/components/layout/DesktopNav.tsx
+apps/web/components/layout/HEADER_COMPONENTS.md
+apps/web/components/layout/Header.tsx
+apps/web/components/layout/MobileNav.tsx
+apps/web/components/layout/PageHeader.tsx
+apps/web/components/layout/SearchInput.tsx
+apps/web/components/layout/Shell.tsx
+apps/web/components/layout/icons.tsx
+apps/web/components/layout/index.ts
+apps/web/components/layout/nav-config.ts
+c712a841436b428b1c1d0180090eb4a43dffa76b 2025-12-01 11:27:42 -0500 docs(progress): mark Phase 1 Design System Foundation as complete
+
+.claude/progress/ui-overhaul-v2/phase-1-progress.md
+691c3c86d3395a8c9ed967cbab96985317c8d552 2025-12-01 11:19:43 -0500 feat(web): add useDarkMode hook for theme management
+
+apps/web/hooks/useDarkMode.ts
+1bb2e795e73057d63b23c12c05738ed121373196 2025-12-01 11:18:43 -0500 feat(web): add Material Symbols icons and global CSS updates
+
+apps/web/app/globals.css
+apps/web/components/ui/icon.tsx
+apps/web/components/ui/index.ts
+451c48b87facbcfb4b6ad20bd32be8bf6395a7ad 2025-12-01 11:15:37 -0500 feat(web): update Tailwind config with Design System V2 tokens
+
+apps/web/tailwind.config.ts
+3d3f9774f26df51948afd1ee718ea4bdf4bb3153 2025-12-01 11:11:47 -0500 feat(ai): update phase for tracking
+
+.claude/commands/dev/execute-phase.md
+634e844c5aff089b621c32404f1776392a127d4d 2025-12-01 10:20:04 -0500 refactor(ai): convert all-phases progress to per-phase artifacts
+
+.claude/progress/ui-overhaul-v2/all-phases-progress.md
+.claude/progress/ui-overhaul-v2/phase-1-progress.md
+.claude/progress/ui-overhaul-v2/phase-2-progress.md
+.claude/progress/ui-overhaul-v2/phase-3-progress.md
+.claude/progress/ui-overhaul-v2/phase-4-progress.md
+.claude/progress/ui-overhaul-v2/phase-5-progress.md
+.claude/progress/ui-overhaul-v2/phase-6-progress.md
+b171cc94d5224fd896a104ad26afe8c6b17abdda 2025-12-01 10:06:43 -0500 feat(ai): updating skills - planning and artifacts
+
+.claude/commands/dev/execute-phase.md
+.claude/skills/artifact-tracking/SKILL.md
+.claude/skills/artifact-tracking/SKILL.md.backup
+.claude/skills/artifact-tracking/agents/artifact-validator.md
+.claude/skills/artifact-tracking/creating-artifacts.md
+.claude/skills/artifact-tracking/orchestration-reference.md
+.claude/skills/artifact-tracking/querying-artifacts.md
+.claude/skills/artifact-tracking/schemas/context.schema.yaml
+.claude/skills/artifact-tracking/schemas/progress.schema.yaml
+.claude/skills/artifact-tracking/templates/context-template.md
+.claude/skills/artifact-tracking/templates/progress-template.md
+.claude/skills/artifact-tracking/updating-artifacts.md
+.claude/skills/artifact-tracking/validating-artifacts.md
+.claude/skills/planning/README.md
+.claude/skills/planning/SKILL.md
+.claude/skills/planning/references/file-structure.md
+.claude/skills/planning/references/mp-architecture.md
+.claude/skills/planning/references/subagent-assignments.md
+.claude/skills/planning/templates/progress-tracking-template.md
+4b98df947d3e018649a005e3329469ca62780f46 2025-11-30 22:18:02 -0500 docs(plan): create UI Overhaul V2 implementation plan from new inspiration
+
+.claude/progress/ui-overhaul-v2/all-phases-progress.md
+docs/designs/asthetic-v1.md
+docs/project_plans/ui-overhaul-phase2/IMPLEMENTATION-CHECKLIST.md
+docs/project_plans/ui-overhaul-phase2/PHASE-DETAILS.md
+docs/project_plans/ui-overhaul-phase2/QUICK-START.md
+docs/project_plans/ui-overhaul-phase2/README.md
+docs/project_plans/ui-overhaul-phase2/ui-overhaul-phase2.md
+docs/project_plans/ui-overhaul-phase2/ui-overhaul-v2-implementation.md
+inspiration/family-gifting-v2/.gitignore
+inspiration/family-gifting-v2/App.tsx
+inspiration/family-gifting-v2/README.md
+inspiration/family-gifting-v2/components/Layout.tsx
+inspiration/family-gifting-v2/components/Modal.tsx
+inspiration/family-gifting-v2/components/Sidebar.tsx
+inspiration/family-gifting-v2/index.html
+inspiration/family-gifting-v2/index.tsx
+inspiration/family-gifting-v2/metadata.json
+inspiration/family-gifting-v2/package.json
+inspiration/family-gifting-v2/pages/Dashboard.tsx
+inspiration/family-gifting-v2/pages/Gifts.tsx
+inspiration/family-gifting-v2/pages/ListDetails.tsx
+inspiration/family-gifting-v2/pages/Lists.tsx
+inspiration/family-gifting-v2/pages/Login.tsx
+inspiration/family-gifting-v2/pages/Recipients.tsx
+inspiration/family-gifting-v2/tsconfig.json
+inspiration/family-gifting-v2/types.ts
+inspiration/family-gifting-v2/vite.config.ts
+f16e514d33a0743c33e23728297dcb3e1e2d3848 2025-11-29 14:20:23 -0500 docs(bugs): add follow-up fix for GiftSummary import
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+da74e53b0855cbc26c6d9372db9bba104e8462f7 2025-11-29 14:20:12 -0500 fix(api): resolve GiftSummary forward reference in ListItemWithGift
+
+services/api/app/schemas/list_item.py
+5457d1a679cc0299e6a159f0c559c86e4ceb68fe 2025-11-29 13:37:33 -0500 docs(bugs): update commit hash reference in bug-fixes-2025-11.md
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+c10ee663f170f8791b1672bac2dae49dfe8dd4d4 2025-11-29 13:36:52 -0500 fix(api): include gift data in list items endpoint
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+services/api/app/api/lists.py
+services/api/app/repositories/list_item.py
+services/api/app/services/list_item.py
+79bdd21be5c447e747f82ba2f466f0e241ad833c 2025-11-29 13:26:58 -0500 chore: updating docs
+
+.claude/agents/pm/feature-planner.md
+.claude/commands/pm/user_stories.md
+.claude/config/config.json
+.claude/other/enhancements/skills/frontend-design-v2.md
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+.claude/skills/planning/SKILL.md
+.claude/skills/symbols/scripts/__pycache__/config.cpython-312.pyc
+.claude/skills/symbols/scripts/__pycache__/symbol_tools.cpython-312.pyc
+CLAUDE.md
+docs/project_plans/family-dashboard-v1/family-dashboard-v1-implementation.md
+docs/project_plans/family-dashboard-v1/family-dashboard-v1.md
+docs/project_plans/family-dashboard-v1/family-dashboard-v1/phase-1-3-backend.md
+docs/project_plans/family-dashboard-v1/family-dashboard-v1/phase-4-5-api.md
+docs/project_plans/family-dashboard-v1/family-dashboard-v1/phase-6-8-frontend.md
+docs/project_plans/family-dashboard-v1/family-dashboard-v1/phase-9-deployment.md
+docs/screenshots/dashboard-redesign.png
+docs/screenshots/lists-redesign.png
+inspiration/family-gifting/App.tsx
+inspiration/family-gifting/README.md
+inspiration/family-gifting/components/AllLists.tsx
+inspiration/family-gifting/components/Dashboard.tsx
+inspiration/family-gifting/components/Sidebar.tsx
+inspiration/family-gifting/components/SingleListView.tsx
+inspiration/family-gifting/index.html
+inspiration/family-gifting/index.tsx
+inspiration/family-gifting/metadata.json
+inspiration/family-gifting/package.json
+inspiration/family-gifting/services/geminiService.ts
+inspiration/family-gifting/tsconfig.json
+inspiration/family-gifting/types.ts
+inspiration/family-gifting/vite.config.ts
+74cbf3d84bf511e170f923f32834449360e35c36 2025-11-29 11:16:46 -0500 fix(web): add null check for gift in KanbanCard
+
+apps/web/components/lists/KanbanCard.tsx
+e5846acf7758831b7783d52bf6edfefba838e4e0 2025-11-29 11:12:56 -0500 docs(plan): add UI overhaul phase 2 planning document
+
+docs/project_plans/ui-overhaul-phase2.md
+24456a8452a4b31149e4eac521949faaa358e1c3 2025-11-29 11:10:30 -0500 feat(web): major UI overhaul with inspiration-based design system
+
+apps/web/app/dashboard/page.tsx
+apps/web/app/lists/[id]/page.tsx
+apps/web/app/lists/page.tsx
+apps/web/components/dashboard/DashboardHeader.tsx
+apps/web/components/dashboard/IdeaInbox.tsx
+apps/web/components/dashboard/RecentActivity.tsx
+apps/web/components/dashboard/StatsCards.tsx
+apps/web/components/dashboard/index.ts
+apps/web/components/layout/DesktopNav.tsx
+apps/web/components/layout/MobileNav.tsx
+apps/web/components/layout/Shell.tsx
+apps/web/components/layout/icons.tsx
+apps/web/components/lists/KanbanCard.tsx
+apps/web/components/lists/KanbanColumn.tsx
+apps/web/components/lists/KanbanView.tsx
+apps/web/components/lists/ListCard.tsx
+apps/web/components/lists/index.ts
+apps/web/tailwind.config.ts
+2a4c23bf095a315549f8d9e4af8c56afc5475e20 2025-11-29 10:42:46 -0500 docs(bugs): update commit hash references in bug-fixes-2025-11.md
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+3cbdf21b3ce75498aff760c696587c33d6b03119 2025-11-29 10:41:45 -0500 feat(web,api): enhance dashboard people section with photos, dates, and gift breakdowns
+
+apps/web/components/dashboard/PeopleNeeding.tsx
+apps/web/types/index.ts
+services/api/app/schemas/dashboard.py
+services/api/app/services/dashboard.py
+services/api/tests/unit/services/test_dashboard_service.py
+5b1b8be67a622b3d1a4d0b0463797a725448b926 2025-11-29 09:50:56 -0500 docs(bugs): update commit hash references in bug-fixes-2025-11.md
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+3a99c082e5a12d6f7b4271c49010812982f5f47d 2025-11-29 09:50:24 -0500 fix(web,api): fix dashboard text visibility, date timezone, and gift modal behavior
+
+apps/web/components/dashboard/PeopleNeeding.tsx
+apps/web/components/dashboard/PipelineSummary.tsx
+apps/web/components/lists/ListItemRow.tsx
+apps/web/tailwind.config.ts
+docs/project_plans/bugs/bug-fixes-2025-11.md
+services/api/scripts/populate_test_data.py
+7378998cfeb42cb5245c5d19ca7cb7a94d2d08e4 2025-11-28 23:54:33 -0500 fix(web): remove unnecessary animations from dashboard components
+
+apps/web/components/dashboard/PipelineSummary.tsx
+apps/web/components/dashboard/PrimaryOccasion.tsx
+apps/web/components/dashboard/QuickActions.tsx
+dd2f963f9e0a0c2d693b290fc24056beaad58392 2025-11-28 23:54:04 -0500 docs(bugs): update commit hash references in bug-fixes-2025-11.md
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+d8d0520fbd82f99072d83c79ba6d2475ce84349b 2025-11-28 23:53:28 -0500 fix(web,api): fix dashboard data population, text visibility, and modal animations
+
+apps/web/components/dashboard/PeopleNeeding.tsx
+apps/web/components/modals/EntityModal.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+docs/project_plans/bugs/bug-fixes-2025-11.md
+services/api/scripts/populate_test_data.py
+69d2c981f1fa7d1a51a8a00f13357b05e16ecede 2025-11-28 23:24:13 -0500 fix(web): update modals to use centralized API client
+
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+7ca680d7ad522cf4a0e2561bca6d4e9d1283e524 2025-11-28 23:15:52 -0500 fix(web): correct modal onOpenChange callback to prevent immediate close
+
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/lists/ListCard.tsx
+apps/web/components/occasions/OccasionCard.tsx
+apps/web/components/people/PersonCard.tsx
+e778e4afd5b50cccbbe0c4672e0b036f1c8775c2 2025-11-28 23:13:54 -0500 feat(web): implement comprehensive modal system with animations for all entities
+
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+cb9f374b48d4bee7b0f563a12f9f9343d8784597 2025-11-28 23:04:34 -0500 fix(web): resolve module import errors in modal components
+
+apps/web/components/modals/EntityModal.tsx
+apps/web/components/modals/GiftDetailModal.tsx
+apps/web/components/modals/ListDetailModal.tsx
+apps/web/components/modals/OccasionDetailModal.tsx
+apps/web/components/modals/PersonDetailModal.tsx
+apps/web/components/modals/README.md
+apps/web/components/modals/index.ts
+apps/web/components/ui/icons.tsx
+apps/web/lib/date-utils.ts
+aaca83630ea166dabcb1d2c73e6ff2c7250ea549 2025-11-28 21:58:05 -0500 docs(bugs): document item_count and tooltip fixes
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+2a0f483d4fbb6cd3bfbcf178b4ee0b320a1345ea 2025-11-28 21:57:41 -0500 fix(api,web): add item_count to lists API and status tooltips to list headers
+
+apps/web/components/lists/ListItemGroup.tsx
+apps/web/components/occasions/OccasionLists.tsx
+apps/web/components/ui/index.ts
+apps/web/components/ui/tooltip.tsx
+apps/web/package.json
+apps/web/pnpm-lock.yaml
+apps/web/types/index.ts
+docs/project_plans/bugs/bug-fixes-2025-11.md
+services/api/app/repositories/list.py
+services/api/app/schemas/list.py
+services/api/app/services/list.py
+198352a929c15c7dfdc6098acd82e7962d24d46f 2025-11-28 21:03:15 -0500 docs(bugs): document getInitials() null safety fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+b25fb1b7603c043eadddbed8c4eb158939c01e2e 2025-11-28 21:02:58 -0500 fix(web): add null safety to getInitials() function in Avatar component
+
+apps/web/components/ui/avatar.tsx
+2a036edc69a7e1809549bfaf0632477cfcf46a97 2025-11-28 21:00:03 -0500 docs(bugs): document User.name TypeScript error fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+639489c3b9a04973f9e8e2a9f8b5a314f708d751 2025-11-28 20:59:09 -0500 fix(web): remove non-existent User.name property reference in DesktopNav
+
+apps/web/components/layout/DesktopNav.tsx
+d5f93ab59e68eb2198970502632e748a347f07aa 2025-11-28 20:53:54 -0500 docs(bugs): add commit hash to .split() bug fix entry
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+d541a4eeba5861f14bc97d755b2e6c704b320af8 2025-11-28 20:53:42 -0500 fix(web): add safe navigation for .split() calls on dashboard
+
+apps/web/components/features/dashboard/AvatarCarousel.tsx
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/layout/DesktopNav.tsx
+docs/project_plans/bugs/bug-fixes-2025-11.md
+1a9af1d73dcbd6be76aa638083f9edbc7133fc34 2025-11-28 20:47:52 -0500 refactor(api): use reset_dev_db.py for database reset in populate script
+
+services/api/scripts/populate_test_data.py
+2859ec19f7567177861e17f04b3f4f287a10016b 2025-11-28 20:42:19 -0500 fix(api): use raw SQL schema drop for reliable database reset
+
+services/api/scripts/populate_test_data.py
+98976c3de196193426795905a3e82e167c077ff0 2025-11-28 16:29:08 -0500 fix(api): improve database cleanup in populate_test_data script
+
+services/api/scripts/populate_test_data.py
+8da7a18affa4542b99291572d3461745883d463f 2025-11-28 16:26:28 -0500 feat(api): add comprehensive test data population script
+
+services/api/scripts/README.md
+services/api/scripts/populate_test_data.py
+931fc458af1ee1a5e6ee0e09db9cb05e9e9146a0 2025-11-28 16:11:09 -0500 feat(ai): enhance frontend-design skill with Soft Modernity design system
+
+.claude/skills/frontend-design/SKILL.md
+.claude/skills/frontend-design/references/component-variants.md
+.claude/skills/frontend-design/references/layout-mobile.md
+.claude/skills/frontend-design/references/soft-modernity-tokens.md
+21134929b6b5b9bbd3d7cb3fdc67c5414a8ef745 2025-11-28 16:01:57 -0500 fix(api,web): fix add item status sync and duplicate error handling
+
+apps/web/components/lists/AddListItemModal.tsx
+docs/project_plans/bugs/bug-fixes-2025-11.md
+services/api/app/services/list_item.py
+a7ec3e03c4670347e09283fe00e08e2564e6315c 2025-11-28 15:54:00 -0500 feat(dashboard): improve animations and fix flickering
+
+CLAUDE.md
+apps/web/app/dashboard/page.tsx
+apps/web/components/dashboard/PeopleNeeding.tsx
+apps/web/components/dashboard/PipelineSummary.tsx
+apps/web/components/dashboard/PrimaryOccasion.tsx
+apps/web/components/dashboard/QuickActions.tsx
+apps/web/package.json
+0e1dc167b8ed16f0b5a7e562d30bdc7179f84c32 2025-11-28 14:29:24 -0500 fix(ui): disable dark mode to enforce consistent design system
+
+apps/web/app/globals.css
+84ee6438a29653840278d8479aab5117e6967aa4 2025-11-28 14:26:00 -0500 fix(ui): restore solid background and add content padding
+
+apps/web/app/globals.css
+apps/web/components/layout/Shell.tsx
+e59bcd0226deb5d38feab15557f1209b49ee7b2e 2025-11-28 14:19:39 -0500 fix(ui): adjust shell layout for fixed sidebar and enable glassmorphism
+
+apps/web/components/layout/Shell.tsx
+db5257d03d97a8cab2cc1b1328eff3f98aedcdf3 2025-11-28 14:01:31 -0500 feat(ui): add staggered entrance animations to dashboard
+
+apps/web/app/dashboard/page.tsx
+379c25db4730e91d4d0b7df49381fb22f683b861 2025-11-28 14:01:20 -0500 feat(ui): update header with glassmorphism and refined buttons
+
+apps/web/components/layout/Header.tsx
+ca73f7cbf084cbaf36caf29e45a5a64451fa0085 2025-11-28 14:01:04 -0500 feat(ui): update mobile nav with glassmorphism and touch feedback
+
+apps/web/components/layout/MobileNav.tsx
+027a7ba10b9197ec180c53da16a3785b9c981f94 2025-11-28 14:00:48 -0500 feat(ui): update desktop nav with glassmorphism and refined interactions
+
+apps/web/components/layout/DesktopNav.tsx
+62f0ad2b0398b53af5939fbb509848216d8992a2 2025-11-28 14:00:09 -0500 feat(ui): update button component with press effect and glass variant
+
+apps/web/components/ui/button.tsx
+e371fb4c5cf8165f7ac07ef75ca86879cb7753ea 2025-11-28 13:59:47 -0500 feat(ui): update card component with glass variant and refined shadows
+
+apps/web/components/ui/card.tsx
+eb0e4a17f153d69fb269aae337fd5c651f042f10 2025-11-28 13:59:34 -0500 feat(ui): update global styles with mesh gradient and glassmorphism utilities
+
+apps/web/app/globals.css
+2a3f398ce67aaebabcca9030ff400f2fb31ff3ee 2025-11-28 13:59:02 -0500 feat(ui): update tailwind config with glassmorphism and refined colors
+
+apps/web/tailwind.config.ts
+64182c954b4d58df292b0f0f0f37f8753dc4e0c3 2025-11-28 13:47:53 -0500 docs(claude): add Opus delegation principle to Prime Directives
+
+CLAUDE.md
+2bacf82ad949d5839a425d756fcd152080b5e1ce 2025-11-28 13:43:15 -0500 docs: update bug-fixes with user_id fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+403ffc585212bde899fb2a46ebf5dd514fe12eb6 2025-11-28 13:42:58 -0500 fix(api): pass user_id to ListItemService.create()
+
+services/api/app/api/lists.py
+31b804cdff9b65ebe99ead42d80eeb7e1f0c90af 2025-11-28 13:30:23 -0500 chore: docs and ai updates
+
+.claude/prompt-blocks/debug-stub.md
+.claude/skills/chrome-devtools/scripts/lib/browser.js
+.claude/skills/chrome-devtools/scripts/lib/selector.js
+.claude/worknotes/WEBSOCKET-SUMMARY.md
+DOCKER.md
+GEMINI.md
+apps/web/DATA-TESTID-CHECKLIST.md
+apps/web/FE-002-SETUP-COMPLETE.md
+apps/web/FE-004-AUTH-IMPLEMENTATION.md
+apps/web/FE-005-API-CLIENT-COMPLETE.md
+apps/web/FE-006-LAYOUT-COMPLETE.md
+apps/web/FE-007-BASE-COMPONENTS-COMPLETE.md
+apps/web/FE-008-COMPLETE.md
+apps/web/FE-C-002-PEOPLE-LIST-COMPLETE.md
+apps/web/FE-C-003-PERSON-DETAIL-COMPLETE.md
+apps/web/FE-C-004-OCCASIONS-LIST-COMPLETE.md
+apps/web/FE-C-006-LISTS-VIEW-COMPLETE.md
+apps/web/WEBSOCKET-INTEGRATION-GUIDE.md
+apps/web/WEBSOCKET-QUICK-REFERENCE.md
+docs/api/WEBSOCKET_QUICK_REFERENCE.md
+docs/implementation/WS-002-WS-005-websocket-endpoint.md
+212e81dfd7beeaad58b1c59ed9b62deab0e4be17 2025-11-28 13:28:40 -0500 docs: update bug-fixes with list_id schema fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+4825f47e7bbd262f89f558008fb536af5b3d8476 2025-11-28 13:28:22 -0500 fix(api): make list_id optional in ListItemCreate schema
+
+services/api/app/schemas/list_item.py
+73662c05f333059a9fcc7056c823f15524367837 2025-11-28 13:25:20 -0500 docs(web): add design system references to CLAUDE.md
+
+apps/web/CLAUDE.md
+e2c189628da6d38018dd7ed4749d13bbc7b6a087 2025-11-28 13:23:22 -0500 docs: update bug-fixes with price serialization and modal enhancements
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+05b2d116c020a63b896c69a4e2b671a305acea00 2025-11-28 13:22:37 -0500 feat(web): add multi-select list attachment to gift creation
+
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/gifts/UrlGiftForm.tsx
+apps/web/components/ui/checkbox.tsx
+apps/web/components/ui/index.ts
+63a1505c9025c8bb50e649758d06fa46c24bdedf 2025-11-28 13:22:28 -0500 feat(web): enhance Add Item modal with inline gift creation
+
+apps/web/components/lists/AddListItemModal.tsx
+47a123fdc41742676faf18afde44c7014998def7 2025-11-28 13:18:45 -0500 fix(api,web): fix Decimal price serialization causing toFixed errors
+
+apps/web/components/assignments/AssignmentCard.tsx
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/gifts/GiftDetail.tsx
+apps/web/components/lists/ListItemRow.tsx
+apps/web/lib/utils.ts
+services/api/app/schemas/gift.py
+aafade86bc6f2c2941bbe3d798eeb79aee88d932 2025-11-28 13:11:08 -0500 docs(designs): optimize DESIGN-GUIDE and create modular design system docs
+
+docs/designs/COMPONENTS.md
+docs/designs/DESIGN-GUIDE.md
+docs/designs/DESIGN-IMPLEMENTATION.md
+docs/designs/DESIGN-TOKENS.md
+docs/designs/LAYOUT-PATTERNS.md
+c6b65059e62f2defc455c4b7c8af8c11739c928a 2025-11-28 13:03:47 -0500 docs: update bug-fixes with Add Item modal implementation
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+2cc284ffb9f59aa5e491b9642d145c1ce80cdb62 2025-11-28 13:03:20 -0500 feat(web): implement Add Item modal and inline buttons on list detail page
+
+apps/web/app/lists/[id]/page.tsx
+apps/web/components/lists/AddListItemModal.tsx
+apps/web/components/lists/ListItemGroup.tsx
+apps/web/components/lists/PipelineView.tsx
+apps/web/components/lists/index.ts
+a3b3a6e70cda48b2aadfb6d6e22b0cd3f8a59886 2025-11-28 12:43:52 -0500 fix(web): wire Add List buttons on occasion and person detail pages
+
+apps/web/components/lists/AddListModal.tsx
+apps/web/components/occasions/OccasionLists.tsx
+apps/web/components/people/PersonLists.tsx
+docs/project_plans/bugs/bug-fixes-2025-11.md
+eef4511ec339a48ceabd6f243fe3ef24c1d89459 2025-11-28 12:11:59 -0500 docs: update bug-fixes with dashboard and login 401 fixes
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+aba7e40e1dc576e2eb37890593ace02c677afa12 2025-11-28 12:11:17 -0500 fix(api,web): fix dashboard Person.name AttributeError and login 401 display
+
+apps/web/lib/context/AuthContext.tsx
+services/api/app/services/dashboard.py
+38332b3daedfe868da089547500be59b11ac04fa 2025-11-28 09:20:22 -0500 docs: update bug-fixes with Person schema implementation
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+0e82b42dd08db39b5e53bc4cc7a9f0b15b850100 2025-11-28 09:19:59 -0500 feat(api,web): implement full Person schema per PRD
+
+apps/web/app/lists/new/page.tsx
+apps/web/app/people/[id]/page.tsx
+apps/web/app/people/page.tsx
+apps/web/components/dashboard/PeopleNeeding.tsx
+apps/web/components/features/dashboard/AvatarCarousel.tsx
+apps/web/components/people/PersonCard.tsx
+apps/web/components/people/PersonDetail.tsx
+apps/web/components/people/PersonForm.tsx
+apps/web/components/people/PersonInfo.tsx
+apps/web/types/index.ts
+services/api/alembic/versions/39be0dfc7e1d_add_person_fields_per_prd.py
+services/api/app/models/person.py
+services/api/app/schemas/person.py
+64c03dcb34c87d710e7af13bf4b5e3ecf120b2b3 2025-11-28 08:56:01 -0500 fix(web): align Person types with backend schema and add assignments layout
+
+apps/web/app/assignments/layout.tsx
+apps/web/app/assignments/page.tsx
+apps/web/app/lists/new/page.tsx
+apps/web/app/people/[id]/page.tsx
+apps/web/app/people/page.tsx
+apps/web/components/people/PersonCard.tsx
+apps/web/components/people/PersonDetail.tsx
+apps/web/components/people/PersonForm.tsx
+apps/web/components/people/PersonInfo.tsx
+apps/web/types/index.ts
+docs/project_plans/bugs/bug-fixes-2025-11.md
+04d1dede4035c0921c05fc2a746b3358026ce7c9 2025-11-28 08:40:59 -0500 fix(web): add missing UI component variants to fix TypeScript build errors
+
+apps/web/components/ui/avatar.tsx
+apps/web/components/ui/badge.tsx
+apps/web/components/ui/button.tsx
+apps/web/components/ui/card.tsx
+apps/web/components/ui/skeleton.tsx
+docs/project_plans/bugs/bug-fixes-2025-11.md
+289675717df7935b5edbf2d4a8628bee55e79dc1 2025-11-28 00:11:20 -0500 docs: mark Soft Modernity design implementation as complete
+
+.claude/progress/soft-modernity-design/all-phases-progress.md
+c346c5c301115298a151bd9aa27388f504970729 2025-11-28 00:11:01 -0500 feat(web): implement Phase 5 Soft Modernity polish and animations
+
+apps/web/app/globals.css
+apps/web/components/ui/skeleton.tsx
+apps/web/components/ui/status-pill.tsx
+apps/web/tailwind.config.ts
+52b9c7aacfdd704a3bf83e8f0c23fe027c61f2f9 2025-11-28 00:08:22 -0500 feat(web): implement Phase 4 Soft Modernity feature components
+
+apps/web/components/features/dashboard/AvatarCarousel.tsx
+apps/web/components/features/dashboard/StatCard.tsx
+apps/web/components/features/lists/KanbanColumn.tsx
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/ui/index.ts
+13c90294b3939bb0bd8e703a0d09d5a17932d0a4 2025-11-28 00:05:25 -0500 feat(web): implement Phase 3 Soft Modernity layout components
+
+apps/web/components/layout/DesktopNav.tsx
+apps/web/components/layout/MobileNav.tsx
+apps/web/components/layout/PageHeader.tsx
+apps/web/components/layout/Shell.tsx
+fae4207ccd6d3d044b5deb2c102fd5422a65d684 2025-11-28 00:03:35 -0500 feat(web): implement Phase 2 Soft Modernity core components
+
+apps/web/components/ui/avatar.tsx
+apps/web/components/ui/badge.tsx
+apps/web/components/ui/button.tsx
+apps/web/components/ui/card.tsx
+apps/web/components/ui/input.tsx
+apps/web/components/ui/status-pill.tsx
+4ccc3aaa7d479c2f66f78946f291e48489671339 2025-11-28 00:00:08 -0500 feat(web): implement Phase 1 Soft Modernity design tokens
+
+.claude/progress/soft-modernity-design/all-phases-progress.md
+apps/web/app/globals.css
+apps/web/lib/colors.ts
+apps/web/lib/typography.ts
+apps/web/tailwind.config.ts
+dc94f9eb521d56a844131cce639c15f6bfd6b9b7 2025-11-27 23:41:50 -0500 docs(design): add Soft Modernity design guide and implementation plan
+
+docs/designs/DESIGN-GUIDE.md
+docs/designs/DESIGN-IMPLEMENTATION-PLAN.md
+docs/designs/asthetic-v1.md
+docs/designs/renders/gifts-dash.png
+docs/designs/renders/gifts-lists-dash.png
+docs/designs/renders/gifts-lists.png
+b8b9ed595a6e770e5897085daa977aacad30788e 2025-11-27 23:07:40 -0500 docs(bugs): update commit hash for list-items fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+660684e5c51c4bcb033d08c19ed876f092e53f56 2025-11-27 23:07:20 -0500 fix(web): correct list-items API endpoints to use nested resource pattern
+
+apps/web/app/lists/[id]/page.tsx
+apps/web/components/quick-add/QuickAddModal.tsx
+apps/web/hooks/useListItems.ts
+apps/web/hooks/useMyAssignments.ts
+apps/web/lib/api/endpoints.ts
+docs/project_plans/bugs/bug-fixes-2025-11.md
+acc553e52e5a527a2bb7bcdb7e7a06030eef7a50 2025-11-27 22:50:11 -0500 docs(bugs): update commit hash for OccasionService fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+0d661e8763945c9fe5d85d6cd7d77ea951f79986 2025-11-27 22:50:02 -0500 fix(api): use get_multi instead of list_paginated in OccasionService
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+services/api/app/services/occasion.py
+services/api/tests/unit/services/test_occasion_service.py
+c3a60104b189bd74be236eb1e39175b1fffdd002 2025-11-27 22:28:47 -0500 docs(bugs): update commit hash for create pages fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+6e8161e3fc49b781396f2ce9ea04130c21c6dbca 2025-11-27 22:28:07 -0500 fix(web): add missing create pages for lists and occasions
+
+apps/web/app/lists/new/page.tsx
+apps/web/app/occasions/new/page.tsx
+apps/web/hooks/useOccasion.ts
+docs/project_plans/bugs/bug-fixes-2025-11.md
+878db219a2e14dc3309746e28055474402dcc684 2025-11-27 22:26:34 -0500 feat(web): add person creation page and form component
+
+apps/web/app/people/new/page.tsx
+apps/web/components/people/PersonForm.tsx
+apps/web/components/people/index.ts
+dad77ab537c45410dc87fa21c0c3a7bbd7cdd640 2025-11-27 21:59:37 -0500 fix(api): correct ListItemStatus enum casing in dashboard service
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+services/api/app/services/dashboard.py
+services/api/tests/unit/services/test_dashboard_service.py
+89d75abf7c04e49735f21b0c6f3f1123ab38745b 2025-11-27 21:50:24 -0500 docs(bugs): document API client URL construction fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+a6dcab36eeb9d9b03cf74883a16910bb95058a53 2025-11-27 21:50:10 -0500 fix(web): correct API client URL construction with base path
+
+apps/web/lib/api/client.ts
+bf29cf3fcbc671e1eb421dd2bf019b8a261eec97 2025-11-27 21:41:01 -0500 fix(web): resolve CSS, API routing, PWA permissions, and gitignore issues
+
+.gitignore
+apps/web/app/globals.css
+apps/web/lib/api/README.md
+apps/web/lib/api/client.ts
+apps/web/lib/api/endpoints.ts
+apps/web/lib/api/index.ts
+apps/web/lib/api/types.ts
+apps/web/lib/auth/README.md
+apps/web/lib/auth/api.ts
+apps/web/lib/auth/storage.ts
+apps/web/lib/auth/types.ts
+apps/web/lib/context/AuthContext.tsx
+apps/web/lib/query-client.ts
+apps/web/lib/utils.ts
+apps/web/lib/websocket/README.md
+apps/web/lib/websocket/WebSocketProvider.tsx
+apps/web/lib/websocket/index.ts
+apps/web/lib/websocket/types.ts
+docs/project_plans/bugs/bug-fixes-2025-11.md
+56661fbb602111abbf2782e77637262ec4942343 2025-11-27 20:49:51 -0500 docs(bugs): document multiple missing bidirectional relationships fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+23530ce7d7ebf6b937e985e1af2e31ff19b2eeb8 2025-11-27 20:41:04 -0500 fix(api): add missing bidirectional relationships to all models
+
+services/api/app/models/list.py
+services/api/app/models/occasion.py
+services/api/app/models/person.py
+services/api/app/models/user.py
+services/api/app/repositories/list.py
+services/api/app/services/list.py
+cbaea96ecb1479f2fa98e64319e25fca6e754b82 2025-11-27 20:32:28 -0500 docs(bugs): update commit hash for user comments relationship fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+7ae285054ebe06b9604ac4037fb8fe68e9185cb7 2025-11-27 20:31:53 -0500 fix(api): add missing comments relationship to User model
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+services/api/app/models/user.py
+3a6b3f51dd7b2bf845913530e0d3bb349cbd520e 2025-11-27 20:24:44 -0500 fix(api): add /api/v1 prefix to all REST routers
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+services/api/app/main.py
+b42cb12f16ae13af05d41dd2bd4c2e1b768da453 2025-11-27 20:17:52 -0500 fix(web): escape apostrophe in login page for ESLint
+
+apps/web/app/(auth)/login/page.tsx
+85332070d98860d3c1a568657cc0683ad2813316 2025-11-27 20:13:52 -0500 docs(bugs): update commit hash for auth pages fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+5ac40a670070c69b2ab021c066b393d906580d27 2025-11-27 20:13:19 -0500 fix(web): implement login and register forms with full functionality
+
+apps/web/app/(auth)/login/page.tsx
+apps/web/app/(auth)/register/page.tsx
+docs/project_plans/bugs/bug-fixes-2025-11.md
+7b14bd055cadc3dfd56f09f2b617614e4c733d8d 2025-11-27 19:58:05 -0500 feat(api): add dev database reset script and fix enum duplication in migration
+
+services/api/alembic/versions/e5d8200343c6_initial_schema.py
+services/api/scripts/reset_dev_db.py
+85d6fdaecea943e9dc2a02afda211ce8c69e250d 2025-11-27 19:47:31 -0500 docs(bugs): document OccasionType enum duplicate fix
+
+docs/project_plans/bugs/bug-fixes-2025-11.md
+18bf915abcaf01bcfb227149ba959d805a8933a8 2025-11-27 19:46:46 -0500 fix(api): align OccasionType enum name with migration to prevent duplicate type error
+
+services/api/app/models/occasion.py
+291f95f8601bac8049819573ece63f5b89b7da04 2025-11-27 18:22:53 -0500 fix(infra): use psycopg3 dialect and local postgres volume
+
+docker-compose.yml
+55bd35cb1d161d856ae3abea6d75cb6fb3d2daa6 2025-11-27 17:06:29 -0500 fix(web): commit pnpm-lock.yaml for reproducible Docker builds
+
+.gitignore
+apps/web/pnpm-lock.yaml
+071de47092b571f259a4e733a6c452a08986c19e 2025-11-27 16:51:32 -0500 feat(deploy): Phase 9 complete - Testing & Deployment infrastructure
+
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+.claude/worknotes/family-dashboard-v1/phase-9-context.md
+.gitignore
+Makefile
+apps/web/.dockerignore
+apps/web/.gitignore
+apps/web/Dockerfile
+apps/web/next.config.ts
+apps/web/package.json
+apps/web/playwright.config.ts
+apps/web/tests/README.md
+apps/web/tests/TEST-004-E2E-TESTS-COMPLETE.md
+apps/web/tests/e2e/auth.setup.ts
+apps/web/tests/e2e/use-case-1-capture-idea.spec.ts
+apps/web/tests/e2e/use-case-2-plan-occasion.spec.ts
+apps/web/tests/e2e/use-case-3-realtime.spec.ts
+apps/web/tests/e2e/use-case-4-progress.spec.ts
+docker-build.sh
+docker-compose.yml
+k8s/DEPLOY.md
+k8s/QUICK_REFERENCE.md
+k8s/README.md
+k8s/SUMMARY.md
+k8s/api/configmap.yaml
+k8s/api/deployment.yaml
+k8s/api/service.yaml
+k8s/kustomization.yaml
+k8s/namespace.yaml
+k8s/postgres/pvc.yaml
+k8s/postgres/service.yaml
+k8s/postgres/statefulset.yaml
+k8s/secrets.yaml.example
+k8s/validate.sh
+k8s/web/configmap.yaml
+k8s/web/deployment.yaml
+k8s/web/service.yaml
+services/api/.dockerignore
+services/api/Dockerfile
+services/api/app/models/gift.py
+services/api/app/models/person.py
+services/api/app/services/auth.py
+services/api/pyproject.toml
+services/api/tests/__init__.py
+services/api/tests/conftest.py
+services/api/tests/integration/__init__.py
+services/api/tests/integration/test_auth_endpoints.py
+services/api/tests/integration/test_dashboard_endpoints.py
+services/api/tests/integration/test_gift_endpoints.py
+services/api/tests/integration/test_health_endpoints.py
+services/api/tests/integration/test_list_endpoints.py
+services/api/tests/integration/test_list_item_endpoints.py
+services/api/tests/integration/test_occasion_endpoints.py
+services/api/tests/integration/test_person_endpoints.py
+services/api/tests/integration/test_websocket.py
+services/api/tests/unit/__init__.py
+services/api/tests/unit/services/__init__.py
+services/api/tests/unit/services/test_auth_service.py
+services/api/tests/unit/services/test_comment_service.py
+services/api/tests/unit/services/test_dashboard_service.py
+services/api/tests/unit/services/test_gift_service.py
+services/api/tests/unit/services/test_list_item_service.py
+services/api/tests/unit/services/test_list_service.py
+services/api/tests/unit/services/test_occasion_service.py
+services/api/tests/unit/services/test_person_service.py
+services/api/uv.lock
+3e3b3abac5b025972ef00a54707eae3811e113bb 2025-11-27 15:53:01 -0500 feat(web): Phase 8 complete - Advanced Frontend Features
+
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+apps/web/app/assignments/page.tsx
+apps/web/app/gifts/[id]/page.tsx
+apps/web/app/gifts/new/page.tsx
+apps/web/app/gifts/page.tsx
+apps/web/components/assignments/AssignmentCard.tsx
+apps/web/components/assignments/AssignmentList.tsx
+apps/web/components/assignments/index.ts
+apps/web/components/comments/CommentCard.tsx
+apps/web/components/comments/CommentForm.tsx
+apps/web/components/comments/CommentThread.tsx
+apps/web/components/comments/README.md
+apps/web/components/comments/index.ts
+apps/web/components/gifts/GiftCard.tsx
+apps/web/components/gifts/GiftDetail.tsx
+apps/web/components/gifts/GiftDetailSkeleton.tsx
+apps/web/components/gifts/GiftGrid.tsx
+apps/web/components/gifts/GiftSearch.tsx
+apps/web/components/gifts/GiftUsage.tsx
+apps/web/components/gifts/ManualGiftForm.tsx
+apps/web/components/gifts/UrlGiftForm.tsx
+apps/web/components/gifts/index.ts
+apps/web/components/layout/Header.tsx
+apps/web/components/layout/Shell.tsx
+apps/web/components/layout/icons.tsx
+apps/web/components/layout/nav-config.ts
+apps/web/components/providers/index.tsx
+apps/web/components/quick-add/QuickAddButton.tsx
+apps/web/components/quick-add/QuickAddModal.tsx
+apps/web/components/quick-add/index.ts
+apps/web/components/ui/textarea.tsx
+apps/web/components/websocket/ConnectionIndicator.tsx
+apps/web/hooks/useComments.ts
+apps/web/hooks/useGift.ts
+apps/web/hooks/useGifts.ts
+apps/web/hooks/useGiftsRealtime.ts
+apps/web/hooks/useListItems.ts
+apps/web/hooks/useLists.ts
+apps/web/hooks/useMyAssignments.ts
+apps/web/hooks/useRealtimeSync.ts
+apps/web/hooks/useWebSocket.ts
+apps/web/package.json
+apps/web/types/index.ts
+e80c488d29dd3b25b64c996153ec94bdd4f46e40 2025-11-27 11:10:06 -0500 feat(web): Phase 7 complete - Core Frontend Features
+
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+apps/web/FE-C-002-PEOPLE-LIST-COMPLETE.md
+apps/web/FE-C-003-PERSON-DETAIL-COMPLETE.md
+apps/web/FE-C-004-OCCASIONS-LIST-COMPLETE.md
+apps/web/FE-C-006-LISTS-VIEW-COMPLETE.md
+apps/web/app/dashboard/page.tsx
+apps/web/app/lists/[id]/page.tsx
+apps/web/app/lists/page.tsx
+apps/web/app/occasions/[id]/page.tsx
+apps/web/app/occasions/page.tsx
+apps/web/app/people/[id]/page.tsx
+apps/web/app/people/page.tsx
+apps/web/components/dashboard/PeopleNeeding.tsx
+apps/web/components/dashboard/PipelineSummary.tsx
+apps/web/components/dashboard/PrimaryOccasion.tsx
+apps/web/components/dashboard/QuickActions.tsx
+apps/web/components/dashboard/index.ts
+apps/web/components/layout/icons.tsx
+apps/web/components/lists/ListCard.tsx
+apps/web/components/lists/ListDetail.tsx
+apps/web/components/lists/ListItemGroup.tsx
+apps/web/components/lists/ListItemRow.tsx
+apps/web/components/lists/ListSummary.tsx
+apps/web/components/lists/PipelineView.tsx
+apps/web/components/lists/index.ts
+apps/web/components/occasions/OccasionCard.tsx
+apps/web/components/occasions/OccasionDetail.tsx
+apps/web/components/occasions/OccasionList.tsx
+apps/web/components/occasions/OccasionLists.tsx
+apps/web/components/occasions/index.ts
+apps/web/components/people/PersonCard.tsx
+apps/web/components/people/PersonDetail.tsx
+apps/web/components/people/PersonHistory.tsx
+apps/web/components/people/PersonInfo.tsx
+apps/web/components/people/PersonList.tsx
+apps/web/components/people/PersonLists.tsx
+apps/web/components/people/PersonSearch.tsx
+apps/web/components/people/index.ts
+apps/web/components/ui/index.ts
+apps/web/components/ui/tabs.tsx
+apps/web/hooks/useDashboard.ts
+apps/web/hooks/useListItems.ts
+apps/web/hooks/useLists.ts
+apps/web/hooks/useOccasion.ts
+apps/web/hooks/useOccasions.ts
+apps/web/hooks/usePersons.ts
+apps/web/types/index.ts
+839517fce4fbaf572ee712c2380012335a748ae2 2025-11-27 10:42:00 -0500 feat(web): Phase 6 complete - Frontend Foundation
+
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+.claude/worknotes/family-dashboard-v1/phase-6-8-context.md
+apps/web/.env.example
+apps/web/.eslintrc.json
+apps/web/.gitignore
+apps/web/FE-002-SETUP-COMPLETE.md
+apps/web/FE-004-AUTH-IMPLEMENTATION.md
+apps/web/FE-005-API-CLIENT-COMPLETE.md
+apps/web/FE-006-LAYOUT-COMPLETE.md
+apps/web/FE-007-BASE-COMPONENTS-COMPLETE.md
+apps/web/FE-008-COMPLETE.md
+apps/web/PWA-QUICK-REF.md
+apps/web/PWA.md
+apps/web/QUICK-START-AUTH.md
+apps/web/REACT_QUERY_SETUP.md
+apps/web/README.md
+apps/web/app/(auth)/login/page.tsx
+apps/web/app/(auth)/register/page.tsx
+apps/web/app/dashboard/layout.tsx
+apps/web/app/dashboard/page.tsx
+apps/web/app/gifts/[id]/page.tsx
+apps/web/app/gifts/layout.tsx
+apps/web/app/gifts/page.tsx
+apps/web/app/globals.css
+apps/web/app/layout.tsx
+apps/web/app/lists/[id]/page.tsx
+apps/web/app/lists/layout.tsx
+apps/web/app/lists/page.tsx
+apps/web/app/occasions/[id]/page.tsx
+apps/web/app/occasions/layout.tsx
+apps/web/app/occasions/page.tsx
+apps/web/app/page.tsx
+apps/web/app/people/[id]/page.tsx
+apps/web/app/people/layout.tsx
+apps/web/app/test-query/page.tsx
+apps/web/app/test-tailwind/page.tsx
+apps/web/app/ui-demo/page.tsx
+apps/web/components/auth/ProtectedRoute.tsx
+apps/web/components/auth/PublicRoute.tsx
+apps/web/components/auth/index.ts
+apps/web/components/layout/DesktopNav.tsx
+apps/web/components/layout/Header.tsx
+apps/web/components/layout/MobileNav.tsx
+apps/web/components/layout/PageHeader.tsx
+apps/web/components/layout/Shell.tsx
+apps/web/components/layout/icons.tsx
+apps/web/components/layout/index.ts
+apps/web/components/layout/nav-config.ts
+apps/web/components/providers/.gitkeep
+apps/web/components/providers/AuthProvider.tsx
+apps/web/components/providers/QueryProvider.tsx
+apps/web/components/providers/index.tsx
+apps/web/components/pwa-register.tsx
+apps/web/components/shared/.gitkeep
+apps/web/components/ui/.gitkeep
+apps/web/components/ui/README.md
+apps/web/components/ui/avatar.tsx
+apps/web/components/ui/badge.tsx
+apps/web/components/ui/button.tsx
+apps/web/components/ui/card.tsx
+apps/web/components/ui/dialog.tsx
+apps/web/components/ui/index.ts
+apps/web/components/ui/input.tsx
+apps/web/components/ui/skeleton.tsx
+apps/web/components/ui/spinner.tsx
+apps/web/components/ui/test-tailwind.tsx
+apps/web/components/ui/toast.tsx
+apps/web/components/ui/toaster.tsx
+apps/web/components/ui/use-toast.tsx
+apps/web/hooks/.gitkeep
+apps/web/hooks/useAuth.ts
+apps/web/middleware.ts
+apps/web/next.config.ts
+apps/web/package.json
+apps/web/postcss.config.js
+apps/web/public/apple-touch-icon.png
+apps/web/public/apple-touch-icon.svg
+apps/web/public/icons/icon-180.png
+apps/web/public/icons/icon-180.svg
+apps/web/public/icons/icon-192.png
+apps/web/public/icons/icon-192.svg
+apps/web/public/icons/icon-512.png
+apps/web/public/icons/icon-512.svg
+apps/web/public/manifest.json
+apps/web/public/sw.js
+apps/web/scripts/generate-icons.js
+apps/web/tailwind.config.ts
+apps/web/tsconfig.json
+apps/web/types/index.ts
+1f8d44a0331f973c442d01e2c4a1ddc808b168fd 2025-11-26 22:56:21 -0500 feat(api): Phase 4-5 complete - REST API (25+ routes) + WebSocket
+
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+.claude/worknotes/family-dashboard-v1/phase-4-5-context.md
+services/api/app/api/auth.py
+services/api/app/api/dashboard.py
+services/api/app/api/gifts.py
+services/api/app/api/list_items.py
+services/api/app/api/occasions.py
+services/api/app/core/config.py
+services/api/app/core/deps.py
+services/api/app/core/exceptions.py
+services/api/app/main.py
+services/api/app/schemas/__init__.py
+services/api/app/schemas/ws.py
+services/api/app/services/ws_manager.py
+35e2d3764f71fcd88dc2dc3a58f0d69262907745 2025-11-26 22:54:02 -0500 feat(api): WS-004 - Service layer broadcast integration for ListItem mutations
+
+services/api/app/services/list_item.py
+f29356fb983d68e3efb4eaa847f2f1dcf2059fe9 2025-11-26 22:50:26 -0500 feat(api): Phase 4 - WebSocket endpoint with JWT auth and topic subscriptions (WS-002 + WS-005)
+
+services/api/app/api/ws.py
+services/api/app/main.py
+c724172fefbc0323f0befc6d44ad0ea6f10a9643 2025-11-26 22:41:51 -0500 feat(api): Phase 4 partial - List routes (API-006)
+
+services/api/app/api/lists.py
+services/api/app/services/list.py
+47f8e411057bad7f0920271cec0dcff7dcd4e30f 2025-11-26 22:41:44 -0500 feat(api): API-003 - User routes with CRUD endpoints
+
+services/api/app/api/persons.py
+services/api/app/api/users.py
+services/api/app/repositories/base.py
+services/api/app/services/user.py
+84fc95233bcaeeaef2f3790d311215feb6a80fa5 2025-11-26 22:41:31 -0500 feat(api): API-008 - List item status and assignment endpoints
+
+services/api/app/api/list_items.py
+services/api/app/main.py
+59964c33a375b5a99c1d8beb05351bb6ac752b01 2025-11-26 22:34:06 -0500 feat(api): Add health check endpoint for K8s probes
+
+services/api/app/api/health.py
+788b444024dc039c04cf24565efd33948c09f029 2025-11-26 22:24:44 -0500 feat(api): Phase 3 complete - service layer with 9 services
+
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+.claude/worknotes/family-dashboard-v1/phase-3-context.md
+services/api/app/core/config.py
+services/api/app/services/__init__.py
+services/api/app/services/auth.py
+services/api/app/services/comment.py
+services/api/app/services/dashboard.py
+services/api/app/services/gift.py
+services/api/app/services/list.py
+services/api/app/services/list_item.py
+services/api/app/services/occasion.py
+services/api/app/services/person.py
+services/api/app/services/user.py
+services/api/pyproject.toml
+services/api/uv.lock
+ab5971c6d408b21763746cb00975743225f4e12e 2025-11-26 20:52:27 -0500 ai: create reusable prompt block
+
+.claude/prompt-blocks/tracking-created.md
+cfd16123b43d2a3cba812b293b535553a2518eb4 2025-11-26 20:12:17 -0500 chore: update Phase 3 progress - SVC-001 complete
+fb2ae42ffdf2a27ae949f087fe647aa9cbc6b626 2025-11-26 20:12:06 -0500 feat(api): Phase 3 partial - DTO schemas (SVC-001)
+
+services/api/app/schemas/__init__.py
+services/api/app/schemas/base.py
+services/api/app/schemas/comment.py
+services/api/app/schemas/dashboard.py
+services/api/app/schemas/gift.py
+services/api/app/schemas/list.py
+services/api/app/schemas/list_item.py
+services/api/app/schemas/occasion.py
+services/api/app/schemas/person.py
+services/api/app/schemas/tag.py
+services/api/app/schemas/user.py
+8790c7b1e273d5e0e27840cff56fb13d1707f6fc 2025-11-26 17:11:34 -0500 feat(api): Phase 2 complete - repository layer with cursor pagination
+
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+services/api/app/models/gift.py
+services/api/app/repositories/README.md
+services/api/app/repositories/__init__.py
+services/api/app/repositories/base.py
+services/api/app/repositories/comment.py
+services/api/app/repositories/gift.py
+services/api/app/repositories/list.py
+services/api/app/repositories/list_item.py
+services/api/app/repositories/occasion.py
+services/api/app/repositories/person.py
+services/api/app/repositories/tag.py
+services/api/app/repositories/user.py
+72211b45e7feb407dd7a1563a4c3321d46ab5667 2025-11-26 17:04:51 -0500 feat(api): Phase 1 complete - database foundation with 8 entity models
+
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+.claude/worknotes/family-dashboard-v1/phase-1-3-context.md
+services/api/.env.example
+services/api/alembic.ini
+services/api/alembic/README
+services/api/alembic/env.py
+services/api/alembic/script.py.mako
+services/api/alembic/versions/e5d8200343c6_initial_schema.py
+services/api/app/__init__.py
+services/api/app/api/__init__.py
+services/api/app/core/__init__.py
+services/api/app/core/config.py
+services/api/app/core/database.py
+services/api/app/models/__init__.py
+services/api/app/models/base.py
+services/api/app/models/comment.py
+services/api/app/models/gift.py
+services/api/app/models/list.py
+services/api/app/models/list_item.py
+services/api/app/models/occasion.py
+services/api/app/models/person.py
+services/api/app/models/tag.py
+services/api/app/models/user.py
+services/api/main.py
+services/api/pyproject.toml
+services/api/uv.lock
+ee0840755b7ae10bb43b597c80de4cf7926e5045 2025-11-26 16:27:02 -0500 Remove tracked .DS_Store files
+
+docs/.DS_Store
+docs/project_plans/.DS_Store
+docs/project_plans/implementation_plans/family-dashboard-v1/phase-1-3-backend.md
+docs/project_plans/implementation_plans/family-dashboard-v1/phase-4-5-api.md
+docs/project_plans/implementation_plans/family-dashboard-v1/phase-6-8-frontend.md
+docs/project_plans/implementation_plans/family-dashboard-v1/phase-9-deployment.md
+77dea62dee779ce5dc09e0595d82189b9a2cf447 2025-11-26 14:33:44 -0500 feat(agents, skills): add real-time specialist agent and complete WebSocket skill
+
+.claude/.skillmeat-deployed.toml
+.claude/agents/architects/react-component-architect.md
+.claude/agents/architects/realtime-architect.md
+.claude/agents/dev-team/frontend/frontend-developer.md
+.claude/agents/dev-team/frontend/react-nextjs-expert.md
+.claude/agents/dev-team/frontend/tailwind-css-expert.md
+.claude/agents/dev-team/frontend/ui-engineer-enhanced.md
+.claude/skills/frontend-development/SKILL.md
+.claude/skills/frontend-development/resources/common-patterns.md
+.claude/skills/frontend-development/resources/complete-examples.md
+.claude/skills/frontend-development/resources/component-patterns.md
+.claude/skills/frontend-development/resources/data-fetching.md
+.claude/skills/frontend-development/resources/file-organization.md
+.claude/skills/frontend-development/resources/loading-and-error-states.md
+.claude/skills/frontend-development/resources/performance.md
+.claude/skills/frontend-development/resources/routing-guide.md
+.claude/skills/frontend-development/resources/styling-guide.md
+.claude/skills/frontend-development/resources/typescript-standards.md
+.claude/skills/implementing-websocket-realtime/SKILL.md
+.claude/skills/implementing-websocket-realtime/backend-patterns.md
+.claude/skills/implementing-websocket-realtime/connection-lifecycle.md
+.claude/skills/implementing-websocket-realtime/event-structure-patterns.md
+.claude/skills/implementing-websocket-realtime/fallback-strategies.md
+.claude/skills/implementing-websocket-realtime/frontend-patterns.md
+.claude/skills/implementing-websocket-realtime/scripts/validate-ws-event.js
+.claude/skills/implementing-websocket-realtime/state-sync-strategies.md
+50e72c215199c61d9cde7de04443a4d70d894cc2 2025-11-26 11:52:44 -0500 ai: init .claude
+
+.claude/.skillmeat-deployed.toml
+.claude/.skillmeat-project.toml
+.claude/skills/chrome-devtools/SKILL.md
+.claude/skills/chrome-devtools/references/cdp-domains.md
+.claude/skills/chrome-devtools/references/performance-guide.md
+.claude/skills/chrome-devtools/references/puppeteer-reference.md
+.claude/skills/chrome-devtools/scripts/README.md
+.claude/skills/chrome-devtools/scripts/__tests__/selector.test.js
+.claude/skills/chrome-devtools/scripts/click.js
+.claude/skills/chrome-devtools/scripts/console.js
+.claude/skills/chrome-devtools/scripts/evaluate.js
+.claude/skills/chrome-devtools/scripts/fill.js
+.claude/skills/chrome-devtools/scripts/install-deps.sh
+.claude/skills/chrome-devtools/scripts/install.sh
+.claude/skills/chrome-devtools/scripts/navigate.js
+.claude/skills/chrome-devtools/scripts/network.js
+.claude/skills/chrome-devtools/scripts/package-lock.json
+.claude/skills/chrome-devtools/scripts/package.json
+.claude/skills/chrome-devtools/scripts/performance.js
+.claude/skills/chrome-devtools/scripts/screenshot.js
+.claude/skills/chrome-devtools/scripts/snapshot.js
+.claude/skills/claude-code/SKILL.md
+.claude/skills/claude-code/llms.txt
+.claude/skills/claude-code/references/advanced-features.md
+.claude/skills/claude-code/references/agent-skills.md
+.claude/skills/claude-code/references/api-reference.md
+.claude/skills/claude-code/references/best-practices.md
+.claude/skills/claude-code/references/cicd-integration.md
+.claude/skills/claude-code/references/configuration.md
+.claude/skills/claude-code/references/enterprise-features.md
+.claude/skills/claude-code/references/getting-started.md
+.claude/skills/claude-code/references/hooks-and-plugins.md
+.claude/skills/claude-code/references/ide-integration.md
+.claude/skills/claude-code/references/mcp-integration.md
+.claude/skills/claude-code/references/slash-commands.md
+.claude/skills/claude-code/references/troubleshooting.md
+.claude/skills/claude-code/skill.json
+.claude/skills/frontend-design/SKILL.md
+.claude/skills/frontend-design/references/animejs.md
+.claude/skills/skill-builder
+0a2636924bd7f85bf9aa2a1ed88025191b798a13 2025-11-26 11:51:11 -0500 feat: Initial project setup with V1 implementation plan
+
+.claude/CLAUDE.md
+.claude/INSTALL.md
+.claude/README.md
+.claude/agents/ai/agent-expert.md
+.claude/agents/ai/ai-artifacts-engineer.md
+.claude/agents/ai/ai-engineer.md
+.claude/agents/ai/codebase-explorer.md
+.claude/agents/ai/command-creator.md
+.claude/agents/ai/prompt-engineer.md
+.claude/agents/ai/search-specialist.md
+.claude/agents/ai/symbols-engineer.md
+.claude/agents/architects/backend-architect.md
+.claude/agents/architects/backend-typescript-architect.md
+.claude/agents/architects/data-layer-expert.md
+.claude/agents/architects/devops-architect.md
+.claude/agents/architects/frontend-architect.md
+.claude/agents/architects/lead-architect.md
+.claude/agents/architects/nextjs-architecture-expert.md
+.claude/agents/architects/system-architect.md
+.claude/agents/dev-team/frontend-developer.md
+.claude/agents/dev-team/mobile-app-builder.md
+.claude/agents/dev-team/python-backend-engineer.md
+.claude/agents/dev-team/python-pro.md
+.claude/agents/dev-team/ui-engineer-enhanced.md
+.claude/agents/fix-team/refactoring-expert.md
+.claude/agents/fix-team/ultrathink-debugger.md
+.claude/agents/pm/feature-planner.md
+.claude/agents/pm/implementation-planner.md
+.claude/agents/pm/lead-pm.md
+.claude/agents/pm/prd-writer.md
+.claude/agents/pm/spike-writer.md
+.claude/agents/pm/task-decomposition-expert.md
+.claude/agents/reviewers/api-librarian.md
+.claude/agents/reviewers/code-reviewer.md
+.claude/agents/reviewers/karen.md
+.claude/agents/reviewers/senior-code-reviewer.md
+.claude/agents/reviewers/task-completion-validator.md
+.claude/agents/reviewers/telemetry-auditor.md
+.claude/agents/tech-writers/api-documenter.md
+.claude/agents/tech-writers/changelog-generator.md
+.claude/agents/tech-writers/documentation-complex.md
+.claude/agents/tech-writers/documentation-expert.md
+.claude/agents/tech-writers/documentation-planner.md
+.claude/agents/tech-writers/documentation-writer.md
+.claude/agents/tech-writers/openapi-expert.md
+.claude/agents/tech-writers/technical-writer.md
+.claude/agents/ui-ux/a11y-sheriff.md
+.claude/agents/ui-ux/ui-designer.md
+.claude/agents/ui-ux/ui-engineer.md
+.claude/agents/ui-ux/ux-researcher.md
+.claude/agents/web-optimize-team/react-performance-optimizer.md
+.claude/agents/web-optimize-team/url-context-validator.md
+.claude/agents/web-optimize-team/url-link-extractor.md
+.claude/agents/web-optimize-team/web-accessibility-checker.md
+.claude/commands/ai/lyra.md
+.claude/commands/ai/memory-spring-cleaning.md
+.claude/commands/ai/session-learning-capture.md
+.claude/commands/analyze/analyze-codebase.md
+.claude/commands/analyze/architecture-review.md
+.claude/commands/analyze/check-architecture.md
+.claude/commands/analyze/check-file.md
+.claude/commands/analyze/scan-violations.md
+.claude/commands/analyze/symbols/load-symbols.md
+.claude/commands/analyze/symbols/symbols-chunk.md
+.claude/commands/analyze/symbols/symbols-query.md
+.claude/commands/analyze/symbols/symbols-search.md
+.claude/commands/analyze/symbols/symbols-update.md
+.claude/commands/artifacts/README.md
+.claude/commands/artifacts/freeze-api-version.md
+.claude/commands/artifacts/generate-api-docs.md
+.claude/commands/artifacts/post-implementation-updates.md
+.claude/commands/artifacts/refresh-ai-artifacts.md
+.claude/commands/artifacts/update-ai-hints.md
+.claude/commands/artifacts/update-codeowners.md
+.claude/commands/artifacts/update-readmes.md
+.claude/commands/artifacts/update-repo-map.md
+.claude/commands/artifacts/update-symbols-graph.md
+.claude/commands/artifacts/validate-chunking.md
+.claude/commands/artifacts/validate-contracts.md
+.claude/commands/dev/complete-user-story.md
+.claude/commands/dev/create-feature.md
+.claude/commands/dev/execute-phase.md
+.claude/commands/dev/implement-story.md
+.claude/commands/dev/new-feature.md
+.claude/commands/fix/bugfix-commit.md
+.claude/commands/fix/fix-arch-violation.md
+.claude/commands/fix/fix-gh-issue.md
+.claude/commands/integrations/github-create-issue.md
+.claude/commands/integrations/linear-create-task.md
+.claude/commands/integrations/trello-add-card.md
+.claude/commands/plan/architecture-scenario-explorer.md
+.claude/commands/plan/design.md
+.claude/commands/plan/plan-from-gh.md
+.claude/commands/plan/plan-story.md
+.claude/commands/plan/spike.md
+.claude/commands/plan/ultra_think.md
+.claude/commands/pm/create-adr.md
+.claude/commands/pm/pre-pr-validation.md
+.claude/commands/pm/task_gen.md
+.claude/commands/pm/user_stories.md
+.claude/commands/review/code-review.md
+.claude/commands/review/refactor-code.md
+.claude/commands/review/refractor.md
+.claude/commands/review/review-story.md
+.claude/commands/stubs/load-story.md
+.claude/commands/test/test-stories.md
+.claude/commands/test/write-tests.md
+.claude/config/INDEX.md
+.claude/config/QUICK_REFERENCE.md
+.claude/config/README.md
+.claude/config/config.json
+.claude/config/subagents.json
+.claude/config/template-config-schema.json
+.claude/config/template-config.json
+.claude/examples/README.md
+.claude/examples/TEMPLATES.md
+.claude/examples/plans/implementation-plan-template.md
+.claude/examples/progress/phase-progress-template.md
+.claude/examples/worknotes/bug-fixes-tracking-template.md
+.claude/examples/worknotes/observation-log-template.md
+.claude/examples/worknotes/phase-context-template.md
+.claude/hooks/check-style.sh
+.claude/hooks/run-py-tests.sh
+.claude/hooks/run-web-tests.sh
+.claude/install.sh
+.claude/progress/family-dashboard-v1/all-phases-progress.md
+.claude/scripts/README.md
+.claude/scripts/architecture-utils.sh
+.claude/scripts/artifact-utils.sh
+.claude/scripts/backup-utils.sh
+.claude/scripts/ci-utils.sh
+.claude/scripts/contract-utils.sh
+.claude/scripts/file-utils.sh
+.claude/scripts/git-utils.sh
+.claude/scripts/json-utils.sh
+.claude/scripts/report-utils.sh
+.claude/scripts/story-helpers.sh
+.claude/scripts/validation-utils.sh
+.claude/settings.json
+.claude/skills/artifact-tracking/SKILL.md
+.claude/skills/artifact-tracking/SUMMARY.md
+.claude/skills/artifact-tracking/TEMPLATES-INDEX.md
+.claude/skills/artifact-tracking/agents/artifact-query.md
+.claude/skills/artifact-tracking/agents/artifact-tracker.md
+.claude/skills/artifact-tracking/agents/artifact-validator.md
+.claude/skills/artifact-tracking/format-specification.md
+.claude/skills/artifact-tracking/migration-guide.md
+.claude/skills/artifact-tracking/query-patterns.md
+.claude/skills/artifact-tracking/schemas/DELIVERY-SUMMARY.md
+.claude/skills/artifact-tracking/schemas/EXAMPLE-FRONTMATTER.md
+.claude/skills/artifact-tracking/schemas/README.md
+.claude/skills/artifact-tracking/schemas/SCHEMAS-INDEX.md
+.claude/skills/artifact-tracking/schemas/VALIDATION-REFERENCE.md
+.claude/skills/artifact-tracking/schemas/bug-fix.schema.yaml
+.claude/skills/artifact-tracking/schemas/context.schema.yaml
+.claude/skills/artifact-tracking/schemas/observation.schema.yaml
+.claude/skills/artifact-tracking/schemas/progress.schema.yaml
+.claude/skills/artifact-tracking/scripts/README.md
+.claude/skills/artifact-tracking/scripts/__pycache__/validate_artifact.cpython-312.pyc
+.claude/skills/artifact-tracking/scripts/convert_to_hybrid.py
+.claude/skills/artifact-tracking/scripts/migrate_all.py
+.claude/skills/artifact-tracking/scripts/query_artifacts.py
+.claude/skills/artifact-tracking/scripts/requirements.txt
+.claude/skills/artifact-tracking/scripts/validate_artifact.py
+.claude/skills/artifact-tracking/templates/README.md
+.claude/skills/artifact-tracking/templates/bug-fix-template.md
+.claude/skills/artifact-tracking/templates/context-template.md
+.claude/skills/artifact-tracking/templates/observation-template.md
+.claude/skills/artifact-tracking/templates/progress-template.md
+.claude/skills/planning/README.md
+.claude/skills/planning/SKILL.md
+.claude/skills/planning/references/file-structure.md
+.claude/skills/planning/references/mp-architecture.md
+.claude/skills/planning/references/optimization-patterns.md
+.claude/skills/planning/references/subagent-assignments.md
+.claude/skills/planning/scripts/README.md
+.claude/skills/planning/templates/implementation-plan-template.md
+.claude/skills/planning/templates/phase-breakdown-template.md
+.claude/skills/planning/templates/prd-template.md
+.claude/skills/planning/templates/progress-tracking-template.md
+.claude/skills/receiving-code-review/skill.md
+.claude/skills/skill-creator/LICENSE.txt
+.claude/skills/skill-creator/SKILL.md
+.claude/skills/skill-creator/scripts/__pycache__/quick_validate.cpython-312.pyc
+.claude/skills/skill-creator/scripts/init_skill.py
+.claude/skills/skill-creator/scripts/package_skill.py
+.claude/skills/skill-creator/scripts/quick_validate.py
+.claude/skills/symbols/README.md
+.claude/skills/symbols/SKILL.md
+.claude/skills/symbols/TEMPLATIZATION_SUMMARY.md
+.claude/skills/symbols/scripts/README.md
+.claude/skills/symbols/scripts/__pycache__/config.cpython-312.pyc
+.claude/skills/symbols/scripts/__pycache__/extract_symbols_python.cpython-312.pyc
+.claude/skills/symbols/scripts/__pycache__/merge_symbols.cpython-312.pyc
+.claude/skills/symbols/scripts/__pycache__/symbol_tools.cpython-312.pyc
+.claude/skills/symbols/scripts/__pycache__/test_init_symbols.cpython-312-pytest-8.4.1.pyc
+.claude/skills/symbols/scripts/__pycache__/test_update_claude_md.cpython-312-pytest-8.4.1.pyc
+.claude/skills/symbols/scripts/__pycache__/update_claude_md.cpython-312.pyc
+.claude/skills/symbols/scripts/add_layer_tags.py
+.claude/skills/symbols/scripts/backfill_schema.py
+.claude/skills/symbols/scripts/config.py
+.claude/skills/symbols/scripts/config_example.py
+.claude/skills/symbols/scripts/extract_symbols_python.py
+.claude/skills/symbols/scripts/extract_symbols_typescript.py
+.claude/skills/symbols/scripts/generate_api_symbols.py
+.claude/skills/symbols/scripts/init_symbols.py
+.claude/skills/symbols/scripts/merge_symbols.py
+.claude/skills/symbols/scripts/split_api_by_layer.py
+.claude/skills/symbols/scripts/symbol_tools.py
+.claude/skills/symbols/scripts/test_init_symbols.py
+.claude/skills/symbols/scripts/test_update_claude_md.py
+.claude/skills/symbols/scripts/update_claude_md.py
+.claude/skills/symbols/scripts/validate_schema.py
+.claude/skills/symbols/scripts/validate_symbols.py
+.claude/skills/symbols/symbols-config-schema.json
+.claude/skills/symbols/symbols.config.json
+.claude/skills/symbols/templates/example-custom-config.json
+.claude/skills/symbols/templates/nextjs-monorepo.json
+.claude/skills/symbols/templates/python-django.json
+.claude/skills/symbols/templates/python-fastapi.json
+.claude/skills/symbols/templates/react-typescript-fullstack.json
+.claude/skills/symbols/templates/validate_templates.py
+.claude/skills/symbols/templates/vue-typescript.json
+.claude/specs/README.md
+.claude/specs/claude-fundamentals-spec.md
+.claude/specs/doc-policy-spec.md
+.claude/specs/project-examples/meatyprompts-spec.md
+.claude/templates/pm/README.md
+.claude/templates/pm/feature-request-template.md
+.claude/templates/pm/implementation-plan-template.md
+.claude/templates/pm/spike-document-template.md
+.claude/templates/pm/task-breakdown-template.md
+.claude/worknotes/family-dashboard-v1/phase-1-context.md
+.gitignore
+CLAUDE.md
+apps/web/CLAUDE.md
+docs/.DS_Store
+docs/project_plans/.DS_Store
+docs/project_plans/implementation_plans/family-dashboard-v1-implementation.md
+docs/project_plans/implementation_plans/family-dashboard-v1/phase-1-3-backend.md
+docs/project_plans/implementation_plans/family-dashboard-v1/phase-4-5-api.md
+docs/project_plans/implementation_plans/family-dashboard-v1/phase-6-8-frontend.md
+docs/project_plans/implementation_plans/family-dashboard-v1/phase-9-deployment.md
+docs/project_plans/init/family-dashboard-v1.md
+docs/project_plans/north-star/family-gifting-dash.md
+services/api/CLAUDE.md

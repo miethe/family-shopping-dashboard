@@ -1,0 +1,62 @@
+$ pnpm install --frozen-lockfile --ignore-scripts
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +545
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 545, reused 466, downloaded 14, added 8
+Progress: resolved 545, reused 467, downloaded 32, added 26
+Progress: resolved 545, reused 467, downloaded 72, added 109
+Progress: resolved 545, reused 467, downloaded 75, added 268
+Progress: resolved 545, reused 467, downloaded 76, added 469
+Progress: resolved 545, reused 467, downloaded 76, added 519
+Progress: resolved 545, reused 467, downloaded 76, added 540
+Progress: resolved 545, reused 467, downloaded 77, added 542
+Progress: resolved 545, reused 467, downloaded 77, added 544
+Progress: resolved 545, reused 467, downloaded 78, added 544
+Progress: resolved 545, reused 467, downloaded 78, added 545
+Progress: resolved 545, reused 467, downloaded 78, added 545, done
+
+dependencies:
++ @radix-ui/react-avatar 1.1.11
++ @radix-ui/react-collapsible 1.1.12
++ @radix-ui/react-dialog 1.1.15
++ @radix-ui/react-dropdown-menu 2.1.16
++ @radix-ui/react-slot 1.2.4
++ @radix-ui/react-switch 1.2.6
++ @radix-ui/react-tabs 1.1.13
++ @radix-ui/react-toast 1.2.15
++ @radix-ui/react-tooltip 1.2.8
++ @tanstack/react-query 5.90.11
++ @tanstack/react-query-devtools 5.91.1
++ class-variance-authority 0.7.1
++ clsx 2.1.1
++ date-fns 4.1.0
++ next 15.5.6
++ react 19.2.0
++ react-dom 19.2.0
++ react-easy-crop 5.5.6
++ tailwind-merge 2.6.0
+
+devDependencies:
++ @axe-core/playwright 4.11.0
++ @playwright/test 1.57.0
++ @testing-library/jest-dom 6.9.1
++ @testing-library/react 16.3.0
++ @testing-library/user-event 14.6.1
++ @types/node 22.19.1
++ @types/react 19.2.7
++ @types/react-dom 19.2.3
++ @vitejs/plugin-react 5.1.1
++ autoprefixer 10.4.22
++ eslint 9.39.1
++ eslint-config-next 15.5.6
++ happy-dom 20.0.11
++ jsdom 27.2.0
++ postcss 8.5.6
++ tailwindcss 3.4.18
++ typescript 5.9.3
++ vitest 4.0.15
+
+Done in 11.8s using pnpm v10.14.0
+
+EXIT 0

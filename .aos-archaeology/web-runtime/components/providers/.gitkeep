@@ -1,0 +1,9 @@
+# Providers Directory
+
+This directory will contain React context providers.
+
+Examples:
+- QueryProvider.tsx (React Query)
+- AuthProvider.tsx (Authentication)
+- ThemeProvider.tsx (Dark mode)
+- WebSocketProvider.tsx (Real-time updates)

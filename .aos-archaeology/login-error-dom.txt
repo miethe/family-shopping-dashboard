@@ -1,0 +1,14 @@
+redeem
+card_giftcard
+celebration
+Welcome to Family Gifting
+
+Log in to continue managing your gifts and lists.
+
+Login
+Failed to fetch
+Email
+Password
+Log In
+
+Don't have an account? Sign Up

@@ -1,0 +1,39 @@
+itt --json node add-evidence node_01M7DPW9QWRVVTN2KVRKCE1T1N --kind validation --ref /Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/page.html --data <paths and run result>
+{
+  "id": "evid_01M7DR1HZJJKQT40A8A4PEVSFC",
+  "workspace_id": "ws_01KVXN21Q7S072GQ5EWZAR03RJ",
+  "target_type": "node",
+  "target_id": "node_01M7DPW9QWRVVTN2KVRKCE1T1N",
+  "kind": "validation",
+  "delivery_class": "branch_local",
+  "label": "Private family gifting archaeology: page, historical intent map, runtime result",
+  "ref_value": "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/page.html",
+  "validation_run_id": null,
+  "external_link_id": null,
+  "occurred_at": null,
+  "data": {
+    "historical": true,
+    "private": true,
+    "page_path": "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/page.html",
+    "intents_path": "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/intents.yaml",
+    "run_result": "Local Postgres, API and web start; migration reaches head; fake registration succeeds; login returns HTTP 500 because latest migration drops activity_logs. Authenticated gift/list/budget workflows unverified. All started processes stopped.",
+    "run_evidence": "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/run-results.json",
+    "first_attempt_evidence": "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/first-run-results.json",
+    "screenshots": [
+      "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/login-error.png",
+      "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/register.png",
+      "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/component-library.png"
+    ],
+    "validation": [
+      "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/artifact-validation.json",
+      "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/page-validation.json"
+    ],
+    "delivery": "private local artifacts; no code changes or publication"
+  },
+  "authored_by_actor_id": "actor_system",
+  "claimed_actor_id": null,
+  "created_at": "2026-11-14T19:20:12.530833Z",
+  "updated_at": "2026-11-14T19:20:12.530837Z"
+}
+
+EXIT 0

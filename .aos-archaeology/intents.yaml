@@ -1,0 +1,670 @@
+schema_version: 1
+historical: true
+snapshot:
+  repository: family-shopping-dashboard
+  git_head: 5df108b9461089567205b98d0eabadf35a0fe459
+  observed_on: '2026-11-14'
+  mode: private_archaeology
+  activation: Do not import as live tasks without later triage.
+  status_meaning:
+    built: Implementation exists; does not assert a currently passing workflow.
+    partial: Some implementation exists with specific gaps or a reproduced failure.
+    ideated: Historical intention or researched alternative, with no integrated implementation.
+    abandoned: Explicitly superseded historical approach.
+root:
+  id: family-gifting
+  title: A shared family gifting table
+  intent: Remember people, capture thoughtful gifts and coordinate buying across occasions without duplicate purchases
+    or lost context.
+  status: partial
+  historical: true
+  sources:
+  - path: docs/project_plans/north-star/family-gifting-dash.md
+    line: 11
+  - path: docs/project_plans/family-dashboard-v1/family-dashboard-v1.md
+    line: 12
+  layers:
+  - id: data
+    title: Family memory
+    intent: Remember people, occasions, gifts, relationships and spending between planning seasons.
+    status: partial
+    historical: true
+    sources:
+    - path: docs/project_plans/north-star/family-gifting-dash.md
+      line: 94
+    features:
+    - id: people
+      title: People and preferences
+      intent: Remember interests, constraints, clothing sizes and groups for thoughtful gifting.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/models/person.py
+        line: 20
+      - path: services/api/app/schemas/person.py
+        line: 542
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: occasions
+      title: Occasions and recurrence
+      intent: Keep holidays, birthdays and anniversaries attached to the people involved.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/models/occasion.py
+        line: 26
+      - path: services/api/app/services/person_occasion_hooks.py
+        line: 29
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: catalog
+      title: Reusable gift catalog
+      intent: Store a gift once and relate it to recipients, shops and planning lists.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/models/gift.py
+        line: 39
+      - path: services/api/app/models/gift_person.py
+        line: 25
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: lists
+      title: Lists and lifecycle
+      intent: Track choices and buying progress for a person and an occasion.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/models/list.py
+        line: 27
+      - path: services/api/app/models/list_item.py
+        line: 13
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: budgets
+      title: Budgets at several levels
+      intent: Compare purchased and planned spending against optional family and personal limits.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/models/entity_budget.py
+        line: 15
+      - path: services/api/app/models/person.py
+        line: 153
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: comments
+      title: Comments with visibility
+      intent: Keep discussions alongside the thing being planned, including author-private notes.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/models/comment.py
+        line: 29
+      - path: services/api/app/services/comment.py
+        line: 11
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: activity-storage
+      title: Activity history storage
+      intent: Remember changes for a shared feed and later review.
+      status: partial
+      historical: true
+      sources:
+      - path: services/api/app/models/activity.py
+        line: 14
+      - path: services/api/alembic/versions/a9a8b7496861_add_gift_from_santa_field.py
+        line: 26
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Latest migration drops the activity table while the ORM still queries it; reproduced login failure.
+    - id: tags
+      title: Tags and classification
+      intent: Organize ideas and people through reusable gift-interest labels.
+      status: partial
+      historical: true
+      sources:
+      - path: services/api/app/models/tag.py
+        line: 35
+      - path: services/api/app/repositories/tag.py
+        line: 11
+      - path: docs/project_plans/family-dashboard-v1/family-dashboard-v1.md
+        line: 188
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Tag storage and repository exist; no dedicated tags router is mounted in the application.
+    - id: options-data
+      title: Editable field vocabulary
+      intent: Let household maintain dropdown choices without editing source code.
+      status: partial
+      historical: true
+      sources:
+      - path: services/api/app/models/field_option.py
+        line: 11
+      - path: services/api/app/schemas/person.py
+        line: 27
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Options are stored, but many validators still use hardcoded sets.
+  - id: service
+    title: Household coordination
+    intent: Turn shared family records into reliable decisions, updates and useful summaries.
+    status: partial
+    historical: true
+    sources:
+    - path: services/api/CLAUDE.md
+      line: 8
+    features:
+    - id: authentication
+      title: Local accounts
+      intent: Allow household members to register and sign in privately.
+      status: partial
+      historical: true
+      sources:
+      - path: services/api/app/api/auth.py
+        line: 97
+      - path: services/api/app/services/user.py
+        line: 84
+      verification: static_source_review; authenticated workflows blocked in this run
+      observed: Registration returned 201; login returned 500 on a fresh migrated Postgres instance.
+    - id: crud
+      title: Core record management
+      intent: Create and connect people, occasions, gifts and lists through typed endpoints.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/main.py
+        line: 193
+      - path: services/api/app/api/gifts.py
+        line: 216
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: recurrence
+      title: Automatic personal occasions
+      intent: Keep birthdays and anniversaries aligned when person information changes.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/services/person_occasion_hooks.py
+        line: 15
+      - path: services/api/app/services/holiday_seeder.py
+        line: 26
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: budget-math
+      title: Budget calculations
+      intent: Show spending, commitments, remaining budget and warnings without manual arithmetic.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/services/budget.py
+        line: 15
+      - path: services/api/app/repositories/budget.py
+        line: 227
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: kanban-realtime
+      title: Shared list board
+      intent: Keep partners in step while a gift moves through buying stages.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/services/list_item.py
+        line: 77
+      - path: services/api/app/services/ws_manager.py
+        line: 8
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: everything-realtime
+      title: Universal instant updates
+      intent: Originally synchronize all family screens through sockets.
+      status: abandoned
+      historical: true
+      sources:
+      - path: docs/project_plans/implementation_plans/refactors/websocket-simplification-v1.md
+        line: 19
+      verification: static_source_review; authenticated workflows blocked in this run
+      replacement: Kanban keeps sockets; ordinary screens use React Query caching/refetching and activity polling.
+    - id: idea-inbox
+      title: Idea inbox
+      intent: Collect gift ideas before committing them to a destination.
+      status: partial
+      historical: true
+      sources:
+      - path: services/api/app/services/idea_service.py
+        line: 80
+      - path: apps/web/hooks/useIdeas.ts
+        line: 77
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Inbox queries existing idea-status list items; add-to-list hook names a route absent from the ideas router.
+    - id: url-metadata
+      title: Gift capture from a URL
+      intent: Reduce typing by extracting a product title, image and price.
+      status: partial
+      historical: true
+      sources:
+      - path: services/api/app/services/gift.py
+        line: 117
+      - path: apps/web/lib/api/endpoints.ts
+        line: 199
+      - path: docs/project_plans/requests/done/enhance-12-06.md
+        line: 30
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Parser helper exists; web client expects a POST /gifts/from-url route that is not registered; historical
+        request explicitly disables it.
+    - id: image-upload
+      title: Image upload and cropping
+      intent: Recognize people and gifts through pictures pasted, uploaded or linked.
+      status: built
+      historical: true
+      sources:
+      - path: services/api/app/api/upload.py
+        line: 22
+      - path: apps/web/components/ui/image-picker.tsx
+        line: 45
+      - path: apps/web/components/ui/image-crop-dialog.tsx
+        line: 77
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: surprise-access
+      title: Surprise-safe visibility
+      intent: Keep recipient surprises and owner-private lists hidden from the wrong viewer.
+      status: partial
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 542
+      - path: services/api/app/api/lists.py
+        line: 236
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Visibility labels exist; direct list retrieval explicitly allows any authenticated user.
+  - id: web
+    title: Shared planning table
+    intent: Help family members see who needs gifts, choose ideas and coordinate purchases at a glance.
+    status: partial
+    historical: true
+    sources:
+    - path: docs/project_plans/family-dashboard-v1/family-dashboard-v1.md
+      line: 219
+    features:
+    - id: dashboard
+      title: Occasion overview
+      intent: Bring upcoming celebrations, coverage, spending and ideas into a calm home view.
+      status: built
+      historical: true
+      sources:
+      - path: apps/web/app/dashboard/page.tsx
+        line: 14
+      - path: services/api/app/services/dashboard.py
+        line: 46
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: people-ui
+      title: People and groups
+      intent: Find the right person and their preferences, linked gifts and budgets.
+      status: built
+      historical: true
+      sources:
+      - path: apps/web/app/people/page.tsx
+        line: 112
+      - path: apps/web/components/modals/PersonDetailModal.tsx
+        line: 42
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: occasions-ui
+      title: Occasion planning
+      intent: Gather recipients, lists and budget information around a celebration.
+      status: built
+      historical: true
+      sources:
+      - path: apps/web/app/occasions/page.tsx
+        line: 20
+      - path: apps/web/components/occasions/OccasionRecipientsSection.tsx
+        line: 85
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: gift-ui
+      title: Gift catalog and linked details
+      intent: Find ideas and edit gifts without losing their people and occasion context.
+      status: built
+      historical: true
+      sources:
+      - path: apps/web/app/gifts/page.tsx
+        line: 435
+      - path: apps/web/components/modals/GiftDetailModal.tsx
+        line: 53
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: board-ui
+      title: Kanban and table views
+      intent: Review and move list gifts through buying stages.
+      status: built
+      historical: true
+      sources:
+      - path: apps/web/components/lists/KanbanView.tsx
+        line: 60
+      - path: apps/web/components/lists/TableView.tsx
+        line: 69
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: bulk-selection
+      title: Gift selection and bulk actions
+      intent: Handle many gift choices together without repetitive editing.
+      status: built
+      historical: true
+      sources:
+      - path: .claude/progress/gift-select-enhancements-v1/phase-1-3-progress.md
+        line: 4
+      - path: apps/web/hooks/useGiftSelection.ts
+        line: 62
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: quick-actions
+      title: Inline gift actions and Santa marker
+      intent: Change status, lists, recipient, price and Santa marking close to the gift card.
+      status: partial
+      historical: true
+      sources:
+      - path: docs/project_plans/PRDs/features/gifts-action-bar-v1.md
+        line: 187
+      - path: services/api/app/services/gift.py
+        line: 64
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Much UI is present; final test phase remains planning and gift creation does not copy every accepted
+        field, including from_santa.
+    - id: my-assignments
+      title: My assignments
+      intent: Show each collaborator which purchases they own across all lists.
+      status: partial
+      historical: true
+      sources:
+      - path: apps/web/hooks/useMyAssignments.ts
+        line: 8
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Hook deliberately returns an empty array; cross-list query endpoint is absent.
+    - id: history-ui
+      title: Gift and entity history
+      intent: Answer what was given before and how the plan changed.
+      status: partial
+      historical: true
+      sources:
+      - path: apps/web/components/people/PersonHistory.tsx
+        line: 5
+      - path: apps/web/components/modals/GiftDetailModal.tsx
+        line: 987
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: History panels remain placeholders, separate from the existing but broken activity-feed storage.
+    - id: admin-options
+      title: Field options administration
+      intent: Maintain shared choices from the browser and avoid unsafe deletion.
+      status: partial
+      historical: true
+      sources:
+      - path: apps/web/components/features/admin/AdminPage.tsx
+        line: 47
+      - path: services/api/app/services/field_option.py
+        line: 167
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: CRUD surfaces exist; usage is always zero and many actual input validators remain static.
+    - id: global-search
+      title: Global header search
+      intent: Find a family record from anywhere in the app.
+      status: partial
+      historical: true
+      sources:
+      - path: apps/web/components/layout/Header.tsx
+        line: 23
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: The visible search logs the query; it does not perform global search.
+    - id: family-table
+      title: Family table and moodboards
+      intent: Arrange inspiration freely across people and occasions on a shared visual surface.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 423
+      - path: docs/project_plans/family-dashboard-v1/family-dashboard-v1.md
+        line: 433
+      verification: static_source_review; authenticated workflows blocked in this run
+      note: The built Kanban status board is a different, narrower feature.
+    - id: seasonal-themes
+      title: Automatic seasonal themes
+      intent: Let the home subtly reflect the occasion being planned.
+      status: partial
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 518
+      - path: apps/web/app/globals.css
+        line: 1
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Static warm styling and dark-mode support exist; no persisted Theme model or date-driven seasonal engine
+        was found.
+  - id: mobile
+    title: Phone-sized doorway
+    intent: Make capture and planning practical on the family’s Apple devices.
+    status: partial
+    historical: true
+    sources:
+    - path: docs/project_plans/PRDs/features/mobile-first-redesign-v1.md
+      line: 47
+    features:
+    - id: mobile-foundation
+      title: Responsive foundations
+      intent: Keep content visible and controls usable around phone edges and browser chrome.
+      status: built
+      historical: true
+      sources:
+      - path: .claude/progress/mobile-first-redesign/phase-1-progress.md
+        line: 9
+      - path: apps/web/components/layout/AppLayout.tsx
+        line: 42
+      verification: static_source_review; authenticated workflows blocked in this run
+      note: Historical implementation evidence; real-device quality remains unverified here.
+    - id: mobile-navigation
+      title: Complete mobile navigation and forms
+      intent: Make every planning route practical on phones and tablets.
+      status: partial
+      historical: true
+      sources:
+      - path: .claude/progress/mobile-first-redesign/phase-2-progress.md
+        line: 9
+      - path: apps/web/components/layout/MobileNav.tsx
+        line: 52
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: mobile-gestures
+      title: Swipe, refresh and haptics
+      intent: Support familiar phone interactions for routine planning.
+      status: ideated
+      historical: true
+      sources:
+      - path: .claude/progress/mobile-first-redesign/phase-3-progress.md
+        line: 9
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: offline
+      title: Installable and dependable offline app
+      intent: Keep useful information available away from a connection.
+      status: partial
+      historical: true
+      sources:
+      - path: apps/web/public/sw.js
+        line: 6
+      - path: apps/web/components/pwa-register.tsx
+        line: 15
+      - path: .claude/progress/mobile-first-redesign/phase-4-progress.md
+        line: 9
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Manifest and basic network-first worker exist; later offline behavior and push remain uncompleted/unverified.
+    - id: advanced-mobile
+      title: Advanced mobile polish
+      intent: Make loading, motion, sheets and phone interactions feel considered.
+      status: partial
+      historical: true
+      sources:
+      - path: .claude/progress/mobile-first-redesign/phase-5-progress.md
+        line: 9
+      - path: apps/web/components/ui/skeleton.tsx
+        line: 28
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: native-ios
+      title: Native iOS client
+      intent: Bring the family planning model into an Apple-native application.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/Research/mobile-first-redesign-spike.md
+        line: 336
+      verification: static_source_review; authenticated workflows blocked in this run
+      note: Only alternatives were researched; historical recommendation selected PWA enhancement. No native client
+        exists; new SwiftUI scope is not authorized by this historical map.
+  - id: integrations
+    title: Connections beyond the house
+    intent: Bring ideas in from browsing and keep the family informed without duplicating work.
+    status: ideated
+    historical: true
+    sources:
+    - path: docs/project_plans/north-star/family-gifting-dash.md
+      line: 445
+    features:
+    - id: share-capture
+      title: Share-sheet and browser capture
+      intent: Save an idea from where the family notices it.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 660
+      - path: docs/project_plans/family-dashboard-v1/family-dashboard-v1.md
+        line: 438
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: apple-auth
+      title: Sign in with Apple
+      intent: Use familiar private household sign-in.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 661
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: notifications
+      title: Reminders and notifications
+      intent: Bring timely buying or planning changes to the right family member.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/family-dashboard-v1/family-dashboard-v1.md
+        line: 437
+      - path: docs/project_plans/PRDs/features/mobile-first-redesign-v1.md
+        line: 54
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: calendar
+      title: Calendar integration
+      intent: Connect family celebrations to the calendars people already use.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 31
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: deals
+      title: Deal and price tracking
+      intent: Choose a good time and place to buy a planned gift.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 481
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 248
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: recommendations
+      title: Gift suggestions
+      intent: Use preferences and history to suggest thoughtful gifts.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 669
+      - path: inspiration/family-gifting/services/geminiService.ts
+        line: 6
+      verification: static_source_review; authenticated workflows blocked in this run
+      note: An isolated inspiration prototype has a Gemini call; the production app has no recommender integration.
+        It was not run or contacted.
+    - id: guests
+      title: Scoped guest collaboration
+      intent: Invite relatives into only the relevant planning context without spoiling surprises.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 663
+      verification: static_source_review; authenticated workflows blocked in this run
+    - id: presence
+      title: Shared presence
+      intent: Let planners see who is looking at the same planning surface.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 649
+      verification: static_source_review; authenticated workflows blocked in this run
+  - id: operations
+    title: A private home
+    intent: Keep the household app self-hosted, recoverable and usable beyond a single holiday.
+    status: partial
+    historical: true
+    sources:
+    - path: docs/project_plans/family-dashboard-v1/family-dashboard-v1.md
+      line: 423
+    features:
+    - id: deployment
+      title: Self-hosted deployment
+      intent: Run the database, service and browser app under household control.
+      status: built
+      historical: true
+      sources:
+      - path: docker-compose.yml
+        line: 3
+      - path: k8s/README.md
+        line: 1
+      verification: static_source_review; authenticated workflows blocked in this run
+      observed: Docker daemon unavailable; alternative isolated Postgres plus uv-managed API and pnpm web started
+        and stopped successfully. Production deployment was not probed.
+    - id: migrations
+      title: Schema evolution
+      intent: Preserve family information while the app changes.
+      status: partial
+      historical: true
+      sources:
+      - path: services/api/alembic/env.py
+        line: 44
+      - path: services/api/alembic/versions/a9a8b7496861_add_gift_from_santa_field.py
+        line: 26
+      verification: static_source_review; authenticated workflows blocked in this run
+      gap: Fresh migration reaches head but creates a schema the current login query cannot use.
+    - id: quality
+      title: Workflow and accessibility verification
+      intent: Keep the core family routines dependable across devices.
+      status: partial
+      historical: true
+      sources:
+      - path: .claude/progress/mobile-first-redesign/phase-1-progress.md
+        line: 133
+      - path: .claude/progress/gifts-action-bar-v1/phase-6-progress.md
+        line: 10
+      verification: static_source_review; authenticated workflows blocked in this run
+      note: Autumn suite repair exists in git history and modifies application code; historical green suite claims
+        do not establish fresh database boot success.
+    - id: backup
+      title: Recoverable family memory
+      intent: Protect past planning and photos from host failure.
+      status: ideated
+      historical: true
+      sources:
+      - path: docs/project_plans/north-star/family-gifting-dash.md
+        line: 578
+      verification: static_source_review; authenticated workflows blocked in this run
+      note: Deployment files do not prove an exercised backup and restore procedure.
+current_capability_context:
+  historical: true
+  not_feature_scope: true
+  sources:
+  - path: /Users/miethe/dev/homelab/development/miethe-design/languages/miethe/DESIGN.md
+    line: 1
+  - path: /Users/miethe/dev/homelab/development/miethe-design/references/apple/TOKEN-MAPPING-NOTES.md
+    line: 1
+  - path: /Users/miethe/dev/homelab/development/miethe-ui/README.md
+    line: 1
+  note: Current design assets inform the recommendation only; they are not evidence of a historical app integration.
+runtime_evidence:
+- first-run-results.json
+- migration-retry.log
+- api.log
+- run-results.json
+- browser-results.json
+limitations:
+- No real family database opened.
+- Authenticated product workflows blocked by login failure; no gift demo records created.
+- No deployment, real-device, offline or multi-user behavior certified.
+- No feature changes or new feature plans authored.

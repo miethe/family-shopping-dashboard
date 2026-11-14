@@ -1,0 +1,3 @@
+$ node .aos-archaeology/capture.cjs
+
+EXIT 0

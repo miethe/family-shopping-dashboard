@@ -1,0 +1,8 @@
+Initial inline artifact validation failed on mobile lazy images checked before scrolling/loading.
+Exact output:
+Traceback (most recent call last):
+  File "<stdin>", line 16, in <module>
+AssertionError
+
+The app/report was not changed to satisfy this check. The browser validation now explicitly decodes every image before inspecting it. Final command: PYTHONDONTWRITEBYTECODE=1 services/api/.venv/bin/python .aos-archaeology/check-artifacts.py
+Final output: artifact-validation.log

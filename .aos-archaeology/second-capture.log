@@ -1,0 +1,10 @@
+$ node .aos-archaeology/capture.cjs
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: /sign in/i })[22m
+
+    at /Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/capture.cjs:10:51 {
+  name: 'TimeoutError'
+}
+
+EXIT 1

@@ -1,0 +1,13 @@
+{
+  "historical_intents": 57,
+  "unique_ids": 57,
+  "source_pointers_valid": true,
+  "source_drift": [],
+  "page_checks": "Desktop and mobile: no horizontal overflow; local images decode after enabling eager loading in the validation browser; source appendix initially collapsed; main text contains no raw numbers or paths.",
+  "visual_inspection": "Desktop: clear large title, right-hand verdict and room diagram; no overlap. Mobile: stacked title/verdict, legible room grid, no horizontal clipping. App screenshots inspected individually; missing icon fonts and login error documented in findings.json.",
+  "errors": [],
+  "sha256": {
+    "page.html": "61b4d785359c0d95b733a19765c840a6fd9f2ac8775aed9e64648e30869e67e3",
+    "intents.yaml": "d465d1b3851b948cd4d6b12d2fc6f282d1c2896ed5ac5c01341dc1786e7f45a6"
+  }
+}

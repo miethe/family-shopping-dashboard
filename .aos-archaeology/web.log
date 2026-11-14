@@ -1,0 +1,27 @@
+$ pnpm dev --hostname 127.0.0.1 --port 3030
+
+> family-gifting-web@0.1.0 dev /Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/web-runtime
+> next dev --hostname 127.0.0.1 --port 3030
+
+   ▲ Next.js 15.5.6
+   - Local:        http://127.0.0.1:3030
+   - Network:      http://127.0.0.1:3030
+
+ ✓ Starting...
+ ✓ Ready in 1512ms
+ ✓ Compiled /middleware in 112ms (114 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 756ms (729 modules)
+ GET /login 200 in 27ms
+ GET /login 200 in 41ms
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Browserslist: browsers data (caniuse-lite) is 12 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ○ Compiling /register ...
+ ✓ Compiled /register in 1804ms (766 modules)
+ GET /register 200 in 1981ms
+ ○ Compiling /ui-demo ...
+ ✓ Compiled /ui-demo in 1146ms (978 modules)
+ GET /ui-demo 200 in 1315ms
+[?25h

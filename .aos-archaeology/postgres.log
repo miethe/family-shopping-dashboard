@@ -1,0 +1,19 @@
+$ /Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/pg-runtime/node_modules/@embedded-postgres/darwin-arm64/native/bin/postgres -D /Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/postgres-data -p 15442 -h 127.0.0.1 -k 
+2026-11-14 14:14:01.973 EST [42243] LOG:  starting PostgreSQL 16.4 on x86_64-apple-darwin20.6.0, compiled by Apple clang version 12.0.5 (clang-1205.0.22.9), 64-bit
+2026-11-14 14:14:01.973 EST [42243] LOG:  listening on IPv4 address "127.0.0.1", port 15442
+2026-11-14 14:14:01.978 EST [42252] LOG:  database system was shut down at 2026-11-14 14:13:53 EST
+2026-11-14 14:14:01.981 EST [42243] LOG:  database system is ready to accept connections
+2026-11-14 14:14:06.071 EST [42984] ERROR:  relation "activity_logs" does not exist at character 473
+2026-11-14 14:14:06.071 EST [42984] STATEMENT:  SELECT activity_logs.actor_id AS activity_logs_actor_id, activity_logs.action AS activity_logs_action, activity_logs.entity_type AS activity_logs_entity_type, activity_logs.entity_id AS activity_logs_entity_id, activity_logs.entity_name AS activity_logs_entity_name, activity_logs.extra_data AS activity_logs_extra_data, activity_logs.id AS activity_logs_id, activity_logs.created_at AS activity_logs_created_at, activity_logs.updated_at AS activity_logs_updated_at 
+	FROM activity_logs 
+	WHERE activity_logs.actor_id IN ($1::INTEGER)
+2026-11-14 14:14:12.062 EST [42984] ERROR:  relation "activity_logs" does not exist at character 473
+2026-11-14 14:14:12.062 EST [42984] STATEMENT:  SELECT activity_logs.actor_id AS activity_logs_actor_id, activity_logs.action AS activity_logs_action, activity_logs.entity_type AS activity_logs_entity_type, activity_logs.entity_id AS activity_logs_entity_id, activity_logs.entity_name AS activity_logs_entity_name, activity_logs.extra_data AS activity_logs_extra_data, activity_logs.id AS activity_logs_id, activity_logs.created_at AS activity_logs_created_at, activity_logs.updated_at AS activity_logs_updated_at 
+	FROM activity_logs 
+	WHERE activity_logs.actor_id IN ($1::INTEGER)
+2026-11-14 14:14:30.647 EST [42243] LOG:  received smart shutdown request
+2026-11-14 14:14:30.648 EST [42243] LOG:  background worker "logical replication launcher" (PID 42255) exited with exit code 1
+2026-11-14 14:14:30.649 EST [42249] LOG:  shutting down
+2026-11-14 14:14:30.649 EST [42249] LOG:  checkpoint starting: shutdown immediate
+2026-11-14 14:14:30.652 EST [42249] LOG:  checkpoint complete: wrote 34 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.002 s, total=0.004 s; sync files=7, longest=0.001 s, average=0.001 s; distance=141 kB, estimate=141 kB; lsn=0/1B163F0, redo lsn=0/1B163F0
+2026-11-14 14:14:30.654 EST [42243] LOG:  database system is shut down

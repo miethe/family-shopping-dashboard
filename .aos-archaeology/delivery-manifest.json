@@ -1,0 +1,257 @@
+{
+  "private": true,
+  "publication_authorized": false,
+  "primary_page": "page.html",
+  "historical_intents": "intents.yaml",
+  "evidence_id": "evid_01M7DR1HZJJKQT40A8A4PEVSFC",
+  "inbox_messages_consumed": [],
+  "files": [
+    {
+      "path": "api.log",
+      "bytes": 43331,
+      "sha256": "fd6ae170ddb58640e8bccede9dd1a8e06415ece3a79ce436f52b3c574d8c5616"
+    },
+    {
+      "path": "artifact-validation.json",
+      "bytes": 814,
+      "sha256": "4a6c4ef7f2eeff53876753bef2f6b58d26952e17f64696209333c93aea8f4489"
+    },
+    {
+      "path": "artifact-validation.log",
+      "bytes": 815,
+      "sha256": "8b1e1e7970d28007660003190859ddc508e5a59307e71f30baa8401c826750e5"
+    },
+    {
+      "path": "browser-results.json",
+      "bytes": 502,
+      "sha256": "ceda35bdf8de44a148c6a3ad73cafb97c96e9bfb469a29f371fb1319abb1e712"
+    },
+    {
+      "path": "build-artifacts.py",
+      "bytes": 41456,
+      "sha256": "24cadc06879784bcfb3566589ae5abd5a58625b5eff5677bfe1c1ee78a765725"
+    },
+    {
+      "path": "capture.cjs",
+      "bytes": 1922,
+      "sha256": "ed90213a2752dc8f26b7af93b20ef4a293ef7a043a9cd22381bd6ba228510bef"
+    },
+    {
+      "path": "capture.log",
+      "bytes": 43,
+      "sha256": "eded9ce9b64a701a14797d2063e6ac0177a8ba0e63a494de0ae15f4191970df7"
+    },
+    {
+      "path": "check-artifacts.py",
+      "bytes": 1874,
+      "sha256": "87fb14bc51bca96e2cddaf7b8a181e46082ee1f3376eded41ca1b1f7e5ac9a79"
+    },
+    {
+      "path": "component-library-dom.txt",
+      "bytes": 1243,
+      "sha256": "0690e238456e497d86d602bc67bf0780476041f28c0f3d5d8091c4960d72ebf3"
+    },
+    {
+      "path": "component-library.png",
+      "bytes": 84599,
+      "sha256": "82cb3a0a23cdb996a98ce6043dfb0b425f32adf8c1acd9744598377e160f8d65"
+    },
+    {
+      "path": "docker.log",
+      "bytes": 854,
+      "sha256": "318129c19fc5cbdfa922246fb1f25f45e0d91fc16e5e2c5abbff1a29302670d6"
+    },
+    {
+      "path": "embedded-postgres-install.log",
+      "bytes": 25,
+      "sha256": "ee49f9d82e7eb07b1db6995cf7e4d72b1b8ef45d4d58597dc6011f2a535d7ec5"
+    },
+    {
+      "path": "evidence-command.log",
+      "bytes": 2859,
+      "sha256": "68560a4a37ccbdf5b7b678468e03e4a6a9a54ce6fe46888cd3e576db0efc8193"
+    },
+    {
+      "path": "evidence-receipt.json",
+      "bytes": 2602,
+      "sha256": "8699686d44996908f8a873bd82fdfae332ab991a498576bfc7fb7d4d5d775773"
+    },
+    {
+      "path": "findings.json",
+      "bytes": 2836,
+      "sha256": "192b60a3ad34feeb5a8d4cb9561cb660812aba0bd0e7b6a668aac126466c9c00"
+    },
+    {
+      "path": "first-api.log",
+      "bytes": 24824,
+      "sha256": "12492a65e83fd15a3c52e7ee9be8049cb1356a05eb3f26f341e1514f99e56b90"
+    },
+    {
+      "path": "first-run-results.json",
+      "bytes": 1032,
+      "sha256": "ec7f74b709b63dd84724ba936514de51f051a990978d99d33d414f371560d112"
+    },
+    {
+      "path": "first-runtime.log",
+      "bytes": 781,
+      "sha256": "35ae9fd381c8a57fe77b00153c4ce9117d1dfc8302f3ea0ba783b8cb55986c62"
+    },
+    {
+      "path": "git-history.txt",
+      "bytes": 153725,
+      "sha256": "504f41f73a6b53357dd094b91c5778171afa333d6ea3b2c398d158a8865e4f57"
+    },
+    {
+      "path": "intents.yaml",
+      "bytes": 27616,
+      "sha256": "d465d1b3851b948cd4d6b12d2fc6f282d1c2896ed5ac5c01341dc1786e7f45a6"
+    },
+    {
+      "path": "login-error-dom.txt",
+      "bytes": 186,
+      "sha256": "5a483695690276cfab8d8f91c4beb2c1b90d9882ca28a7884a7debff584682ba"
+    },
+    {
+      "path": "login-error.png",
+      "bytes": 204551,
+      "sha256": "7aef359883a7b3b178bfbe3f0cf295a802494211a20f67a0ae10fc80e5ebc445"
+    },
+    {
+      "path": "migrate.mjs",
+      "bytes": 945,
+      "sha256": "d42b929bc62fe24e58c612e89a3a811bc7026e6bacf127ccbddcae4e75ec5746"
+    },
+    {
+      "path": "migration-retry.log",
+      "bytes": 4778,
+      "sha256": "e451cb5318934f619404a69cb719fd73e13c23aebde18e30335ed58c26162d0e"
+    },
+    {
+      "path": "migration.log",
+      "bytes": 2179,
+      "sha256": "4bc0c22f989ee7e5081570993b1c97e82d2da383858d9dbb1b65d97339c823f0"
+    },
+    {
+      "path": "node-validation-readback.json",
+      "bytes": 7160,
+      "sha256": "27cfe828342c633efeef2d6b99252f278bbeb89e2f6ff91b6f192d104bb4b254"
+    },
+    {
+      "path": "openapi.json",
+      "bytes": 262582,
+      "sha256": "972a97643ff9313f685216241f6eec99c91722878c72e284c09eda55191a9b8d"
+    },
+    {
+      "path": "page-desktop.png",
+      "bytes": 179994,
+      "sha256": "176bf0a77e502efc1fe6c298e1c9c46b818c47153fd0d2138919ac2d88dc65e5"
+    },
+    {
+      "path": "page-mobile.png",
+      "bytes": 68156,
+      "sha256": "e19a25a0a1fded2832284256bb810ed094a3b48ccab97e09863daa079b001b41"
+    },
+    {
+      "path": "page-validation.json",
+      "bytes": 13185,
+      "sha256": "79199bff94cad7bfb2b1fb5507841a4692e638d3d392fad79e090aa149d0a62c"
+    },
+    {
+      "path": "page.html",
+      "bytes": 151847,
+      "sha256": "61b4d785359c0d95b733a19765c840a6fd9f2ac8775aed9e64648e30869e67e3"
+    },
+    {
+      "path": "pnpm-install.log",
+      "bytes": 2017,
+      "sha256": "6d76ea358d510034a0b82c1a158b90bac865203ac3c704fa161950ebfdbb8f83"
+    },
+    {
+      "path": "postgres.log",
+      "bytes": 2885,
+      "sha256": "9cdfae56efd84668541469df738165be610d71d8b53e9c777aa4a81b7bc7771b"
+    },
+    {
+      "path": "read-index.json",
+      "bytes": 1701840,
+      "sha256": "9545182a209f9d29a10ab8ac0544dbb5569abb934d3164e44a2f969d0e3849bb"
+    },
+    {
+      "path": "read-inventory.json",
+      "bytes": 137806,
+      "sha256": "abcb43cf06f31c4558b1a3512c66d8e8029712fa76cc7d65c5d1fc2d30bf7d6a"
+    },
+    {
+      "path": "register-dom.txt",
+      "bytes": 141,
+      "sha256": "5301f6be4d353f50998b0d8ba4637f23ea742a7e7701cce48dde8f28c30f4348"
+    },
+    {
+      "path": "register.png",
+      "bytes": 47113,
+      "sha256": "2aadfd6ccb2dd47c82c0f2234d43dd1642eb64678edfe13d0a1b5cb46fa09898"
+    },
+    {
+      "path": "run-results.json",
+      "bytes": 1093,
+      "sha256": "a2960c841dee1eeeb924ea737c0e550745f993343365de173ecffe70515dcad2"
+    },
+    {
+      "path": "run.py",
+      "bytes": 3658,
+      "sha256": "eaa6e31152749cf968ad9b3ed055bffb3dd0a7bce779ae12ad0507ce66599bf4"
+    },
+    {
+      "path": "runtime.log",
+      "bytes": 508,
+      "sha256": "635480f4db5b2e28934f07f3d0bfd02618ef8a6fc548c9d3fdc3f31364716734"
+    },
+    {
+      "path": "second-api.log",
+      "bytes": 24136,
+      "sha256": "2119ef4262f7bf2c43a30c056f4dc1a08aa590a89c355ea98ad525be73539638"
+    },
+    {
+      "path": "second-capture.log",
+      "bytes": 339,
+      "sha256": "35e8e74c6b67ae39eb7ae152369c0514401ca9657cb7613a7496f50ef5af91dc"
+    },
+    {
+      "path": "second-run-results.json",
+      "bytes": 1093,
+      "sha256": "ed0b31ba963bad3b5aad26e82d5fdeec97cfc84874fc76e4d288bb39b5ca6720"
+    },
+    {
+      "path": "source-audit.json",
+      "bytes": 285591,
+      "sha256": "ce72b0e5f61e02ea9bf9bd5be23db614a840385472cba6ce5e98c37768354b1f"
+    },
+    {
+      "path": "uv-install.log",
+      "bytes": 1615,
+      "sha256": "3469d08b554d57c48534361b019da83adefa607dad1e6dfdd1d6554da7e26348"
+    },
+    {
+      "path": "validate-page.cjs",
+      "bytes": 1547,
+      "sha256": "88036fd59aeebe99515e66ac6604b64c826129c6e0a274928b28868d94bb4536"
+    },
+    {
+      "path": "validation-harness-note.txt",
+      "bytes": 481,
+      "sha256": "6bc5ed5b4fee0bf7fefcb1c880f5e36ff091aed097d0ab933e00739baf933fbf"
+    },
+    {
+      "path": "web.log",
+      "bytes": 1144,
+      "sha256": "22e0b23d1284795a60410ef9a8da61cdf872d26508e900d831c93f80d4a26214"
+    }
+  ],
+  "runtime_directories_excluded": [
+    "pg-runtime",
+    "postgres-data",
+    "web-runtime",
+    "uploads"
+  ],
+  "scope": "No application source edits, commits, pushes or PRs; local .aos-archaeology artifacts only. Required liveness records appended to the supplied checkpoint path."
+}

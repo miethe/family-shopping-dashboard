@@ -1,0 +1,9 @@
+Create Account
+
+Sign up to start managing your gift lists
+
+EMAIL*
+PASSWORD*
+CONFIRM PASSWORD*
+Create Account
+Already have an account? Sign in

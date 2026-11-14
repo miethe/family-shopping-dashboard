@@ -1,0 +1,23 @@
+[
+  {
+    "type": "capture",
+    "name": "login-error",
+    "url": "http://localhost:3030/login",
+    "title": "Family Gifting Dashboard",
+    "overflow": false
+  },
+  {
+    "type": "capture",
+    "name": "register",
+    "url": "http://localhost:3030/register",
+    "title": "Family Gifting Dashboard",
+    "overflow": false
+  },
+  {
+    "type": "capture",
+    "name": "component-library",
+    "url": "http://localhost:3030/ui-demo",
+    "title": "Family Gifting Dashboard",
+    "overflow": false
+  }
+]

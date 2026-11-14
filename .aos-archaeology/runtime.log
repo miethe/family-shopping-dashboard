@@ -1,0 +1,38 @@
+{
+  "capture_exit": 0,
+  "error": null,
+  "api": [
+    [
+      "/health",
+      200
+    ],
+    [
+      "/api/v1/auth/register",
+      400
+    ],
+    [
+      "/api/v1/auth/login",
+      500
+    ]
+  ],
+  "processes": [
+    {
+      "name": "web",
+      "pid": 42992,
+      "exit": 0,
+      "stopped": true
+    },
+    {
+      "name": "api",
+      "pid": 42433,
+      "exit": -15,
+      "stopped": true
+    },
+    {
+      "name": "postgres",
+      "pid": 42243,
+      "exit": 0,
+      "stopped": true
+    }
+  ]
+}

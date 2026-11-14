@@ -1,0 +1,7 @@
+$ docker compose up postgres
+time="2026-11-14T14:07:53-05:00" level=warning msg="The \"NEXT_PUBLIC_API_URL\" variable is not set. Defaulting to a blank string."
+time="2026-11-14T14:07:53-05:00" level=warning msg="The \"NEXT_PUBLIC_WS_URL\" variable is not set. Defaulting to a blank string."
+time="2026-11-14T14:07:53-05:00" level=warning msg="/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+unable to get image 'postgres:16-alpine': failed to connect to the docker API at unix:///Users/miethe/.docker/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /Users/miethe/.docker/run/docker.sock: connect: no such file or directory
+
+EXIT 1

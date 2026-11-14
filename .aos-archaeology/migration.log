@@ -1,0 +1,32 @@
+The files belonging to this database system will be owned by user "miethe".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C.UTF-8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+creating directory /Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/postgres-data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting default time zone ... America/New_York
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    '/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/pg-runtime/node_modules/@embedded-postgres/darwin-arm64/native/bin/pg_ctl' -D /Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/postgres-data -l logfile start
+
+2026-11-14 14:10:05.418 EST [15005] LOG:  starting PostgreSQL 16.4 on x86_64-apple-darwin20.6.0, compiled by Apple clang version 12.0.5 (clang-1205.0.22.9), 64-bit
+
+2026-11-14 14:10:05.419 EST [15005] LOG:  listening on IPv4 address "127.0.0.1", port 15442
+2026-11-14 14:10:05.420 EST [15005] LOG:  Unix-domain socket path "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology/.s.PGSQL.15442" is too long (maximum 103 bytes)
+2026-11-14 14:10:05.420 EST [15005] WARNING:  could not create Unix-domain socket in directory "/Volumes/SKNVME/aos-exec/dayhub1114-famarch/.clones/leg__RKCE1T1N-20261114T190619Z-82393/dayhub1114-famarch/.aos-archaeology"
+2026-11-14 14:10:05.420 EST [15005] FATAL:  could not create any Unix-domain sockets
+2026-11-14 14:10:05.420 EST [15005] LOG:  database system is shut down
+

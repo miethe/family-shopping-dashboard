@@ -1,0 +1,10 @@
+# Hooks Directory
+
+This directory will contain custom React hooks.
+
+Examples:
+- useAuth.ts
+- useGifts.ts
+- useLists.ts
+- useWebSocket.ts
+- useDebounce.ts
