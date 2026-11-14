@@ -1,0 +1,33 @@
+{
+  "source_ref": "5df108b9461089567205b98d0eabadf35a0fe459",
+  "branch": "leg/K4TZGK3F-20261114T202632Z-67507",
+  "screenshots": "real",
+  "phone_viewport": [
+    390,
+    844
+  ],
+  "desktop_viewport": [
+    1440,
+    900
+  ],
+  "database": "Fresh cluster created under .aos-mockups/runtime/postgres; loopback only port 15453; no existing family database accessed",
+  "repair": "Alembic upgrade head followed by ActivityLog.__table__.create(checkfirst=True) in scratch database only",
+  "source_edits": [],
+  "runtime_web_copy": "apps/web copied into .aos-mockups/runtime/web; native build output stayed inside that copy",
+  "fake_seed_api": "runtime/run.py",
+  "api_observations": [
+    "Login succeeds after scratch-only table restoration",
+    "Explicit list-item buyer assignment returns 200 and persisted assigned_to=1",
+    "Assignments page still renders an empty state",
+    "Setting budget_amount returns 500 because the response serializer receives True; the budget subsequently appears in GET-driven UI"
+  ],
+  "no_commits": true,
+  "no_pushes": true,
+  "no_production_changes": true,
+  "inbox_messages_consumed": [],
+  "counts": {
+    "real": 44,
+    "generated": 14,
+    "asset_total": 58
+  }
+}

@@ -1,0 +1,161 @@
+Skip to main content
+card_giftcard
+home
+Dashboard
+assignment
+Assignments
+groups
+People
+calendar_month
+Occasions
+card_giftcard
+Gifts
+list_alt
+Lists
+settings
+Admin
+D
+add
+Admin Settings
+
+Manage field options for Persons, Gifts, Occasions, and Lists
+
+Person
+Gift
+Occasion
+List
+Person Fields
+
+Preferences, hobbies, interests, dietary restrictions, etc.
+
+Food & Drink
+Wine Types
+
+wine_types
+
+expand_more
+Beverage Preferences
+
+beverage_prefs
+
+expand_more
+Coffee Style
+
+coffee_style
+
+expand_more
+Tea Style
+
+tea_style
+
+expand_more
+Spirits
+
+spirits
+
+expand_more
+Dietary Restrictions
+
+dietary
+
+expand_more
+Favorite Cuisines
+
+favorite_cuisines
+
+expand_more
+Sweet vs Savory
+
+sweet_vs_savory
+
+expand_more
+Style & Accessories
+Preferred Metals
+
+preferred_metals
+
+expand_more
+Fragrance Notes
+
+fragrance_notes
+
+expand_more
+Accessory Preferences
+
+accessory_prefs
+
+expand_more
+Hobbies & Interests
+Hobbies
+
+hobbies
+
+expand_more
+Creative Outlets
+
+creative_outlets
+
+expand_more
+Sports
+
+sports_played
+
+expand_more
+Reading Genres
+
+reading_genres
+
+expand_more
+Music Genres
+
+music_genres
+
+expand_more
+Technology
+Tech Ecosystem
+
+tech_ecosystem
+
+expand_more
+Gaming Platforms
+
+gaming_platforms
+
+expand_more
+Smart Home
+
+smart_home
+
+expand_more
+Travel & Experiences
+Travel Styles
+
+travel_styles
+
+expand_more
+Experience Types
+
+experience_types
+
+expand_more
+Event Preferences
+
+event_preferences
+
+expand_more
+Gift Preferences
+Collections
+
+collects
+
+expand_more
+Avoid Categories
+
+avoid_categories
+
+expand_more
+Budget Comfort
+
+budget_comfort
+
+expand_more

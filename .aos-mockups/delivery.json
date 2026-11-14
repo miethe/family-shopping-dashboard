@@ -1,0 +1,47 @@
+{
+  "page": "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/review.html",
+  "source_ref": "5df108b9461089567205b98d0eabadf35a0fe459",
+  "counts": {
+    "real_screenshots": 44,
+    "native_generated_images": 14,
+    "total_assets": 58
+  },
+  "screenshot_mode": "real",
+  "evidence_id": "evid_01M7DXPZ1K5YBYHB6GYDMKH2KM",
+  "inbox_messages_consumed": [],
+  "delta": {
+    "deviations": [
+      {
+        "paths": [
+          "assets/today-occasion-phone.png",
+          "assets/today-buying-phone.png",
+          "assets/today-*-modal-phone.png"
+        ],
+        "reason": "Retained and labelled current-app overflow and constrained dialog tabs; fixing source UI would exceed this design-only brief."
+      }
+    ],
+    "docs": {
+      "applicable": true,
+      "evidence": [
+        "review.html",
+        "screen-inventory.json",
+        "dialog-inventory.json",
+        "prompts.json",
+        "provenance.json"
+      ],
+      "reason": "Local review and design provenance delivered; production documentation omitted because production code was unchanged."
+    },
+    "tests": {
+      "applicable": true,
+      "evidence": [
+        "validation.json",
+        "image-checks.json",
+        "cleanup.json",
+        "node-evidence-readback.txt"
+      ],
+      "reason": "Phone/desktop layout, asset loading, feedback controls, capture-to-bought/undo flow, reduced motion, visual inspection and process cleanup verified. No product regression suite required for local design artifacts."
+    },
+    "followup_nodes": []
+  },
+  "assumptions": []
+}

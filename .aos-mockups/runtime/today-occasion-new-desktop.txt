@@ -1,0 +1,37 @@
+Skip to main content
+card_giftcard
+home
+Dashboard
+assignment
+Assignments
+groups
+People
+calendar_month
+Occasions
+card_giftcard
+Gifts
+list_alt
+Lists
+settings
+Admin
+D
+add
+Dashboard
+Occasions
+Add Occasion
+Add Occasion
+
+Create a new occasion
+
+NAME*
+TYPE*
+Select an option
+Holiday
+Recurring
+Other
+DATE*
+
+When is this occasion?
+
+Description(optional)
+Create Occasion

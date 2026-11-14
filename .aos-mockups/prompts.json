@@ -1,0 +1,212 @@
+{
+  "tool": "native image_gen.imagegen",
+  "mode": "built-in",
+  "prompt_record": "Consolidated final specifications plus applied revisions; generation call text remains in the leg transcript.",
+  "assets": [
+    {
+      "id": "home-a",
+      "file": "assets/home-a.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Spacious Montessori Meadow cut-paper storybook. Sage, blush, starlight gold, tactile paper. Person and purpose lead; one clear next action. Screen purpose: See who you\u2019re thinking of, what\u2019s coming up, and where a little help is needed. Direction: The family storybook. A celebration and familiar faces lead; the next useful action follows.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": []
+    },
+    {
+      "id": "home-b",
+      "file": "assets/home-b.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Wonder Workshop Toymaker workbench. Compact task-focused modular rows and boards, ivory graph paper, navy ink, honey and clay. Small buildable objects, useful density. Do not print style-guide names in the UI. Screen purpose: See who you\u2019re thinking of, what\u2019s coming up, and where a little help is needed. Direction: The family workbench. Shared tasks and buying ownership lead in a compact, tactile board.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": [
+        "Corrected selected tab to Home."
+      ]
+    },
+    {
+      "id": "home-c",
+      "file": "assets/home-c.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Lenslight Field Journal. Watercolor, pressed plants, collected notes, forest ink, lake blue and sunset gold. Observation, map, timeline, and parcel-passport metaphors. Do not print style-guide names in the UI. Screen purpose: See who you\u2019re thinking of, what\u2019s coming up, and where a little help is needed. Direction: The gift atlas. People, celebrations, and ideas become places on a little illustrated map.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": []
+    },
+    {
+      "id": "person-a",
+      "file": "assets/person-a.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Spacious Montessori Meadow cut-paper storybook. Sage, blush, starlight gold, tactile paper. Person and purpose lead; one clear next action. Screen purpose: Keep relationships, preferences, useful notes, gift ideas, and past gifts together. Direction: A thoughtful keepsake. Interests sit beside gift ideas, with preferences and past gifts close by.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": [
+        "Removed contradictory status chips so Garden journal is Idea and Ceramic tea set is Theo is buying."
+      ]
+    },
+    {
+      "id": "person-b",
+      "file": "assets/person-b.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Wonder Workshop Toymaker workbench. Compact task-focused modular rows and boards, ivory graph paper, navy ink, honey and clay. Small buildable objects, useful density. Do not print style-guide names in the UI. Screen purpose: Keep relationships, preferences, useful notes, gift ideas, and past gifts together. Direction: Their gift workbench. Group this person\u2019s gifts by who still needs to buy and what is already in hand.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": [
+        "Corrected selected tab to People."
+      ]
+    },
+    {
+      "id": "person-c",
+      "file": "assets/person-c.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Lenslight Field Journal. Watercolor, pressed plants, collected notes, forest ink, lake blue and sunset gold. Observation, map, timeline, and parcel-passport metaphors. Do not print style-guide names in the UI. Screen purpose: Keep relationships, preferences, useful notes, gift ideas, and past gifts together. Direction: A notebook of little things. Small observations become a timeline that can spark a gift idea.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": []
+    },
+    {
+      "id": "occasion-a",
+      "file": "assets/occasion-a.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Spacious Montessori Meadow cut-paper storybook. Sage, blush, starlight gold, tactile paper. Person and purpose lead; one clear next action. Screen purpose: Bring recipients, lists, budgets, and shared buying progress into one celebration. Direction: An invitation for everyone. A celebration scene and people\u2019s readiness lead the plan.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": [
+        "Corrected selected tab to Plans."
+      ]
+    },
+    {
+      "id": "occasion-b",
+      "file": "assets/occasion-b.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Wonder Workshop Toymaker workbench. Compact task-focused modular rows and boards, ivory graph paper, navy ink, honey and clay. Small buildable objects, useful density. Do not print style-guide names in the UI. Screen purpose: Bring recipients, lists, budgets, and shared buying progress into one celebration. Direction: The family budget envelope. Bought, set aside, and available stay visible beside the recipient ledger.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": [
+        "Removed style-guide banner; corrected selected tab to Plans."
+      ]
+    },
+    {
+      "id": "occasion-c",
+      "file": "assets/occasion-c.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Lenslight Field Journal. Watercolor, pressed plants, collected notes, forest ink, lake blue and sunset gold. Observation, map, timeline, and parcel-passport metaphors. Do not print style-guide names in the UI. Screen purpose: Bring recipients, lists, budgets, and shared buying progress into one celebration. Direction: A celebration journey. Plan by what happens now, before the gathering, and on the day.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": []
+    },
+    {
+      "id": "buying-a",
+      "file": "assets/buying-a.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Spacious Montessori Meadow cut-paper storybook. Sage, blush, starlight gold, tactile paper. Person and purpose lead; one clear next action. Screen purpose: Capture a gift, connect it to someone and an occasion, choose a buyer, and track it through buying. Direction: One gift, one next step. A focused gift sheet makes its recipient, buyer, and next action unmistakable.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": []
+    },
+    {
+      "id": "buying-b",
+      "file": "assets/buying-b.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Wonder Workshop Toymaker workbench. Compact task-focused modular rows and boards, ivory graph paper, navy ink, honey and clay. Small buildable objects, useful density. Do not print style-guide names in the UI. Screen purpose: Capture a gift, connect it to someone and an occasion, choose a buyer, and track it through buying. Direction: The shared buying board. Keep unclaimed, buying, and bought gifts together so the family can coordinate.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": [
+        "Removed style-guide banner."
+      ]
+    },
+    {
+      "id": "buying-c",
+      "file": "assets/buying-c.png",
+      "final_consolidated_prompt": "High fidelity native iPhone family gifting app named Gather. Straight-on portrait phone with safe areas. Warm, cute, family-friendly; invented demo data only, no dogs. Dark ink on cream, literary serif headings and legible system sans controls. Keep buyer and recipient distinct. No clipped or garbled text. Lenslight Field Journal. Watercolor, pressed plants, collected notes, forest ink, lake blue and sunset gold. Observation, map, timeline, and parcel-passport metaphors. Do not print style-guide names in the UI. Screen purpose: Capture a gift, connect it to someone and an occasion, choose a buyer, and track it through buying. Direction: A parcel passport. A checklist records the gift\u2019s journey with buyer and recipient clearly separated.",
+      "fictional_copy": [
+        "Grandma Rose",
+        "Uncle Theo",
+        "Aunt June",
+        "Winter gathering",
+        "Garden journal",
+        "Ceramic tea set",
+        "Wooden puzzle"
+      ],
+      "refinements": []
+    },
+    {
+      "id": "buying-desktop",
+      "file": "assets/buying-desktop.png",
+      "final_consolidated_prompt": "Landscape desktop counterpart of the family workbench: left Home/People/Plans/Gifts rail, three buying-stage columns, a recipient/buyer/notes inspector, Add idea and budget summary. Warm ivory graph paper, navy ink, honey and clay, small illustrated wooden bird and gifts; fictional data only."
+    },
+    {
+      "id": "future-map",
+      "file": "assets/future-map.png",
+      "final_consolidated_prompt": "Warm paper cut-out infographic titled Room to grow, without the clutter. Center Gather phone. Surrounding labelled homes for inspiration boards in a person\u2019s Ideas, assistant and price watch inside a gift, quick capture from phone/browser, calendar in plan details, and surprise-safe audience selection. Footer Future concepts, not built today. No connector lines.",
+      "refinements": [
+        "Removed misleading connector lines, preserving explicit textual feature homes."
+      ]
+    }
+  ]
+}

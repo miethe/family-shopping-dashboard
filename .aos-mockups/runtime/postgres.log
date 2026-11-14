@@ -1,0 +1,10 @@
+2026-11-14 15:55:35.965 EST [40088] LOG:  starting PostgreSQL 16.4 on x86_64-apple-darwin20.6.0, compiled by Apple clang version 12.0.5 (clang-1205.0.22.9), 64-bit
+2026-11-14 15:55:35.966 EST [40088] LOG:  listening on IPv4 address "127.0.0.1", port 15453
+2026-11-14 15:55:35.978 EST [40103] LOG:  database system was shut down at 2026-11-14 15:55:09 EST
+2026-11-14 15:55:36.009 EST [40088] LOG:  database system is ready to accept connections
+2026-11-14 15:57:13.013 EST [40088] LOG:  received smart shutdown request
+2026-11-14 15:57:13.022 EST [40088] LOG:  background worker "logical replication launcher" (PID 40107) exited with exit code 1
+2026-11-14 15:57:13.022 EST [40101] LOG:  shutting down
+2026-11-14 15:57:13.025 EST [40101] LOG:  checkpoint starting: shutdown immediate
+2026-11-14 15:57:13.111 EST [40101] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.001 s, total=0.089 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1AE0CF0, redo lsn=0/1AE0CF0
+2026-11-14 15:57:13.115 EST [40088] LOG:  database system is shut down

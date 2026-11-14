@@ -1,0 +1,523 @@
+{
+  "fake_data_only": true,
+  "database": "new isolated cluster under .aos-mockups/runtime/postgres on loopback:15453",
+  "api": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "response": {
+        "status": "healthy",
+        "db": "connected"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "response": {
+        "created_at": "2026-11-14T15:32:39.269301-05:00",
+        "updated_at": "2026-11-14T15:32:39.269301-05:00",
+        "id": 1,
+        "email": "demo-june@example.invalid"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/budgets/occasions/1",
+      "status": 500,
+      "response": "{\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred. Please try again later.\",\"trace_id\":\"29b5e63e-1c42-4e9f-bd02-90a11e356990\"}}"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/list-items/2/assign",
+      "status": 200,
+      "response": {
+        "created_at": "2026-11-14T15:32:40.002089-05:00",
+        "updated_at": "2026-11-14T15:32:40.002089-05:00",
+        "id": 2,
+        "gift_id": 2,
+        "list_id": 1,
+        "status": "selected",
+        "assigned_to": 1,
+        "notes": null,
+        "price": null,
+        "discount_price": null,
+        "quantity": 1
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/list-items/3/assign",
+      "status": 200,
+      "response": {
+        "created_at": "2026-11-14T15:32:40.032222-05:00",
+        "updated_at": "2026-11-14T15:32:40.032222-05:00",
+        "id": 3,
+        "gift_id": 3,
+        "list_id": 1,
+        "status": "purchased",
+        "assigned_to": 1,
+        "notes": null,
+        "price": null,
+        "discount_price": null,
+        "quantity": 1
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/lists/1/items",
+      "status": 200,
+      "response": [
+        {
+          "created_at": "2026-11-14T15:32:40.048322-05:00",
+          "updated_at": "2026-11-14T15:32:40.048322-05:00",
+          "id": 4,
+          "gift_id": 4,
+          "list_id": 1,
+          "status": "idea",
+          "assigned_to": null,
+          "notes": null,
+          "price": null,
+          "discount_price": null,
+          "quantity": 1,
+          "gift": {
+            "id": 4,
+            "name": "Watercolor Set",
+            "price": 36.0,
+            "image_url": null,
+            "priority": "medium",
+            "status": "idea",
+            "quantity": 1,
+            "sale_price": null
+          }
+        },
+        {
+          "created_at": "2026-11-14T15:32:40.032222-05:00",
+          "updated_at": "2026-11-14T15:32:40.032222-05:00",
+          "id": 3,
+          "gift_id": 3,
+          "list_id": 1,
+          "status": "purchased",
+          "assigned_to": 1,
+          "notes": null,
+          "price": null,
+          "discount_price": null,
+          "quantity": 1,
+          "gift": {
+            "id": 3,
+            "name": "Wooden Puzzle",
+            "price": 24.0,
+            "image_url": null,
+            "priority": "medium",
+            "status": "idea",
+            "quantity": 1,
+            "sale_price": null
+          }
+        },
+        {
+          "created_at": "2026-11-14T15:32:40.002089-05:00",
+          "updated_at": "2026-11-14T15:32:40.002089-05:00",
+          "id": 2,
+          "gift_id": 2,
+          "list_id": 1,
+          "status": "selected",
+          "assigned_to": 1,
+          "notes": null,
+          "price": null,
+          "discount_price": null,
+          "quantity": 1,
+          "gift": {
+            "id": 2,
+            "name": "Ceramic Tea Set",
+            "price": 45.0,
+            "image_url": null,
+            "priority": "medium",
+            "status": "idea",
+            "quantity": 1,
+            "sale_price": null
+          }
+        },
+        {
+          "created_at": "2026-11-14T15:32:39.984751-05:00",
+          "updated_at": "2026-11-14T15:32:39.984751-05:00",
+          "id": 1,
+          "gift_id": 1,
+          "list_id": 1,
+          "status": "idea",
+          "assigned_to": null,
+          "notes": null,
+          "price": null,
+          "discount_price": null,
+          "quantity": 1,
+          "gift": {
+            "id": 1,
+            "name": "Garden Journal",
+            "price": 28.0,
+            "image_url": null,
+            "priority": "medium",
+            "status": "idea",
+            "quantity": 1,
+            "sale_price": null
+          }
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "response": {
+        "created_at": "2026-11-14T15:32:39.269301-05:00",
+        "updated_at": "2026-11-14T15:32:39.269301-05:00",
+        "id": 1,
+        "email": "demo-june@example.invalid"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/persons",
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "created_at": "2026-11-14T15:32:39.819491-05:00",
+            "updated_at": "2026-11-14T15:32:39.819491-05:00",
+            "id": 1,
+            "display_name": "Grandma Rose",
+            "relationship": "Grandparent",
+            "birthdate": null,
+            "anniversary": null,
+            "notes": "Fictional design demo only. Loves useful little things.",
+            "interests": [
+              "Gardening",
+              "Tea",
+              "Mysteries"
+            ],
+            "size_profile": null,
+            "sizes": null,
+            "advanced_interests": null,
+            "constraints": null,
+            "photo_url": null,
+            "groups": [],
+            "occasion_ids": []
+          },
+          {
+            "created_at": "2026-11-14T15:32:39.836545-05:00",
+            "updated_at": "2026-11-14T15:32:39.836545-05:00",
+            "id": 2,
+            "display_name": "Uncle Theo",
+            "relationship": "Uncle",
+            "birthdate": null,
+            "anniversary": null,
+            "notes": "Fictional design demo only. Loves useful little things.",
+            "interests": [
+              "Puzzles",
+              "Cooking"
+            ],
+            "size_profile": null,
+            "sizes": null,
+            "advanced_interests": null,
+            "constraints": null,
+            "photo_url": null,
+            "groups": [],
+            "occasion_ids": []
+          },
+          {
+            "created_at": "2026-11-14T15:32:39.844696-05:00",
+            "updated_at": "2026-11-14T15:32:39.844696-05:00",
+            "id": 3,
+            "display_name": "Aunt June",
+            "relationship": "Aunt",
+            "birthdate": null,
+            "anniversary": null,
+            "notes": "Fictional design demo only. Loves useful little things.",
+            "interests": [
+              "Painting",
+              "Hiking"
+            ],
+            "size_profile": null,
+            "sizes": null,
+            "advanced_interests": null,
+            "constraints": null,
+            "photo_url": null,
+            "groups": [],
+            "occasion_ids": []
+          }
+        ],
+        "has_more": false,
+        "next_cursor": null
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "response": {
+        "created_at": "2026-11-14T15:32:39.269301-05:00",
+        "updated_at": "2026-11-14T15:32:39.269301-05:00",
+        "id": 1,
+        "email": "demo-june@example.invalid"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/occasions",
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "created_at": "2026-11-14T15:32:39.852384-05:00",
+            "updated_at": "2026-11-14T15:50:27.149657-05:00",
+            "id": 1,
+            "name": "Winter Gathering",
+            "type": "holiday",
+            "date": "2026-12-25",
+            "description": "An invented celebration for design review.",
+            "recurrence_rule": null,
+            "is_active": true,
+            "next_occurrence": null,
+            "subtype": null,
+            "person_ids": [
+              1,
+              2,
+              3
+            ]
+          }
+        ],
+        "has_more": false,
+        "next_cursor": null
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "response": {
+        "created_at": "2026-11-14T15:32:39.269301-05:00",
+        "updated_at": "2026-11-14T15:32:39.269301-05:00",
+        "id": 1,
+        "email": "demo-june@example.invalid"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/gifts",
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "created_at": "2026-11-14T15:32:40.036903-05:00",
+            "updated_at": "2026-11-14T15:32:40.036903-05:00",
+            "id": 4,
+            "name": "Watercolor Set",
+            "url": null,
+            "price": 36.0,
+            "image_url": null,
+            "source": null,
+            "description": "Fictional demo gift, no retailer or personal data.",
+            "notes": null,
+            "priority": "medium",
+            "status": "idea",
+            "quantity": 1,
+            "sale_price": null,
+            "purchase_date": null,
+            "additional_urls": [],
+            "extra_data": {},
+            "from_santa": false,
+            "stores": [],
+            "person_ids": [
+              3
+            ],
+            "gift_people": [
+              {
+                "person_id": 3,
+                "role": "recipient"
+              }
+            ],
+            "list_items": [
+              {
+                "id": 4,
+                "list_id": 1,
+                "list_name": "Gifts for Rose",
+                "status": "idea"
+              }
+            ]
+          },
+          {
+            "created_at": "2026-11-14T15:32:40.006061-05:00",
+            "updated_at": "2026-11-14T15:32:40.006061-05:00",
+            "id": 3,
+            "name": "Wooden Puzzle",
+            "url": null,
+            "price": 24.0,
+            "image_url": null,
+            "source": null,
+            "description": "Fictional demo gift, no retailer or personal data.",
+            "notes": null,
+            "priority": "medium",
+            "status": "idea",
+            "quantity": 1,
+            "sale_price": null,
+            "purchase_date": null,
+            "additional_urls": [],
+            "extra_data": {},
+            "from_santa": false,
+            "stores": [],
+            "person_ids": [
+              2
+            ],
+            "gift_people": [
+              {
+                "person_id": 2,
+                "role": "recipient"
+              }
+            ],
+            "list_items": [
+              {
+                "id": 3,
+                "list_id": 1,
+                "list_name": "Gifts for Rose",
+                "status": "purchased"
+              }
+            ]
+          },
+          {
+            "created_at": "2026-11-14T15:32:39.992062-05:00",
+            "updated_at": "2026-11-14T15:32:39.992062-05:00",
+            "id": 2,
+            "name": "Ceramic Tea Set",
+            "url": null,
+            "price": 45.0,
+            "image_url": null,
+            "source": null,
+            "description": "Fictional demo gift, no retailer or personal data.",
+            "notes": null,
+            "priority": "medium",
+            "status": "idea",
+            "quantity": 1,
+            "sale_price": null,
+            "purchase_date": null,
+            "additional_urls": [],
+            "extra_data": {},
+            "from_santa": false,
+            "stores": [],
+            "person_ids": [
+              1
+            ],
+            "gift_people": [
+              {
+                "person_id": 1,
+                "role": "recipient"
+              }
+            ],
+            "list_items": [
+              {
+                "id": 2,
+                "list_id": 1,
+                "list_name": "Gifts for Rose",
+                "status": "selected"
+              }
+            ]
+          },
+          {
+            "created_at": "2026-11-14T15:32:39.895492-05:00",
+            "updated_at": "2026-11-14T15:32:39.895492-05:00",
+            "id": 1,
+            "name": "Garden Journal",
+            "url": null,
+            "price": 28.0,
+            "image_url": null,
+            "source": null,
+            "description": "Fictional demo gift, no retailer or personal data.",
+            "notes": null,
+            "priority": "medium",
+            "status": "idea",
+            "quantity": 1,
+            "sale_price": null,
+            "purchase_date": null,
+            "additional_urls": [],
+            "extra_data": {},
+            "from_santa": false,
+            "stores": [],
+            "person_ids": [
+              1
+            ],
+            "gift_people": [
+              {
+                "person_id": 1,
+                "role": "recipient"
+              }
+            ],
+            "list_items": [
+              {
+                "id": 1,
+                "list_id": 1,
+                "list_name": "Gifts for Rose",
+                "status": "idea"
+              }
+            ]
+          }
+        ],
+        "has_more": false,
+        "next_cursor": null
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "response": {
+        "created_at": "2026-11-14T15:32:39.269301-05:00",
+        "updated_at": "2026-11-14T15:32:39.269301-05:00",
+        "id": 1,
+        "email": "demo-june@example.invalid"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/lists",
+      "status": 200,
+      "response": {
+        "items": [
+          {
+            "created_at": "2026-11-14T15:32:39.890626-05:00",
+            "updated_at": "2026-11-14T15:32:39.890626-05:00",
+            "id": 1,
+            "name": "Gifts for Rose",
+            "type": "ideas",
+            "visibility": "family",
+            "user_id": 1,
+            "person_id": 1,
+            "occasion_id": 1,
+            "item_count": 4
+          }
+        ],
+        "has_more": false,
+        "next_cursor": null
+      }
+    }
+  ],
+  "source_edits": [],
+  "capture_exit": 0,
+  "processes": [
+    {
+      "name": "web",
+      "pid": 18953,
+      "exit": 0,
+      "stopped": true
+    },
+    {
+      "name": "api",
+      "pid": 18280,
+      "exit": -15,
+      "stopped": true
+    },
+    {
+      "name": "postgres",
+      "pid": 18194,
+      "exit": 0,
+      "stopped": true
+    }
+  ]
+}

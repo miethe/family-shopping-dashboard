@@ -1,0 +1,46 @@
+Skip to main content
+card_giftcard
+home
+Dashboard
+assignment
+Assignments
+groups
+People
+calendar_month
+Occasions
+card_giftcard
+Gifts
+list_alt
+Lists
+settings
+Admin
+D
+add
+Dashboard
+Gifts
+Add Gift
+Add Gift
+
+Add a gift to your catalog
+
+From URL
+Manual
+PRODUCT URL*
+
+We'll try to automatically extract the title, image, and price.
+
+STATUS
+Select an option
+Idea
+Selected
+Purchased
+Received
+
+Current status of this gift idea
+
+ADD TO LISTS (OPTIONAL)
+Gifts for Rose
+
+for Grandma Rose (Winter Gathering)
+
+Add Gift from URL

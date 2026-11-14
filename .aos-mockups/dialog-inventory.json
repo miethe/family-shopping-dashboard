@@ -1,0 +1,246 @@
+[
+  {
+    "source": "apps/web/components/lists/AddListItemModal.tsx",
+    "component": "AddListItemModal",
+    "tabs": [],
+    "titles": [
+      "Add Item to List"
+    ],
+    "source_sha256": "4f816d8f65a917f5a4e4df46bfdf042849971e2e916fab7ff1838397eb2df461"
+  },
+  {
+    "source": "apps/web/components/lists/AddListModal.tsx",
+    "component": "AddListModal",
+    "tabs": [],
+    "titles": [
+      "{isEditMode ? 'Edit List' : 'Create List'}"
+    ],
+    "source_sha256": "6401e49713627667b9b9ab3604406d172acab4f98633290e74144bdcd331d553"
+  },
+  {
+    "source": "apps/web/components/modals/OccasionDetailModal.tsx",
+    "component": "OccasionDetailModal",
+    "tabs": [
+      "Overview\n              ",
+      "Linked Entities\n              ",
+      "Comments\n              ",
+      "History\n              "
+    ],
+    "titles": [],
+    "source_sha256": "c670d3a9f8827f2912df7367cdaf997a36256f76b8bad22da45ff12275c5da1d"
+  },
+  {
+    "source": "apps/web/components/modals/ImageEditDialog.tsx",
+    "component": "ImageEditDialog",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "aa97cebc32ddee8f42912ea79c27243fcc6de4aee3a089b5d49b5065a27f582d"
+  },
+  {
+    "source": "apps/web/components/modals/ListDetailModal.tsx",
+    "component": "ListDetailModal",
+    "tabs": [
+      "Overview\n                ",
+      "Items\n                ",
+      "Linked Entities\n                ",
+      "Comments\n                ",
+      "History\n                "
+    ],
+    "titles": [],
+    "source_sha256": "471b666bb52b9d18d0c0837bae2febabb0f749a80cf9b5a07f721ec41d41be83"
+  },
+  {
+    "source": "apps/web/components/modals/AddToListModal.tsx",
+    "component": "AddToListModal",
+    "tabs": [],
+    "titles": [
+      "Add to List"
+    ],
+    "source_sha256": "9fc16a0ba7292b59827765118926a27fe8d7c26f462b13a13beaec820a5592bd"
+  },
+  {
+    "source": "apps/web/components/modals/SeparateSharedDialog.tsx",
+    "component": "SeparateSharedDialog",
+    "tabs": [],
+    "titles": [
+      "Multiple Recipients"
+    ],
+    "source_sha256": "079cb23a8a40b9156556da3f054969d7f1bfe99bf7271859140e32450b0ede55"
+  },
+  {
+    "source": "apps/web/components/modals/PurchaserAssignDialog.tsx",
+    "component": "PurchaserAssignDialog",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "b1e44cef70d3a8beb112fe13823846e418d649c4b8c5072526836e4b7526611c"
+  },
+  {
+    "source": "apps/web/components/modals/LinkListsToContextModal.tsx",
+    "component": "LinkListsToContextModal",
+    "tabs": [
+      "Add Existing\n              ",
+      "Create New\n              "
+    ],
+    "titles": [
+      "\n              Link Lists to {contextType === 'person' ? 'Person' : 'Occasion'}\n            "
+    ],
+    "source_sha256": "d058c60e78b6305544acd4d6018dc74cd11b9290b38544d773236f22a638e5b9"
+  },
+  {
+    "source": "apps/web/components/modals/EntityModal.tsx",
+    "component": "EntityModal",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "f5d0d1413e3cd4b8d240ab64ea6e9246db58a932764480b9f7917c44b94e3007"
+  },
+  {
+    "source": "apps/web/components/modals/PersonQuickCreateModal.tsx",
+    "component": "PersonQuickCreateModal",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "216f167aeccd2bd2ff03982cdc01eb4fc82d366ad4124c17465923f7cb49fd10"
+  },
+  {
+    "source": "apps/web/components/modals/GiftDetailModal.tsx",
+    "component": "GiftDetailModal",
+    "tabs": [
+      "Overview\n                ",
+      "Linked Entities\n                ",
+      "Comments\n                ",
+      "History\n                "
+    ],
+    "titles": [
+      "Delete Gift",
+      "Mark as Purchased"
+    ],
+    "source_sha256": "7c04e9fe46d928c38ac99c504d200241af8943cffe01429c5c8f9bfc8b19e0a7"
+  },
+  {
+    "source": "apps/web/components/modals/PersonDetailModal.tsx",
+    "component": "PersonDetailModal",
+    "tabs": [
+      "Overview\n                  ",
+      "Budgets\n                  ",
+      "Advanced\n                  ",
+      "Linked Entities\n                  ",
+      "Comments\n                  ",
+      "History\n                  ",
+      "Overview\n                  ",
+      "Advanced\n                  "
+    ],
+    "titles": [],
+    "source_sha256": "2cf67b09ae12f133ce7fe22ab0c7ea06f2c74a28fb967e57827bd8712fb312f5"
+  },
+  {
+    "source": "apps/web/components/modals/LinkEntityToListModal.tsx",
+    "component": "LinkEntityToListModal",
+    "tabs": [
+      "Add Existing\n              ",
+      "Create New\n              "
+    ],
+    "titles": [
+      "\n              {entityType === 'person' ? 'Link Recipient' : 'Link Occasion'}\n            "
+    ],
+    "source_sha256": "2d6dbccd255aa33ca31771713ebff084fb086ee390921a937620f665fb572902"
+  },
+  {
+    "source": "apps/web/components/groups/GroupEditModal.tsx",
+    "component": "GroupEditModal",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "515c1029699ec24c754a80d5976e389f7ab5acb85e460b63ad7d255882250c90"
+  },
+  {
+    "source": "apps/web/components/quick-add/QuickAddModal.tsx",
+    "component": "QuickAddModal",
+    "tabs": [],
+    "titles": [
+      "Quick Add Idea"
+    ],
+    "source_sha256": "f459ae9f11fa00c3a261ffd85456167063289e21abec7ab1bbcd09d14b40b3ad"
+  },
+  {
+    "source": "apps/web/components/quick-add/QuickAddButton.tsx",
+    "component": "QuickAddButton",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "5fca417bfc2e13cfa0fa406d41b3ff92544aa4c5bec1de37a49c73c2747be7bb"
+  },
+  {
+    "source": "apps/web/components/gifts/GiftEditModal.tsx",
+    "component": "GiftEditModal",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "575eca6a19da14bcab3ffd3e1579cca968c2bba65b662eb2f22ca0e4e29e7406"
+  },
+  {
+    "source": "apps/web/components/gifts/PriceEditDialog.tsx",
+    "component": "PriceEditDialog",
+    "tabs": [],
+    "titles": [
+      "Edit Price"
+    ],
+    "source_sha256": "ec150c3d12e9004ec0dd6d19572f2deee90dcbbf042ac5a7e27a74b7896c4ecf"
+  },
+  {
+    "source": "apps/web/components/gifts/LinkGiftToListsModal.tsx",
+    "component": "LinkGiftToListsModal",
+    "tabs": [
+      "Add to Existing\n              ",
+      "Create New\n              "
+    ],
+    "titles": [
+      "Link Gift to Lists"
+    ],
+    "source_sha256": "e0f3f653c45d817b25c432f1f704fbc0caf91ecd1e0a2d8f1402f5d4d237c0ac"
+  },
+  {
+    "source": "apps/web/components/gifts/AddGiftModal.tsx",
+    "component": "AddGiftModal",
+    "tabs": [
+      "From URL",
+      "Manual"
+    ],
+    "titles": [],
+    "source_sha256": "1e933ca111e59cee203922bf3ef0aa8e8cb2ff4e61a0966ea71adf9080ce4219"
+  },
+  {
+    "source": "apps/web/components/people/AddPersonModal.tsx",
+    "component": "AddPersonModal",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "cdb69391f99c1ee705bab4dbac4c29ee06bf6560ddce19b4629260cf7fa620f4"
+  },
+  {
+    "source": "apps/web/components/occasions/AddOccasionModal.tsx",
+    "component": "AddOccasionModal",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "058b8f8c478efb39c5a51612f2692ca74be825b54705911acd6ae353f90fbddd"
+  },
+  {
+    "source": "apps/web/components/features/admin/EditOptionModal.tsx",
+    "component": "EditOptionModal",
+    "tabs": [],
+    "titles": [
+      "Edit Option"
+    ],
+    "source_sha256": "1e07ae60c9a191a6fd41c9b390ffb6d0df365fd348b5452f99a27823a6d0818f"
+  },
+  {
+    "source": "apps/web/components/features/admin/DeleteConfirmationModal.tsx",
+    "component": "DeleteConfirmationModal",
+    "tabs": [],
+    "titles": [],
+    "source_sha256": "ffddd38d8c2738ca1f82938819a79299a889df8fb0d84b3d4338cae9f625057e"
+  },
+  {
+    "source": "apps/web/components/features/admin/AddOptionModal.tsx",
+    "component": "AddOptionModal",
+    "tabs": [],
+    "titles": [
+      "Add New Option"
+    ],
+    "source_sha256": "cae8678c9c1ec81912412c3aae2d5ba3eaac130b89475ab4e2684549c2870866"
+  }
+]

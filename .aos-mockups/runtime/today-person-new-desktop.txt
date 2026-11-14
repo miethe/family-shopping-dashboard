@@ -1,0 +1,76 @@
+Skip to main content
+card_giftcard
+home
+Dashboard
+assignment
+Assignments
+groups
+People
+calendar_month
+Occasions
+card_giftcard
+Gifts
+list_alt
+Lists
+settings
+Admin
+D
+add
+Dashboard
+People
+Add Person
+Add Person
+
+Add a person to your family
+
+Basic Information
+DISPLAY NAME*
+Relationship (optional)
+Select a relationship
+Parent
+Sibling
+Child
+Extended Family
+Friend
+Colleague
+Other
+BIRTHDATE (OPTIONAL)
+Photo (optional)
+Upload
+URL
+
+Drop image here, paste, or click to upload
+
+JPEG, PNG, WebP, GIF, HEIF/HEIC up to 10MB
+
+Upload or link to a photo of this person
+
+Interests
+Add interests (optional)
+Add
+
+Add interests to help with gift ideas
+
+Sizes
+Add sizes (optional)
+Category
+Shirt
+Pants
+Shoes
+Dress
+Jacket
+Custom
+Add
+
+Clothing sizes for shopping reference
+
+Additional Information
+Notes (optional)
+
+Any additional notes or preferences
+
+Gift Constraints (optional)
+
+Important restrictions or preferences for gift selection
+
+Add Person

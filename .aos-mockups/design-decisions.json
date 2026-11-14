@@ -1,0 +1,171 @@
+{
+  "flows": [
+    {
+      "id": "home",
+      "title": "A home for the whole family",
+      "purpose": "See who you\u2019re thinking of, what\u2019s coming up, and where a little help is needed.",
+      "today": "The current dashboard brings together the next occasion, gift counts, an idea inbox, and recent activity.",
+      "options": [
+        [
+          "A",
+          "The family storybook",
+          "A celebration and familiar faces lead; the next useful action follows."
+        ],
+        [
+          "B",
+          "The family workbench",
+          "Shared tasks and buying ownership lead in a compact, tactile board."
+        ],
+        [
+          "C",
+          "The gift atlas",
+          "People, celebrations, and ideas become places on a little illustrated map."
+        ]
+      ],
+      "recommend": "A \u00b7 The family storybook",
+      "reason": "It says \u201cpeople we care about\u201d before it asks anyone to manage tasks. Keep the task summary within easy reach.",
+      "steps": [
+        [
+          "Open Home",
+          "A familiar celebration anchors the page."
+        ],
+        [
+          "Choose a person",
+          "Their avatar carries into the profile header."
+        ],
+        [
+          "Return with an idea",
+          "The next-action row quietly updates."
+        ]
+      ],
+      "motion": "A keeps the person\u2019s avatar continuous. B updates a task row in place. C follows a short path between destinations. Avoid bouncing the entire page."
+    },
+    {
+      "id": "person",
+      "title": "Remember what makes them smile",
+      "purpose": "Keep relationships, preferences, useful notes, gift ideas, and past gifts together.",
+      "today": "The standalone profile has information, lists, and history tabs. Opening a person\u2019s card adds a richer overlay with budgets, advanced preferences, linked records, comments, and history.",
+      "options": [
+        [
+          "A",
+          "A thoughtful keepsake",
+          "Interests sit beside gift ideas, with preferences and past gifts close by."
+        ],
+        [
+          "B",
+          "Their gift workbench",
+          "Group this person\u2019s gifts by who still needs to buy and what is already in hand."
+        ],
+        [
+          "C",
+          "A notebook of little things",
+          "Small observations become a timeline that can spark a gift idea."
+        ]
+      ],
+      "recommend": "A \u00b7 A thoughtful keepsake",
+      "reason": "Remembering a person and choosing for them belong together. It gives the app a warmer purpose while preserving the deeper preferences.",
+      "steps": [
+        [
+          "Notice a preference",
+          "Tea, gardening, and mysteries stay in view."
+        ],
+        [
+          "Open an idea",
+          "The gift grows into a focused detail sheet."
+        ],
+        [
+          "Keep the context",
+          "Returning restores the same person and tab."
+        ]
+      ],
+      "motion": "A expands the chosen gift into a sheet. B carries a gift row between stages. C gently reveals a note\u2019s gift action. Restore scroll position and keyboard focus."
+    },
+    {
+      "id": "occasion",
+      "title": "Make a plan with room for joy",
+      "purpose": "Bring recipients, lists, budgets, and shared buying progress into one celebration.",
+      "today": "The current occasion page links recipients and lists with budget controls further down. Its phone layout currently overflows horizontally; saving a budget returned a server error even though the value later appeared.",
+      "options": [
+        [
+          "A",
+          "An invitation for everyone",
+          "A celebration scene and people\u2019s readiness lead the plan."
+        ],
+        [
+          "B",
+          "The family budget envelope",
+          "Bought, set aside, and available stay visible beside the recipient ledger."
+        ],
+        [
+          "C",
+          "A celebration journey",
+          "Plan by what happens now, before the gathering, and on the day."
+        ]
+      ],
+      "recommend": "B \u00b7 The family budget envelope",
+      "reason": "It makes financial room and remaining work easy to compare. Keep the celebration illustration small enough that the plan comes first.",
+      "steps": [
+        [
+          "Open the plan",
+          "See bought, committed, and remaining together."
+        ],
+        [
+          "Choose a recipient",
+          "Their gifts open without losing the occasion."
+        ],
+        [
+          "Buy something",
+          "The budget bar and gift stage settle together."
+        ]
+      ],
+      "motion": "A lifts a recipient into their plan. B animates only the changed budget segment and ledger row. C advances the timeline marker. Always show the final amount as text."
+    },
+    {
+      "id": "buying",
+      "title": "From a lovely idea to \u201cI\u2019ve got it\u201d",
+      "purpose": "Capture a gift, connect it to someone and an occasion, choose a buyer, and track it through buying.",
+      "today": "The current list board already has idea, selected, purchased, and received stages. Catalog gifts and list items carry separate state; the assignments view is a separate screen.",
+      "options": [
+        [
+          "A",
+          "One gift, one next step",
+          "A focused gift sheet makes its recipient, buyer, and next action unmistakable."
+        ],
+        [
+          "B",
+          "The shared buying board",
+          "Keep unclaimed, buying, and bought gifts together so the family can coordinate."
+        ],
+        [
+          "C",
+          "A parcel passport",
+          "A checklist records the gift\u2019s journey with buyer and recipient clearly separated."
+        ]
+      ],
+      "recommend": "B \u00b7 The shared buying board",
+      "reason": "Who is buying what is the coordination problem this app can solve best. Use a focused sheet like A when someone claims or buys a gift.",
+      "steps": [
+        [
+          "Save an idea",
+          "The gift appears under \u201cNeeds a buyer\u201d."
+        ],
+        [
+          "Choose a buyer",
+          "A named owner replaces the claim action."
+        ],
+        [
+          "Mark bought",
+          "The same gift moves to \u201cBought\u201d, with undo."
+        ]
+      ],
+      "motion": "A advances the gift\u2019s stage in place. B moves one stable card between sections. C checks the next passport entry. Use a short settle, explicit status text, and a visible undo."
+    }
+  ],
+  "directions": {
+    "A": "Montessori Meadow cut-paper storybook",
+    "B": "Wonder Workshop task workbench",
+    "C": "Lenslight Field Journal"
+  },
+  "page_token_source": "~/.local/share/aos/leads/opshub-1111/admission/page.html",
+  "no_production_changes": true
+}

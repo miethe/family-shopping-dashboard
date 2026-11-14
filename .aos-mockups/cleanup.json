@@ -1,0 +1,27 @@
+{
+  "removed_own_temporary_runtime": [
+    "web",
+    "postgres",
+    "fonts",
+    "python",
+    "pg-bin",
+    "pg-password",
+    "prior-run-command.txt"
+  ],
+  "ports": [
+    {
+      "port": 15453,
+      "listening": false
+    },
+    {
+      "port": 18430,
+      "listening": false
+    },
+    {
+      "port": 18330,
+      "listening": false
+    }
+  ],
+  "retained_review_asset_count": 58,
+  "review_asset_hashes_verified": true
+}

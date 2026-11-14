@@ -1,0 +1,41 @@
+Skip to main content
+card_giftcard
+home
+Dashboard
+assignment
+Assignments
+groups
+People
+calendar_month
+Occasions
+card_giftcard
+Gifts
+list_alt
+Lists
+settings
+Admin
+D
+add
+Create List
+
+Create a new gift list
+
+List Name
+Type
+Wishlist
+Ideas
+Assigned
+Visibility
+Private
+Family
+Public
+Person (Optional)
+Select a person
+Grandma Rose
+Uncle Theo
+Aunt June
+Occasion (Optional)
+Select an occasion
+Winter Gathering
+Create List
+Cancel

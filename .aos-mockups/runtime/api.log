@@ -1,0 +1,214 @@
+/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/services/api/app/schemas/person.py:692: UserWarning: `_normalize_size_profile` overrides an existing Pydantic `@field_validator` decorator
+  def _normalize_size_profile(cls, value: list[SizeEntry] | None) -> list[SizeEntry] | None:
+/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/services/api/app/schemas/person.py:699: UserWarning: `_normalize_sizes` overrides an existing Pydantic `@field_validator` decorator
+  def _normalize_sizes(cls, value: dict[str, Any] | None) -> dict[str, str] | None:
+/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/services/api/app/schemas/person.py:704: UserWarning: `_prune_empty_advanced` overrides an existing Pydantic `@field_validator` decorator
+  def _prune_empty_advanced(
+INFO:     Started server process [40126]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:18430 (Press CTRL+C to quit)
+INFO:     127.0.0.1:58770 - "GET /health HTTP/1.1" 200 OK
+<sys>:0: SAWarning: relationship 'GiftPerson.person' will copy column persons.id to column gift_people.person_id, which conflicts with relationship(s): 'Gift.people' (copies persons.id to gift_people.person_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="people"' to the 'GiftPerson.person' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+<sys>:0: SAWarning: relationship 'PersonGroup.person' will copy column persons.id to column person_groups.person_id, which conflicts with relationship(s): 'Group.members' (copies persons.id to person_groups.person_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="members"' to the 'PersonGroup.person' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+<sys>:0: SAWarning: relationship 'Person.gifts' will copy column gifts.id to column gift_people.gift_id, which conflicts with relationship(s): 'Gift.gift_people_links' (copies gifts.id to gift_people.gift_id), 'GiftPerson.gift' (copies gifts.id to gift_people.gift_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="gift,gift_people_links"' to the 'Person.gifts' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+<sys>:0: SAWarning: relationship 'Person.groups' will copy column groups.id to column person_groups.group_id, which conflicts with relationship(s): 'PersonGroup.group' (copies groups.id to person_groups.group_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="group"' to the 'Person.groups' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+INFO:     127.0.0.1:58775 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58812 - "POST /api/v1/budgets/occasions/1 HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/fastapi/applications.py", line 1134, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/fastapi/routing.py", line 125, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/fastapi/routing.py", line 111, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/fastapi/routing.py", line 413, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<9 lines>...
+    )
+    ^
+  File "/Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/runtime/python/lib/python3.14/site-packages/fastapi/routing.py", line 254, in serialize_response
+    raise ResponseValidationError(
+        errors=_normalize_errors(errors), body=response_content
+    )
+fastapi.exceptions.ResponseValidationError: 1 validation errors:
+  {'type': 'model_attributes_type', 'loc': ('response',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': True}
+
+INFO:     127.0.0.1:58814 - "PUT /api/v1/list-items/2/assign HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58815 - "PUT /api/v1/list-items/3/assign HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58816 - "GET /api/v1/lists/1/items HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58817 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58852 - "GET /api/v1/persons HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58863 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58885 - "GET /api/v1/occasions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58887 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58931 - "GET /api/v1/gifts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58933 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58968 - "GET /api/v1/lists HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59632 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59650 - "WebSocket /ws?token=[redacted-demo-token]" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59814 - "GET /api/v1/lists?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59816 - "GET /api/v1/activity?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59815 - "GET /api/v1/ideas/inbox?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59817 - "GET /api/v1/dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59817 - "GET /api/v1/budgets/occasions/1/meter HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     127.0.0.1:59817 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59947 - "WebSocket /ws?token=[redacted-demo-token]" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59817 - "GET /api/v1/groups HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59815 - "GET /api/v1/occasions?filter=upcoming HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59817 - "GET /api/v1/persons HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59816 - "GET /api/v1/lists?person_id=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59817 - "GET /api/v1/persons/1/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59816 - "GET /api/v1/persons/2/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59952 - "GET /api/v1/lists?person_id=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59815 - "GET /api/v1/gifts?person_ids=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59816 - "GET /api/v1/lists?person_id=3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59814 - "GET /api/v1/gifts?person_ids=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59953 - "GET /api/v1/persons/3/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59817 - "GET /api/v1/gifts?person_ids=3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59817 - "GET /api/v1/persons/1 HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     127.0.0.1:60255 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60258 - "WebSocket /ws?token=[redacted-demo-token]" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:60259 - "GET /api/v1/lists HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60255 - "GET /api/v1/persons HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60260 - "GET /api/v1/occasions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60259 - "GET /api/v1/gifts?sort=recent HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60259 - "GET /api/v1/lists?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60260 - "GET /api/v1/lists?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60259 - "GET /api/v1/lists?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60260 - "GET /api/v1/lists?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60259 - "GET /api/v1/lists/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60260 - "GET /api/v1/lists/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60255 - "GET /api/v1/lists/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60263 - "GET /api/v1/lists/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60263 - "GET /api/v1/gifts/1 HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     127.0.0.1:60263 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60349 - "WebSocket /ws?token=[redacted-demo-token]" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:60263 - "GET /api/v1/groups HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60260 - "GET /api/v1/occasions?filter=upcoming HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60255 - "GET /api/v1/persons HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60263 - "GET /api/v1/lists?person_id=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60354 - "GET /api/v1/lists?person_id=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60255 - "GET /api/v1/persons/1/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60259 - "GET /api/v1/persons/2/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60260 - "GET /api/v1/gifts?person_ids=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60255 - "GET /api/v1/lists?person_id=3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60353 - "GET /api/v1/gifts?person_ids=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60260 - "GET /api/v1/lists?occasion_id=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60259 - "GET /api/v1/occasions/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60263 - "GET /api/v1/persons/3/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60255 - "GET /api/v1/persons HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60354 - "GET /api/v1/gifts?person_ids=3 HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     127.0.0.1:60496 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60512 - "WebSocket /ws?token=[redacted-demo-token]" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:60496 - "GET /api/v1/lists?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/activity?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60532 - "GET /api/v1/ideas/inbox?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60534 - "GET /api/v1/dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60534 - "GET /api/v1/budgets/occasions/1/meter HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     127.0.0.1:60534 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60553 - "WebSocket /ws?token=[redacted-demo-token]" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:60534 - "GET /api/v1/groups HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/occasions?filter=upcoming HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60532 - "GET /api/v1/persons HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60532 - "GET /api/v1/persons/1/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/gifts?person_ids=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60534 - "GET /api/v1/lists?person_id=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60558 - "GET /api/v1/lists?person_id=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60534 - "GET /api/v1/lists?person_id=3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60496 - "GET /api/v1/persons/2/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60557 - "GET /api/v1/gifts?person_ids=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60532 - "GET /api/v1/persons/3/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/gifts?person_ids=3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/persons/1 HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     127.0.0.1:60533 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60694 - "WebSocket /ws?token=[redacted-demo-token]" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:60697 - "GET /api/v1/lists HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60698 - "GET /api/v1/occasions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/persons HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60700 - "GET /api/v1/gifts?sort=recent HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60700 - "GET /api/v1/lists?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/lists?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /api/v1/lists?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60698 - "GET /api/v1/lists?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60698 - "GET /api/v1/lists/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /api/v1/lists/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/lists/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60700 - "GET /api/v1/lists/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60706 - "GET /api/v1/gifts/1 HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     127.0.0.1:60706 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60792 - "WebSocket /ws?token=[redacted-demo-token]" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:60706 - "GET /api/v1/groups HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/occasions?filter=upcoming HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60700 - "GET /api/v1/persons HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60706 - "GET /api/v1/lists?person_id=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60700 - "GET /api/v1/persons/1/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /api/v1/persons/2/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60805 - "GET /api/v1/lists?person_id=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60533 - "GET /api/v1/gifts?person_ids=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60698 - "GET /api/v1/gifts?person_ids=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60706 - "GET /api/v1/persons/3/budgets HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /api/v1/lists?person_id=3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60700 - "GET /api/v1/gifts?person_ids=3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /api/v1/lists?occasion_id=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60700 - "GET /api/v1/occasions/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60706 - "GET /api/v1/persons HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [40126]

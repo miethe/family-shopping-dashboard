@@ -1,0 +1,28 @@
+   ▲ Next.js 15.5.6
+   - Local:        http://127.0.0.1:18330
+   - Network:      http://127.0.0.1:18330
+
+ ✓ Starting...
+ ✓ Ready in 5.6s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 644ms (114 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 3.5s (729 modules)
+ GET /login 200 in 2630ms
+ GET /login 200 in 271ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 5.5s (1263 modules)
+ GET /dashboard 200 in 5879ms
+ ○ Compiling /people ...
+ ✓ Compiled /people in 2.6s (1275 modules)
+ GET /people 200 in 3432ms
+ ○ Compiling /gifts ...
+ ✓ Compiled /gifts in 4.1s (1343 modules)
+ GET /gifts 200 in 5038ms
+ GET /people 200 in 140ms
+ GET /login 200 in 132ms
+ GET /dashboard 200 in 108ms
+ GET /people 200 in 142ms
+ GET /gifts 200 in 42ms
+ GET /people 200 in 47ms
+[?25h

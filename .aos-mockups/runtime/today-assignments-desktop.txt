@@ -1,0 +1,32 @@
+Skip to main content
+card_giftcard
+home
+Dashboard
+assignment
+Assignments
+groups
+People
+calendar_month
+Occasions
+card_giftcard
+Gifts
+list_alt
+Lists
+settings
+Admin
+D
+add
+My Assignments
+
+Gifts assigned to you across all lists
+
+All
+Ideas
+Selected
+Purchased
+Received
+By List
+By Person
+No assignments yet
+
+You don't have any gift assignments at the moment.

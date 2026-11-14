@@ -1,0 +1,1120 @@
+{
+  "scope": "All final review asset images; source UI defects are recorded separately from proposal quality.",
+  "asset_count": 58,
+  "real_count": 44,
+  "generated_count": 14,
+  "reviewer": "Codex visual inspection",
+  "checks": [
+    {
+      "file": "assets/buying-a.png",
+      "sha256": "708a85729842d1ed871b2694b7cc732ceea6334b266d762ac0b95f71e981ac98",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/buying-b.png",
+      "sha256": "906c1872f38354d0532625f883c982287a0ab929331e0a66fa26ecdb6363f2c2",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/buying-c.png",
+      "sha256": "3cb3e8d84896f89b558610ba629a7a113907a2f3aaa1477d97f2d383c964a20c",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/buying-desktop.png",
+      "sha256": "6afdb093c980e5424fc999b85716a135e6f352dec15533dd7ffc8a64cdce5cde",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/future-map.png",
+      "sha256": "5429f8ac26e45827074cf65799b50725334aaf31ff5b396a47509b846e8a645d",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown.",
+        "Removed inaccurate connector lines; explicit labels state feature homes."
+      ]
+    },
+    {
+      "file": "assets/home-a.png",
+      "sha256": "60fafaa45b7547ee3f1f9197b898fa0584fe1126c6a763f90b4a883d7bd41788",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/home-b.png",
+      "sha256": "70704fa6fa82203a977b78c3cdec2680c559264e530fa6e67d52eab16cf048c8",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/home-c.png",
+      "sha256": "5b7e6a2be473c92a41d570bb66cd474e3aa29291db063e052c6d990d066209d9",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/occasion-a.png",
+      "sha256": "b0e4419174c16d4e47b47f1776886dbc0d86f9c570dd443c3ea125505c0bc8f7",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/occasion-b.png",
+      "sha256": "f41fbfd43bc786d835c7081e79aa8b850e89e499f582b8663e494a839e3f3450",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/occasion-c.png",
+      "sha256": "8eead7babd8fe3610767d409799fa7eea7ca8a837815bfe47e3a94ec8b261638",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/person-a.png",
+      "sha256": "3a82c88dd690a68994186d64bb765720cff8609556e38b595b49d30393ddb174",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/person-b.png",
+      "sha256": "93ffb03f51efd75dbe7bb1e1afcc2b3922fdc2c9ed61e4bf1f8e73fa7963e0fe",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/person-c.png",
+      "sha256": "bc8ad5542cb9dbd064c4b364c501abd37c5686967afefc5eb401f3a7b66de155",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536
+      },
+      "mode": "native-image-generation",
+      "inspected": true,
+      "method": "view_image source",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Final generated image inspected individually: complete frame, readable controls, no garbled copy, invented people only. Buyer and recipient are distinct where shown."
+      ]
+    },
+    {
+      "file": "assets/today-admin-desktop.png",
+      "sha256": "4e3c516b5d29a73f2c41c8aa6d4109f268b424941a4217efe03d2c465655749a",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-admin-phone.png",
+      "sha256": "d0f2c5c7ded2c9c37cf4b1674022dc904d41eded8beea3d002ff8d5941c12ca2",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-assignments-desktop.png",
+      "sha256": "0d3f7c537ed53a8e04e3dec0a3c339783971787b2b54ac33ba809b081f296583",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-assignments-phone.png",
+      "sha256": "2124b0a772a80f89af4e9077bf156d4d99e7e3938d5b6e721a1fa54d429994a6",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-buying-desktop.png",
+      "sha256": "a9e56d887d59bea13c4cc1111e18ceaf6d49c6de9af6d2590146059aa39cb07b",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-buying-phone.png",
+      "sha256": "bfb5ff0367f1fa6c1f434591be2aa8a0d9ddceedc0541bc627c6616abe8c62bf",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "known-source-overflow",
+      "result": "accepted-faithful-baseline-with-limitations",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture.",
+        "Observed current-app horizontal overflow clips content at the right edge. Retained as labelled Today evidence; regeneration cannot fix the source layout within a design-only brief."
+      ]
+    },
+    {
+      "file": "assets/today-capture-desktop.png",
+      "sha256": "6700e77d66fcf155e3e955ba878792d3d692abf92e46ab1d4c5257bc69c66f5f",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-capture-phone.png",
+      "sha256": "6d324cdc658e8295836bd7a5a4d32e9484115062147b2f2fe6c327758855b6f5",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-gift-desktop.png",
+      "sha256": "5c38030a52b40277105dbfc7236618a026d34b01147c73372ad4263219787ed4",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-gift-edit-desktop.png",
+      "sha256": "bbf620a39ebf559d3c7739d3538e716590f1529aea5b8ebc34e0b1a520524644",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-gift-edit-phone.png",
+      "sha256": "c574c2d9441eb95bbc114d91fbae7c0b6f6c81344a4507318437cf20f319a7de",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-gift-modal-desktop.png",
+      "sha256": "cc70858ef75a9dc1814ae0f8e72e83a8e3864855c36efd1ee4900ca8f19b724e",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-gift-modal-phone.png",
+      "sha256": "13cb81017227d848f40571d53de378f6b81c102a616c06491370fc6099c54cf7",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "source-scrollable-tabs",
+      "result": "accepted-faithful-baseline-with-limitations",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture.",
+        "Current modal tab strip extends horizontally beyond the visible phone area; the fixed action footer leaves limited content height. Source UI behavior retained."
+      ]
+    },
+    {
+      "file": "assets/today-gift-phone.png",
+      "sha256": "873ee09b0053696a6232c36beb3830333ec852b93d8ae96ca347d1a873a0840d",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-gifts-desktop.png",
+      "sha256": "62bebdbd1ea771b1694619ddebf3262555d59f8eee81a4bc8a21cc6d8bfe32c0",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-gifts-phone.png",
+      "sha256": "27c2bf679aec456d3fd51027d927327cf22c048478126dadc25f26af6bd071ee",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-home-desktop.png",
+      "sha256": "cefe667311dd8b4a136fe88f06c1fe2d82f4f7169949bceb57d8cd6dbb8e60c4",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-home-phone.png",
+      "sha256": "ac277852d48c0ec9da19e53935a86f71502a257dd0986d30d453043e1ca695b8",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-list-new-desktop.png",
+      "sha256": "e4895ae48b51ae490f5c801f696420f240e45ae9e281a4f76a18b531c93a4791",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-list-new-phone.png",
+      "sha256": "b9f0ed9a18f3c219beae732ab0ad7331efb2d5af5c4d1337036973320203540a",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-lists-desktop.png",
+      "sha256": "a36114cc3eb5c02383908b3359110b3ef9b83cded4841657c51776546a73e180",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-lists-phone.png",
+      "sha256": "bd717074067551fe453b2a0b23261eae9fcd134492d496e9bf64f34469dacdc1",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-login-desktop.png",
+      "sha256": "55147ef9b4bb33637c3102a5c0f5da1a297af04c0553878e827993a0113f28bc",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-login-phone.png",
+      "sha256": "6a179a886dd17df54fa691aa6d9db139c72447105b93f2299ad783782d8433e5",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-occasion-desktop.png",
+      "sha256": "ca3591020849cc0b9014d7cc883032a406a99662f3b89ab562110a492eced7a7",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-occasion-modal-desktop.png",
+      "sha256": "42ac8e12c899b2f688fbbf629c73d7f78c1954654e6ddaf6ae733b7a3344ece6",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-occasion-modal-phone.png",
+      "sha256": "4d1057bbe7f9a449d3cc555c2cf503c528f4ef4268b76a7f07bfeec7c2eb2b98",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "source-scrollable-tabs",
+      "result": "accepted-faithful-baseline-with-limitations",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture.",
+        "Current modal tab strip extends horizontally beyond the visible phone area; the fixed action footer leaves limited content height. Source UI behavior retained."
+      ]
+    },
+    {
+      "file": "assets/today-occasion-new-desktop.png",
+      "sha256": "1343924265d090f8dcd1cc0bbfc9880be88378524fd3cdc1497b58044616e436",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-occasion-new-phone.png",
+      "sha256": "6a692495ad9d390d62461cda6812940218da33f203c7f8055319226766445e14",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-occasion-phone.png",
+      "sha256": "7c53259596e147099abaaf8c63bca827a7452d96561b3089078284dd5e6c7156",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "known-source-overflow",
+      "result": "accepted-faithful-baseline-with-limitations",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture.",
+        "Observed current-app horizontal overflow clips content at the right edge. Retained as labelled Today evidence; regeneration cannot fix the source layout within a design-only brief."
+      ]
+    },
+    {
+      "file": "assets/today-occasions-desktop.png",
+      "sha256": "ebb0f8bd2474c121199586c4162c8bb223a6784ebaae1071fcad23d617f239e5",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-occasions-phone.png",
+      "sha256": "1bd44282a72399e9821285d184b1957a6569d4bacc74f3cd37d112ec6ccdd43f",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-people-desktop.png",
+      "sha256": "6f180ea57b5c56340134ca05b42a43582f12c19c81009fa9b30a21d156b43a09",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-people-phone.png",
+      "sha256": "e5168953a395a1c44639102b3b8170cc3393c2577d4a86426e7d813bfa90594c",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-person-desktop.png",
+      "sha256": "1a12904599f71aa4542290a115b2baacf25b0764abd8707c0fbe819afc07c8ae",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-person-modal-desktop.png",
+      "sha256": "bd8e528e1a144ff39b8a4085bc55784aa9d12553261f28e9504ebdab020ec271",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-person-modal-phone.png",
+      "sha256": "7426177dee9b6492642a8fe0f09041dece96391d64b53734901d1bb0884e3855",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "source-scrollable-tabs",
+      "result": "accepted-faithful-baseline-with-limitations",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture.",
+        "Current modal tab strip extends horizontally beyond the visible phone area; the fixed action footer leaves limited content height. Source UI behavior retained."
+      ]
+    },
+    {
+      "file": "assets/today-person-new-desktop.png",
+      "sha256": "b58851e305674006af882b8b31ebec7b9d021312ba4e500595811043fb1693bd",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-person-new-phone.png",
+      "sha256": "3dc46108e2d49cd5b8648a7ee9bbc60d1e553dc2639be58c908a68f487f1f529",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-person-phone.png",
+      "sha256": "aa38eaa2cd5c621f9750032bd1eb92caeed2f3da4651703c428460ffe40195bc",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-preferences-modal-desktop.png",
+      "sha256": "62d6d1c3466001d2c2619bb1c6f0a0fc231d210a7a866b3e856a34ddf4f3aff5",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture.",
+        "Intentional empty state: the invented profile has basic interests but no advanced-interest object."
+      ]
+    },
+    {
+      "file": "assets/today-preferences-modal-phone.png",
+      "sha256": "4034ad0bbacf35305e334e72f550979f796bb1226af6d294415976c2365784a7",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "source-scrollable-tabs",
+      "result": "accepted-faithful-baseline-with-limitations",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture.",
+        "Current modal tab strip extends horizontally beyond the visible phone area; the fixed action footer leaves limited content height. Source UI behavior retained.",
+        "Intentional empty state: the invented profile has basic interests but no advanced-interest object."
+      ]
+    },
+    {
+      "file": "assets/today-register-desktop.png",
+      "sha256": "2aadfd6ccb2dd47c82c0f2234d43dd1642eb64678edfe13d0a1b5cb46fa09898",
+      "dimensions": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at native desktop resolution",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    },
+    {
+      "file": "assets/today-register-phone.png",
+      "sha256": "65f22babef994e0fd351c531094031fb69df0ef24302165a3eacd616bf0adc1e",
+      "dimensions": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "real",
+      "inspected": true,
+      "method": "view_image source and browser contact sheets",
+      "garbled_text": false,
+      "real_personal_data": false,
+      "legibility": "Readable at phone viewport; full-size links provided",
+      "clipping": "no unintended clipping",
+      "result": "pass",
+      "notes": [
+        "Faithful real-app viewport, with development-tool buttons visible. Content below the fold requires scrolling; this is not a full-page capture."
+      ]
+    }
+  ]
+}

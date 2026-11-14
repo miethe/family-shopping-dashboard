@@ -1,0 +1,472 @@
+{
+  "review": [
+    {
+      "name": "phone",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "overflow": false,
+      "images": [
+        {
+          "src": "assets/today-home-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/home-a.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/home-b.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/home-c.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-person-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/person-a.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/person-b.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/person-c.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasion-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/occasion-a.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/occasion-b.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/occasion-c.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-buying-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/buying-a.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/buying-b.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/buying-c.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-buying-desktop.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/buying-desktop.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/future-map.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-login-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-register-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-home-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-people-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-person-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-person-new-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasions-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasion-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasion-new-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-gifts-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-gift-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-capture-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-gift-edit-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-lists-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-buying-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-list-new-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-assignments-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-admin-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-person-modal-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-preferences-modal-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-gift-modal-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasion-modal-phone.png",
+          "loaded": true
+        }
+      ],
+      "sourcesCollapsed": true,
+      "pathsInMainText": false,
+      "rawDigitsInMainText": false,
+      "groups": [
+        {
+          "id": "pick-home",
+          "values": [
+            "A",
+            "B",
+            "C",
+            "none"
+          ]
+        },
+        {
+          "id": "pick-person",
+          "values": [
+            "A",
+            "B",
+            "C",
+            "none"
+          ]
+        },
+        {
+          "id": "pick-occasion",
+          "values": [
+            "A",
+            "B",
+            "C",
+            "none"
+          ]
+        },
+        {
+          "id": "pick-buying",
+          "values": [
+            "A",
+            "B",
+            "C",
+            "none"
+          ]
+        }
+      ],
+      "notes": [
+        "note-home",
+        "note-person",
+        "note-occasion",
+        "note-buying",
+        "note-overall"
+      ]
+    },
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": false,
+      "images": [
+        {
+          "src": "assets/today-home-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/home-a.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/home-b.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/home-c.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-person-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/person-a.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/person-b.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/person-c.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasion-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/occasion-a.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/occasion-b.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/occasion-c.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-buying-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/buying-a.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/buying-b.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/buying-c.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-buying-desktop.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/buying-desktop.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/future-map.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-login-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-register-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-home-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-people-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-person-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-person-new-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasions-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasion-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasion-new-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-gifts-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-gift-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-capture-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-gift-edit-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-lists-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-buying-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-list-new-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-assignments-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-admin-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-person-modal-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-preferences-modal-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-gift-modal-phone.png",
+          "loaded": true
+        },
+        {
+          "src": "assets/today-occasion-modal-phone.png",
+          "loaded": true
+        }
+      ],
+      "sourcesCollapsed": true,
+      "pathsInMainText": false,
+      "rawDigitsInMainText": false,
+      "groups": [
+        {
+          "id": "pick-home",
+          "values": [
+            "A",
+            "B",
+            "C",
+            "none"
+          ]
+        },
+        {
+          "id": "pick-person",
+          "values": [
+            "A",
+            "B",
+            "C",
+            "none"
+          ]
+        },
+        {
+          "id": "pick-occasion",
+          "values": [
+            "A",
+            "B",
+            "C",
+            "none"
+          ]
+        },
+        {
+          "id": "pick-buying",
+          "values": [
+            "A",
+            "B",
+            "C",
+            "none"
+          ]
+        }
+      ],
+      "notes": [
+        "note-home",
+        "note-person",
+        "note-occasion",
+        "note-buying",
+        "note-overall"
+      ]
+    }
+  ],
+  "prototype": [
+    {
+      "reducedMotion": false,
+      "buyer": "Theo is buying this",
+      "gift": "Pressed flower journal",
+      "bought": true,
+      "undo": true,
+      "reset": true,
+      "animation": "arrive",
+      "overflow": false
+    },
+    {
+      "reducedMotion": true,
+      "buyer": "Theo is buying this",
+      "gift": "Pressed flower journal",
+      "bought": true,
+      "undo": true,
+      "reset": true,
+      "animation": "none",
+      "overflow": false
+    }
+  ],
+  "externalRequests": [],
+  "errors": []
+}

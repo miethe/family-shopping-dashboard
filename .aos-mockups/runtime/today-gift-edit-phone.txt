@@ -1,0 +1,106 @@
+Skip to main content
+Family Gifting
+home
+Dashboard
+list_alt
+Assignments
+groups
+People
+calendar_month
+Occasions
+card_giftcard
+Gifts
+Edit Gift
+GIFT NAME*
+PRODUCT URL
+
+Optional - link to product page
+
+PRICE
+
+Optional - estimated or actual price
+
+Gift status
+Idea
+GIFT IMAGE
+Upload
+URL
+
+Drop image here, paste, or click to upload
+
+JPEG, PNG, WebP, GIF, HEIF/HEIC up to 10MB
+
+Optional - upload or link to product image
+
+FOR...
+GR
+Grandma Rose
+Uncle Theo
+Aunt June
+Add New Person
+
+Optional - who is this gift for
+
+SOURCE
+Select a source (optional)
+Amazon
+Target
+Etsy
+Other
+
+Optional - where to purchase this gift
+
+Description
+
+Optional - detailed description of the gift
+
+Notes (Internal)
+
+Optional - private notes for your reference only
+
+PRIORITY
+Select an option
+Low
+Medium
+High
+QUANTITY
+
+How many items
+
+SALE PRICE
+
+Optional - discounted or sale price
+
+PURCHASE DATE
+
+Optional - when the gift was purchased
+
+ADDITIONAL URLS
+
+Add more product links or references
+
+STORES
+Add New Store
+
+Select stores where this gift can be purchased
+
+LIST MANAGEMENT
+LIST ITEM STATUS
+Select an option
+Idea
+Selected
+Purchased
+Received
+
+Status when adding to new lists below
+
+ADD TO LISTS (OPTIONAL)
+
+Select lists to add this gift to. To remove from lists, visit the list page.
+
+Gifts for Rose
+
+for Grandma Rose (Winter Gathering)
+
+Cancel
+Save Changes

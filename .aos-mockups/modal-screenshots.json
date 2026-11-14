@@ -1,0 +1,114 @@
+[
+  {
+    "name": "person-modal",
+    "size": "phone",
+    "route": "/people",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-person-modal-phone.png",
+    "bodyText": "Skip to main content\nFamily Gifting\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n🎁\n4 gifts\nGifts to Receive\nPurchased: $0.00•Planned: $73.00•Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $24.00•Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $36.00•Total: $36.00\nPainting\nHiking\nRecent Updates\n👤\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nGrandma Rose\nGR\nGrandma Rose\nGrandparent\nOverview\nBudgets\nAdvanced\nLinked Entities\nComments\nHistory\nBudget Overview\nGifts to Receive\nPurchased: $0.00•Planned: $73.00•Total: $73.00\nInterests\nGardening\nTea\nMysteries\nGroups\n\nNot assigned to any groups\n\nAdded on Invalid Date\n\nNotes\n\nFictional design demo only. Loves useful little things.\n\nEdit\nClose",
+    "overflow": false
+  },
+  {
+    "name": "preferences-modal",
+    "size": "phone",
+    "route": "/people",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-preferences-modal-phone.png",
+    "bodyText": "Skip to main content\nFamily Gifting\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n🎁\n4 gifts\nGifts to Receive\nPurchased: $0.00•Planned: $73.00•Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $24.00•Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $36.00•Total: $36.00\nPainting\nHiking\nRecent Updates\n👤\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nGrandma Rose\nGR\nGrandma Rose\nGrandparent\nOverview\nBudgets\nAdvanced\nLinked Entities\nComments\nHistory\n\nNo advanced interests recorded yet.\n\nEdit this person to add detailed preferences.\n\nEdit\nClose",
+    "overflow": false
+  },
+  {
+    "name": "gift-modal",
+    "size": "phone",
+    "route": "/gifts",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-gift-modal-phone.png",
+    "bodyText": "Skip to main content\nFamily Gifting\nGift Catalog\n\nBrowse and manage gift ideas\n\nSelect\nAdd Gift\nsearch\nStatus\nexpand_more\nRecipient\nexpand_more\nList\nexpand_more\nOccasion\nexpand_more\nMost Recent\nexpand_more\nGrid View\nexpand_more\nWatercolor Set\nIdea\n$36.00\nWooden Puzzle\nIdea\n$24.00\nCeramic Tea Set\nIdea\n$45.00\nGarden Journal\nIdea\n$28.00\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nGarden Journal\nOverview\nLinked Entities\nComments\nHistory\n\nNo image available\n\nGarden Journal\nIdea\nFor:\nGR\nGrandma Rose\n(Grandparent)\nPriority:\nMEDIUM\nQty:\n1\n\nPrice\n\n28.00\n\nIdea\nMark as Purchased\nDescription\n\nFictional demo gift, no retailer or personal data.\n\nAdded on Invalid Date\nEdit\nDelete",
+    "overflow": false
+  },
+  {
+    "name": "occasion-modal",
+    "size": "phone",
+    "route": "/occasions",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-occasion-modal-phone.png",
+    "bodyText": "Skip to main content\nFamily Gifting\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n🎁\n4 gifts\nGifts to Receive\nPurchased: $0.00•Planned: $73.00•Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $24.00•Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $36.00•Total: $36.00\nPainting\nHiking\nRecent Updates\n👤\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nWinter Gathering\nHoliday\nWinter Gathering\nDecember 25, 2026\n41 days to go\nOverview\nLinked Entities\nComments\nHistory\nType & Status\nHoliday\nActive\nRecipients\n3 people\nDescription\n\nAn invented celebration for design review.\n\nCreated on Invalid Date\n\nLast updated Invalid Date\n\nDelete\nEdit\nClose\nView Details",
+    "overflow": false
+  },
+  {
+    "name": "person-modal",
+    "size": "desktop",
+    "route": "/people",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-person-modal-desktop.png",
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n🎁\n4 gifts\nGifts to Receive\nPurchased: $0.00•Planned: $73.00•Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $24.00•Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $36.00•Total: $36.00\nPainting\nHiking\nRecent Updates\n👤\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nGrandma Rose\nGR\nGrandma Rose\nGrandparent\nOverview\nBudgets\nAdvanced\nLinked Entities\nComments\nHistory\nBudget Overview\nGifts to Receive\nPurchased: $0.00•Planned: $73.00•Total: $73.00\nInterests\nGardening\nTea\nMysteries\nGroups\n\nNot assigned to any groups\n\nAdded on Invalid Date\n\nNotes\n\nFictional design demo only. Loves useful little things.\n\nEdit\nClose",
+    "overflow": false
+  },
+  {
+    "name": "preferences-modal",
+    "size": "desktop",
+    "route": "/people",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-preferences-modal-desktop.png",
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n🎁\n4 gifts\nGifts to Receive\nPurchased: $0.00•Planned: $73.00•Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $24.00•Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $36.00•Total: $36.00\nPainting\nHiking\nRecent Updates\n👤\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nGrandma Rose\nGR\nGrandma Rose\nGrandparent\nOverview\nBudgets\nAdvanced\nLinked Entities\nComments\nHistory\n\nNo advanced interests recorded yet.\n\nEdit this person to add detailed preferences.\n\nEdit\nClose",
+    "overflow": false
+  },
+  {
+    "name": "gift-modal",
+    "size": "desktop",
+    "route": "/gifts",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-gift-modal-desktop.png",
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nGift Catalog\n\nBrowse and manage gift ideas\n\nSelect\nAdd Gift\nsearch\nStatus\nexpand_more\nRecipient\nexpand_more\nList\nexpand_more\nOccasion\nexpand_more\nMost Recent\nexpand_more\nGrid View\nexpand_more\nWatercolor Set\nIdea\n$36.00\n1\n🎅\nWooden Puzzle\nIdea\n$24.00\n1\n🎅\nCeramic Tea Set\nIdea\n$45.00\n1\n🎅\nGarden Journal\nIdea\n$28.00\n1\n🎅\nGarden Journal\nOverview\nLinked Entities\nComments\nHistory\n\nNo image available\n\nGarden Journal\nIdea\nFor:\nGR\nGrandma Rose\n(Grandparent)\nPriority:\nMEDIUM\nQty:\n1\n\nPrice\n\n28.00\n\nIdea\nMark as Purchased\nDescription\n\nFictional demo gift, no retailer or personal data.\n\nAdded on Invalid Date\nEdit\nDelete",
+    "overflow": false
+  },
+  {
+    "name": "occasion-modal",
+    "size": "desktop",
+    "route": "/occasions",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-occasion-modal-desktop.png",
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n🎁\n4 gifts\nGifts to Receive\nPurchased: $0.00•Planned: $73.00•Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $24.00•Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n🎁\n1 gift\nGifts to Receive\nPurchased: $0.00•Planned: $36.00•Total: $36.00\nPainting\nHiking\nRecent Updates\n👤\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nWinter Gathering\nHoliday\nWinter Gathering\nDecember 25, 2026\n41 days to go\nOverview\nLinked Entities\nComments\nHistory\nType & Status\nHoliday\nActive\nRecipients\n3 people\nDescription\n\nAn invented celebration for design review.\n\nCreated on Invalid Date\n\nLast updated Invalid Date\n\nDelete\nEdit\nClose\nView Details",
+    "overflow": false
+  }
+]

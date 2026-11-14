@@ -1,0 +1,26 @@
+{
+  "fake_data_only": true,
+  "database": "new isolated cluster under .aos-mockups/runtime/postgres on loopback:15453",
+  "source_edits": [],
+  "capture_exit": 0,
+  "processes": [
+    {
+      "name": "web",
+      "pid": 41200,
+      "exit": 0,
+      "stopped": true
+    },
+    {
+      "name": "api",
+      "pid": 40126,
+      "exit": -15,
+      "stopped": true
+    },
+    {
+      "name": "postgres",
+      "pid": 40088,
+      "exit": 0,
+      "stopped": true
+    }
+  ]
+}

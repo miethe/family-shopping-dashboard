@@ -1,0 +1,9 @@
+id:     node_01M7DVQ92P381QFY3PK4TZGK3F
+title:  Family gifting app: real current screens + 2-3 visual directions per key screen/flow (iPhone first, web second), motion intent, one review page for Nick
+type:   atomic_task
+status: not_started
+
+Completion Evidence:
+ID                               KIND        DELIVERY_CLASS  REF_VALUE                                                                                                                       
+-------------------------------  ----------  --------------  --------------------------------------------------------------------------------------------------------------------------------
+evid_01M7DXPZ1K5YBYHB6GYDMKH2KM  validation  branch_local    /Volumes/SKNVME/aos-exec/dayhub1114-famux/.clones/leg__K4TZGK3F-20261114T202632Z-67507/dayhub1114-famux/.aos-mockups/review.html

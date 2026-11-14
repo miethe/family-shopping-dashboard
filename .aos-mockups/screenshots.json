@@ -1,0 +1,674 @@
+[
+  {
+    "name": "home",
+    "size": "phone",
+    "route": "/dashboard",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-home-phone.png",
+    "url": "http://127.0.0.1:18330/dashboard",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nWinter Gathering 2026\n\n41 days left\n\nGR\nIdeas:\n2\nTo Buy:\n2\nPurchased:\n1\nView Occasion\nWinter Gathering Budget\nSpent: $0.00\nPlanned: $0.00\nRemaining: $300.00\nTotal: $300.00\n0.0% used\nIdea Inbox\nredeem\nWatercolor Set\n20 minutes ago\nAdd to List\nredeem\nGarden Journal\n20 minutes ago\nAdd to List\nRecent Activity\nnotifications_none\n\nNo recent activity\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "people",
+    "size": "phone",
+    "route": "/people",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-people-phone.png",
+    "url": "http://127.0.0.1:18330/people",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n\ud83c\udf81\n4 gifts\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nPainting\nHiking\nRecent Updates\n\ud83d\udc64\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "person",
+    "size": "phone",
+    "route": "/people/1",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-person-phone.png",
+    "url": "http://127.0.0.1:18330/people/1",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nBack\nGrandma Rose\nEdit\nDelete\nGR\nGrandma Rose\nGrandparent\nAdded November 14, 2026\nGardening\nTea\nMysteries\nInfo\nLists\nHistory\nNOTES\n\nFictional design demo only. Loves useful little things.\n\nINTERESTS\nGardening\nTea\nMysteries\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "occasions",
+    "size": "phone",
+    "route": "/occasions",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-occasions-phone.png",
+    "url": "http://127.0.0.1:18330/occasions",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nOccasions\n\nHolidays, birthdays, and special events\n\nAdd Occasion\nUpcoming\nPast\nAll\nWinter Gathering\nHoliday\n41\n\ndays left\n\nFri, Dec 25, 2026\n\u2022 in 41 days\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "occasion",
+    "size": "phone",
+    "route": "/occasions/1",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-occasion-phone.png",
+    "url": "http://127.0.0.1:18330/occasions/1",
+    "overflow": true,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nBack\nWinter Gathering\n\nThu, Dec 24, 2026\n\nEdit\nDelete\nHoliday\nWinter Gathering\n\nFriday, December 25, 2026\n\n41\n\ndays left\n\nAn invented celebration for design review.\n\nRecipients (3)\nAdd\nGR\nGrandma Rose\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nUT\nUncle Theo\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nAJ\nAunt June\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nBudget Status\nSpent: $0.00\nPlanned: $0.00\nRemaining: $300.00\nTotal: $300.00\n0.0% used\nGift Lists (1)\nNew List\nGifts for Rose\nideas\n\nfamily \u2022 4 items\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "gifts",
+    "size": "phone",
+    "route": "/gifts",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-gifts-phone.png",
+    "url": "http://127.0.0.1:18330/gifts",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nGift Catalog\n\nBrowse and manage gift ideas\n\nSelect\nAdd Gift\nsearch\nStatus\nexpand_more\nRecipient\nexpand_more\nList\nexpand_more\nOccasion\nexpand_more\nMost Recent\nexpand_more\nGrid View\nexpand_more\nWatercolor Set\nIdea\n$36.00\nWooden Puzzle\nIdea\n$24.00\nCeramic Tea Set\nIdea\n$45.00\nGarden Journal\nIdea\n$28.00\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "gift",
+    "size": "phone",
+    "route": "/gifts/1",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-gift-phone.png",
+    "url": "http://127.0.0.1:18330/gifts/1",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nBack\nGarden Journal\nGarden Journal\n\n$28.00\n\nAdded Nov 14, 2026\n\nUsed In Lists\n\nThis gift is not in any lists yet.\n\nEdit this gift to add it to lists, or add it from a list page.\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "lists",
+    "size": "phone",
+    "route": "/lists",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-lists-phone.png",
+    "url": "http://127.0.0.1:18330/lists",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nAll Lists\n\n1 lists \u00b7 1 active occasions\n\nFilter\nSort\nCreate List\nWinter Gathering\nGifts for Rose\n\n4 items \u00b7 ideas\n\nStatus\nFamily\nNew Gift List\nRecent List Activity\nOngoing\nGifts for Rose\n4 items\n\u2022\nWinter Gathering\nUpdated 20 mins ago\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "buying",
+    "size": "phone",
+    "route": "/lists/1",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-buying-phone.png",
+    "url": "http://127.0.0.1:18330/lists/1",
+    "overflow": true,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nGIFT LIST\nUpdated 2h ago\nGifts for Rose\n4 items\n1 purchased\n$133.00 / $300.00\nview_kanban\ntable_rows\nEdit\nadd\nIdea\n2\n$64.00\nredeem\n$36\nWatercolor Set\n?\nUnassigned\nredeem\n$28\nGarden Journal\n?\nUnassigned\nSelected\n1\n$45.00\nredeem\n$45\nCeramic Tea Set\n?\nUser 1\nPurchased\n1\n$24.00\nredeem\n$24\nWooden Puzzle\n?\nUser 1\nReceived\n0\n$0.00\nshopping_bag\n\nDrag items here\n\n+ Add Item\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "assignments",
+    "size": "phone",
+    "route": "/assignments",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-assignments-phone.png",
+    "url": "http://127.0.0.1:18330/assignments",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nMy Assignments\n\nGifts assigned to you across all lists\n\nAll\nIdeas\nSelected\nPurchased\nReceived\nBy List\nBy Person\nNo assignments yet\n\nYou don't have any gift assignments at the moment.\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "capture",
+    "size": "phone",
+    "route": "/gifts/new",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-capture-phone.png",
+    "url": "http://127.0.0.1:18330/gifts/new",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nBack\nAdd Gift\n\nAdd a gift to your catalog\n\nFrom URL\nManual\nPRODUCT URL*\n\nWe'll try to automatically extract the title, image, and price.\n\nSTATUS\nSelect an option\nIdea\nSelected\nPurchased\nReceived\n\nCurrent status of this gift idea\n\nADD TO LISTS (OPTIONAL)\nGifts for Rose\n\nfor Grandma Rose (Winter Gathering)\n\nAdd Gift from URL\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "person-new",
+    "size": "phone",
+    "route": "/people/new",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-person-new-phone.png",
+    "url": "http://127.0.0.1:18330/people/new",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nBack\nAdd Person\n\nAdd a person to your family\n\nBasic Information\nDISPLAY NAME*\nRelationship (optional)\nSelect a relationship\nParent\nSibling\nChild\nExtended Family\nFriend\nColleague\nOther\nBIRTHDATE (OPTIONAL)\nPhoto (optional)\nUpload\nURL\n\nDrop image here, paste, or click to upload\n\nJPEG, PNG, WebP, GIF, HEIF/HEIC up to 10MB\n\nUpload or link to a photo of this person\n\nInterests\nAdd interests (optional)\nAdd\n\nAdd interests to help with gift ideas\n\nSizes\nAdd sizes (optional)\nCategory\nShirt\nPants\nShoes\nDress\nJacket\nCustom\nAdd\n\nClothing sizes for shopping reference\n\nAdditional Information\nNotes (optional)\n\nAny additional notes or preferences\n\nGift Constraints (optional)\n\nImportant restrictions or preferences for gift selection\n\nAdd Person\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "occasion-new",
+    "size": "phone",
+    "route": "/occasions/new",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-occasion-new-phone.png",
+    "url": "http://127.0.0.1:18330/occasions/new",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nBack\nAdd Occasion\n\nCreate a new occasion\n\nNAME*\nTYPE*\nSelect an option\nHoliday\nRecurring\nOther\nDATE*\n\nWhen is this occasion?\n\nDescription(optional)\nCreate Occasion\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "list-new",
+    "size": "phone",
+    "route": "/lists/new",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-list-new-phone.png",
+    "url": "http://127.0.0.1:18330/lists/new",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nBack\nCreate List\n\nCreate a new gift list\n\nList Name\nType\nWishlist\nIdeas\nAssigned\nVisibility\nPrivate\nFamily\nPublic\nPerson (Optional)\nSelect a person\nGrandma Rose\nUncle Theo\nAunt June\nOccasion (Optional)\nSelect an occasion\nWinter Gathering\nCreate List\nCancel\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "gift-edit",
+    "size": "phone",
+    "route": "/gifts/1/edit",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-gift-edit-phone.png",
+    "url": "http://127.0.0.1:18330/gifts/1/edit",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nEdit Gift\nGIFT NAME*\nPRODUCT URL\n\nOptional - link to product page\n\nPRICE\n\nOptional - estimated or actual price\n\nGift status\nIdea\nGIFT IMAGE\nUpload\nURL\n\nDrop image here, paste, or click to upload\n\nJPEG, PNG, WebP, GIF, HEIF/HEIC up to 10MB\n\nOptional - upload or link to product image\n\nFOR...\nGR\nGrandma Rose\nUncle Theo\nAunt June\nAdd New Person\n\nOptional - who is this gift for\n\nSOURCE\nSelect a source (optional)\nAmazon\nTarget\nEtsy\nOther\n\nOptional - where to purchase this gift\n\nDescription\n\nOptional - detailed description of the gift\n\nNotes (Internal)\n\nOptional - private notes for your reference only\n\nPRIORITY\nSelect an option\nLow\nMedium\nHigh\nQUANTITY\n\nHow many items\n\nSALE PRICE\n\nOptional - discounted or sale price\n\nPURCHASE DATE\n\nOptional - when the gift was purchased\n\nADDITIONAL URLS\n\nAdd more product links or references\n\nSTORES\nAdd New Store\n\nSelect stores where this gift can be purchased\n\nLIST MANAGEMENT\nLIST ITEM STATUS\nSelect an option\nIdea\nSelected\nPurchased\nReceived\n\nStatus when adding to new lists below\n\nADD TO LISTS (OPTIONAL)\n\nSelect lists to add this gift to. To remove from lists, visit the list page.\n\nGifts for Rose\n\nfor Grandma Rose (Winter Gathering)\n\nCancel\nSave Changes",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "admin",
+    "size": "phone",
+    "route": "/admin",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-admin-phone.png",
+    "url": "http://127.0.0.1:18330/admin",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\nFamily Gifting\nAdmin Settings\n\nManage field options for Persons, Gifts, Occasions, and Lists\n\nPerson\nGift\nOccasion\nList\nPerson Fields\n\nPreferences, hobbies, interests, dietary restrictions, etc.\n\nFood & Drink\nWine Types\n\nwine_types\n\nexpand_more\nBeverage Preferences\n\nbeverage_prefs\n\nexpand_more\nCoffee Style\n\ncoffee_style\n\nexpand_more\nTea Style\n\ntea_style\n\nexpand_more\nSpirits\n\nspirits\n\nexpand_more\nDietary Restrictions\n\ndietary\n\nexpand_more\nFavorite Cuisines\n\nfavorite_cuisines\n\nexpand_more\nSweet vs Savory\n\nsweet_vs_savory\n\nexpand_more\nStyle & Accessories\nPreferred Metals\n\npreferred_metals\n\nexpand_more\nFragrance Notes\n\nfragrance_notes\n\nexpand_more\nAccessory Preferences\n\naccessory_prefs\n\nexpand_more\nHobbies & Interests\nHobbies\n\nhobbies\n\nexpand_more\nCreative Outlets\n\ncreative_outlets\n\nexpand_more\nSports\n\nsports_played\n\nexpand_more\nReading Genres\n\nreading_genres\n\nexpand_more\nMusic Genres\n\nmusic_genres\n\nexpand_more\nTechnology\nTech Ecosystem\n\ntech_ecosystem\n\nexpand_more\nGaming Platforms\n\ngaming_platforms\n\nexpand_more\nSmart Home\n\nsmart_home\n\nexpand_more\nTravel & Experiences\nTravel Styles\n\ntravel_styles\n\nexpand_more\nExperience Types\n\nexperience_types\n\nexpand_more\nEvent Preferences\n\nevent_preferences\n\nexpand_more\nGift Preferences\nCollections\n\ncollects\n\nexpand_more\nAvoid Categories\n\navoid_categories\n\nexpand_more\nBudget Comfort\n\nbudget_comfort\n\nexpand_more\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "home",
+    "size": "desktop",
+    "route": "/dashboard",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-home-desktop.png",
+    "url": "http://127.0.0.1:18330/dashboard",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nWinter Gathering 2026\n\n41 days left\n\nPeople Needing Gifts\nGR\nIdeas:\n2\nTo Buy:\n2\nPurchased:\n1\nView Occasion\nWinter Gathering Budget\nSpent: $0.00\nPlanned: $0.00\nRemaining: $300.00\nTotal: $300.00\n0.0% used\nIdea Inbox\nredeem\nWatercolor Set\n21 minutes ago\nAdd to List\nredeem\nGarden Journal\n21 minutes ago\nAdd to List\nRecent Activity\nnotifications_none\n\nNo recent activity",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "people",
+    "size": "desktop",
+    "route": "/people",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-people-desktop.png",
+    "url": "http://127.0.0.1:18330/people",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n\ud83c\udf81\n4 gifts\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nPainting\nHiking\nRecent Updates\n\ud83d\udc64\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "person",
+    "size": "desktop",
+    "route": "/people/1",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-person-desktop.png",
+    "url": "http://127.0.0.1:18330/people/1",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nDashboard\nPeople\nGrandma Rose\nGrandma Rose\nEdit\nDelete\nGR\nGrandma Rose\nGrandparent\nAdded November 14, 2026\nGardening\nTea\nMysteries\nInfo\nLists\nHistory\nNOTES\n\nFictional design demo only. Loves useful little things.\n\nINTERESTS\nGardening\nTea\nMysteries",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "occasions",
+    "size": "desktop",
+    "route": "/occasions",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-occasions-desktop.png",
+    "url": "http://127.0.0.1:18330/occasions",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nOccasions\n\nHolidays, birthdays, and special events\n\nAdd Occasion\nUpcoming\nPast\nAll\nWinter Gathering\nHoliday\n41\n\ndays left\n\nFri, Dec 25, 2026\n\u2022 in 41 days",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "occasion",
+    "size": "desktop",
+    "route": "/occasions/1",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-occasion-desktop.png",
+    "url": "http://127.0.0.1:18330/occasions/1",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nDashboard\nOccasions\nWinter Gathering\nWinter Gathering\n\nThu, Dec 24, 2026\n\nEdit\nDelete\nHoliday\nWinter Gathering\n\nFriday, December 25, 2026\n\n41\n\ndays left\n\nAn invented celebration for design review.\n\nRecipients (3)\nAdd\nGR\nGrandma Rose\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nUT\nUncle Theo\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nAJ\nAunt June\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nBudget Status\nSpent: $0.00\nPlanned: $0.00\nRemaining: $300.00\nTotal: $300.00\n0.0% used\nGift Lists (1)\nNew List\nGifts for Rose\nideas\n\nfamily \u2022 4 items",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "gifts",
+    "size": "desktop",
+    "route": "/gifts",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-gifts-desktop.png",
+    "url": "http://127.0.0.1:18330/gifts",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nGift Catalog\n\nBrowse and manage gift ideas\n\nSelect\nAdd Gift\nsearch\nStatus\nexpand_more\nRecipient\nexpand_more\nList\nexpand_more\nOccasion\nexpand_more\nMost Recent\nexpand_more\nGrid View\nexpand_more\nWatercolor Set\nIdea\n$36.00\n1\n\ud83c\udf85\nWooden Puzzle\nIdea\n$24.00\n1\n\ud83c\udf85\nCeramic Tea Set\nIdea\n$45.00\n1\n\ud83c\udf85\nGarden Journal\nIdea\n$28.00\n1\n\ud83c\udf85",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "gift",
+    "size": "desktop",
+    "route": "/gifts/1",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-gift-desktop.png",
+    "url": "http://127.0.0.1:18330/gifts/1",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nDashboard\nGifts\nGarden Journal\nGarden Journal\nEdit\nDelete\nGarden Journal\n\n$28.00\n\nAdded Nov 14, 2026\n\nUsed In Lists\n\nThis gift is not in any lists yet.\n\nEdit this gift to add it to lists, or add it from a list page.",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "lists",
+    "size": "desktop",
+    "route": "/lists",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-lists-desktop.png",
+    "url": "http://127.0.0.1:18330/lists",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nAll Lists\n\n1 lists \u00b7 1 active occasions\n\nFilter\nSort\nCreate List\nWinter Gathering\nGifts for Rose\n\n4 items \u00b7 ideas\n\nStatus\nFamily\nNew Gift List\nRecent List Activity\nOngoing\nGifts for Rose\n4 items\n\u2022\nWinter Gathering\nUpdated 21 mins ago",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "buying",
+    "size": "desktop",
+    "route": "/lists/1",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-buying-desktop.png",
+    "url": "http://127.0.0.1:18330/lists/1",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nDashboard\nLists\nGifts for Rose\nGIFT LIST\nUpdated 2h ago\nGifts for Rose\n4 items\n1 purchased\n$133.00 / $300.00\nview_kanban\nBoard\ntable_rows\nList\nEdit\nadd\nAdd Gift\nIdea\n2\n$64.00\nredeem\n$36\nWatercolor Set\n?\nUnassigned\nredeem\n$28\nGarden Journal\n?\nUnassigned\nSelected\n1\n$45.00\nredeem\n$45\nCeramic Tea Set\n?\nUser 1\nPurchased\n1\n$24.00\nredeem\n$24\nWooden Puzzle\n?\nUser 1\nReceived\n0\n$0.00\nshopping_bag\n\nDrag items here\n\n+ Add Item",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "assignments",
+    "size": "desktop",
+    "route": "/assignments",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-assignments-desktop.png",
+    "url": "http://127.0.0.1:18330/assignments",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nMy Assignments\n\nGifts assigned to you across all lists\n\nAll\nIdeas\nSelected\nPurchased\nReceived\nBy List\nBy Person\nNo assignments yet\n\nYou don't have any gift assignments at the moment.",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "capture",
+    "size": "desktop",
+    "route": "/gifts/new",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-capture-desktop.png",
+    "url": "http://127.0.0.1:18330/gifts/new",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nDashboard\nGifts\nAdd Gift\nAdd Gift\n\nAdd a gift to your catalog\n\nFrom URL\nManual\nPRODUCT URL*\n\nWe'll try to automatically extract the title, image, and price.\n\nSTATUS\nSelect an option\nIdea\nSelected\nPurchased\nReceived\n\nCurrent status of this gift idea\n\nADD TO LISTS (OPTIONAL)\nGifts for Rose\n\nfor Grandma Rose (Winter Gathering)\n\nAdd Gift from URL",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "person-new",
+    "size": "desktop",
+    "route": "/people/new",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-person-new-desktop.png",
+    "url": "http://127.0.0.1:18330/people/new",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nDashboard\nPeople\nAdd Person\nAdd Person\n\nAdd a person to your family\n\nBasic Information\nDISPLAY NAME*\nRelationship (optional)\nSelect a relationship\nParent\nSibling\nChild\nExtended Family\nFriend\nColleague\nOther\nBIRTHDATE (OPTIONAL)\nPhoto (optional)\nUpload\nURL\n\nDrop image here, paste, or click to upload\n\nJPEG, PNG, WebP, GIF, HEIF/HEIC up to 10MB\n\nUpload or link to a photo of this person\n\nInterests\nAdd interests (optional)\nAdd\n\nAdd interests to help with gift ideas\n\nSizes\nAdd sizes (optional)\nCategory\nShirt\nPants\nShoes\nDress\nJacket\nCustom\nAdd\n\nClothing sizes for shopping reference\n\nAdditional Information\nNotes (optional)\n\nAny additional notes or preferences\n\nGift Constraints (optional)\n\nImportant restrictions or preferences for gift selection\n\nAdd Person",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "occasion-new",
+    "size": "desktop",
+    "route": "/occasions/new",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-occasion-new-desktop.png",
+    "url": "http://127.0.0.1:18330/occasions/new",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nDashboard\nOccasions\nAdd Occasion\nAdd Occasion\n\nCreate a new occasion\n\nNAME*\nTYPE*\nSelect an option\nHoliday\nRecurring\nOther\nDATE*\n\nWhen is this occasion?\n\nDescription(optional)\nCreate Occasion",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "list-new",
+    "size": "desktop",
+    "route": "/lists/new",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-list-new-desktop.png",
+    "url": "http://127.0.0.1:18330/lists/new",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nCreate List\n\nCreate a new gift list\n\nList Name\nType\nWishlist\nIdeas\nAssigned\nVisibility\nPrivate\nFamily\nPublic\nPerson (Optional)\nSelect a person\nGrandma Rose\nUncle Theo\nAunt June\nOccasion (Optional)\nSelect an occasion\nWinter Gathering\nCreate List\nCancel",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "gift-edit",
+    "size": "desktop",
+    "route": "/gifts/1/edit",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-gift-edit-desktop.png",
+    "url": "http://127.0.0.1:18330/gifts/1/edit",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nEdit Gift\nGIFT NAME*\nPRODUCT URL\n\nOptional - link to product page\n\nPRICE\n\nOptional - estimated or actual price\n\nGift status\nIdea\nGIFT IMAGE\nUpload\nURL\n\nDrop image here, paste, or click to upload\n\nJPEG, PNG, WebP, GIF, HEIF/HEIC up to 10MB\n\nOptional - upload or link to product image\n\nFOR...\nGR\nGrandma Rose\nUncle Theo\nAunt June\nAdd New Person\n\nOptional - who is this gift for\n\nSOURCE\nSelect a source (optional)\nAmazon\nTarget\nEtsy\nOther\n\nOptional - where to purchase this gift\n\nDescription\n\nOptional - detailed description of the gift\n\nNotes (Internal)\n\nOptional - private notes for your reference only\n\nPRIORITY\nSelect an option\nLow\nMedium\nHigh\nQUANTITY\n\nHow many items\n\nSALE PRICE\n\nOptional - discounted or sale price\n\nPURCHASE DATE\n\nOptional - when the gift was purchased\n\nADDITIONAL URLS\n\nAdd more product links or references\n\nSTORES\nAdd New Store\n\nSelect stores where this gift can be purchased\n\nLIST MANAGEMENT\nLIST ITEM STATUS\nSelect an option\nIdea\nSelected\nPurchased\nReceived\n\nStatus when adding to new lists below\n\nADD TO LISTS (OPTIONAL)\n\nSelect lists to add this gift to. To remove from lists, visit the list page.\n\nGifts for Rose\n\nfor Grandma Rose (Winter Gathering)\n\nCancel\nSave Changes",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "admin",
+    "size": "desktop",
+    "route": "/admin",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-admin-desktop.png",
+    "url": "http://127.0.0.1:18330/admin",
+    "overflow": false,
+    "errors": [],
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nAdmin Settings\n\nManage field options for Persons, Gifts, Occasions, and Lists\n\nPerson\nGift\nOccasion\nList\nPerson Fields\n\nPreferences, hobbies, interests, dietary restrictions, etc.\n\nFood & Drink\nWine Types\n\nwine_types\n\nexpand_more\nBeverage Preferences\n\nbeverage_prefs\n\nexpand_more\nCoffee Style\n\ncoffee_style\n\nexpand_more\nTea Style\n\ntea_style\n\nexpand_more\nSpirits\n\nspirits\n\nexpand_more\nDietary Restrictions\n\ndietary\n\nexpand_more\nFavorite Cuisines\n\nfavorite_cuisines\n\nexpand_more\nSweet vs Savory\n\nsweet_vs_savory\n\nexpand_more\nStyle & Accessories\nPreferred Metals\n\npreferred_metals\n\nexpand_more\nFragrance Notes\n\nfragrance_notes\n\nexpand_more\nAccessory Preferences\n\naccessory_prefs\n\nexpand_more\nHobbies & Interests\nHobbies\n\nhobbies\n\nexpand_more\nCreative Outlets\n\ncreative_outlets\n\nexpand_more\nSports\n\nsports_played\n\nexpand_more\nReading Genres\n\nreading_genres\n\nexpand_more\nMusic Genres\n\nmusic_genres\n\nexpand_more\nTechnology\nTech Ecosystem\n\ntech_ecosystem\n\nexpand_more\nGaming Platforms\n\ngaming_platforms\n\nexpand_more\nSmart Home\n\nsmart_home\n\nexpand_more\nTravel & Experiences\nTravel Styles\n\ntravel_styles\n\nexpand_more\nExperience Types\n\nexperience_types\n\nexpand_more\nEvent Preferences\n\nevent_preferences\n\nexpand_more\nGift Preferences\nCollections\n\ncollects\n\nexpand_more\nAvoid Categories\n\navoid_categories\n\nexpand_more\nBudget Comfort\n\nbudget_comfort\n\nexpand_more",
+    "iconFontLoaded": true
+  },
+  {
+    "name": "login",
+    "size": "phone",
+    "route": "/login",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-login-phone.png",
+    "inspection": "Native app authentication page; local fonts, development tool overlays visible."
+  },
+  {
+    "name": "login",
+    "size": "desktop",
+    "route": "/login",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-login-desktop.png",
+    "inspection": "Native app authentication page; local fonts, development tool overlays visible."
+  },
+  {
+    "name": "register",
+    "size": "phone",
+    "route": "/register",
+    "mode": "real",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-register-phone.png",
+    "inspection": "Native app authentication page; local fonts, development tool overlays visible."
+  },
+  {
+    "name": "register",
+    "size": "desktop",
+    "route": "/register",
+    "mode": "real",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-register-desktop.png",
+    "inspection": "Native app authentication page; local fonts, development tool overlays visible."
+  },
+  {
+    "name": "person-modal",
+    "size": "phone",
+    "route": "/people",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-person-modal-phone.png",
+    "bodyText": "Skip to main content\nFamily Gifting\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n\ud83c\udf81\n4 gifts\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nPainting\nHiking\nRecent Updates\n\ud83d\udc64\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nGrandma Rose\nGR\nGrandma Rose\nGrandparent\nOverview\nBudgets\nAdvanced\nLinked Entities\nComments\nHistory\nBudget Overview\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nInterests\nGardening\nTea\nMysteries\nGroups\n\nNot assigned to any groups\n\nAdded on Invalid Date\n\nNotes\n\nFictional design demo only. Loves useful little things.\n\nEdit\nClose",
+    "overflow": false
+  },
+  {
+    "name": "preferences-modal",
+    "size": "phone",
+    "route": "/people",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-preferences-modal-phone.png",
+    "bodyText": "Skip to main content\nFamily Gifting\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n\ud83c\udf81\n4 gifts\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nPainting\nHiking\nRecent Updates\n\ud83d\udc64\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nGrandma Rose\nGR\nGrandma Rose\nGrandparent\nOverview\nBudgets\nAdvanced\nLinked Entities\nComments\nHistory\n\nNo advanced interests recorded yet.\n\nEdit this person to add detailed preferences.\n\nEdit\nClose",
+    "overflow": false
+  },
+  {
+    "name": "gift-modal",
+    "size": "phone",
+    "route": "/gifts",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-gift-modal-phone.png",
+    "bodyText": "Skip to main content\nFamily Gifting\nGift Catalog\n\nBrowse and manage gift ideas\n\nSelect\nAdd Gift\nsearch\nStatus\nexpand_more\nRecipient\nexpand_more\nList\nexpand_more\nOccasion\nexpand_more\nMost Recent\nexpand_more\nGrid View\nexpand_more\nWatercolor Set\nIdea\n$36.00\nWooden Puzzle\nIdea\n$24.00\nCeramic Tea Set\nIdea\n$45.00\nGarden Journal\nIdea\n$28.00\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nGarden Journal\nOverview\nLinked Entities\nComments\nHistory\n\nNo image available\n\nGarden Journal\nIdea\nFor:\nGR\nGrandma Rose\n(Grandparent)\nPriority:\nMEDIUM\nQty:\n1\n\nPrice\n\n28.00\n\nIdea\nMark as Purchased\nDescription\n\nFictional demo gift, no retailer or personal data.\n\nAdded on Invalid Date\nEdit\nDelete",
+    "overflow": false
+  },
+  {
+    "name": "occasion-modal",
+    "size": "phone",
+    "route": "/occasions",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "file": "assets/today-occasion-modal-phone.png",
+    "bodyText": "Skip to main content\nFamily Gifting\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n\ud83c\udf81\n4 gifts\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nPainting\nHiking\nRecent Updates\n\ud83d\udc64\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nhome\nDashboard\nlist_alt\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nWinter Gathering\nHoliday\nWinter Gathering\nDecember 25, 2026\n41 days to go\nOverview\nLinked Entities\nComments\nHistory\nType & Status\nHoliday\nActive\nRecipients\n3 people\nDescription\n\nAn invented celebration for design review.\n\nCreated on Invalid Date\n\nLast updated Invalid Date\n\nDelete\nEdit\nClose\nView Details",
+    "overflow": false
+  },
+  {
+    "name": "person-modal",
+    "size": "desktop",
+    "route": "/people",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-person-modal-desktop.png",
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n\ud83c\udf81\n4 gifts\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nPainting\nHiking\nRecent Updates\n\ud83d\udc64\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nGrandma Rose\nGR\nGrandma Rose\nGrandparent\nOverview\nBudgets\nAdvanced\nLinked Entities\nComments\nHistory\nBudget Overview\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nInterests\nGardening\nTea\nMysteries\nGroups\n\nNot assigned to any groups\n\nAdded on Invalid Date\n\nNotes\n\nFictional design demo only. Loves useful little things.\n\nEdit\nClose",
+    "overflow": false
+  },
+  {
+    "name": "preferences-modal",
+    "size": "desktop",
+    "route": "/people",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-preferences-modal-desktop.png",
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n\ud83c\udf81\n4 gifts\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nPainting\nHiking\nRecent Updates\n\ud83d\udc64\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nGrandma Rose\nGR\nGrandma Rose\nGrandparent\nOverview\nBudgets\nAdvanced\nLinked Entities\nComments\nHistory\n\nNo advanced interests recorded yet.\n\nEdit this person to add detailed preferences.\n\nEdit\nClose",
+    "overflow": false
+  },
+  {
+    "name": "gift-modal",
+    "size": "desktop",
+    "route": "/gifts",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-gift-modal-desktop.png",
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nGift Catalog\n\nBrowse and manage gift ideas\n\nSelect\nAdd Gift\nsearch\nStatus\nexpand_more\nRecipient\nexpand_more\nList\nexpand_more\nOccasion\nexpand_more\nMost Recent\nexpand_more\nGrid View\nexpand_more\nWatercolor Set\nIdea\n$36.00\n1\n\ud83c\udf85\nWooden Puzzle\nIdea\n$24.00\n1\n\ud83c\udf85\nCeramic Tea Set\nIdea\n$45.00\n1\n\ud83c\udf85\nGarden Journal\nIdea\n$28.00\n1\n\ud83c\udf85\nGarden Journal\nOverview\nLinked Entities\nComments\nHistory\n\nNo image available\n\nGarden Journal\nIdea\nFor:\nGR\nGrandma Rose\n(Grandparent)\nPriority:\nMEDIUM\nQty:\n1\n\nPrice\n\n28.00\n\nIdea\nMark as Purchased\nDescription\n\nFictional demo gift, no retailer or personal data.\n\nAdded on Invalid Date\nEdit\nDelete",
+    "overflow": false
+  },
+  {
+    "name": "occasion-modal",
+    "size": "desktop",
+    "route": "/occasions",
+    "mode": "real",
+    "surface": "dialog",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "file": "assets/today-occasion-modal-desktop.png",
+    "bodyText": "Skip to main content\ncard_giftcard\nhome\nDashboard\nassignment\nAssignments\ngroups\nPeople\ncalendar_month\nOccasions\ncard_giftcard\nGifts\nlist_alt\nLists\nsettings\nAdmin\nD\nadd\nAll Recipients\n\n3 Recipients, organized in 1 groups\n\nAdd Person\nUpcoming Occasions\n\nWinter Gathering\n\nin 1 month\n\nW\nAll (3)\nHousehold (0)\nFamily (3)\nFriends (0)\nOther (0)\nGR\nGrandma Rose\nGrandparent\n\ud83c\udf81\n4 gifts\nGifts to Receive\nPurchased: $0.00\u2022Planned: $73.00\u2022Total: $73.00\nLists:\nGifts for Rose\nGardening\nTea\n+1 more\nUT\nUncle Theo\nUncle\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $24.00\u2022Total: $24.00\nPuzzles\nCooking\nAJ\nAunt June\nAunt\n\ud83c\udf81\n1 gift\nGifts to Receive\nPurchased: $0.00\u2022Planned: $36.00\u2022Total: $36.00\nPainting\nHiking\nRecent Updates\n\ud83d\udc64\n\nYou added a new recipient.\n\nRecently\n\nG\n\nGrandma Rose profile updated.\n\nRecently\n\nU\n\nUncle Theo profile updated.\n\nRecently\n\nA\n\nAunt June profile updated.\n\nRecently\n\nWinter Gathering\nHoliday\nWinter Gathering\nDecember 25, 2026\n41 days to go\nOverview\nLinked Entities\nComments\nHistory\nType & Status\nHoliday\nActive\nRecipients\n3 people\nDescription\n\nAn invented celebration for design review.\n\nCreated on Invalid Date\n\nLast updated Invalid Date\n\nDelete\nEdit\nClose\nView Details",
+    "overflow": false
+  }
+]

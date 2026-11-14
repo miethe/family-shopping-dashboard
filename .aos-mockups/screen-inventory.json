@@ -1,0 +1,204 @@
+[
+  {
+    "route": "/login",
+    "source": "apps/web/app/(auth)/login/page.tsx",
+    "headings": [
+      "<h1 className=\"text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight\">",
+      "<h2 className=\"text-2xl font-semibold text-center text-slate-800 mb-8\">Login</h2>"
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/register",
+    "source": "apps/web/app/(auth)/register/page.tsx",
+    "headings": [
+      "<h1 className=\"text-3xl font-bold text-gray-900\">Create Account</h1>"
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/admin",
+    "source": "apps/web/app/admin/page.tsx",
+    "headings": [],
+    "kind": "product"
+  },
+  {
+    "route": "/assignments",
+    "source": "apps/web/app/assignments/page.tsx",
+    "headings": [
+      "title=\"My Assignments\"",
+      "subtitle=\"Gifts assigned to you across all lists\""
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/dashboard",
+    "source": "apps/web/app/dashboard/page.tsx",
+    "headings": [],
+    "kind": "product"
+  },
+  {
+    "route": "/gifts/[id]/edit",
+    "source": "apps/web/app/gifts/[id]/edit/page.tsx",
+    "headings": [
+      "<PageHeader title=\"Loading gift...\" backHref=\"/gifts\" />",
+      "<PageHeader title=\"Gift not found\" backHref=\"/gifts\" />"
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/gifts/[id]",
+    "source": "apps/web/app/gifts/[id]/page.tsx",
+    "headings": [
+      "title=\"Loading...\"",
+      "title=\"Error\"",
+      "title=\"Not Found\"",
+      "title={gift.name}"
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/gifts/new",
+    "source": "apps/web/app/gifts/new/page.tsx",
+    "headings": [
+      "title=\"Add Gift\"",
+      "subtitle=\"Add a gift to your catalog\""
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/gifts",
+    "source": "apps/web/app/gifts/page.tsx",
+    "headings": [
+      "title=\"Gift Catalog\"",
+      "subtitle=\"Browse and manage gift ideas\""
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/lists/[id]",
+    "source": "apps/web/app/lists/[id]/page.tsx",
+    "headings": [
+      "<h2 className=\"text-xl font-semibold text-gray-900 mb-2\">List Not Found</h2>",
+      "<h1 className=\"text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight\">"
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/lists/new",
+    "source": "apps/web/app/lists/new/page.tsx",
+    "headings": [
+      "title=\"Create List\"",
+      "subtitle=\"Create a new gift list\""
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/lists",
+    "source": "apps/web/app/lists/page.tsx",
+    "headings": [
+      "<h1 className=\"text-4xl font-extrabold text-charcoal mb-2\">All Lists</h1>",
+      "<h2 className=\"text-2xl font-bold text-charcoal mb-6 ml-2\">",
+      "<h2 className=\"text-2xl font-bold text-charcoal mb-6 ml-2\">",
+      "<h2 className=\"text-2xl font-bold text-slate-800 mb-4\">Recent List Activity</h2>"
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/occasions/[id]",
+    "source": "apps/web/app/occasions/[id]/page.tsx",
+    "headings": [
+      "title=\"Error\"",
+      "<h2 className=\"text-xl font-semibold text-red-600 mb-2\">Error Loading Occasion</h2>",
+      "title=\"Not Found\"",
+      "<h2 className=\"text-xl font-semibold text-gray-900 mb-2\">Occasion Not Found</h2>",
+      "title={occasion.name}",
+      "subtitle={formatDate(occasion.date)}"
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/occasions/new",
+    "source": "apps/web/app/occasions/new/page.tsx",
+    "headings": [
+      "title=\"Add Occasion\"",
+      "subtitle=\"Create a new occasion\""
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/occasions",
+    "source": "apps/web/app/occasions/page.tsx",
+    "headings": [
+      "title=\"Occasions\"",
+      "subtitle=\"Holidays, birthdays, and special events\""
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/",
+    "source": "apps/web/app/page.tsx",
+    "headings": [],
+    "kind": "product"
+  },
+  {
+    "route": "/people/[id]",
+    "source": "apps/web/app/people/[id]/page.tsx",
+    "headings": [
+      "title=\"Error\"",
+      "title=\"Not Found\"",
+      "title={person.display_name}"
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/people/new",
+    "source": "apps/web/app/people/new/page.tsx",
+    "headings": [
+      "title=\"Add Person\"",
+      "subtitle=\"Add a person to your family\""
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/people",
+    "source": "apps/web/app/people/page.tsx",
+    "headings": [
+      "<h1 className=\"text-4xl font-bold text-slate-900\">All Recipients</h1>",
+      "<h2 className=\"text-lg font-bold text-slate-800\">Upcoming Occasions</h2>",
+      "<h2 className=\"text-lg font-bold text-slate-800\">Groups</h2>",
+      "<h2 className=\"text-xl font-bold mb-8 text-slate-800\">Recent Updates</h2>"
+    ],
+    "kind": "product"
+  },
+  {
+    "route": "/test-animations",
+    "source": "apps/web/app/test-animations/page.tsx",
+    "headings": [],
+    "kind": "diagnostic"
+  },
+  {
+    "route": "/test-query",
+    "source": "apps/web/app/test-query/page.tsx",
+    "headings": [
+      "<h1 className=\"text-3xl font-bold\">React Query Test</h1>"
+    ],
+    "kind": "diagnostic"
+  },
+  {
+    "route": "/test-tailwind",
+    "source": "apps/web/app/test-tailwind/page.tsx",
+    "headings": [
+      "<h1 className=\"text-3xl font-bold text-primary-600 mb-6\">"
+    ],
+    "kind": "diagnostic"
+  },
+  {
+    "route": "/ui-demo",
+    "source": "apps/web/app/ui-demo/page.tsx",
+    "headings": [
+      "<h1 className=\"text-3xl font-bold text-gray-900 mb-2\">UI Component Library</h1>"
+    ],
+    "kind": "diagnostic"
+  }
+]
