@@ -132,7 +132,7 @@ describe("Event gifting screens", () => {
       screen.getByRole("link", { name: /Winter gathering/ }),
     ).toHaveAttribute("href", "/events/1");
     await user.click(screen.getByRole("button", { name: "Calendar view" }));
-    expect(screen.getByRole("status")).toHaveTextContent("milestone 2");
+    expect(screen.getByRole("status")).toHaveTextContent("on the way");
   });
   it("changes a gift phase through its recipient envelope", async () => {
     const user = userEvent.setup();

@@ -95,7 +95,7 @@ export function EventHome() {
       </div>
       {showCalendar && (
         <p className={styles.empty} role="status">
-          The calendar and seasonal timeline are coming in milestone 2. Your
+          The calendar and seasonal timeline are on the way. Your
           events are ready below.
         </p>
       )}

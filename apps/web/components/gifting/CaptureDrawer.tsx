@@ -108,6 +108,7 @@ export function CaptureDrawer({
             Recipient
             <select
               name="person"
+              aria-label="Recipient"
               className={styles.select}
               value={person}
               onChange={(e) => setPerson(e.target.value)}
@@ -124,6 +125,7 @@ export function CaptureDrawer({
             Event (optional)
             <select
               name="occurrence"
+              aria-label="Event (optional)"
               className={styles.select}
               disabled={!person}
               key={person}
