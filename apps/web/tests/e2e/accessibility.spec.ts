@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 /**
@@ -24,7 +24,7 @@ test.describe('Accessibility: Person-Occasion Budgets', () => {
   /**
    * Helper: Navigate to person budgets tab
    */
-  async function navigateToPersonBudgetsTab(page: any) {
+  async function navigateToPersonBudgetsTab(page: Page) {
     await page.goto('/people');
     await expect(page).toHaveURL(/.*people/);
 
