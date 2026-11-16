@@ -22,31 +22,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  {
-    href: '/dashboard',
-    label: 'Dashboard',
-    icon: 'home'
-  },
-  {
-    href: '/assignments',
-    label: 'Assignments',
-    icon: 'list_alt'
-  },
-  {
-    href: '/people',
-    label: 'People',
-    icon: 'groups'
-  },
-  {
-    href: '/occasions',
-    label: 'Occasions',
-    icon: 'calendar_month'
-  },
-  {
-    href: '/gifts',
-    label: 'Gifts',
-    icon: 'card_giftcard'
-  }
+  { href: '/dashboard', label: 'Events', icon: 'calendar_month' },
+  { href: '/people', label: 'People', icon: 'groups' },
+  { href: '/ideas', label: 'Ideas', icon: 'lightbulb' },
+  { href: '/budgets', label: 'Budget', icon: 'savings' },
 ];
 
 export function MobileNav() {
@@ -67,7 +46,7 @@ export function MobileNav() {
     >
       <div className="flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+          const isActive = pathname === item.href || pathname?.startsWith(item.href + '/') || (item.href === '/dashboard' && pathname?.startsWith('/events'));
 
           return (
             <Link

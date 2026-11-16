@@ -38,7 +38,7 @@ export function QuickAddButton({ variant = 'fab' }: QuickAddButtonProps) {
       <>
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 w-14 h-14 bg-primary-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary-700 active:bg-primary-800 transition-colors z-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+          className="fixed bottom-24 right-4 md:bottom-6 md:right-6 w-14 h-14 bg-primary-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary-700 active:bg-primary-800 transition-colors z-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
           aria-label="Quick add idea"
         >
           <PlusIcon className="w-6 h-6" />
@@ -50,9 +50,8 @@ export function QuickAddButton({ variant = 'fab' }: QuickAddButtonProps) {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)} size="sm">
-        <PlusIcon className="w-4 h-4 mr-1" />
-        Add Idea
+      <Button onClick={() => setIsOpen(true)} size="sm" aria-label="Quick add idea" className="min-w-[44px] px-2">
+        <PlusIcon className="w-5 h-5" />
       </Button>
       <QuickAddModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>

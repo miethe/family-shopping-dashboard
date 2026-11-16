@@ -87,7 +87,8 @@ describe('CommentForm', () => {
     const textarea = screen.getByPlaceholderText(/add a comment/i);
     // Type 455 characters to get to 45 remaining (within warning threshold of 50)
     const longText = 'a'.repeat(455);
-    await user.type(textarea, longText);
+    await user.click(textarea);
+    await user.paste(longText);
 
     const charCount = screen.getByText('45 characters remaining');
     expect(charCount).toHaveClass('text-orange-600');
@@ -100,7 +101,8 @@ describe('CommentForm', () => {
     const textarea = screen.getByPlaceholderText(/add a comment/i);
     // Type 505 characters to exceed limit
     const tooLongText = 'a'.repeat(505);
-    await user.type(textarea, tooLongText);
+    await user.click(textarea);
+    await user.paste(tooLongText);
 
     const charCount = screen.getByText('-5 characters remaining');
     expect(charCount).toHaveClass('text-red-600');
@@ -113,7 +115,8 @@ describe('CommentForm', () => {
 
     const textarea = screen.getByPlaceholderText(/add a comment/i);
     const tooLongText = 'a'.repeat(505);
-    await user.type(textarea, tooLongText);
+    await user.click(textarea);
+    await user.paste(tooLongText);
 
     const submitButton = screen.getByRole('button', { name: /add comment/i });
     expect(submitButton).toBeDisabled();
@@ -284,7 +287,8 @@ describe('CommentForm', () => {
 
     const textarea = screen.getByPlaceholderText(/add a comment/i);
     const tooLongText = 'a'.repeat(510);
-    await user.type(textarea, tooLongText);
+    await user.click(textarea);
+    await user.paste(tooLongText);
 
     // Check for error message in textarea (passed as error prop)
     expect(screen.getByText(/comment is 10 characters too long/i)).toBeInTheDocument();

@@ -48,3 +48,5 @@ __all__ = [
     "CommentParentType",
     "GiftPriority",
 ]
+
+from app.models.occurrence import Occurrence, OccurrenceGift, RecipientEnvelope

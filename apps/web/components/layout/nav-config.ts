@@ -12,9 +12,11 @@ export interface NavItem {
 export const navItems = [
   {
     href: '/dashboard',
-    label: 'Dashboard',
+    label: 'Events',
     icon: 'home'
   },
+  { href: '/ideas', label: 'Ideas', icon: 'lightbulb' },
+  { href: '/budgets', label: 'Budget', icon: 'savings' },
   {
     href: '/assignments',
     label: 'Assignments',
