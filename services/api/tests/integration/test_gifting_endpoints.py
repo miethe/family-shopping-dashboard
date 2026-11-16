@@ -126,6 +126,15 @@ async def test_capture_person_and_unknown_prices(client, auth_headers, test_pers
     assert response.status_code == 201, response.text
     person = (await client.get(f"{BASE}/people/{test_person.id}", headers=auth_headers)).json()
     assert person["ideas"][0]["url"] == payload["url"]
+    wish = await client.post(
+        f"{BASE}/ideas",
+        headers=auth_headers,
+        json={"name": "Demo wishlist book", "person_id": test_person.id, "kind": "wishlist"},
+    )
+    assert wish.status_code == 201
+    saved = (await client.get(f"{BASE}/ideas", headers=auth_headers)).json()
+    assert any(g["id"] == wish.json()["id"] for g in saved)
+
     data = (await client.get(f"{BASE}/occurrences/{current['id']}", headers=auth_headers)).json()
     assert data["unknown_prices"] == 1
     assert data["spent"] == "0"

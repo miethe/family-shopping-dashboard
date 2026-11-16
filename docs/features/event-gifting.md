@@ -30,8 +30,8 @@ The person page has collapsible wishlist, ideas, past gifts, events, and prefere
 sections. Ideas and wishlists use full cards; history uses compact rows. Given gifts
 appear in history. The profile editor remains available from Preferences. Store
 links open directly in another tab. The capture drawer saves once and opens Ideas,
-so a saved thought can be found in one consistent place after capture. Wishlists
-also remain on the selected person.
+so a saved thought can be found in one consistent place after capture. Ideas
+includes saved wishlist items too; wishlists also remain on the selected person.
 
 ## API and storage
 

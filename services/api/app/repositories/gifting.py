@@ -151,7 +151,7 @@ class GiftingRepository:
                 .join(ListItem, ListItem.gift_id == Gift.id)
                 .join(List, List.id == ListItem.list_id)
                 .where(
-                    List.type == ListType.ideas,
+                    List.type.in_([ListType.ideas, ListType.wishlist]),
                     or_(List.visibility != ListVisibility.private, List.user_id == user_id),
                 )
                 .order_by(Gift.id.desc())
