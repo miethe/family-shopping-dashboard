@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { QuickAddButton } from '@/components/quick-add';
 import { useAuth } from '@/hooks/useAuth';
-import { PlusIcon, UserCircleIcon, BellIcon, SearchIcon } from './icons';
+import { UserCircleIcon, BellIcon, SearchIcon } from './icons';
 import { ConnectionIndicatorCompact } from '@/components/websocket/ConnectionIndicator';
 import { SearchInput } from './SearchInput';
 
@@ -78,21 +79,7 @@ export function Header() {
             <span className="absolute top-1 right-1 w-2 h-2 bg-primary-500 rounded-full ring-2 ring-white dark:ring-warm-900" />
           </button>
 
-          {/* Quick Add Button */}
-          <button
-            className="
-              flex items-center justify-center
-              min-w-touch min-h-touch
-              w-10 h-10
-              rounded-full
-              bg-primary-500 text-white
-              shadow-low hover:shadow-medium
-              active:scale-95 transition-all duration-200
-            "
-            aria-label="Quick add"
-          >
-            <PlusIcon className="w-5 h-5" />
-          </button>
+          <QuickAddButton variant="header" />
 
           {/* User Menu */}
           <button
