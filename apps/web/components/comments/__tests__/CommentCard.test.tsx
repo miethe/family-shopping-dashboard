@@ -295,7 +295,9 @@ describe('CommentCard', () => {
 
     const textarea = screen.getByRole('textbox');
     await user.clear(textarea);
-    await user.type(textarea, 'a'.repeat(505));
+    // Paste exercises the boundary without hundreds of asynchronous keystrokes.
+    await user.click(textarea);
+    await user.paste('a'.repeat(505));
 
     const saveButton = screen.getByRole('button', { name: /save/i });
     expect(saveButton).toBeDisabled();
@@ -437,7 +439,8 @@ describe('CommentCard', () => {
 
     const textarea = screen.getByRole('textbox');
     await user.clear(textarea);
-    await user.type(textarea, 'a'.repeat(510));
+    await user.click(textarea);
+    await user.paste('a'.repeat(510));
 
     expect(screen.getByText(/comment is 10 characters too long/i)).toBeInTheDocument();
   });
