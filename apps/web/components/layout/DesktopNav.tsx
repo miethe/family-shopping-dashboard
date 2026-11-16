@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { QuickAddButton } from '@/components/quick-add';
 import { navItems } from './nav-config';
 import { cn } from '@/lib/utils';
 
@@ -21,13 +22,13 @@ export function DesktopNav() {
 
   return (
     <aside
-      className="w-20 lg:w-24 flex-shrink-0 flex flex-col items-center py-8 h-screen fixed left-0 top-0 z-50 bg-[#B67352] transition-all duration-300"
+      className="w-20 lg:w-24 flex-shrink-0 flex flex-col items-center py-4 h-screen fixed left-0 top-0 z-50 bg-[#B67352] transition-all duration-300"
       style={{ paddingLeft: 'env(safe-area-inset-left)' }}
     >
       {/* Brand Icon */}
       <Link
         href="/dashboard"
-        className="mb-12 p-3 bg-white/20 rounded-2xl shadow-lg cursor-pointer hover:scale-105 hover:bg-white/30 transition-all duration-200"
+        className="mb-6 p-3 shrink-0 bg-white/20 rounded-2xl shadow-lg cursor-pointer hover:scale-105 hover:bg-white/30 transition-all duration-200"
       >
         <span className="material-symbols-outlined text-white text-2xl">
           card_giftcard
@@ -35,17 +36,19 @@ export function DesktopNav() {
       </Link>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-8 w-full items-center flex-1">
+      <nav className="flex flex-col gap-2 w-full items-center flex-1 min-h-0 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+          const isActive = pathname === item.href || pathname?.startsWith(item.href + '/') || (item.href === '/dashboard' && pathname?.startsWith('/events'));
 
           return (
             <Link
               key={item.href}
               href={item.href as any}
               prefetch={false}
+              aria-label={item.label}
+              aria-current={isActive ? 'page' : undefined}
               className={cn(
-                'p-3 rounded-2xl transition-all duration-300 group relative',
+                'p-3 min-h-[44px] shrink-0 rounded-2xl transition-all duration-300 group relative',
                 isActive
                   ? 'bg-white/30 text-white shadow-lg'
                   : 'text-white/70 hover:bg-white/20 hover:text-white'
@@ -73,7 +76,7 @@ export function DesktopNav() {
       </nav>
 
       {/* Profile Avatar and FAB */}
-      <div className="mt-auto flex flex-col items-center gap-4">
+      <div className="mt-auto pt-3 flex shrink-0 flex-col items-center gap-4">
         <button
           onClick={logout}
           className="text-white/70 hover:text-white transition-colors group"
@@ -90,13 +93,7 @@ export function DesktopNav() {
           </div>
         </button>
 
-        {/* FAB Button */}
-        <button
-          className="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-all duration-200"
-          title="Quick Add"
-        >
-          <span className="material-symbols-outlined text-2xl">add</span>
-        </button>
+        <QuickAddButton variant="header" />
       </div>
     </aside>
   );
