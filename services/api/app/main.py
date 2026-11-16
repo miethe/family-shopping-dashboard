@@ -253,3 +253,8 @@ app.mount(
     StaticFiles(directory=settings.UPLOAD_DIR, check_dir=False),
     name="uploads",
 )
+
+# Event-first gifting, reusable by any authenticated surface.
+from app.api import gifting
+
+app.include_router(gifting.router, prefix=API_V1_PREFIX)
