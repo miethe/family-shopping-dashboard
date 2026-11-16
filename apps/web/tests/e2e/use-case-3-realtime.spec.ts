@@ -188,32 +188,33 @@ test.describe('UC3: Real-Time Coordination', () => {
     }
   });
 
-  test('should show connection indicator for WebSocket status', async ({ page }) => {
-    // Use first user auth
-    await page.goto('/dashboard', {
-      storageState: 'tests/.auth/user.json',
-    });
+  test.describe('connection indicator', () => {
+    test.use({ storageState: 'tests/.auth/user.json' });
 
-    // Connection indicator should be visible
-    // TODO: Add data-testid="ws-connection-indicator" to ConnectionIndicator component
-    const connectionIndicator = page.locator(
-      '[data-testid="ws-connection-indicator"], [data-testid="connection-status"]'
-    ).first();
+    test('should show connection indicator for WebSocket status', async ({ page }) => {
+      await page.goto('/dashboard');
 
-    if (await connectionIndicator.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await expect(connectionIndicator).toBeVisible();
+      // Connection indicator should be visible
+      // TODO: Add data-testid="ws-connection-indicator" to ConnectionIndicator component
+      const connectionIndicator = page.locator(
+        '[data-testid="ws-connection-indicator"], [data-testid="connection-status"]'
+      ).first();
 
-      // Should show "Connected" or green indicator
-      // Check for positive connection state
-      const isConnected = await page.evaluate(() => {
-        const indicator = document.querySelector('[data-testid="ws-connection-indicator"]');
-        return indicator?.textContent?.toLowerCase().includes('connected');
-      });
+      if (await connectionIndicator.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await expect(connectionIndicator).toBeVisible();
 
-      if (isConnected) {
-        expect(isConnected).toBe(true);
+        // Should show "Connected" or green indicator
+        // Check for positive connection state
+        const isConnected = await page.evaluate(() => {
+          const indicator = document.querySelector('[data-testid="ws-connection-indicator"]');
+          return indicator?.textContent?.toLowerCase().includes('connected');
+        });
+
+        if (isConnected) {
+          expect(isConnected).toBe(true);
+        }
       }
-    }
+    });
   });
 
   test('should sync list item additions between users', async ({ browser }) => {

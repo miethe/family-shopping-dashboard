@@ -109,7 +109,7 @@ describe('AddOptionModal', () => {
     );
 
     const displayLabelInput = screen.getByLabelText(/Display Label/i);
-    const valueInput = screen.getByLabelText(/Value \(Key\)/i);
+    const valueInput = screen.getByLabelText<HTMLInputElement>(/Value \(Key\)/i);
 
     await user.type(displayLabelInput, 'Rosé & Champagne!');
 
