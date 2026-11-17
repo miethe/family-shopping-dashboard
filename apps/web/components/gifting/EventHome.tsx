@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,18 +10,25 @@ import { OccasionType } from "@/types";
 import { giftingApi } from "@/lib/api/gifting";
 import {
   Hero,
-  PhaseCounts,
   QueryState,
   Empty,
   styles,
-  money,
-  dateLabel,
 } from "./shared";
+import { EventCards } from "./EventCards";
+import { CalendarPanel } from "./CalendarPanel";
 
 export function EventHome() {
   const query = useOccurrences();
   const occasions = useOccasions({ limit: 100 });
   const [showCalendar, setShowCalendar] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [calendarMounted, setCalendarMounted] = useState(false);
+  useEffect(() => {
+    if (showCalendar) { setCalendarMounted(true); return; }
+    const delay = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? 0 : 260;
+    const timer = window.setTimeout(() => setCalendarMounted(false), delay);
+    return () => window.clearTimeout(timer);
+  }, [showCalendar]);
   const [eventId, setEventId] = useState("");
   const create = useGiftingMutation(async (form: FormData) => {
     const date = String(form.get("date"));
@@ -42,42 +49,11 @@ export function EventHome() {
         : {}),
     });
   });
-  const today = new Date().toLocaleDateString("en-CA");
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const upcoming =
     query.data?.filter((o) => !o.closed && o.date >= today) ?? [];
   const past = query.data?.filter((o) => o.closed || o.date < today) ?? [];
-  const cards = (rows: typeof upcoming) => (
-    <div className={styles.grid}>
-      {rows.map((o) => (
-        <Link key={o.id} href={`/events/${o.id}`} className={styles.event}>
-          <span className={styles.date}>
-            {dateLabel(o.date)}
-            {o.closed ? " · Closed" : ""}
-          </span>
-          <h2>{o.name}</h2>
-          {o.envelopes.slice(0, 3).map((e) => (
-            <div key={e.id} className={styles.miniEnvelope}>
-              <strong>{e.person_name}</strong>
-              <span>
-                {e.count_allowance == null
-                  ? "Count not set"
-                  : `${e.count_allowance} gifts`}{" "}
-                · {money(e.money_allowance)}
-              </span>
-            </div>
-          ))}
-          {!o.envelopes.length && <p>Open to add recipient envelopes</p>}
-          <PhaseCounts totals={o} />
-          <p>
-            {money(o.spent)} bought ·{" "}
-            {o.remaining_money == null
-              ? "Event budget not set"
-              : `${money(o.remaining_money)} remaining`}
-          </p>
-        </Link>
-      ))}
-    </div>
-  );
   return (
     <div className={styles.page}>
       <Hero eyebrow="Gather & give" title="The event shelf">
@@ -86,19 +62,20 @@ export function EventHome() {
       <div className={styles.toolbar}>
         <h2>Upcoming events</h2>
         <Button
+          ref={triggerRef}
           variant="outline"
+          aria-controls="calendar-panel"
           onClick={() => setShowCalendar((v) => !v)}
           aria-expanded={showCalendar}
         >
-          Calendar view
+          {showCalendar ? "Close calendar" : "Calendar view"}
         </Button>
       </div>
-      {showCalendar && (
-        <p className={styles.empty} role="status">
-          The calendar and seasonal timeline are on the way. Your
-          events are ready below.
-        </p>
-      )}
+      <div className={styles.calendarReveal} data-open={showCalendar}>
+        <div>
+          {calendarMounted && <CalendarPanel occurrences={query.data ?? []} loading={query.isLoading} error={query.error} retry={() => query.refetch()} onClose={() => { setShowCalendar(false); triggerRef.current?.focus(); }} />}
+        </div>
+      </div>
       <QueryState
         loading={query.isLoading}
         error={query.error}
@@ -109,7 +86,7 @@ export function EventHome() {
         (!upcoming.length ? (
           <Empty>No upcoming events yet. Start with a celebration below.</Empty>
         ) : (
-          cards(upcoming)
+          <EventCards rows={upcoming} />
         ))}
       <details className={styles.shelf}>
         <summary>Plan an event</summary>
@@ -167,7 +144,7 @@ export function EventHome() {
         <summary>
           Past & closed events <span>{past.length}</span>
         </summary>
-        <div className={styles.shelfBody}>{cards(past)}</div>
+        <div className={styles.shelfBody}><EventCards rows={past} /></div>
       </details>
       <Link className={styles.textLink} href="/occasions">
         Manage recurring events →

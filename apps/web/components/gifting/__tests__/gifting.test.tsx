@@ -122,7 +122,7 @@ beforeEach(() => {
   } as YearBudget);
 });
 describe("Event gifting screens", () => {
-  it("shows upcoming events first and explains the deferred calendar", async () => {
+  it("shows upcoming events first and opens the calendar", async () => {
     const user = userEvent.setup();
     mount(<EventHome />);
     expect(
@@ -132,7 +132,10 @@ describe("Event gifting screens", () => {
       screen.getByRole("link", { name: /Winter gathering/ }),
     ).toHaveAttribute("href", "/events/1");
     await user.click(screen.getByRole("button", { name: "Calendar view" }));
-    expect(screen.getByRole("status")).toHaveTextContent("on the way");
+    expect(screen.getByRole("tab", { name: "Upcoming" })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("tab", { name: "Upcoming" }));
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("button", { name: "Calendar view" })).toHaveFocus();
   });
   it("changes a gift phase through its recipient envelope", async () => {
     const user = userEvent.setup();
