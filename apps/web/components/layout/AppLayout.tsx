@@ -56,7 +56,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       </div>
 
       {/* Mobile Layout Container - Full height flex column */}
-      <div className="flex flex-col flex-1 md:ml-20 lg:ml-24 h-screen-safe">
+      <div className="flex flex-col flex-1 min-w-0 md:ml-20 lg:ml-24 h-screen-safe">
         {/* Mobile Header - Sticky top with safe-area-fixed-top, Hidden on desktop */}
         <div className="md:hidden sticky top-0 z-50 bg-surface-primary/80 dark:bg-background-dark/80 backdrop-blur-md safe-area-fixed-top border-b border-border-subtle dark:border-white/10 shadow-subtle">
           <Header />

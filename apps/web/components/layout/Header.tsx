@@ -29,14 +29,14 @@ export function Header() {
       {/* Main header bar */}
       <div className="flex items-center justify-between px-4 py-3">
         {/* App Title */}
-        <div className="flex-shrink-0">
+        <div className="min-w-0 pr-2">
           <h1 className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-500 dark:from-primary-400 dark:to-primary-300 bg-clip-text text-transparent">
             Family Gifting
           </h1>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {/* Connection Status */}
           <ConnectionIndicatorCompact className="mr-1" />
 

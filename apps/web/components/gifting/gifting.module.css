@@ -323,3 +323,43 @@
     transition: none;
   }
 }
+.calendarReveal { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 260ms cubic-bezier(.2,.8,.2,1), opacity 260ms; }
+.calendarReveal[data-open="true"] { grid-template-rows: 1fr; opacity: 1; }
+.calendarReveal > div { min-height: 0; overflow: hidden; }
+.calendar { border: 1px solid #d1c8bc; border-radius: 20px; padding: 20px; margin-bottom: 24px; background: #f9f6f0; min-width: 0; }
+.calendarHeader { margin-bottom: 12px; }
+.calendarTabs { position: relative; display: flex; width: 100%; max-width: 440px; background: #e5e7d8; padding: 3px; border-radius: 12px; }
+.calendarTabs::before { content: ""; position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 3); background: #214d40; border-radius: 9px; transition: transform 180ms ease; }
+.calendarTabs[data-view="upcoming"]::before { transform: translateX(100%); }
+.calendarTabs[data-view="season"]::before { transform: translateX(200%); }
+.calendarTab { position: relative; z-index: 1; flex: 1; min-width: 0; padding: 8px; border-radius: 9px; }
+.calendarTab[data-state="active"] { background: transparent; color: white; box-shadow: none; }
+.calendarColumns { display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr); gap: 20px; margin-top: 18px; }
+.monthNavigator { min-width: 0; border: 1px solid #d1c8bc; border-radius: 16px; padding: 10px; align-self: start; }
+.monthHeading { display: flex; align-items: center; justify-content: space-between; gap: 4px; text-align: center; background: #e5e7d8; border-radius: 10px; }
+.monthHeading button, .dayGrid button { min-width: 44px; min-height: 44px; border-radius: 50%; }
+.monthHeading button { font-size: 1.7rem; }
+.dayGrid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); justify-items: center; align-items: center; }
+.weekday { font-size: .7rem; font-weight: 700; padding: 10px 0; }
+.dayGrid button { position: relative; }
+.dayGrid button[aria-pressed="true"] { background: #214d40; color: white; }
+.dot { position: absolute; bottom: 3px; left: calc(50% - 3px); width: 6px; height: 6px; background: #a75b35; border-radius: 50%; }
+.dateSummary { display: flex; justify-content: space-between; gap: 8px; padding: 12px; margin-top: 10px; border-radius: 10px; background: #e5e7d8; }
+.calendarContent { min-width: 0; }
+.calendarFilters { display: flex; flex-wrap: wrap; gap: 4px 20px; align-items: center; }
+.calendarFilters label { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; }
+.calendarFilters input { width: 20px; height: 20px; accent-color: #214d40; }
+.calendarFilters select { min-height: 44px; border: 1px solid #bdb3a6; border-radius: 8px; background: #fffdf8; padding: 0 8px; }
+.viewContent { animation: calendarContentIn 160ms ease-out; }
+.viewContent h3 { font-family: Georgia, serif; font-weight: 700; font-size: 1.4rem; margin: 12px 0; }
+.timelineItem h4 { margin: 18px 0 8px; font-weight: 700; color: #214d40; }
+.timelineItem + .timelineItem { margin-top: 12px; }
+.closedEvent { border: 1px solid #d1c8bc; border-radius: 16px; padding: 12px; background: #e5e7d8; }
+.closedEvent summary { min-height: 44px; cursor: pointer; overflow-wrap: anywhere; }
+.closedEvent summary span { display: inline-block; border-radius: 8px; padding: 4px 8px; background: #d1c8bc; font-weight: 700; }
+@keyframes calendarContentIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 767px) { .calendar { padding: 8px; } .monthNavigator { padding: 6px; } .calendarColumns { grid-template-columns: minmax(0, 1fr); } .desktopNavigator { display: none; } .dayGrid button { min-width: 44px; } }
+@media (prefers-reduced-motion: reduce) { .calendarReveal, .calendarTab, .calendarTabs::before { transition: none; } .viewContent { animation: none; } }
+.phases > div { min-width: 0; overflow-wrap: anywhere; }
+.calendarContent .grid { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 639px) { .calendarContent .phases span { font-size: .6rem; } }
