@@ -1,0 +1,44 @@
+[
+  {
+    "file": "docs/mockups/m2/01-home-entry.png",
+    "bytes": 1701221,
+    "width": 1536,
+    "height": 1024,
+    "sha256": "496c6394023bf6f09838d46490dff1d7633e8e3e5561c8972eba400fea0b968d"
+  },
+  {
+    "file": "docs/mockups/m2/02-month.png",
+    "bytes": 1670682,
+    "width": 1536,
+    "height": 1024,
+    "sha256": "9935e4bf28a3a6766c33a18f181fd568ba7a653077bd98a43573eb3506b6c6da"
+  },
+  {
+    "file": "docs/mockups/m2/03-upcoming-agenda.png",
+    "bytes": 1769606,
+    "width": 1536,
+    "height": 1024,
+    "sha256": "24517f912de047a65e5156b524fcb073121b348f8099f53cbe9d09b01f4456fe"
+  },
+  {
+    "file": "docs/mockups/m2/04-season-timeline.png",
+    "bytes": 1698985,
+    "width": 1536,
+    "height": 1024,
+    "sha256": "9db533c0f0802d3f5f0ddd710a8feda74078fd862614cdc2028d1042f37a8e2c"
+  },
+  {
+    "file": "docs/mockups/m2/05-mobile-agenda.png",
+    "bytes": 1706983,
+    "width": 1024,
+    "height": 1536,
+    "sha256": "40e598c743b90d8b45b50adf4bf34cc73c08b3825684b41f3d41563999e7f830"
+  },
+  {
+    "file": "docs/mockups/m2/06-open-storyboard.png",
+    "bytes": 1648584,
+    "width": 1659,
+    "height": 948,
+    "sha256": "b7f34e427a20116a54acf00c0dc49edbc9e65bb20eef781ed4b9bbd80f20e271"
+  }
+]
