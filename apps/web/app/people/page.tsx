@@ -222,14 +222,14 @@ export default function RecipientsPage() {
       <header className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-slate-900">All Recipients</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900">All Recipients</h1>
             <p className="text-slate-500 mt-1">
-              {groupCounts.all} Recipients, organized in {Object.values(groupCounts).filter(c => c > 0).length - 1} groups
+              {groupCounts.all} {groupCounts.all === 1 ? 'recipient' : 'recipients'}, organized in {Math.max(0, Object.values(groupCounts).filter(c => c > 0).length - 1)} {Math.max(0, Object.values(groupCounts).filter(c => c > 0).length - 1) === 1 ? 'group' : 'groups'}
             </p>
           </div>
           <Button
             size="lg"
-            className="min-h-[44px]"
+            className="min-h-[44px] shrink-0 whitespace-nowrap"
             onClick={() => setIsAddModalOpen(true)}
           >
             Add Person

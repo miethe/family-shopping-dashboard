@@ -153,7 +153,7 @@ function EnvelopeCard({
       {envelope.gifts.map((g) => (
         <GiftCard compact gift={g} key={g.placement_id}>
           <label className={styles.label}>
-            Phase for {g.name}
+            Phase<span className="sr-only"> for {g.name}</span>
             <select
               className={styles.select}
               value={g.phase}
