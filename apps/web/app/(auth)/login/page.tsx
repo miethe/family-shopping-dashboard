@@ -50,9 +50,9 @@ export default function LoginPage() {
     <div className="fg-theme min-h-[100dvh] bg-[#f5f1e8] p-4 flex items-center justify-center">
       <div className="w-full max-w-md space-y-5">
         {/* Hero, same banner as the Events screens */}
-        <div className="bg-[#214d40] text-[#f5f1e8] px-6 pt-6 pb-8 relative overflow-hidden rounded-[24px_24px_42%_8%/24px_24px_28px_18px]">
+        <div className="bg-[#214d40] text-[#f5f1e8] px-5 pt-[18px] pb-[22px] sm:px-[25px] sm:pt-[30px] sm:pb-[38px] relative overflow-hidden rounded-[24px_24px_42%_8%/24px_24px_28px_18px]">
           <p className="text-[0.72rem] font-bold uppercase tracking-[0.19em]">Gather &amp; give</p>
-          <h1 className="text-4xl leading-tight mt-3 text-[#f5f1e8]" style={{ fontFamily: 'Georgia, serif' }}>Family Gifting</h1>
+          <h1 className="text-[1.9rem] sm:text-[clamp(2.1rem,5vw,3.6rem)] leading-[1.08] mt-3 text-[#f5f1e8]" style={{ fontFamily: 'Georgia, serif' }}>Family Gifting</h1>
           <p className="mt-2 text-[#eee6d7] max-w-[78%]">Sign in to keep your gift plans together.</p>
           <span className="absolute right-5 bottom-3 text-[#ddbea9] text-5xl rotate-[15deg]" aria-hidden="true">✦</span>
         </div>

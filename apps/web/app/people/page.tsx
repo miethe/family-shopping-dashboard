@@ -220,9 +220,9 @@ export default function RecipientsPage() {
     <div className="space-y-6">
       {/* Page header: same hero banner as the Events screens */}
       <header>
-        <div className="bg-[#214d40] text-[#f5f1e8] px-[25px] pt-6 pb-8 relative overflow-hidden rounded-[24px_24px_42%_8%/24px_24px_28px_18px]">
+        <div className="bg-[#214d40] text-[#f5f1e8] px-5 pt-[18px] pb-[22px] sm:px-[25px] sm:pt-[30px] sm:pb-[38px] relative overflow-hidden rounded-[24px_24px_42%_8%/24px_24px_28px_18px]">
           <p className="text-[0.72rem] font-bold uppercase tracking-[0.19em]">Everyone you give to</p>
-          <h1 className="text-3xl sm:text-5xl leading-tight mt-3 mb-2 text-[#f5f1e8]">People</h1>
+          <h1 className="text-[1.9rem] sm:text-[clamp(2.1rem,5vw,3.6rem)] leading-[1.08] mt-3 mb-2 text-[#f5f1e8]">People</h1>
           <p className="text-[#eee6d7]">
             {groupCounts.all} {groupCounts.all === 1 ? 'recipient' : 'recipients'}, organized in {Math.max(0, Object.values(groupCounts).filter(c => c > 0).length - 1)} {Math.max(0, Object.values(groupCounts).filter(c => c > 0).length - 1) === 1 ? 'group' : 'groups'}
           </p>
