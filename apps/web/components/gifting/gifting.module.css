@@ -147,10 +147,19 @@
 }
 .meter {
   width: 100%;
-  height: 7px;
+  height: 8px;
   margin: 10px 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e1dacd;
   accent-color: #214d40;
 }
+.meter::-webkit-progress-bar { background: #e1dacd; border-radius: 999px; }
+.meter::-webkit-progress-value { background: #214d40; border-radius: 999px; }
+.meter::-moz-progress-bar { background: #214d40; border-radius: 999px; }
 .gift {
   padding: 18px;
   background: #fffdf8;
@@ -187,6 +196,10 @@
 }
 .compactGift > div {
   flex: 1;
+  min-width: 120px;
+}
+.compactGift > label {
+  flex: 1 0 100%;
 }
 .compactGift .giftMark {
   padding: 0 10px;
@@ -252,13 +265,14 @@
   padding: 18px 0;
 }
 .fields {
+  align-items: end;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 .select {
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   padding: 8px;
   border: 1px solid #bdb3a6;
   border-radius: 10px;
@@ -269,9 +283,16 @@
 .label {
   display: grid;
   gap: 6px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: #474039;
+}
+.label > select,
+.label > input {
+  text-transform: none;
+  letter-spacing: normal;
 }
 .error {
   color: #9a3021;
@@ -363,3 +384,11 @@
 .phases > div { min-width: 0; overflow-wrap: anywhere; }
 .calendarContent .grid { grid-template-columns: minmax(0, 1fr); }
 @media (max-width: 639px) { .calendarContent .phases span { font-size: .6rem; } }
+
+/* Phone: keep the hero a banner, not half the first screen. */
+@media (max-width: 639px) {
+  .hero { padding: 18px 20px 22px; margin-bottom: 16px; }
+  .hero h1 { font-size: 1.9rem; margin: 6px 0; }
+  .hero p { font-size: 0.95rem; max-width: 72%; }
+  .sprig { font-size: 36px; right: 16px; bottom: 10px; }
+}

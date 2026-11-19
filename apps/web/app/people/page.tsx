@@ -210,28 +210,26 @@ export default function RecipientsPage() {
     const today = new Date();
     const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
-    if (diffDays <= 1) return 'bg-primary';
-    if (diffDays <= 7) return 'bg-status-warning-500';
-    if (diffDays <= 14) return 'bg-status-info-500';
-    return 'bg-status-progress-500';
+    if (diffDays <= 1) return 'bg-[#91462d]';
+    if (diffDays <= 7) return 'bg-[#c8a166]';
+    if (diffDays <= 14) return 'bg-[#84a98c]';
+    return 'bg-[#214d40]';
   };
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <header className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-slate-900">All Recipients</h1>
-            <p className="text-slate-500 mt-1">
-              {groupCounts.all} Recipients, organized in {Object.values(groupCounts).filter(c => c > 0).length - 1} groups
-            </p>
-          </div>
-          <Button
-            size="lg"
-            className="min-h-[44px]"
-            onClick={() => setIsAddModalOpen(true)}
-          >
+      {/* Page header: same hero banner as the Events screens */}
+      <header>
+        <div className="bg-[#214d40] text-[#f5f1e8] px-5 pt-[18px] pb-[22px] sm:px-[25px] sm:pt-[30px] sm:pb-[38px] relative overflow-hidden rounded-[24px_24px_42%_8%/24px_24px_28px_18px]">
+          <p className="text-[0.72rem] font-bold uppercase tracking-[0.19em]">Everyone you give to</p>
+          <h1 className="text-[1.9rem] sm:text-[clamp(2.1rem,5vw,3.6rem)] leading-[1.08] mt-3 mb-2 text-[#f5f1e8]">People</h1>
+          <p className="text-[#eee6d7]">
+            {groupCounts.all} {groupCounts.all === 1 ? 'recipient' : 'recipients'}, organized in {Math.max(0, Object.values(groupCounts).filter(c => c > 0).length - 1)} {Math.max(0, Object.values(groupCounts).filter(c => c > 0).length - 1) === 1 ? 'group' : 'groups'}
+          </p>
+          <span className="absolute right-5 bottom-3 text-[#ddbea9] text-5xl rotate-[15deg]" aria-hidden="true">✦</span>
+        </div>
+        <div className="mt-5">
+          <Button size="lg" className="min-h-[44px] rounded-full whitespace-nowrap" onClick={() => setIsAddModalOpen(true)}>
             Add Person
           </Button>
         </div>
@@ -244,7 +242,7 @@ export default function RecipientsPage() {
           {/* Upcoming Occasions Section */}
           {!occasionsLoading && occasionsData?.items && occasionsData.items.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-slate-800">Upcoming Occasions</h2>
+              <h2 className="text-2xl font-bold text-[#2b2622]">Upcoming Occasions</h2>
               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                 {occasionsData.items.slice(0, 5).map((occasion: Occasion) => (
                   <button
@@ -253,7 +251,7 @@ export default function RecipientsPage() {
                     className="flex-shrink-0 w-64 bg-white p-5 rounded-3xl shadow-card text-center relative overflow-hidden group hover:-translate-y-1 transition-transform cursor-pointer"
                   >
                     <div className={`absolute top-0 left-0 w-full h-1 ${getOccasionColor(occasion.date)}`}></div>
-                    <p className="font-bold text-slate-800 text-lg">{occasion.name}</p>
+                    <p className="font-bold text-[#2b2622] text-lg" style={{ fontFamily: "Georgia, serif" }}>{occasion.name}</p>
                     <p className={`text-sm font-bold ${
                       getTimeUntil(occasion.date).includes('Tomorrow') || getTimeUntil(occasion.date) === 'Today'
                         ? 'text-primary'
@@ -277,7 +275,7 @@ export default function RecipientsPage() {
           {groupsWithCounts.length > 0 && (
             <section className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-slate-800">Groups</h2>
+                <h2 className="text-2xl font-bold text-[#2b2622]">Groups</h2>
                 <CreateGroupButton onCreated={(group) => setSelectedGroupId(group.id)} />
               </div>
 
@@ -288,8 +286,8 @@ export default function RecipientsPage() {
                   className={cn(
                     'px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 min-h-[44px]',
                     selectedGroupId === null
-                      ? 'bg-primary-500 text-white shadow-md'
-                      : 'bg-white text-slate-700 hover:bg-slate-100 shadow-sm'
+                      ? 'bg-[#214d40] text-white'
+                      : 'bg-[#fffdf8] border border-[#bdb3a6] text-[#474039] hover:bg-[#e5e7d8]'
                   )}
                 >
                   All ({personsData?.items?.length || 0})
@@ -322,53 +320,53 @@ export default function RecipientsPage() {
 
           {/* Filter Bar */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex items-center bg-white p-1 rounded-full shadow-sm overflow-x-auto w-full sm:w-auto scrollbar-hide">
+            <div className="flex items-center bg-[#e5e7d8] p-[3px] rounded-xl overflow-x-auto w-full sm:w-auto scrollbar-hide">
               <button
                 onClick={() => setSelectedGroup('all')}
-                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-[9px] font-semibold text-sm transition-colors ${
                   selectedGroup === 'all'
-                    ? 'bg-primary text-white shadow-md'
-                    : 'text-slate-500 hover:bg-slate-50'
+                    ? 'bg-[#214d40] text-white'
+                    : 'text-[#474039] hover:bg-white/60'
                 }`}
               >
                 All ({groupCounts.all})
               </button>
               <button
                 onClick={() => setSelectedGroup('household')}
-                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-[9px] font-semibold text-sm transition-colors ${
                   selectedGroup === 'household'
-                    ? 'bg-primary text-white shadow-md'
-                    : 'text-slate-500 hover:bg-slate-50'
+                    ? 'bg-[#214d40] text-white'
+                    : 'text-[#474039] hover:bg-white/60'
                 }`}
               >
                 Household ({groupCounts.household})
               </button>
               <button
                 onClick={() => setSelectedGroup('family')}
-                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-[9px] font-semibold text-sm transition-colors ${
                   selectedGroup === 'family'
-                    ? 'bg-primary text-white shadow-md'
-                    : 'text-slate-500 hover:bg-slate-50'
+                    ? 'bg-[#214d40] text-white'
+                    : 'text-[#474039] hover:bg-white/60'
                 }`}
               >
                 Family ({groupCounts.family})
               </button>
               <button
                 onClick={() => setSelectedGroup('friends')}
-                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-[9px] font-semibold text-sm transition-colors ${
                   selectedGroup === 'friends'
-                    ? 'bg-primary text-white shadow-md'
-                    : 'text-slate-500 hover:bg-slate-50'
+                    ? 'bg-[#214d40] text-white'
+                    : 'text-[#474039] hover:bg-white/60'
                 }`}
               >
                 Friends ({groupCounts.friends})
               </button>
               <button
                 onClick={() => setSelectedGroup('other')}
-                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full font-semibold text-sm transition-colors ${
+                className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-[9px] font-semibold text-sm transition-colors ${
                   selectedGroup === 'other'
-                    ? 'bg-primary text-white shadow-md'
-                    : 'text-slate-500 hover:bg-slate-50'
+                    ? 'bg-[#214d40] text-white'
+                    : 'text-[#474039] hover:bg-white/60'
                 }`}
               >
                 Other ({groupCounts.other})
@@ -389,7 +387,7 @@ export default function RecipientsPage() {
                   placeholder="Search recipients..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full sm:w-64 pl-10 pr-4 py-2 bg-white border-none rounded-full shadow-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                  className="w-full sm:w-64 pl-10 pr-4 py-2 min-h-[44px] bg-[#fffdf8] border border-[#bdb3a6] rounded-[10px] focus:border-[#214d40] focus:ring-2 focus:ring-[#214d40]/25 focus:outline-none"
                 />
               </div>
             </div>
@@ -397,7 +395,7 @@ export default function RecipientsPage() {
 
           {/* Loading State */}
           {personsLoading ? (
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div key={i} className="space-y-3">
                   <Skeleton className="h-48 w-full rounded-3xl" />
@@ -416,14 +414,14 @@ export default function RecipientsPage() {
             <>
               {/* Recipients Grid */}
               {filteredPeople.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 text-lg">No recipients found</p>
+                <div className="text-center py-10 px-4 border border-dashed border-[#bdb3a6] rounded-[14px]">
+                  <p className="text-[#635a50] text-lg">No recipients found</p>
                   <p className="text-gray-400 text-sm mt-2">
                     {searchQuery ? 'Try adjusting your search' : 'Add your first recipient to get started'}
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                   {filteredPeople.map((person: Person) => (
                     <PersonCard key={person.id} person={person} />
                   ))}
@@ -448,8 +446,8 @@ export default function RecipientsPage() {
 
         {/* Right Sidebar: Recent Updates */}
         <div className="col-span-12 lg:col-span-4">
-          <div className="bg-white p-8 rounded-3xl shadow-soft h-full">
-            <h2 className="text-xl font-bold mb-8 text-slate-800">Recent Updates</h2>
+          <div className="bg-[#fffdf8] border border-[#d1c8bc] p-6 rounded-[18px] h-full">
+            <h2 className="text-2xl font-bold mb-6 text-[#2b2622]">Recent Updates</h2>
             <ul className="space-y-6">
               {/* Placeholder recent updates - could be enhanced with actual activity feed */}
               <li className="flex gap-4 items-start">

@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { QuickAddModal } from '@/components/quick-add';
 import { cn } from '@/lib/utils';
 
 /**
@@ -30,22 +32,11 @@ const navItems: NavItem[] = [
 
 export function MobileNav() {
   const pathname = usePathname();
+  const [addOpen, setAddOpen] = useState(false);
+  const left = navItems.slice(0, 2);
+  const right = navItems.slice(2);
 
-  return (
-    <nav
-      className={cn(
-        // Warm terracotta/rust background matching sidebar
-        'bg-[#B67352]',
-        // Fixed positioning
-        'fixed bottom-0 left-0 right-0 z-50',
-        // Safe area bottom padding + horizontal for landscape
-        'safe-area-fixed-bottom'
-      )}
-      role="navigation"
-      aria-label="Main navigation"
-    >
-      <div className="flex items-center justify-around px-2 py-2">
-        {navItems.map((item) => {
+  const renderItem = (item: NavItem) => {
           const isActive = pathname === item.href || pathname?.startsWith(item.href + '/') || (item.href === '/dashboard' && pathname?.startsWith('/events'));
 
           return (
@@ -92,8 +83,35 @@ export function MobileNav() {
               </span>
             </Link>
           );
-        })}
+        };
+
+  return (
+    <nav
+      className={cn(
+        // Warm terracotta/rust background matching sidebar
+        'bg-[#B67352]',
+        // Fixed positioning
+        'fixed bottom-0 left-0 right-0 z-50',
+        // Safe area bottom padding + horizontal for landscape
+        'safe-area-fixed-bottom'
+      )}
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      <div className="flex items-center justify-around px-2 py-2">
+        {left.map(renderItem)}
+        <button
+          type="button"
+          onClick={() => setAddOpen(true)}
+          className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-3 py-2 rounded-2xl text-white bg-[#214d40] active:scale-95 transition-all duration-300"
+          aria-label="Quick add idea"
+        >
+          <span className="material-symbols-outlined text-[24px]" aria-hidden="true">add</span>
+          <span className="text-[10px] font-bold mt-1 text-white">Add idea</span>
+        </button>
+        {right.map(renderItem)}
       </div>
+      <QuickAddModal isOpen={addOpen} onClose={() => setAddOpen(false)} />
     </nav>
   );
 }
