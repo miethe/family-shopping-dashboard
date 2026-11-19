@@ -397,7 +397,7 @@ export default function RecipientsPage() {
 
           {/* Loading State */}
           {personsLoading ? (
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div key={i} className="space-y-3">
                   <Skeleton className="h-48 w-full rounded-3xl" />
@@ -423,7 +423,7 @@ export default function RecipientsPage() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                   {filteredPeople.map((person: Person) => (
                     <PersonCard key={person.id} person={person} />
                   ))}
