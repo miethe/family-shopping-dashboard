@@ -38,6 +38,24 @@ async function checkMobileText(page: Page) {
 test.use({ serviceWorkers: 'block' });
 test.beforeEach(async ({ page }) => { await setupCalendar(page); });
 
+test('mobile planner cards remain clear of the quick add button while scrolling', async ({ page }) => {
+  test.skip(page.viewportSize()!.width >= 640, 'Mobile layout only');
+  await page.goto('/dashboard');
+  await page.getByRole('button', { name: 'Calendar view' }).click();
+  const panel = page.locator('#calendar-panel');
+  await expect(panel.getByRole('tab', { name: 'Upcoming' })).toHaveAttribute('aria-selected', 'true');
+  const main = page.locator('main');
+  for (const fraction of [0, 0.5, 1]) {
+    await main.evaluate((el, f) => { el.style.scrollBehavior = 'auto'; el.scrollTop = (el.scrollHeight - el.clientHeight) * f; }, fraction);
+    const fab = (await page.getByRole('button', { name: 'Quick add idea' }).last().boundingBox())!;
+    const cards = await panel.getByRole('link', { name: /gathering/ }).all();
+    for (const card of cards) {
+      const box = await card.boundingBox();
+      if (box) expect(box.x + box.width <= fab.x || box.x >= fab.x + fab.width || box.y + box.height <= fab.y || box.y >= fab.y + fab.height).toBeTruthy();
+    }
+  }
+});
+
 test('home and planner views fit the viewport and expose usable controls', async ({ page }) => {
   await page.goto('/dashboard');
   await expect(page.getByRole('heading', { name: 'Winter gathering' })).toBeVisible();
@@ -163,7 +181,11 @@ test('capture planner evidence', async ({ page }) => {
     }));
     await writeFile(join(directory!, `${name}.json`), JSON.stringify(metrics, null, 2));
   };
-  if (page.viewportSize()!.width < 640) await capture('phone-upcoming');
+  if (page.viewportSize()!.width < 640) {
+    await capture('phone-upcoming');
+    await page.locator('main').evaluate(el => { el.scrollTop = el.scrollHeight; });
+    await page.screenshot({ path: join(directory!, 'phone-upcoming-end.png'), animations: 'disabled' });
+  }
   else {
     await capture('desktop-upcoming');
     await panel.getByRole('tab', { name: 'Season' }).click();
