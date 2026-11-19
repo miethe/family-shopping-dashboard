@@ -26,6 +26,14 @@ services:
       # Relative URLs stay on the same gateway as the web app.
       PUBLIC_API_URL: ''
       UPLOAD_DIR: /tmp/uploads
+    # Declared here as well as in the Dockerfile: podman builds OCI images,
+    # which silently drop Dockerfile HEALTHCHECK, so depends_on would never gate.
+    healthcheck:
+      test: [CMD-SHELL, 'curl -fsS http://localhost:8000/health || exit 1']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
     volumes:
       - uploads:/tmp/uploads
     depends_on:
@@ -39,6 +47,12 @@ services:
       args:
         NEXT_PUBLIC_API_URL: /api/v1
         NEXT_PUBLIC_WS_URL: /ws
+    healthcheck:
+      test: [CMD-SHELL, 'curl -fsS http://localhost:3000/ >/dev/null || exit 1']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
     depends_on:
       api:
         condition: service_healthy
