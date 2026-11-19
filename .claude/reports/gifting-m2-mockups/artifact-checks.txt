@@ -1,0 +1,1 @@
+PASS: six PNG integrity/hash/dimension checks; options links; nine prompt records; docs/mockups/report path allowlist.
