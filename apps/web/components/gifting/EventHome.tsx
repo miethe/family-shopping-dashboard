@@ -25,8 +25,8 @@ export function EventHome() {
   const [calendarMounted, setCalendarMounted] = useState(false);
   useEffect(() => {
     if (showCalendar) { setCalendarMounted(true); return; }
-    const delay = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? 0 : 260;
-    const timer = window.setTimeout(() => setCalendarMounted(false), delay);
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { setCalendarMounted(false); return; }
+    const timer = window.setTimeout(() => setCalendarMounted(false), 260);
     return () => window.clearTimeout(timer);
   }, [showCalendar]);
   const [eventId, setEventId] = useState("");
@@ -71,12 +71,12 @@ export function EventHome() {
           {showCalendar ? "Close calendar" : "Calendar view"}
         </Button>
       </div>
-      <div className={styles.calendarReveal} data-open={showCalendar}>
+      <div className={styles.calendarReveal} data-open={showCalendar} inert={!showCalendar}>
         <div>
-          {calendarMounted && <CalendarPanel occurrences={query.data ?? []} loading={query.isLoading} error={query.error} retry={() => query.refetch()} onClose={() => { setShowCalendar(false); triggerRef.current?.focus(); }} />}
+          {(showCalendar || calendarMounted) && <CalendarPanel occurrences={query.data ?? []} loading={query.isLoading} error={query.error} retry={() => query.refetch()} onClose={() => { setShowCalendar(false); triggerRef.current?.focus(); }} />}
         </div>
       </div>
-      <QueryState
+      {!showCalendar && <><QueryState
         loading={query.isLoading}
         error={query.error}
         retry={() => query.refetch()}
@@ -87,7 +87,7 @@ export function EventHome() {
           <Empty>No upcoming events yet. Start with a celebration below.</Empty>
         ) : (
           <EventCards rows={upcoming} />
-        ))}
+        ))}</>}
       <details className={styles.shelf}>
         <summary>Plan an event</summary>
         <div className={styles.shelfBody}>
@@ -140,12 +140,12 @@ export function EventHome() {
           </form>
         </div>
       </details>
-      <details className={styles.shelf}>
+      {!showCalendar && <details className={styles.shelf}>
         <summary>
           Past & closed events <span>{past.length}</span>
         </summary>
         <div className={styles.shelfBody}><EventCards rows={past} /></div>
-      </details>
+      </details>}
       <Link className={styles.textLink} href="/occasions">
         Manage recurring events →
       </Link>
