@@ -20,13 +20,13 @@ You and your partner each use your own phone. Both open the **same address** on 
 1. **People:** tap People, then **Add Person**, and add someone you buy for. Only a name is required.
 2. **Events:** tap Events, then **Plan an event**. Give it a name and a date. A money budget is optional. Tap **Create occurrence**.
 3. **Recipients and allowances:** open the event, tap **Add a recipient**, pick the person, optionally set a money allowance and a gift count, then **Save allowance**.
-4. **Save a gift idea** any time with the round **+** button at the bottom right: name, optional link and price, then pick the person and the event. **Save idea**.
+4. **Save a gift idea** any time with the **Add idea** button in the bottom bar (on a computer, the **+** in the left sidebar): name, optional link and price, then pick the person and the event. **Save idea**.
 5. **Move a gift along** from the event page with its **Phase** menu: Considering, Bought, In hand, Given.
 6. **Budget** shows allocated, bought and remaining for each event. Use **Calendar view** on the Events page for upcoming dates.
 
 ## Good to know
 
-- **Sign out** is at the top right of the phone screen.
+- **Sign out** is at the top right of the phone screen. The page keeps working after the host restarts; if it ever does not load, tell the person running it.
 - Everyone with an account sees the same household information. Do not hand the address to anyone you do not want to see your gift plans.
 - Works only on the home network. Nothing is reachable from the internet.
 - This is a trial run. If something looks wrong or you lose a screen, note what you tapped and tell the person running it. Do not delete and re-create things to fix a problem.
