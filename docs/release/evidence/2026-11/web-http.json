@@ -1,0 +1,38 @@
+{
+  "routes": [
+    {
+      "route": "/login",
+      "status": 200,
+      "bytes": 12824
+    },
+    {
+      "route": "/register",
+      "status": 200,
+      "bytes": 13246
+    },
+    {
+      "route": "/events",
+      "status": 200,
+      "bytes": 11798
+    },
+    {
+      "route": "/budgets",
+      "status": 200,
+      "bytes": 11635
+    },
+    {
+      "route": "/manifest.json",
+      "status": 200,
+      "bytes": 760
+    },
+    {
+      "route": "/sw.js",
+      "status": 200,
+      "bytes": 1916
+    }
+  ],
+  "limits": [
+    "HTTP server responses only; client auth, hydration, browser interaction and layout not verified",
+    "Sign-in form is rendered client-side after auth initialization"
+  ]
+}

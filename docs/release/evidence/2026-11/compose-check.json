@@ -1,0 +1,17 @@
+{
+  "valid_model": true,
+  "only_gateway_published": true,
+  "private_example_binding": true,
+  "persistent_volumes": [
+    "postgres-data",
+    "uploads"
+  ],
+  "relative_endpoints": true,
+  "empty_required_values_rejected": [
+    "POSTGRES_PASSWORD",
+    "JWT_SECRET_KEY",
+    "LAN_BIND_IP",
+    "LAN_ORIGIN"
+  ],
+  "docker_runtime": "unavailable"
+}
