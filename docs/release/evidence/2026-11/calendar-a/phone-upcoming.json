@@ -1,0 +1,119 @@
+{
+  "viewport": {
+    "width": 375,
+    "height": 812
+  },
+  "document": {
+    "scrollWidth": 375,
+    "clientWidth": 375
+  },
+  "main": [
+    {
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "scrollTop": 238
+    }
+  ],
+  "controls": [
+    {
+      "name": "Toggle search",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Notifications",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Quick add idea",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "User menu",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Close calendar",
+      "width": 165.90625,
+      "height": 44
+    },
+    {
+      "name": "Month",
+      "width": 106.328125,
+      "height": 44
+    },
+    {
+      "name": "Upcoming",
+      "width": 106.34375,
+      "height": 44
+    },
+    {
+      "name": "Season",
+      "width": 106.328125,
+      "height": 44
+    },
+    {
+      "name": "Starting year",
+      "width": 120,
+      "height": 44
+    },
+    {
+      "name": "",
+      "width": 136.0625,
+      "height": 44
+    },
+    {
+      "name": "Dec252026Winter gatheringRecipients: Wren2 giftsConsidering: 1 · Bought: 1 · In hand: 0 · Given: 0Budget: $100.00",
+      "width": 325,
+      "height": 167.1875
+    },
+    {
+      "name": "Jan122027January gatheringRecipients: Rowan2 giftsConsidering: 1 · Bought: 1 · In hand: 0 · Given: 0Budget: $100.00",
+      "width": 325,
+      "height": 167.1875
+    },
+    {
+      "name": "Nov 8, 2026 · Autumn gathering Closed",
+      "width": 299,
+      "height": 56
+    },
+    {
+      "name": "Plan an event",
+      "width": 341,
+      "height": 65.75
+    },
+    {
+      "name": "Manage recurring events →",
+      "width": 208.84375,
+      "height": 44
+    },
+    {
+      "name": "Events - current page",
+      "width": 57.09375,
+      "height": 59
+    },
+    {
+      "name": "People",
+      "width": 57.671875,
+      "height": 59
+    },
+    {
+      "name": "Ideas",
+      "width": 51.140625,
+      "height": 59
+    },
+    {
+      "name": "Budget",
+      "width": 60.203125,
+      "height": 59
+    },
+    {
+      "name": "Quick add idea",
+      "width": 56,
+      "height": 56
+    }
+  ]
+}
