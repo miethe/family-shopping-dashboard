@@ -60,20 +60,19 @@ export default function RegisterPage() {
   const displayError = validationError || error;
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center p-4 bg-gray-50">
-      <div className="w-full max-w-md space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-          <p className="text-gray-600">Sign up to start managing your gift lists</p>
+    <div className="fg-theme min-h-[100dvh] bg-[#f5f1e8] p-4 flex items-center justify-center">
+      <div className="w-full max-w-md space-y-5">
+        <div className="bg-[#214d40] text-[#f5f1e8] px-6 pt-6 pb-8 relative overflow-hidden rounded-[24px_24px_42%_8%/24px_24px_28px_18px]">
+          <p className="text-[0.72rem] font-bold uppercase tracking-[0.19em]">Gather &amp; give</p>
+          <h1 className="text-4xl leading-tight mt-3 text-[#f5f1e8]" style={{ fontFamily: 'Georgia, serif' }}>Create Account</h1>
+          <p className="mt-2 text-[#eee6d7] max-w-[78%]">Sign up to start planning gifts together.</p>
+          <span className="absolute right-5 bottom-3 text-[#ddbea9] text-5xl rotate-[15deg]" aria-hidden="true">✦</span>
         </div>
 
-        {/* Registration Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          {/* Global Error Message */}
+        <form onSubmit={handleSubmit} className="space-y-4 bg-[#fffdf8] border border-[#d1c8bc] rounded-[18px] p-6">
           {displayError && (
             <div
-              className="p-3 rounded-md bg-red-50 border border-red-200 text-red-800 text-sm"
+              className="p-3 rounded-[10px] bg-[#f9e9e5] border border-[#d9a99d] text-[#7a2b1d] text-sm"
               role="alert"
               aria-live="assertive"
             >
@@ -81,7 +80,6 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {/* Email Field */}
           <Input
             type="email"
             label="Email"
@@ -94,7 +92,6 @@ export default function RegisterPage() {
             autoFocus
           />
 
-          {/* Password Field */}
           <Input
             type="password"
             label="Password"
@@ -106,7 +103,6 @@ export default function RegisterPage() {
             autoComplete="new-password"
           />
 
-          {/* Confirm Password Field */}
           <Input
             type="password"
             label="Confirm Password"
@@ -118,10 +114,9 @@ export default function RegisterPage() {
             autoComplete="new-password"
           />
 
-          {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full"
+            className="w-full rounded-full"
             isLoading={loading}
             disabled={loading}
           >
@@ -129,16 +124,12 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        {/* Login Link */}
-        <div className="text-center text-sm">
-          <span className="text-gray-600">Already have an account? </span>
-          <Link
-            href="/login"
-            className="text-primary-600 hover:text-primary-700 font-medium underline-offset-4 hover:underline min-h-[44px] inline-flex items-center"
-          >
+        <p className="text-center text-sm text-[#635a50]">
+          Already have an account?{' '}
+          <Link href="/login" className="text-[#91462d] font-semibold underline underline-offset-4 min-h-[44px] inline-flex items-center ml-1">
             Sign in
           </Link>
-        </div>
+        </p>
       </div>
     </div>
   );

@@ -3,7 +3,6 @@
 import { Header } from './Header';
 import { MobileNav } from './MobileNav';
 import { DesktopNav } from './DesktopNav';
-import { QuickAddButton } from '@/components/quick-add';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -68,7 +67,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           className="flex-1 min-h-0 overflow-y-auto scroll-smooth"
         >
           {/* Max-width container with fade-in animation */}
-          <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8 py-6 pb-20 md:pb-8 fade-in">
+          <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8 py-6 pb-32 md:pb-8 fade-in fg-theme">
             {children}
           </div>
         </main>
@@ -79,8 +78,8 @@ export function AppLayout({ children }: AppLayoutProps) {
         </div>
       </div>
 
-      {/* Quick Add FAB - Available on all authenticated pages */}
-      <QuickAddButton variant="fab" />
+      {/* Quick add lives in the mobile tab bar (docked) and the desktop sidebar:
+          a floating button covered content, so there is none. */}
     </div>
   );
 }

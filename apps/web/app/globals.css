@@ -845,3 +845,36 @@ button,
     transform: translateZ(0);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   One design language (November 2026): the Events palette applied to the
+   screens built before it. Scoped to .fg-theme so nothing else is touched.
+   Palette: deep green #214d40, cream #f5f1e8, card #fffdf8, line #d1c8bc,
+   ink #2b2622, muted #635a50, terracotta link #91462d, sage #e5e7d8.
+   ------------------------------------------------------------------------- */
+.fg-theme { color: #2b2622; }
+.fg-theme h1, .fg-theme h2, .fg-theme h3 { font-family: Georgia, serif; letter-spacing: -0.01em; }
+.fg-theme .text-slate-900, .fg-theme .text-slate-800, .fg-theme .text-gray-900, .fg-theme .text-warm-900, .fg-theme .text-gray-800 { color: #2b2622; }
+.fg-theme .text-slate-700, .fg-theme .text-slate-600, .fg-theme .text-slate-500, .fg-theme .text-gray-700, .fg-theme .text-gray-600, .fg-theme .text-gray-500 { color: #635a50; }
+.fg-theme .text-slate-400, .fg-theme .text-gray-400, .fg-theme .text-warm-300 { color: #7d7468; }
+.fg-theme .text-primary, .fg-theme .text-primary-600, .fg-theme .text-primary-500 { color: #91462d; }
+.fg-theme .text-orange-600, .fg-theme .text-status-warning-600 { color: #91462d; }
+.fg-theme .bg-white, .fg-theme .bg-surface-primary { background-color: #fffdf8; }
+.fg-theme .bg-slate-50, .fg-theme .bg-slate-100, .fg-theme .bg-slate-200 { background-color: #e5e7d8; }
+.fg-theme .bg-white.rounded-3xl, .fg-theme .bg-white.rounded-full { border: 1px solid #d1c8bc; }
+.fg-theme .rounded-3xl { border-radius: 18px; }
+.fg-theme .shadow-card, .fg-theme .shadow-soft, .fg-theme .shadow-sm, .fg-theme .shadow-md, .fg-theme .shadow-low { box-shadow: none; }
+.fg-theme .bg-primary, .fg-theme .bg-primary-500 { background-color: #214d40; color: #f5f1e8; }
+.fg-theme .hover\:bg-slate-100:hover, .fg-theme .hover\:bg-slate-50:hover { background-color: #e5e7d8; }
+.fg-theme .focus\:ring-primary:focus { --tw-ring-color: #214d40; }
+/* Badges and avatars that used blue/grey */
+.fg-theme [class*="bg-blue-"], .fg-theme [class*="bg-gray-100"] { background-color: #e5e7d8; color: #214d40; }
+.fg-theme [class*="text-blue-"] { color: #214d40; }
+/* Native controls stay readable and consistent */
+.fg-theme input, .fg-theme select, .fg-theme textarea { color: #2b2622; }
+.fg-theme input:focus-visible, .fg-theme textarea:focus-visible, .fg-theme select:focus-visible { outline: 2px solid #214d40; outline-offset: 1px; }
+.fg-theme .text-green-600, .fg-theme .text-green-700, .fg-theme .text-emerald-600 { color: #214d40; }
+.fg-theme .text-orange-500, .fg-theme .text-orange-700, .fg-theme .text-amber-600 { color: #91462d; }
+.fg-theme .bg-orange-100 { background-color: #e5e7d8; }
+.fg-theme .text-orange-800 { color: #214d40; }
+.fg-theme .border-gray-300, .fg-theme .border-gray-200 { border-color: #bdb3a6; }

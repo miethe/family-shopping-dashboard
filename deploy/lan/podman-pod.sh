@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # LAN stack for podman hosts without the compose plugin (podman 4.x).
 # Same topology as compose.lan.yml: one pod, gateway is the only published port.
-#   ./deploy/lan/podman-pod.sh up|stop|start|status|remove-all
+#   ./deploy/lan/podman-pod.sh up|stop|start|status|install-unit|remove-all
 # Settings come from .env.lan (LAN_BIND_IP, LAN_PORT, LAN_ORIGIN, POSTGRES_PASSWORD,
 # JWT_SECRET_KEY) in the repository root. Everything is named; nothing is matched by
 # wildcard, so "remove-all" can only touch the objects below.
@@ -36,12 +36,18 @@ case "${1:-}" in
       -v "$PWD/deploy/lan/nginx.conf:/etc/nginx/conf.d/default.conf:ro,Z" docker.io/library/nginx:stable-alpine
     for _ in $(seq 1 90); do curl -fsS "http://${LAN_BIND_IP}:${LAN_PORT}/health" 2>/dev/null && echo && exit 0; sleep 2; done
     echo "health check did not pass" >&2; exit 1 ;;
+  install-unit)
+    mkdir -p "$HOME/.config/systemd/user"
+    cp deploy/lan/family-gifting-rehearsal.service "$HOME/.config/systemd/user/family-gifting-rehearsal.service"
+    systemctl --user daemon-reload && systemctl --user enable family-gifting-rehearsal.service ;;
   stop)   podman pod stop "$POD" ;;
   start)  podman pod start "$POD" ;;
   status) podman pod ps --filter "name=^${POD}\$"; podman ps --pod --filter "pod=${POD}" --format '{{.Names}} {{.Status}}' ;;
   remove-all)
+    systemctl --user disable --now family-gifting-rehearsal.service 2>/dev/null || true
+    rm -f "$HOME/.config/systemd/user/family-gifting-rehearsal.service"; systemctl --user daemon-reload
     podman pod rm -f "$POD"
     podman volume rm "$PGVOL" "$UPVOL"
     podman image rm "localhost/${POD}-api" "localhost/${POD}-web" ;;
-  *) echo "usage: $0 up|stop|start|status|remove-all" >&2; exit 2 ;;
+  *) echo "usage: $0 up|stop|start|status|install-unit|remove-all" >&2; exit 2 ;;
 esac

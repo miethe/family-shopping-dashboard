@@ -8,8 +8,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-low hover:shadow-medium active:shadow-subtle focus-visible:ring-primary-500 focus-visible:ring-offset-bg-base',
-        primary: 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-low hover:shadow-medium active:shadow-subtle focus-visible:ring-primary-500 focus-visible:ring-offset-bg-base',
+        default: 'bg-[#214d40] text-[#f5f1e8] hover:bg-[#1a3d33] active:bg-[#14302a] shadow-none focus-visible:ring-[#214d40] focus-visible:ring-offset-bg-base',
+        primary: 'bg-[#214d40] text-[#f5f1e8] hover:bg-[#1a3d33] active:bg-[#14302a] shadow-none focus-visible:ring-[#214d40] focus-visible:ring-offset-bg-base',
         secondary: 'bg-transparent text-warm-900 border-2 border-warm-300 hover:bg-warm-100 hover:border-warm-400 active:bg-warm-200 focus-visible:ring-primary-500',
         outline: 'bg-transparent text-warm-900 border-2 border-warm-300 hover:bg-warm-100 hover:border-warm-400 active:bg-warm-200 focus-visible:ring-primary-500',
         ghost: 'bg-transparent text-warm-900 hover:bg-warm-100 active:bg-warm-200 focus-visible:ring-primary-500',
