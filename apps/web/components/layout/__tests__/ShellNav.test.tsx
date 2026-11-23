@@ -16,7 +16,7 @@ describe('shell navigation', () => {
     const { container } = render(<DesktopNav />);
     const sidebar = container.querySelector('aside')!;
     const nav = sidebar.querySelector('nav')!;
-    expect(sidebar).toHaveClass('w-52');
+    expect(sidebar).toHaveClass('club-sidebar');
     expect(nav.className).not.toMatch(/overflow-[xy]-(auto|scroll|hidden)/);
     for (const item of navItems) {
       const link = within(nav).getByRole('link', { name: item.label });
@@ -28,8 +28,8 @@ describe('shell navigation', () => {
   it('uses matching sidebar offset and normal phone content padding', () => {
     render(<AppLayout><p>Page content</p></AppLayout>);
     const main = screen.getByRole('main');
-    expect(main.parentElement).toHaveClass('md:ml-52', 'min-w-0');
-    expect(screen.getByText('Page content').parentElement).toHaveClass('px-4');
+    expect(main.parentElement).toHaveClass('club-content', 'min-w-0');
+    expect(main).toHaveAttribute('id', 'main-content');
     expect(screen.getByText('Page content').parentElement).not.toHaveClass('pr-20');
   });
   it('stacks the title and actions on small screens', () => {
@@ -41,16 +41,17 @@ describe('shell navigation', () => {
   it('opens the remaining destinations and closes after selecting one', () => {
     render(<MobileNav />);
     const bar = screen.getByRole('navigation', { name: 'Main navigation' });
-    for (const label of ['Events', 'People', 'Ideas', 'Budget']) {
+    for (const label of ['Home', 'People', 'Gifts', 'Events']) {
       expect(within(bar).getByText(label)).toBeVisible();
     }
-    expect(within(bar).getByRole('button', { name: 'Quick add idea' })).toBeVisible();
+    expect(within(bar).getAllByRole('link')).toHaveLength(4);
+    expect(within(bar).getAllByRole('button')).toHaveLength(1);
     fireEvent.click(screen.getByRole('button', { name: 'More' }));
     const dialog = screen.getByRole('dialog');
-    for (const label of ['Assignments', 'Occasions', 'Gifts', 'Lists', 'Admin']) {
+    for (const label of ['Ideas', 'Budget', 'Assignments', 'Occasions', 'Lists', 'Admin']) {
       expect(within(dialog).getByRole('link', { name: label })).toBeInTheDocument();
     }
-    fireEvent.click(within(dialog).getByRole('link', { name: 'Gifts' }));
+    fireEvent.click(within(dialog).getByRole('link', { name: 'Ideas' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
