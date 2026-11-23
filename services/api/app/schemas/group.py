@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel, Field
 
-from app.schemas.base import TimestampSchema
+from app.schemas.base import BaseSchema, TimestampSchema
 
 
 class GroupBase(BaseModel):
@@ -52,7 +52,7 @@ class GroupResponse(GroupBase, TimestampSchema):
     )
 
 
-class GroupMinimal(BaseModel):
+class GroupMinimal(BaseSchema):
     """Lightweight group summary for nested responses."""
 
     id: int

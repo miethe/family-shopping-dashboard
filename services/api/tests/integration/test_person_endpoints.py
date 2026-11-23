@@ -154,3 +154,36 @@ async def test_delete_person_not_found(
 
     # Assert
     assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_person_with_group_round_trip(
+    client: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Creating and reading a person preserves their group in responses."""
+    group_response = await client.post(
+        "/api/v1/groups",
+        json={"name": "Orchard Circle", "color": "#123456"},
+        headers=auth_headers,
+    )
+    assert group_response.status_code == 201
+    group = group_response.json()
+    expected_group = {"id": group["id"], "name": "Orchard Circle", "color": "#123456"}
+
+    created = await client.post(
+        "/api/v1/persons",
+        json={"display_name": "Avery Orchard", "group_ids": [group["id"]]},
+        headers=auth_headers,
+    )
+    assert created.status_code == 201
+    assert created.json()["groups"] == [expected_group]
+    person_id = created.json()["id"]
+
+    listed = await client.get("/api/v1/persons", headers=auth_headers)
+    assert listed.status_code == 200
+    listed_person = next(p for p in listed.json()["items"] if p["id"] == person_id)
+    assert listed_person["groups"] == [expected_group]
+
+    fetched = await client.get(f"/api/v1/persons/{person_id}", headers=auth_headers)
+    assert fetched.status_code == 200
+    assert fetched.json()["groups"] == [expected_group]
