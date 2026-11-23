@@ -72,11 +72,11 @@
  .home-event-hero p { font-size:12px; } .home-eyebrow { font-size:10px; letter-spacing:1.5px; }
  .hero-row { gap:8px; }
  .hero-foot { margin-top:11px; font-size:11px; }
- .hero-foot .home-white { min-height:32px; padding:7px 11px; font-size:11px; border-radius:10px; }
+ .hero-foot .home-white { min-height:44px; padding:7px 11px; font-size:11px; border-radius:10px; }
  .home-birthday { margin:8px 0 12px; padding:16px; border-radius:16px; }
  .home-birthday.has-birthday { padding:0; }
  .home-birthday.has-birthday>:not(.birthday-mobile) { display:none; }
- .birthday-mobile { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; font-size:11px; min-height:38px; }
+ .birthday-mobile { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; font-size:11px; min-height:44px; }
  .birthday-mobile strong { white-space:nowrap; } .birthday-cake { font-size:44px; top:35px; }
  .home-birthday h2 { font-size:23px; margin-top:10px; } .home-birthday p { font-size:12px; margin:8px 0; }
  .home-birthday .home-white { font-size:12px; padding:10px 14px; }
