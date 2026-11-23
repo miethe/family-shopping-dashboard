@@ -7,6 +7,7 @@
 
 'use client';
 
+import { PersonCreator } from './PersonCreator';
 import { useState, useEffect } from 'react';
 import { EntityModal } from '@/components/modals/EntityModal';
 import { Button } from '@/components/ui/button';
@@ -205,6 +206,8 @@ export function AddPersonModal({
       onClose();
     }
   };
+
+  if (!isEditMode) return <PersonCreator isOpen={isOpen} onClose={onClose} onSuccess={onSuccess}/>;
 
   return (
     <EntityModal
