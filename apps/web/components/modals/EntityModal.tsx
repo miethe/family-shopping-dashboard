@@ -93,10 +93,9 @@ export function EntityModal({
             "fixed left-[50%] top-[50%] z-50 w-full translate-x-[-50%] translate-y-[-50%]",
             "max-h-[90vh] sm:max-h-[85vh] overflow-y-auto",
             sizeClasses[size],
-            "bg-white/95 backdrop-blur-xl",
-            "rounded-3xl shadow-2xl",
-            theme.ringColor,
-            "ring-1 ring-inset",
+            "fg-theme bg-[#f5f1e8]",
+            "rounded-[24px] shadow-2xl",
+            "ring-1 ring-inset ring-[#d1c8bc]",
             // Organic animations
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -111,20 +110,17 @@ export function EntityModal({
           <div
             className={cn(
               "absolute top-0 left-0 right-0 h-1 rounded-t-3xl",
-              "bg-gradient-to-r",
-              theme.gradient,
-              "opacity-60"
+              "hidden"
             )}
           />
 
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-warm-200/50 px-6 py-5 rounded-t-3xl">
+          <div className="sticky top-0 z-10 bg-[#f5f1e8] border-b border-[#d1c8bc] px-6 py-5 rounded-t-3xl">
             <div className="flex items-center justify-between">
               <DialogPrimitive.Title
                 className={cn(
                   "text-2xl font-bold tracking-tight",
-                  "bg-gradient-to-br from-warm-900 via-warm-800 to-warm-700",
-                  "bg-clip-text text-transparent"
+                  "text-[#214d40]"
                 )}
               >
                 {title}
@@ -160,7 +156,7 @@ export function EntityModal({
           {footer && (
             <div
               className={cn(
-                "sticky bottom-0 bg-white/80 backdrop-blur-lg",
+                "sticky bottom-0 bg-[#f5f1e8]",
                 "border-t border-warm-200/50 px-6 py-4 rounded-b-3xl"
               )}
             >

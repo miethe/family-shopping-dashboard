@@ -25,6 +25,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
+import { websocketUrl } from '@/lib/websocket/url';
 import type {
   WSEvent,
   WSConnectionState,
@@ -144,7 +145,7 @@ export function useWebSocket(options: WSOptions = {}): UseWebSocketReturn {
       log('Connecting to:', config.url);
 
       // Create WebSocket connection with JWT token
-      const ws = new WebSocket(`${config.url}?token=${token}`);
+      const ws = new WebSocket(websocketUrl(config.url, window.location.origin, token));
       wsRef.current = ws;
 
       ws.onopen = () => {

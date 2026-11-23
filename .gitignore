@@ -73,6 +73,7 @@ $RECYCLE.BIN/
 
 # Environments
 .env
+.env.lan
 .venv
 env/
 venv/

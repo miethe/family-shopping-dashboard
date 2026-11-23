@@ -113,7 +113,9 @@ export function GiftCard({
           {gift.price == null ? "Price unknown" : money(gift.price)}
           {gift.quantity > 1 ? ` × ${gift.quantity}` : ""}
         </p>
-        {compact && gift.phase === "given" && <small>Given</small>}
+        {compact && gift.phase === "given" && (
+          <small style={{ display: "block" }}>Given</small>
+        )}
         <StoreLink url={gift.url} />
       </div>
       {children}

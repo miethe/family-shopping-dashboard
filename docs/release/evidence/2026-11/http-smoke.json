@@ -1,0 +1,19 @@
+{
+  "checks": [
+    "two distinct accounts: register, login, authenticated profile",
+    "person, event occurrence, recipient allowance, URL idea capture",
+    "partner sees persisted Bought/In hand/Given, budgets, remaining counts and history",
+    "sample image upload returns same-origin path and reads back exact bytes",
+    "authenticated live WebSocket ping/pong",
+    "API process restart preserves account login, gift phase and uploaded bytes in disposable storage"
+  ],
+  "sample_data_only": true,
+  "transport": "real loopback HTTP and WebSocket",
+  "database": "disposable file SQLite, SQLAlchemy metadata schema",
+  "limits": [
+    "No browser interaction or visual inspection",
+    "No PostgreSQL/Alembic runtime verification",
+    "No NGINX/container runtime or phone/LAN proof",
+    "SQLite process restart is not Docker volume proof"
+  ]
+}

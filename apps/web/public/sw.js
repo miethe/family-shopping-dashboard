@@ -1,12 +1,10 @@
 /**
  * Service Worker for Family Gifting Dashboard PWA
- * Provides basic caching strategy for offline support
+ * Cache public shell assets only. Gift plans always require a live request.
  */
 
-const CACHE_NAME = 'family-gifting-v1';
+const CACHE_NAME = 'family-gifting-shell-v2';
 const STATIC_CACHE = [
-  '/',
-  '/dashboard',
   '/manifest.json',
   '/icons/icon-180.png',
   '/icons/icon-192.png',
@@ -37,15 +35,15 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - network first, fallback to cache
+// Fetch event - network first for an explicit list of public static assets.
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
-
-  // Skip WebSocket requests
-  if (event.request.url.startsWith('ws://') || event.request.url.startsWith('wss://')) {
+  const url = new URL(event.request.url);
+  if (
+    event.request.method !== 'GET' ||
+    url.origin !== self.location.origin ||
+    !STATIC_CACHE.includes(url.pathname) ||
+    url.search
+  ) {
     return;
   }
 
@@ -71,8 +69,7 @@ self.addEventListener('fetch', (event) => {
               return cachedResponse;
             }
 
-            // Return offline page if available
-            return caches.match('/');
+            return Response.error();
           });
       })
   );

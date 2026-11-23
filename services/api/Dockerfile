@@ -42,6 +42,9 @@ COPY --from=builder /app/.venv /app/.venv
 # Copy application code
 COPY --chown=appuser:appuser . .
 
+# New named upload volumes inherit this ownership for the non-root API user.
+RUN mkdir -p /tmp/uploads && chown appuser:appuser /tmp/uploads
+
 # Switch to non-root user
 USER appuser
 
