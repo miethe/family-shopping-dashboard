@@ -6,7 +6,8 @@ import { navItems } from '../nav-config';
 import { AppLayout } from '../AppLayout';
 import { PageHeader } from '../PageHeader';
 
-vi.mock('next/navigation', () => ({ usePathname: () => '/dashboard' }));
+const route=vi.hoisted(()=>({pathname:'/dashboard'}));
+vi.mock('next/navigation', () => ({ usePathname: () => route.pathname }));
 vi.mock('@/hooks/useAuth', () => ({ useAuth: () => ({ user: null, logout: vi.fn() }) }));
 vi.mock('@/components/quick-add', () => ({ QuickAddButton: () => null, QuickAddModal: () => null }));
 vi.mock('../Header', () => ({ Header: () => null }));
@@ -55,3 +56,5 @@ describe('shell navigation', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
+
+it('marks More active on a secondary destination and keeps the family label static',()=>{route.pathname='/ideas';render(<><MobileNav/><DesktopNav/></>);expect(screen.getByRole('button',{name:'More'})).toHaveAttribute('aria-current','page');expect(screen.getByText('Your family').closest('button,summary,details')).toBeNull();route.pathname='/dashboard';});

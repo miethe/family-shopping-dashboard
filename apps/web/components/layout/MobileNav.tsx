@@ -16,7 +16,7 @@ export function MobileNav() {
   return <>
     <nav className="club-bottom-nav" aria-label="Main navigation">
       {primary.map(href => { const item = navItems.find(i => i.href === href)!; return <Link key={href} href={item.href} prefetch={false} aria-current={isDestinationActive(pathname,href) ? 'page' : undefined}><NavIcon name={item.icon}/><span>{item.label}</span></Link>; })}
-      <button ref={trigger} onClick={()=>setOpen(true)} aria-label="More" aria-haspopup="dialog" aria-expanded={open} data-active={more.some(i=>isDestinationActive(pathname,i.href))}><NavIcon name="more"/><span>More</span></button>
+      <button ref={trigger} onClick={()=>setOpen(true)} aria-current={more.some(i=>isDestinationActive(pathname,i.href)) ? 'page' : undefined} aria-label="More" aria-haspopup="dialog" aria-expanded={open} data-active={more.some(i=>isDestinationActive(pathname,i.href))}><NavIcon name="more"/><span>More</span></button>
     </nav>
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="club-more-sheet" onCloseAutoFocus={e=>{e.preventDefault();trigger.current?.focus();}}>
