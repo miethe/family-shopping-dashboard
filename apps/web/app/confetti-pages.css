@@ -69,9 +69,13 @@ table:has(button[aria-label="More actions"]) :is(th,td):nth-child(n+5) { display
  [role=dialog] [role=tab] { white-space:normal; overflow-wrap:anywhere; padding:10px 8px; }
 }
 /* Remaining legacy list surfaces use the same paper, ink and line tokens. */
-.fg-theme .bg-slate-50 { background-color:rgb(var(--paper)); }
-.fg-theme .bg-slate-100 { background-color:rgb(var(--subtle)); }
-.fg-theme .text-slate-400,.fg-theme .text-slate-500,.fg-theme .text-slate-600 { color:rgb(var(--muted)); }
-.fg-theme .text-slate-700,.fg-theme .text-slate-800,.fg-theme .text-slate-900 { color:rgb(var(--ink)); }
-.fg-theme .border-slate-200 { border-color:rgb(var(--line)); }
-.fg-theme button.bg-slate-900 { background-color:rgb(var(--accent)); box-shadow:none; }
+.club-shell .bg-slate-50 { background-color:rgb(var(--paper)); }
+.club-shell .bg-slate-100 { background-color:rgb(var(--subtle)); }
+.club-shell .text-slate-400,.club-shell .text-slate-500,.club-shell .text-slate-600 { color:rgb(var(--muted)); }
+.club-shell .text-slate-700,.club-shell .text-slate-800,.club-shell .text-slate-900 { color:rgb(var(--ink)); }
+.club-shell .border-slate-200 { border-color:rgb(var(--line)); }
+.club-shell button.bg-slate-900 { background-color:rgb(var(--accent)); box-shadow:none; }
+
+.club-shell .min-h-screen.bg-gradient-to-br { background:rgb(var(--paper)); }
+.club-shell div.mb-1:has(+ h1)>span:last-child { display:none; }
+@media(max-width:767px) { table:has(button[aria-label="More actions"]) :is(th,td) { padding:12px 8px; } }
