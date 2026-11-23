@@ -372,6 +372,7 @@ struct NativeGiftDetailView: View {
 
 struct NativeIdeasView: View {
     let model: AppModel
+    @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(\.confettiTheme) private var theme
     @State private var working = false
     @State private var showAdd = false
@@ -441,27 +442,34 @@ struct NativeIdeasView: View {
     private func ideaCard<Action: View>(name: String, imageURL: String?, summary: String?, @ViewBuilder action: () -> Action) -> some View {
         ConfettiCard {
             VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .top, spacing: 12) {
+                if typeSize.isAccessibilitySize {
                     GiftArtwork(url: giftImageURL(imageURL, model: model), status: .idea)
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(name).font(ConfettiFont.subheading)
-                        if let summary {
-                            Text(summary).font(ConfettiFont.caption).foregroundStyle(ConfettiColor.muted)
-                        }
+                    ideaText(name, summary: summary)
+                } else {
+                    HStack(alignment: .top, spacing: 12) {
+                        GiftArtwork(url: giftImageURL(imageURL, model: model), status: .idea)
+                        ideaText(name, summary: summary)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityElement(children: .combine)
                 }
                 action()
             }
         }
     }
 
+    private func ideaText(_ name: String, summary: String?) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(name).font(ConfettiFont.subheading).fixedSize(horizontal: false, vertical: true)
+            if let summary { Text(summary).font(ConfettiFont.caption).foregroundStyle(ConfettiColor.muted) }
+        }.frame(maxWidth: .infinity, alignment: .leading).accessibilityElement(children: .combine)
+    }
+
     private func planButton(for name: String, action: @escaping () async -> Void) -> some View {
-        Button("Plan to buy", systemImage: "checkmark") { Task { await action() } }
-            .buttonStyle(ConfettiButtonStyle(.secondary))
-            .accessibilityLabel("Plan to buy \(name)")
-            .disabled(working)
+        Button { Task { await action() } } label: {
+            Text("Plan to buy").fixedSize(horizontal: false, vertical: true)
+        }
+        .buttonStyle(ConfettiButtonStyle(.secondary, expands: true))
+        .accessibilityLabel("Plan to buy \(name)")
+        .disabled(working)
     }
 
     private func convert(_ idea: Idea) async {

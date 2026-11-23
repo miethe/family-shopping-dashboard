@@ -25,7 +25,7 @@ struct NativeEventsView: View {
                     VStack(alignment: .leading, spacing: 12) { introduction; addButton }
                 }
                 EventSwitches(selection: $mode)
-                    .accessibilityLabel("Calendar view")
+
                 if mode != .month { yearFilters }
                 if let error = loadError ?? model.error {
                     ErrorNotice(message: error)
@@ -381,7 +381,7 @@ struct NativeEventCreator: View {
                             .font(ConfettiFont.detail)
                             .foregroundStyle(ConfettiColor.muted)
                     }
-                    EventSwitches(selection: $kind).accessibilityLabel("Event type")
+                    EventSwitches(selection: $kind)
                     switch kind {
                     case .holiday:
                         holidayList

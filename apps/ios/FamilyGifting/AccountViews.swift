@@ -130,7 +130,8 @@ struct AddIdeaView: View {
                     }.disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || name.count > 255 || !validURL || (!price.isEmpty && price.range(of: #"^[0-9]{1,8}(\.[0-9]{1,2})?$"#, options: .regularExpression) == nil) || model.busy)
                         .frame(minHeight: 44)
                 }
-            }.navigationTitle("A little inspiration")
+            }.navigationTitle("Save idea")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
                 .sensoryFeedback(.success, trigger: saved)
                 .onAppear { model.error = nil }
