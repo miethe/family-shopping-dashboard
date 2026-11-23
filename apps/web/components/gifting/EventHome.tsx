@@ -16,6 +16,7 @@ import {
   Empty,
   styles,
 } from "./shared";
+import { HolidayPicker } from "./HolidayPicker";
 import { EventCards } from "./EventCards";
 import { CalendarPanel, AgendaRow } from "./CalendarPanel";
 
@@ -142,16 +143,8 @@ export function EventHome() {
               </select>
             </label>
             {eventId === "holiday" && <>
-              <label className={styles.label}>Holiday
-                <select className={styles.select} value={holidayId} required onChange={(e) => {
-                  const selected = holidays.data?.find((h) => String(h.id) === e.target.value);
-                  setHolidayId(e.target.value); setName(selected?.name ?? ""); setDateValue(selected?.next_date ?? "");
-                }}>
-                  <option value="">Choose a holiday</option>
-                  {holidays.data?.map((h) => <option key={h.id} value={h.id}>{h.name}{h.is_major ? " ★" : ""} — {h.next_date} ({h.days_until} days)</option>)}
-                </select>
-              </label>
-              {holidays.error && <p role="alert">Could not load holidays.</p>}
+              {holidays.isLoading ? <p role="status">Finding the next celebrations…</p> : <HolidayPicker holidays={holidays.data||[]} value={holidayId} onChange={h=>{setHolidayId(String(h.id));setName(h.name);setDateValue(h.next_date);}}/>}
+              {holidays.error && <p role="alert">Could not load holidays. <Button type="button" onClick={()=>holidays.refetch()}>Try again</Button></p>}
               <Button type="button" variant="outline" onClick={() => setAddingHoliday(!addingHoliday)}>Add a holiday</Button>
               {addingHoliday && <fieldset>
                 <legend>New holiday</legend>
@@ -175,7 +168,7 @@ export function EventHome() {
                 step="0.01"
               />
             </div>
-            <Button disabled={create.isPending} type="submit">
+            <Button disabled={create.isPending || (eventId === "holiday" && !holidayId)} type="submit">
               {create.isPending ? "Saving…" : "Create occurrence"}
             </Button>
             {create.error && (
