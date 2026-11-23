@@ -1,0 +1,299 @@
+{
+  "viewport": {
+    "width": 1600,
+    "height": 1000
+  },
+  "document": {
+    "scrollWidth": 1600,
+    "clientWidth": 1600
+  },
+  "main": [
+    {
+      "scrollWidth": 1504,
+      "clientWidth": 1504,
+      "scrollTop": 316
+    }
+  ],
+  "controls": [
+    {
+      "name": "card_giftcard",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "Events",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "Ideas",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "Budget",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "Assignments",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "People",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "Occasions",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "Gifts",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "Lists",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "Admin",
+      "width": 48.015625,
+      "height": 49.71875
+    },
+    {
+      "name": "W",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Quick add idea",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Close calendar",
+      "width": 165.90625,
+      "height": 44
+    },
+    {
+      "name": "Month",
+      "width": 144.65625,
+      "height": 44
+    },
+    {
+      "name": "Upcoming",
+      "width": 144.671875,
+      "height": 44
+    },
+    {
+      "name": "Season",
+      "width": 144.671875,
+      "height": 44
+    },
+    {
+      "name": "Previous month",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Next month",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 1, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 2, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 3, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 4, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 5, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 6, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 7, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 8, 2026, 1 event",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 9, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 10, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 11, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 12, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 13, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 14, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 15, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 16, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 17, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 18, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 19, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 20, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 21, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 22, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 23, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 24, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 25, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 26, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 27, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 28, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 29, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Nov 30, 2026, 0 events",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "name": "Starting year",
+      "width": 120,
+      "height": 44
+    },
+    {
+      "name": "",
+      "width": 136.0625,
+      "height": 44
+    },
+    {
+      "name": "Nov 8, 2026 · Autumn gathering Closed",
+      "width": 578.8125,
+      "height": 44
+    },
+    {
+      "name": "Dec 25, 2026Winter gatheringWren2 gifts · $50.00Considering1Bought1In hand0Given0$12.00 bought · $88.00 remaining",
+      "width": 604.8125,
+      "height": 314.421875
+    },
+    {
+      "name": "Jan 12, 2027January gatheringRowan2 gifts · $50.00Considering1Bought1In hand0Given0$12.00 bought · $88.00 remaining",
+      "width": 604.8125,
+      "height": 314.421875
+    },
+    {
+      "name": "Plan an event",
+      "width": 1118,
+      "height": 65.75
+    },
+    {
+      "name": "Manage recurring events →",
+      "width": 208.84375,
+      "height": 44
+    },
+    {
+      "name": "Quick add idea",
+      "width": 56,
+      "height": 56
+    }
+  ]
+}

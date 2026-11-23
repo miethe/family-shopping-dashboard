@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import type { Occurrence } from "@/lib/api/gifting";
+import Link from "next/link";
+import { phases, phaseLabel, type Occurrence } from "@/lib/api/gifting";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { dateLabel, Empty, QueryState, styles } from "./shared";
+import { dateLabel, Empty, money, QueryState, styles } from "./shared";
 import { EventCards } from "./EventCards";
 
 type View = "month" | "upcoming" | "season";
@@ -12,6 +13,26 @@ const season = (date: string) => {
   const month = Number(date.slice(5, 7));
   return month <= 2 || month === 12 ? "Winter" : month <= 5 ? "Spring" : month <= 8 ? "Summer" : "Autumn";
 };
+
+function AgendaRow({ occurrence: o }: { occurrence: Occurrence }) {
+  const date = new Date(`${o.date}T12:00:00`);
+  const gifts = Object.values(o.phases).reduce((sum, count) => sum + count, 0);
+  return <Link href={`/events/${o.id}`} className={styles.agendaRow}>
+    <time dateTime={o.date} className={styles.agendaDate}>
+      <span>{date.toLocaleDateString("en-US", { month: "short" })}</span>
+      <strong>{date.getDate()}</strong><span>{date.getFullYear()}</span>
+    </time>
+    <div className={styles.agendaDetails}>
+      <h4>{o.name}</h4>
+      <div className={styles.agendaMeta}>
+        <span>Recipients: {o.envelopes.length ? o.envelopes.map(e => e.person_name).join(", ") : "Not set"}</span>
+        <span>{gifts} {gifts === 1 ? "gift" : "gifts"}</span>
+        <span>{phases.map(p => `${phaseLabel[p]}: ${o.phases[p]}`).join(" · ")}</span>
+        <span>Budget: {money(o.budget_total)}</span>
+      </div>
+    </div>
+  </Link>;
+}
 
 export function CalendarPanel({ occurrences, loading, error, retry, onClose }: { occurrences: Occurrence[]; loading: boolean; error: unknown; retry: () => void; onClose: () => void }) {
   const [view, setView] = useState<View>("upcoming");
@@ -31,7 +52,8 @@ export function CalendarPanel({ occurrences, loading, error, retry, onClose }: {
   const sorted = [...occurrences].sort((a, b) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name));
   const visible = sorted.filter(o => includeClosed || !o.closed);
   const selectedRows = visible.filter(o => o.date === selected);
-  const upcoming = visible.filter(o => (o.closed || o.date >= localDate(new Date())) && Number(o.date.slice(0, 4)) >= year && Number(o.date.slice(0, 4)) <= year + 1).sort((a, b) => Number(a.closed) - Number(b.closed) || a.date.localeCompare(b.date));
+  const upcoming = visible.filter(o => !o.closed && o.date >= localDate(new Date()) && Number(o.date.slice(0, 4)) >= year && Number(o.date.slice(0, 4)) <= year + 1);
+  const closed = visible.filter(o => o.closed && Number(o.date.slice(0, 4)) >= year && Number(o.date.slice(0, 4)) <= year + 1);
   const start = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
   const days = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
   const grouped = visible.filter(o => Number(o.date.slice(0, 4)) >= year && Number(o.date.slice(0, 4)) <= year + 1);
@@ -49,6 +71,7 @@ export function CalendarPanel({ occurrences, loading, error, retry, onClose }: {
             <strong>{month.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</strong>
             <button type="button" aria-label="Next month" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}>›</button>
           </div>
+          <label className={styles.mobileDatePicker}>Choose a date <input type="date" value={selected} onChange={e => { const date = e.target.value; if (date) { setSelected(date); const [y, m] = date.split("-").map(Number); setMonth(new Date(y, m - 1, 1)); } }} /></label>
           <div className={styles.dayGrid}>
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => <span key={d} className={styles.weekday}>{d}</span>)}
             {Array.from({ length: start }, (_, i) => <span key={`blank-${i}`} />)}
@@ -67,9 +90,9 @@ export function CalendarPanel({ occurrences, loading, error, retry, onClose }: {
           </div>
           <QueryState loading={loading} error={error} retry={retry} />
           {!loading && !error && <>
-            <TabsContent value="month" className={styles.viewContent}><h3>Selected date</h3>{selectedRows.length ? <EventCards rows={selectedRows} /> : <Empty>No events on this date.</Empty>}</TabsContent>
-            <TabsContent value="upcoming" className={styles.viewContent}><h3>Next celebrations</h3>{upcoming.length ? <EventCards rows={upcoming} /> : <Empty>No upcoming events in this year range.</Empty>}</TabsContent>
-            <TabsContent value="season" className={styles.viewContent}><h3>Season by season</h3>{grouped.length ? grouped.map(o => { const label = `${season(o.date)} ${o.date.slice(0, 4)}`; const show = label !== previous; previous = label; return <div key={o.id} className={styles.timelineItem}>{show && <h4>{label}</h4>}{o.closed ? <details className={styles.closedEvent}><summary>{dateLabel(o.date)} · {o.name} <span>Closed</span></summary><EventCards rows={[o]} /></details> : <EventCards rows={[o]} />}</div>; }) : <Empty>No events in this year range.</Empty>}</TabsContent>
+            <TabsContent value="month" className={styles.viewContent}><h3>Selected date</h3>{selectedRows.length ? <EventCards rows={selectedRows} headingLevel={4} /> : <Empty>No events on this date.</Empty>}</TabsContent>
+            <TabsContent value="upcoming" className={styles.viewContent}><h3>Next celebrations</h3>{upcoming.length ? <div className={styles.agendaList}>{upcoming.map(o => <AgendaRow key={o.id} occurrence={o} />)}</div> : <Empty>No upcoming events in this year range.</Empty>}{closed.length > 0 && <div className={styles.closedList}><h3>Closed events</h3>{closed.map(o => <details key={o.id} className={styles.closedEvent}><summary>{dateLabel(o.date)} · {o.name} <span>Closed</span></summary><AgendaRow occurrence={o} /></details>)}</div>}</TabsContent>
+            <TabsContent value="season" className={styles.viewContent}><h3>Season by season</h3>{grouped.length ? grouped.map(o => { const label = `${season(o.date)} ${o.date.slice(0, 4)}`; const show = label !== previous; previous = label; return <div key={o.id} className={styles.timelineItem}>{show && <h4>{label}</h4>}{o.closed ? <details className={styles.closedEvent}><summary>{dateLabel(o.date)} · {o.name} <span>Closed</span></summary><EventCards rows={[o]} headingLevel={5} /></details> : <EventCards rows={[o]} headingLevel={5} />}</div>; }) : <Empty>No events in this year range.</Empty>}</TabsContent>
           </>}
         </div>
       </div>
