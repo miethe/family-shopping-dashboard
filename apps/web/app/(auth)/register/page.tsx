@@ -60,18 +60,18 @@ export default function RegisterPage() {
   const displayError = validationError || error;
 
   return (
-    <div className="fg-theme min-h-[100dvh] bg-[#f5f1e8] p-4 flex items-center justify-center">
+    <div className="fg-theme min-h-[100dvh] bg-[rgb(var(--paper))] p-4 flex items-center justify-center">
       <div className="w-full max-w-md space-y-5">
-        <div className="bg-[#214d40] text-[#f5f1e8] px-5 pt-[18px] pb-[22px] sm:px-[25px] sm:pt-[30px] sm:pb-[38px] relative overflow-hidden rounded-[24px_24px_42%_8%/24px_24px_28px_18px]">
+        <div className="bg-[rgb(var(--accent))] text-[rgb(var(--paper))] px-5 pt-[18px] pb-[22px] sm:px-[25px] sm:pt-[30px] sm:pb-[38px] relative overflow-hidden rounded-[28px]">
           <p className="text-[0.72rem] font-bold uppercase tracking-[0.19em]">Gather &amp; give</p>
-          <h1 className="text-[1.9rem] sm:text-[clamp(2.1rem,5vw,3.6rem)] leading-[1.08] mt-3 text-[#f5f1e8]" style={{ fontFamily: 'Georgia, serif' }}>Create Account</h1>
-          <p className="mt-2 text-[#eee6d7] max-w-[78%]">Sign up to start planning gifts together.</p>
+          <h1 className="text-[1.9rem] sm:text-[clamp(2.1rem,5vw,3.6rem)] leading-[1.08] mt-3 text-[rgb(var(--paper))]" style={{ fontFamily: 'var(--font-family-display)' }}>Create Account</h1>
+          <p className="mt-2 text-[rgb(var(--white))] max-w-[78%]">Sign up to start planning gifts together.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 bg-[#fffdf8] border border-[#d1c8bc] rounded-[18px] p-6">
+        <form onSubmit={handleSubmit} className="space-y-4 bg-[rgb(var(--white))] border border-[rgb(var(--line))] rounded-[26px] p-6">
           {displayError && (
             <div
-              className="p-3 rounded-[10px] bg-[#f9e9e5] border border-[#d9a99d] text-[#7a2b1d] text-sm"
+              className="p-3 rounded-[10px] bg-[rgb(var(--pink))] border border-[rgb(var(--cranberry))] text-[rgb(var(--cranberry))] text-sm"
               role="alert"
               aria-live="assertive"
             >
@@ -123,9 +123,9 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-[#635a50]">
+        <p className="text-center text-sm text-[rgb(var(--muted))]">
           Already have an account?{' '}
-          <Link href="/login" className="text-[#91462d] font-semibold underline underline-offset-4 min-h-[44px] inline-flex items-center ml-1">
+          <Link href="/login" className="text-[rgb(var(--accent))] font-semibold underline underline-offset-4 min-h-[44px] inline-flex items-center ml-1">
             Sign in
           </Link>
         </p>

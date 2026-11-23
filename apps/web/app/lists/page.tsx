@@ -43,7 +43,7 @@ export default function ListsPage() {
     const withOccasion: Record<number, { occasion: any; lists: GiftList[] }> = {};
     const withoutOccasion: GiftList[] = [];
 
-    listsData.items.forEach((list) => {
+    [...listsData.items].sort((a,b)=>a.name.localeCompare(b.name)*(sortOrder==='asc'?1:-1)).forEach((list) => {
       if (list.occasion_id) {
         if (!withOccasion[list.occasion_id]) {
           const occasion = occasionsData?.items?.find((o) => o.id === list.occasion_id);
@@ -59,7 +59,7 @@ export default function ListsPage() {
     });
 
     return { withOccasion, withoutOccasion };
-  }, [listsData, occasionsData]);
+  }, [listsData, occasionsData, sortOrder]);
 
   const isLoading = listsLoading || occasionsLoading;
 
@@ -91,9 +91,9 @@ export default function ListsPage() {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto h-full overflow-y-auto pb-20">
+    <div className="club-lists">
       {/* Header with Actions */}
-      <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-10 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h1 className="text-4xl font-extrabold text-charcoal mb-2">All Lists</h1>
           <p className="text-gray-500 font-medium">
@@ -103,27 +103,19 @@ export default function ListsPage() {
 
         {/* Action Buttons */}
         <div className="flex gap-3 flex-wrap">
-          <button
-            onClick={() => {
-              // TODO: Implement filter functionality
-              console.log('Filter clicked');
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-white rounded-full text-gray-600 font-bold shadow-sm hover:shadow-md transition-all border border-transparent hover:border-gray-100 min-h-[44px]"
-          >
-            <FilterIcon className="w-[18px] h-[18px]" /> Filter
-          </button>
+          <select aria-label="Filter lists by type" className="min-h-[44px] rounded-medium border border-line bg-white px-3" value={typeFilter} onChange={e=>setTypeFilter(e.target.value as ListTypeFilter)}><option value="all">All lists</option><option value="wishlist">Wishlists</option><option value="assigned">Assigned</option><option value="ideas">Ideas</option></select>
           <button
             onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
             className="flex items-center gap-2 px-4 py-2 bg-white rounded-full text-gray-600 font-bold shadow-sm hover:shadow-md transition-all border border-transparent hover:border-gray-100 min-h-[44px]"
           >
-            <ArrowUpDownIcon className="w-[18px] h-[18px]" /> Sort
+            <ArrowUpDownIcon className="w-[18px] h-[18px]" /> {sortOrder==='asc'?'A–Z':'Z–A'}
           </button>
           <button
             onClick={() => {
               setSelectedOccasionId(undefined);
               setIsAddModalOpen(true);
             }}
-            className="flex items-center gap-2 px-5 py-2 bg-salmon text-white rounded-full font-bold shadow-lg shadow-salmon/30 hover:bg-[#d66f56] transition-all min-h-[44px]"
+            className="flex items-center gap-2 px-5 py-2 bg-salmon text-white rounded-full font-bold shadow-lg shadow-salmon/30 hover:bg-[rgb(var(--accent))] transition-all min-h-[44px]"
           >
             <PlusIcon className="w-[18px] h-[18px]" /> Create List
           </button>
@@ -162,7 +154,7 @@ export default function ListsPage() {
               setSelectedOccasionId(undefined);
               setIsAddModalOpen(true);
             }}
-            className="flex items-center gap-2 px-5 py-2 bg-salmon text-white rounded-full font-bold shadow-lg shadow-salmon/30 hover:bg-[#d66f56] transition-all min-h-[44px] mx-auto"
+            className="flex items-center gap-2 px-5 py-2 bg-salmon text-white rounded-full font-bold shadow-lg shadow-salmon/30 hover:bg-[rgb(var(--accent))] transition-all min-h-[44px] mx-auto"
           >
             <PlusIcon className="w-[18px] h-[18px]" /> Create your first list
           </button>

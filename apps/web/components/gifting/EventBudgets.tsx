@@ -63,7 +63,7 @@ export function EventBudgets() {
           {!data.events.length && (
             <Empty>
               No event envelopes for this year.{" "}
-              <Link href="/dashboard">Plan an event →</Link>
+              <Link href="/events">Plan an event →</Link>
             </Empty>
           )}
           {data.events.map((event) => (

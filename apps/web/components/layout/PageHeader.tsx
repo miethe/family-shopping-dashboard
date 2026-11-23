@@ -45,8 +45,8 @@ export function PageHeader({
   breadcrumbItems,
 }: PageHeaderProps) {
   return (
-    <div className="bg-bg-base dark:bg-background-dark">
-      <div className="px-4 py-6 md:px-6 md:py-8">
+    <div className="club-standard-heading">
+      <div className="pb-6">
         {/* Breadcrumb Navigation - Desktop */}
         {breadcrumbItems && (
           <div className="hidden md:block mb-4">
@@ -83,7 +83,7 @@ export function PageHeader({
         {/* Title and Actions */}
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl md:text-3xl font-bold text-warm-900 dark:text-warm-100">
+            <h1 className="text-[28px] md:text-[42px] leading-tight tracking-tight font-bold text-ink">
               {title}
             </h1>
             {subtitle && (

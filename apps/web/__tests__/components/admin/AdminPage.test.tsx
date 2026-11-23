@@ -172,7 +172,7 @@ describe('AdminPage', () => {
     expect(mainContainer).toBeInTheDocument();
 
     const header = screen.getByText('Admin Settings');
-    expect(header.className).toContain('text-2xl');
-    expect(header.className).toContain('md:text-3xl');
+    expect(header.className).toContain('text-[28px]');
+    expect(header.className).toContain('md:text-[42px]');
   });
 });

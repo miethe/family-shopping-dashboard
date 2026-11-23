@@ -48,11 +48,11 @@ export function AdminPage() {
   const [activeEntity, setActiveEntity] = useState<EntityType>('person');
 
   return (
-    <div className="min-h-screen p-4 md:p-8 pb-20 md:pb-6">
+    <div className="club-admin-page">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-warm-900">
+          <h1 className="text-[28px] md:text-[42px] font-bold text-warm-900">
             Admin Settings
           </h1>
           <p className="text-warm-600 mt-2">
@@ -86,7 +86,7 @@ export function AdminPage() {
               value={entity.id}
               className="mt-6"
             >
-              <div className="bg-white rounded-2xlarge border border-warm-200 p-6 shadow-sm">
+              <div className="bg-white rounded-2xlarge border border-line p-4 md:p-6 shadow-none">
                 {/* Entity Description */}
                 <div className="mb-6 pb-4 border-b border-warm-100">
                   <h2 className="text-lg font-semibold text-warm-900">

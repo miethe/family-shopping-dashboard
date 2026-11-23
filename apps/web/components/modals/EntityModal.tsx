@@ -69,23 +69,13 @@ export function EntityModal({
         {/* Enhanced backdrop with entity-specific gradient */}
         <DialogPrimitive.Overlay
           className={cn(
-            "fixed inset-0 z-50 bg-black/60 backdrop-blur-md",
+            "fixed inset-0 z-50 bg-ink/40",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
             "transition-all duration-300"
           )}
         >
           {/* Radial gradient background that shifts based on entity type */}
-          <div
-            className={cn(
-              "absolute inset-0 opacity-40",
-              "bg-gradient-radial from-center to-transparent",
-              theme.gradient
-            )}
-            style={{
-              background: `radial-gradient(circle at 50% 40%, var(--tw-gradient-stops))`,
-            }}
-          />
         </DialogPrimitive.Overlay>
 
         <DialogPrimitive.Content
@@ -93,9 +83,9 @@ export function EntityModal({
             "fixed left-[50%] top-[50%] z-50 w-full translate-x-[-50%] translate-y-[-50%]",
             "max-h-[90vh] sm:max-h-[85vh] overflow-y-auto",
             sizeClasses[size],
-            "fg-theme bg-[#f5f1e8]",
-            "rounded-[24px] shadow-2xl",
-            "ring-1 ring-inset ring-[#d1c8bc]",
+            "fg-theme bg-[rgb(var(--paper))]",
+            "rounded-[26px] shadow-high",
+            "ring-1 ring-inset ring-[rgb(var(--line))]",
             // Organic animations
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -103,7 +93,7 @@ export function EntityModal({
             "data-[state=closed]:slide-out-to-bottom-[2%] data-[state=open]:slide-in-from-bottom-[2%]",
             "duration-300 ease-out",
             // Subtle glow effect
-            theme.accentGlow
+            "shadow-high"
           )}
         >
           {/* Decorative gradient bar at top */}
@@ -115,12 +105,12 @@ export function EntityModal({
           />
 
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-[#f5f1e8] border-b border-[#d1c8bc] px-6 py-5 rounded-t-3xl">
+          <div className="sticky top-0 z-10 bg-[rgb(var(--paper))] border-b border-[rgb(var(--line))] px-6 py-5 rounded-t-3xl">
             <div className="flex items-center justify-between">
               <DialogPrimitive.Title
                 className={cn(
                   "text-2xl font-bold tracking-tight",
-                  "text-[#214d40]"
+                  "text-[rgb(var(--accent))]"
                 )}
               >
                 {title}
@@ -156,7 +146,7 @@ export function EntityModal({
           {footer && (
             <div
               className={cn(
-                "sticky bottom-0 bg-[#f5f1e8]",
+                "sticky bottom-0 bg-[rgb(var(--paper))]",
                 "border-t border-warm-200/50 px-6 py-4 rounded-b-3xl"
               )}
             >

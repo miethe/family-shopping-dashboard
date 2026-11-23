@@ -37,7 +37,7 @@ export default function AssignmentsPage() {
       />
 
       {/* Content with consistent padding */}
-      <div className="px-4 md:px-6 space-y-6">
+      <div className="space-y-6">
         {/* Filters and Controls */}
         <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
         {/* Status Filter */}
