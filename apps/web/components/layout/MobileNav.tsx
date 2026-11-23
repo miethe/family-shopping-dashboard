@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { QuickAddModal } from '@/components/quick-add';
 import { cn } from '@/lib/utils';
+import { navItems as desktopItems } from './nav-config';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 /**
  * Bottom navigation bar for mobile devices
@@ -33,6 +35,8 @@ const navItems: NavItem[] = [
 export function MobileNav() {
   const pathname = usePathname();
   const [addOpen, setAddOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreItems = desktopItems.filter((item) => !navItems.some((primary) => primary.href === item.href));
   const left = navItems.slice(0, 2);
   const right = navItems.slice(2);
 
@@ -48,8 +52,7 @@ export function MobileNav() {
                 // Layout
                 'flex flex-col items-center justify-center',
                 // 44px minimum touch target (iOS guidelines)
-                'min-w-[44px] min-h-[44px]',
-                'px-3 py-2',
+                'min-h-[44px] px-1 py-2 flex-1 min-w-0',
                 // Border radius matching design tokens
                 'rounded-2xl',
                 // Transitions and interactions
@@ -103,14 +106,31 @@ export function MobileNav() {
         <button
           type="button"
           onClick={() => setAddOpen(true)}
-          className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-3 py-2 rounded-2xl text-white bg-[#214d40] active:scale-95 transition-all duration-300"
+          className="flex flex-col items-center justify-center min-w-0 flex-1 min-h-[44px] px-1 py-2 rounded-2xl text-white bg-[#214d40] active:scale-95 transition-all duration-300"
           aria-label="Quick add idea"
         >
           <span className="material-symbols-outlined text-[24px]" aria-hidden="true">add</span>
           <span className="text-[10px] font-bold mt-1 text-white">Add idea</span>
         </button>
         {right.map(renderItem)}
+        <button type="button" onClick={() => setMoreOpen(true)} aria-label="More" aria-haspopup="dialog" className="flex flex-1 min-w-0 min-h-[44px] flex-col items-center justify-center px-1 py-2 rounded-2xl text-white hover:bg-white/20">
+          <span className="material-symbols-outlined text-[24px]" aria-hidden="true">more_horiz</span>
+          <span className="text-[10px] font-bold mt-1">More</span>
+        </button>
       </div>
+      <Dialog open={moreOpen} onOpenChange={setMoreOpen}>
+        <DialogContent className="w-[calc(100%-2rem)]" aria-describedby={undefined}>
+          <DialogTitle>More destinations</DialogTitle>
+          <div className="grid gap-1">
+            {moreItems.map((item) => (
+              <Link key={item.href} href={item.href as any} onClick={() => setMoreOpen(false)} className="flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-warm-900 hover:bg-warm-100">
+                <span className="material-symbols-outlined" aria-hidden="true">{item.icon}</span>
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
       <QuickAddModal isOpen={addOpen} onClose={() => setAddOpen(false)} />
     </nav>
   );

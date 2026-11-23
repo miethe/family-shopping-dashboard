@@ -81,7 +81,7 @@ export function PageHeader({
         )}
 
         {/* Title and Actions */}
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl md:text-3xl font-bold text-warm-900 dark:text-warm-100">
               {title}

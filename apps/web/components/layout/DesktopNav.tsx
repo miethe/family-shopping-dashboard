@@ -9,10 +9,10 @@ import { navItems } from './nav-config';
 import { cn } from '@/lib/utils';
 
 /**
- * Icon-only sidebar navigation for desktop devices (V2 Design)
- * - Fixed left sidebar (w-20 lg:w-24)
+ * Labelled sidebar navigation for desktop devices (V2 Design)
+ * - Fixed left sidebar (w-52)
  * - Warm terracotta/rust background design
- * - Material Symbols icons with hover tooltips
+ * - Material Symbols icons with visible labels
  * - Active state with white highlight and left border indicator
  * - Profile avatar and FAB button at bottom
  */
@@ -22,13 +22,13 @@ export function DesktopNav() {
 
   return (
     <aside
-      className="w-20 lg:w-24 flex-shrink-0 flex flex-col items-center py-4 h-screen fixed left-0 top-0 z-50 bg-[#B67352] transition-all duration-300"
+      className="w-52 flex-shrink-0 flex flex-col items-center py-2 h-screen fixed left-0 top-0 z-50 bg-[#B67352] transition-all duration-300"
       style={{ paddingLeft: 'env(safe-area-inset-left)' }}
     >
       {/* Brand Icon */}
       <Link
         href="/dashboard"
-        className="mb-6 p-3 shrink-0 bg-white/20 rounded-2xl shadow-lg cursor-pointer hover:scale-105 hover:bg-white/30 transition-all duration-200"
+        className="mb-2 p-2 shrink-0 bg-white/20 rounded-2xl shadow-lg cursor-pointer hover:scale-105 hover:bg-white/30 transition-all duration-200"
       >
         <span className="material-symbols-outlined text-white text-2xl">
           card_giftcard
@@ -36,7 +36,7 @@ export function DesktopNav() {
       </Link>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-2 w-full items-center flex-1 min-h-0 overflow-y-auto">
+      <nav className="flex flex-col justify-evenly w-full px-3 flex-1 min-h-0">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname?.startsWith(item.href + '/') || (item.href === '/dashboard' && pathname?.startsWith('/events'));
 
@@ -48,7 +48,7 @@ export function DesktopNav() {
               aria-label={item.label}
               aria-current={isActive ? 'page' : undefined}
               className={cn(
-                'p-3 min-h-[44px] shrink-0 rounded-2xl transition-all duration-300 group relative',
+                'flex items-center gap-3 px-3 min-h-[44px] rounded-2xl transition-all duration-300 relative',
                 isActive
                   ? 'bg-white/30 text-white shadow-lg'
                   : 'text-white/70 hover:bg-white/20 hover:text-white'
@@ -61,14 +61,11 @@ export function DesktopNav() {
                 {item.icon}
               </span>
 
-              {/* Tooltip */}
-              <span className="absolute left-full ml-2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                {item.label}
-              </span>
+              <span className="text-sm font-semibold whitespace-nowrap">{item.label}</span>
 
               {/* Active indicator - left border */}
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full -ml-4 lg:-ml-6" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full -ml-3" />
               )}
             </Link>
           );
@@ -76,7 +73,7 @@ export function DesktopNav() {
       </nav>
 
       {/* Profile Avatar and FAB */}
-      <div className="mt-auto pt-3 flex shrink-0 flex-col items-center gap-4">
+      <div className="pt-2 flex shrink-0 items-center gap-4">
         <button
           onClick={logout}
           className="min-w-[44px] min-h-[44px] flex items-center justify-center text-white/70 hover:text-white transition-colors group"

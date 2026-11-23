@@ -12,7 +12,7 @@ interface AppLayoutProps {
  * AppLayout - Main application layout with fixed sidebar and responsive design
  *
  * Design System V2 Implementation:
- * - Fixed left sidebar (w-20 md:w-24) on desktop
+ * - Fixed left sidebar (w-52) on desktop
  * - Top header on mobile with bottom navigation
  * - Max-width 1600px content container
  * - iOS safe-area support
@@ -26,8 +26,8 @@ interface AppLayoutProps {
  * - 44px minimum touch targets
  *
  * Desktop (>= md):
- * - Fixed left sidebar navigation (w-20 md:w-24)
- * - Content area with ml-20 md:ml-24 offset
+ * - Fixed left sidebar navigation (w-52)
+ * - Content area with matching offset
  * - Max-width 1600px centered container
  * - Smooth transitions and animations
  *
@@ -55,7 +55,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       </div>
 
       {/* Mobile Layout Container - Full height flex column */}
-      <div className="flex flex-col flex-1 min-w-0 md:ml-20 lg:ml-24 h-screen-safe">
+      <div className="flex flex-col flex-1 min-w-0 md:ml-52 h-screen-safe">
         {/* Mobile Header - Sticky top with safe-area-fixed-top, Hidden on desktop */}
         <div className="md:hidden sticky top-0 z-50 bg-surface-primary/80 dark:bg-background-dark/80 backdrop-blur-md safe-area-fixed-top border-b border-border-subtle dark:border-white/10 shadow-subtle">
           <Header />
@@ -67,7 +67,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           className="flex-1 min-h-0 overflow-y-auto scroll-smooth"
         >
           {/* Max-width container with fade-in animation */}
-          <div className="max-w-[1600px] mx-auto pl-4 pr-20 md:px-6 lg:px-8 py-6 pb-[calc(10rem+env(safe-area-inset-bottom))] md:pb-8 fade-in fg-theme">
+          <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8 py-6 pb-[calc(10rem+env(safe-area-inset-bottom))] md:pb-8 fade-in fg-theme">
             {children}
           </div>
         </main>
