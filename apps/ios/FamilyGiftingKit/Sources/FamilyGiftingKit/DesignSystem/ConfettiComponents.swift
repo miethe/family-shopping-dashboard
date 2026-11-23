@@ -175,17 +175,20 @@ public struct ConfettiAvatar: View {
         .frame(width: size, height: size)
         .background(fill ?? paletteFill)
         .clipShape(shape)
-        .accessibilityHidden(true)
+        .accessibilityLabel("\(name) avatar")
+        .accessibilityAddTraits(.isImage)
     }
 
-    private var fallback: some View {
-        let initial = name.first(where: \.isLetter).map { String($0).uppercased() } ?? "?"
-        let glyph = sticker.flatMap { $0.isEmpty ? nil : $0 } ?? initial
-        return Text(glyph)
-            .font(.system(size: size * 0.53))
-            .foregroundStyle(ConfettiColor.ink)
-            .lineLimit(1)
-            .minimumScaleFactor(0.5)
+    @ViewBuilder private var fallback: some View {
+        if let sticker, !sticker.isEmpty {
+            Image(systemName: sticker)
+                .font(.system(size: size * 0.5, weight: .medium))
+                .foregroundStyle(ConfettiColor.ink)
+        } else {
+            let initial = name.first(where: \.isLetter).map { String($0).uppercased() } ?? "?"
+            Text(initial).font(.system(size: size * 0.53)).foregroundStyle(ConfettiColor.ink)
+                .lineLimit(1).minimumScaleFactor(0.5)
+        }
     }
 
     private var paletteFill: Color {

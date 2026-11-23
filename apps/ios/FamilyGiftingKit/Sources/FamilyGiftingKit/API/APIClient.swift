@@ -10,7 +10,7 @@ public actor APIClient {
     public private(set) var address: ServerAddress
     private let transport: any HTTPTransport
     private let tokenStore: any TokenStore
-    private var sessionRevision = 0
+    var sessionRevision = 0
     private var tokenRevoked = false
 
     public init(
@@ -62,8 +62,8 @@ public actor APIClient {
         try tokenStore.clear()
     }
 
-    public func login(email: String, password: String) async throws -> User {
-        try await authenticate(Credentials(email: email, password: password))
+    public func login(email: String, password: String, diagnostic: Bool = false) async throws -> User {
+        try await authenticate(Credentials(email: email, password: password), diagnostic: diagnostic)
     }
 
     public func register(email: String, password: String) async throws -> User {
@@ -77,11 +77,11 @@ public actor APIClient {
         return try await authenticate(credentials)
     }
 
-    private func authenticate(_ credentials: Credentials) async throws -> User {
+    private func authenticate(_ credentials: Credentials, diagnostic: Bool = false) async throws -> User {
         let revision = sessionRevision
         let response: LoginResponse = try await request(
             "/api/v1/auth/login", method: "POST", body: WireFormat.encoder().encode(credentials),
-            authenticated: false
+            authenticated: false, diagnostic: diagnostic
         )
         guard revision == sessionRevision else { throw APIError.sessionChanged }
         try saveToken(response.token)
@@ -192,22 +192,27 @@ public actor APIClient {
         try await request("/api/v1/activity", query: [URLQueryItem(name: "limit", value: String(limit))])
     }
 
+    /// Read-only diagnostics preserve coding paths without exposing response contents.
+    public func smokeRead<T: Decodable & Sendable>(_ path: String, as type: T.Type) async throws -> T {
+        try await request(path, authenticated: path != "/health", diagnostic: true)
+    }
+
     private func pageQuery(cursor: Int?, limit: Int) -> [URLQueryItem] {
         var query = [URLQueryItem(name: "limit", value: String(limit))]
         if let cursor { query.append(URLQueryItem(name: "cursor", value: String(cursor))) }
         return query
     }
 
-    private func request<T: Decodable>(
+    func request<T: Decodable>(
         _ path: String, at candidate: ServerAddress? = nil, method: String = "GET",
-        query: [URLQueryItem] = [], body: Data? = nil, authenticated: Bool = true
+        query: [URLQueryItem] = [], body: Data? = nil, authenticated: Bool = true, contentType: String = "application/json", diagnostic: Bool = false
     ) async throws -> T {
         var request = URLRequest(url: try (candidate ?? address).endpoint(path, query: query))
         request.httpMethod = method
         request.httpBody = body
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         if body != nil {
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
         }
         if authenticated {
             guard let token = try sessionToken() else { throw APIError.missingSession }
@@ -226,7 +231,8 @@ public actor APIClient {
         }
         do {
             return try WireFormat.decoder().decode(T.self, from: response.body)
-        } catch is DecodingError {
+        } catch let error as DecodingError {
+            if diagnostic { throw error }
             throw APIError.invalidPayload
         }
     }
