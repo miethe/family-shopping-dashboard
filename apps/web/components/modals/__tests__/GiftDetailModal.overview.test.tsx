@@ -126,6 +126,13 @@ describe('GiftDetailModal - Overview Tab', () => {
     queryClient.clear();
   });
 
+  it('shows shared location notes in the overview', () => {
+    queryClient.setQueryData(['gifts', 1], createMockGift({ notes: 'Hall closet' }));
+    render(<GiftDetailModal giftId="1" open={true} onOpenChange={vi.fn()} />, { wrapper });
+    expect(screen.getByText('Where it is / notes')).toBeInTheDocument();
+    expect(screen.getByText('Hall closet')).toBeInTheDocument();
+  });
+
   describe('FR4: Gift Title Links', () => {
     it('renders gift title as a link when URL exists', () => {
       const gift = createMockGift({ url: 'https://example.com/product' });

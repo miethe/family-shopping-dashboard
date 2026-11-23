@@ -94,6 +94,10 @@ export function GiftDetail({ gift }: GiftDetailProps) {
             </div>
           )}
 
+          {gift.notes && (
+            <div><h2 className="font-semibold">Where it is / notes</h2><p className="whitespace-pre-wrap">{gift.notes}</p></div>
+          )}
+
           <p className="text-sm text-gray-500 pt-2 border-t border-gray-200">
             Added {formatDate(gift.created_at)}
           </p>

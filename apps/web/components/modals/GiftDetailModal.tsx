@@ -612,7 +612,7 @@ export function GiftDetailModal({
               {/* Notes */}
               {gift.notes && (
                 <div className="space-y-2 bg-warm-50/50 rounded-xl p-4 border border-warm-200">
-                  <h3 className="text-sm font-semibold text-warm-900">Notes</h3>
+                  <h3 className="text-sm font-semibold text-warm-900">Where it is / notes</h3>
                   <p className="text-sm text-warm-700 italic whitespace-pre-wrap">{gift.notes}</p>
                 </div>
               )}

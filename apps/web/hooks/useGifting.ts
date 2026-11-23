@@ -32,6 +32,7 @@ export function useGiftingIdeas() {
   return useQuery({
     queryKey: ["gifting", "ideas"],
     queryFn: giftingApi.ideas,
+    staleTime: 0,
   });
 }
 export function useGiftingMutation<T, R>(fn: (data: T) => Promise<R>) {

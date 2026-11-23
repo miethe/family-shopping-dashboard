@@ -38,6 +38,12 @@ describe('parseLocalDate', () => {
     expect(date.getDate()).toBe(15);
   });
 
+  it('parses ISO timestamps as instants', () => {
+    const value = '2025-01-15T12:34:56Z';
+    expect(parseLocalDate(value).getTime()).toBe(new Date(value).getTime());
+    expect(formatDate(value)).not.toContain('Invalid Date');
+  });
+
   it('handles leap days', () => {
     const date = parseLocalDate('2024-02-29');
     expect(date.getFullYear()).toBe(2024);
