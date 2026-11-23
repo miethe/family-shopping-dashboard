@@ -1,3 +1,6 @@
+#if targetEnvironment(simulator)
+import CoreText
+#endif
 import FamilyGiftingKit
 import ImageIO
 import PhotosUI
@@ -257,8 +260,7 @@ private struct StickerAvatar: View {
 
     var body: some View {
         if let sticker {
-            Text(sticker.icon.rawValue)
-                .font(.system(size: size * 0.56))
+            stickerGlyph(sticker.icon)
                 .frame(width: size, height: size)
                 .background(sticker.tint.fill, in: RoundedRectangle(cornerRadius: size * 28 / 96))
                 .accessibilityLabel("\(name) avatar")
@@ -267,6 +269,43 @@ private struct StickerAvatar: View {
             ConfettiAvatar(name: name, photoURL: photoURL, size: size)
         }
     }
+
+    @ViewBuilder
+    private func stickerGlyph(_ icon: StickerImage.Icon) -> some View {
+        #if targetEnvironment(simulator)
+        if !Self.simulatorHasEmojiFont {
+            Image(systemName: simulatorSymbol(for: icon))
+                .font(.system(size: size * 0.50, weight: .medium))
+                .foregroundStyle(ConfettiColor.ink)
+        } else {
+            Text(icon.rawValue).font(.system(size: size * 0.56))
+        }
+        #else
+        Text(icon.rawValue).font(.system(size: size * 0.56))
+        #endif
+    }
+
+    #if targetEnvironment(simulator)
+    // Some simulator runtimes omit Apple Color Emoji. Keep the sticker recognizable in previews.
+    private static let simulatorHasEmojiFont: Bool = {
+        let font = CTFontCreateWithName("AppleColorEmoji" as CFString, 16, nil)
+        guard let url = CTFontCopyAttribute(font, kCTFontURLAttribute) as? URL,
+              url.lastPathComponent.contains("Emoji") else { return false }
+        return FileManager.default.isReadableFile(atPath: url.path)
+    }()
+
+    private func simulatorSymbol(for icon: StickerImage.Icon) -> String {
+        switch icon {
+        case .fox: "pawprint.fill"
+        case .dinosaur: "lizard.fill"
+        case .chick: "bird.fill"
+        case .sun: "sun.max.fill"
+        case .tulip: "leaf.fill"
+        case .discoBall: "sparkles"
+        }
+    }
+    #endif
+
 }
 
 private struct PersonStickerPicker: View {
