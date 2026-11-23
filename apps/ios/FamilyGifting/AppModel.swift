@@ -1,5 +1,7 @@
 import Foundation
 import Observation
+import Network
+import CryptoKit
 import FamilyGiftingKit
 
 @MainActor @Observable
@@ -13,6 +15,16 @@ final class AppModel {
     var busy = false
     var error: String?
     var credential: SessionCredential?
+    var currentUser: User?
+    var pendingIdeas: [PendingIdea] = []
+    var showIdeas = false
+    private var monitor: NWPathMonitor?
+    private var queue: IdeaQueue?
+    private var offlineUserID: Int?
+    private var accountCacheKey: String? {
+        credential.map { "ideaAccount:" + address + ":" + SHA256.hash(data: Data($0.accessToken.utf8)).map { String(format: "%02x", $0) }.joined() }
+    }
+    private var account: String? { (currentUser?.id ?? offlineUserID).map { address + "#" + String($0) } }
     var dashboard: Dashboard?
     var people: [Person] = []
     var gifts: [Gift] = []
@@ -24,16 +36,24 @@ final class AppModel {
     var christmas = false
     var loaded = false
     var web: WebDestination?
+    var native: WebDestination?
     var addIdea = false
+    var captureSaved = false
     var settings = false
     var selection = 0
     private var reloading = false
+    private var sessionChanging = false
     private var personCursor: Int?
     private var giftCursor: Int?
     private var occasionCursor: Int?
 
     init(arguments: [String] = ProcessInfo.processInfo.arguments) {
+        #if DEBUG
+        let isUnitTest = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        let args = isUnitTest && !arguments.contains("--fixture") ? arguments + ["--fixture", "sample"] : arguments
+        #else
         let args = arguments
+        #endif
         #if DEBUG
         let scenarioIndex = args.firstIndex(of: "--fixture")
         #else
@@ -46,7 +66,7 @@ final class AppModel {
         address = storedAddress
         configured = isFixture || UserDefaults.standard.bool(forKey: "serverValidated")
         if isFixture {
-            client = APIClient(transport: FixtureTransport(scenario: FixtureScenario(rawValue: scenario ?? "sample") ?? .sample), tokenStore: MemoryTokenStore(token: scenario == "signin" ? nil : "fixture-token"))
+            client = APIClient(transport: FixtureTransport(scenario: FixtureScenario(rawValue: scenario ?? "sample") ?? .sample, offlineWrites: args.contains("--offline")), tokenStore: MemoryTokenStore(token: scenario == "signin" ? nil : "fixture-token"))
         } else {
             client = APIClient(address: (try? ServerAddress(storedAddress)) ?? .default)
         }
@@ -57,7 +77,19 @@ final class AppModel {
         do {
             signedIn = try await client.hasSession()
             credential = try await client.sessionToken()
-            if signedIn && configured { await reload() }
+            if signedIn && configured {
+                if !fixture, let key = accountCacheKey { offlineUserID = UserDefaults.standard.object(forKey: key) as? Int }
+                await reload()
+                await flushIdeas()
+            }
+            if !fixture {
+                let monitor = NWPathMonitor()
+                monitor.pathUpdateHandler = { [weak self] path in
+                    if path.status == .satisfied { Task { @MainActor [weak self] in await self?.flushIdeas() } }
+                }
+                monitor.start(queue: DispatchQueue(label: "idea-reachability"))
+                self.monitor = monitor
+            }
         } catch { handle(error) }
     }
 
@@ -67,7 +99,7 @@ final class AppModel {
         if let apiError = problem as? APIError, apiError.isUnauthorized {
             signedIn = false
             credential = nil
-            web = nil
+            web = nil; native = nil; showIdeas = false
             addIdea = false
             clearData()
             error = "Your session has ended. Sign in to keep planning together."
@@ -75,6 +107,8 @@ final class AppModel {
     }
 
     func authenticate(email: String, password: String, register: Bool) async {
+        sessionChanging = true
+        defer { sessionChanging = false }
         busy = true; error = nil
         defer { busy = false }
         do {
@@ -83,10 +117,14 @@ final class AppModel {
             credential = try await client.sessionToken()
             signedIn = true
             await reload()
+            sessionChanging = false
+            await flushIdeas()
         } catch { self.error = error.localizedDescription }
     }
 
     func configure(_ input: String) async {
+        sessionChanging = true
+        defer { sessionChanging = false }
         busy = true; error = nil
         defer { busy = false }
         do {
@@ -105,13 +143,15 @@ final class AppModel {
     }
 
     func signOut() async {
+        sessionChanging = true
+        defer { sessionChanging = false }
         do { try await client.logout() } catch { self.error = error.localizedDescription }
-        signedIn = false; credential = nil; web = nil; addIdea = false
+        signedIn = false; credential = nil; web = nil; native = nil; showIdeas = false; addIdea = false
         clearData()
     }
 
     private func clearData() {
-        dashboard = nil; people = []; gifts = []; occasions = []; holidays = []
+        offlineUserID = nil; currentUser = nil; pendingIdeas = []; dashboard = nil; people = []; gifts = []; occasions = []; holidays = []
         inbox = nil; budget = nil; activity = nil; christmas = false; loaded = false
         personCursor = nil; giftCursor = nil; occasionCursor = nil
     }
@@ -122,6 +162,10 @@ final class AppModel {
         busy = true; error = nil
         defer { busy = false; reloading = false }
         do {
+            currentUser = try await client.me()
+            offlineUserID = currentUser?.id
+            if !fixture, let key = accountCacheKey { UserDefaults.standard.set(offlineUserID, forKey: key) }
+            await flushIdeas()
             // A small family dataset: serial fetches keep server and memory load bounded.
             dashboard = try await client.dashboard()
             christmas = try await client.activeTheme().themeKey == "christmas"
@@ -165,16 +209,50 @@ final class AppModel {
         } catch { handle(error) }
     }
 
-    func open(_ path: String, title: String) { web = WebDestination(path: path, title: title) }
-    func saveIdea(name: String, url: String, notes: String, personIds: [Int]) async -> Bool {
+    func open(_ path: String, title: String) {
+        if path == "/ideas" { showIdeas = true }
+        else if path.hasPrefix("/people/") || path.hasPrefix("/gifts/") || path.hasPrefix("/occasions/") {
+            native = WebDestination(path: path, title: title)
+        } else { web = WebDestination(path: path, title: title) }
+    }
+    func flushIdeas() async {
+        guard signedIn, !sessionChanging, let account else { return }
+        do {
+            if queue == nil {
+                let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+                queue = IdeaQueue(file: base.appendingPathComponent(fixture ? "fixture-ideas-\(UUID()).json" : "pending-ideas.json"))
+            }
+            guard let queue else { return }
+            let client = client
+            let session = try await client.captureSession()
+            let items = try await queue.items(account: account)
+            guard self.account == account, signedIn, !sessionChanging else { return }
+            pendingIdeas = items
+            try await queue.flush(account: account, find: { try await client.containsCapture($0, session: session) }, send: { try await client.sendCapture($0, session: session) })
+            let remaining = try await queue.items(account: account)
+            guard self.account == account, signedIn, !sessionChanging else { return }
+            pendingIdeas = remaining
+        } catch {
+            if let queue {
+                let remaining = try? await queue.items(account: account)
+                if self.account == account, signedIn, !sessionChanging { pendingIdeas = remaining ?? pendingIdeas }
+            }
+        }
+    }
+    func saveIdea(name: String, url: String, notes: String, personIds: [Int], price: Decimal? = nil) async -> Bool {
         busy = true; error = nil
         defer { busy = false }
+        guard let account else { error = "Sign in once while connected before saving offline."; return false }
         do {
-            _ = try await client.createGift(GiftCreate(name: name.trimmingCharacters(in: .whitespacesAndNewlines), url: url.isEmpty ? nil : url, notes: notes.isEmpty ? nil : notes, personIds: personIds))
+            if queue == nil { await flushIdeas() }
+            guard let queue else { return false }
+            try await queue.enqueue(PendingIdea(account: account, name: name.trimmingCharacters(in: .whitespacesAndNewlines), url: url.isEmpty ? nil : url, notes: notes.isEmpty ? nil : notes, price: price, personIds: personIds))
+            pendingIdeas = try await queue.items(account: account)
+            await flushIdeas()
             await reload()
-            selection = 2
+            selection = 2; captureSaved = true
             return true
-        } catch { handle(error); return false }
+        } catch { self.error = "Could not save on this device. " + error.localizedDescription; return false }
     }
 }
 

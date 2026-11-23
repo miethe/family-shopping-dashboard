@@ -96,6 +96,7 @@ struct AddIdeaView: View {
     @State private var notes = ""
     @State private var selectedPerson: Int?
     @State private var saved = false
+    @State private var price = ""
     @Environment(\.dismiss) private var dismiss
     private var validURL: Bool {
         url.isEmpty || (URL(string: url)?.host != nil && ["http", "https"].contains(URL(string: url)?.scheme?.lowercased() ?? ""))
@@ -110,6 +111,7 @@ struct AddIdeaView: View {
                     if !validURL { Text("Use a full http:// or https:// link.").foregroundStyle(.red) }
                 }
                 Section("For someone?") {
+                    TextField("Price (optional)", text: $price).keyboardType(.decimalPad).accessibilityLabel("Idea price")
                     Picker("Person", selection: $selectedPerson) {
                         Text("Decide later").tag(nil as Int?)
                         ForEach(model.people, id: \.id) { Text($0.displayName).tag(Optional($0.id)) }
@@ -118,14 +120,14 @@ struct AddIdeaView: View {
                 }
                 if let error = model.error { Section { ErrorNotice(message: error) } }
                 Section {
-                    Text("Saved ideas appear in Gifts. Add them to a list to include them in the shared inbox.").font(ConfettiFont.caption)
+                    Text("Saved on this device first, then synced when your family server is reachable.").font(ConfettiFont.caption)
                     Button(model.busy ? "Saving…" : "Save idea") {
                         Task {
-                            if await model.saveIdea(name: name, url: url, notes: notes, personIds: selectedPerson.map { [$0] } ?? []) {
+                            if await model.saveIdea(name: name, url: url, notes: notes, personIds: selectedPerson.map { [$0] } ?? [], price: Decimal(string: price)) {
                                 saved = true; dismiss()
                             }
                         }
-                    }.disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || name.count > 255 || !validURL || model.busy)
+                    }.disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || name.count > 255 || !validURL || (!price.isEmpty && price.range(of: #"^[0-9]{1,8}(\.[0-9]{1,2})?$"#, options: .regularExpression) == nil) || model.busy)
                         .frame(minHeight: 44)
                 }
             }.navigationTitle("A little inspiration")

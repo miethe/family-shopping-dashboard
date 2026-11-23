@@ -11,8 +11,13 @@ public actor FixtureTransport: HTTPTransport {
     public let scenario: FixtureScenario
     private var fixtures: Object?
     private var addedGifts: [Object] = []
+    private var changed: [String: [Object]] = [:]
+    private var occurrenceRecords: [Object] = []
+    private var createdChristmas = false
+    private let offlineWrites: Bool
 
-    public init(scenario: FixtureScenario) {
+    public init(scenario: FixtureScenario, offlineWrites: Bool = false) {
+        self.offlineWrites = offlineWrites
         self.scenario = scenario
     }
 
@@ -21,6 +26,7 @@ public actor FixtureTransport: HTTPTransport {
         guard let url = request.url else { throw APIError.invalidServerAddress }
         let path = url.path
         let method = request.httpMethod ?? "GET"
+        if offlineWrites && method == "POST" && path == "/api/v1/gifts" { throw URLError(.notConnectedToInternet) }
 
         if path == "/health", method == "GET" {
             return try json(["status": "healthy", "db": "connected"])
@@ -41,6 +47,9 @@ public actor FixtureTransport: HTTPTransport {
         }
 
         let query = FixtureQuery(url)
+        if let response = try mutation(request, fixtures: fixtures) { return response }
+        if path == "/api/v1/gifting/occurrences" && method == "GET" { return try json(occurrenceRecords) }
+        if path.hasPrefix("/api/v1/gifting/occurrences/"), method == "GET", let id = Int(path.split(separator: "/").last ?? ""), let row = occurrenceRecords.first(where: { $0["id"] as? Int == id }) { return try json(row) }
         switch (method, path) {
         case ("GET", "/api/v1/auth/me"):
             return try json(user)
@@ -69,7 +78,7 @@ public actor FixtureTransport: HTTPTransport {
         case ("GET", "/api/v1/holidays"):
             return try json(records("holidays", in: fixtures))
         case ("GET", "/api/v1/holidays/active-theme"):
-            let key: Any = scenario == .christmas ? "christmas" as Any : NSNull()
+            let key: Any = (scenario == .christmas || createdChristmas) ? "christmas" as Any : NSNull()
             return try json(["theme_key": key])
         case ("GET", "/api/v1/activity"):
             let events = records("activity", in: fixtures)
@@ -105,7 +114,7 @@ public actor FixtureTransport: HTTPTransport {
     }
 
     private func records(_ key: String, in fixtures: Object) -> [Object] {
-        let base = scenario == .empty ? [] : fixtures[key] as? [Object] ?? []
+        let base = changed[key] ?? (scenario == .empty ? [] : fixtures[key] as? [Object] ?? [])
         return key == "gifts" ? addedGifts + base : base
     }
 
@@ -205,7 +214,7 @@ public actor FixtureTransport: HTTPTransport {
         let personIds = body["person_ids"] as? [Int] ?? []
         let gift: Object = [
             "id": id, "name": name, "url": body["url"] ?? NSNull(), "notes": body["notes"] ?? NSNull(),
-            "price": body["price"] ?? NSNull(), "image_url": NSNull(), "source": NSNull(), "description": NSNull(),
+            "price": body["price"] ?? NSNull(), "image_url": NSNull(), "source": body["source"] ?? NSNull(), "description": NSNull(),
             "priority": "medium", "status": "idea", "quantity": 1, "sale_price": NSNull(), "purchase_date": NSNull(),
             "additional_urls": [], "extra_data": [:], "from_santa": false, "stores": [], "person_ids": personIds,
             "gift_people": personIds.map { ["person_id": $0, "role": "recipient"] },
@@ -213,6 +222,67 @@ public actor FixtureTransport: HTTPTransport {
         ]
         addedGifts.insert(gift, at: 0)
         return try json(gift, status: 201)
+    }
+
+    private func mutation(_ request: URLRequest, fixtures: Object) throws -> HTTPResponse? {
+        let path = request.url!.path
+        let method = request.httpMethod ?? "GET"
+        guard method != "GET" else { return nil }
+        if path == "/api/v1/upload/image" { return try json(["image_url": "/fixtures/avatar.jpg"]) }
+        let body = (try? JSONSerialization.jsonObject(with: request.httpBody ?? Data()) as? Object) ?? [:]
+        let parts = path.split(separator: "/").map(String.init)
+        let now = ISO8601DateFormatter().string(from: .now)
+        if path == "/api/v1/gifting/occurrences", method == "POST" {
+            let occasionID = body["occasion_id"] as? Int ?? 0
+            let occasion = records("occasions", in: fixtures).first { $0["id"] as? Int == occasionID }
+            let row: Object = ["id": occurrenceRecords.count + 1, "occasion_id": occasionID, "name": occasion?["name"] ?? "Family day", "date": body["date"] ?? "2026-12-25", "closed": false, "budget_total": body["budget_total"] ?? NSNull(), "spent": 0, "planned": 0, "purchased_count": 0, "unknown_prices": 0, "phases": ["considering": 0, "bought": 0, "in_hand": 0, "given": 0], "envelopes": []]
+            occurrenceRecords.append(row); return try json(row, status: 201)
+        }
+        if path.hasPrefix("/api/v1/gifting/occurrences/"), method == "PATCH", let id = Int(parts.last ?? ""), let index = occurrenceRecords.firstIndex(where: { $0["id"] as? Int == id }) {
+            occurrenceRecords[index].merge(body, uniquingKeysWith: { _, new in new }); return try json(occurrenceRecords[index])
+        }
+        if path == "/api/v1/holidays", method == "POST" {
+            var rows = records("holidays", in: fixtures)
+            var row = body
+            row["id"] = (rows.compactMap { $0["id"] as? Int }.max() ?? 0) + 1
+            row["theme_key"] = NSNull(); row["theme_window_days"] = 45
+            row["next_date"] = "2026-12-25"; row["days_until"] = 32
+            rows.append(row); changed["holidays"] = rows
+            return try json(row, status: 201)
+        }
+        if parts.count == 3, method == "POST", ["persons", "occasions"].contains(parts[2]) {
+            let key = parts[2]
+            var rows = records(key, in: fixtures)
+            var row: Object = ["id": (rows.compactMap { $0["id"] as? Int }.max() ?? 0) + 1, "created_at": now, "updated_at": now]
+            if key == "persons" { row.merge(["groups": [], "occasion_ids": []], uniquingKeysWith: { _, n in n }) }
+            else { row.merge(["is_active": true, "person_ids": []], uniquingKeysWith: { _, n in n }) }
+            row.merge(body, uniquingKeysWith: { _, n in n })
+            if let ids = body["group_ids"] as? [Int] { row["groups"] = records("groups", in: fixtures).filter { ids.contains($0["id"] as? Int ?? -1) } }
+            if key == "occasions", let holiday = body["holiday_id"] as? Int, records("holidays", in: fixtures).contains(where: { $0["id"] as? Int == holiday && $0["theme_key"] as? String == "christmas" && ($0["days_until"] as? Int ?? 999) <= ($0["theme_window_days"] as? Int ?? 0) }) { createdChristmas = true }
+            rows.insert(row, at: 0); changed[key] = rows; return try json(row, status: 201)
+        }
+        if parts.count == 4, method == "PATCH", ["persons", "gifts", "occasions"].contains(parts[2]), let id = Int(parts[3]) {
+            let key = parts[2]; var rows = records(key, in: fixtures)
+            guard let index = rows.firstIndex(where: { $0["id"] as? Int == id }) else { return try notFound() }
+            rows[index].merge(body, uniquingKeysWith: { _, n in n }); rows[index]["updated_at"] = now
+            if let ids = body["group_ids"] as? [Int] { rows[index]["groups"] = records("groups", in: fixtures).filter { ids.contains($0["id"] as? Int ?? -1) } }
+            if key == "gifts" { addedGifts = [] }
+            changed[key] = rows; return try json(rows[index])
+        }
+        if parts.count == 5, parts[2] == "list-items", method == "PUT", let id = Int(parts[3]) {
+            var gifts = records("gifts", in: fixtures)
+            for index in gifts.indices {
+                var links = gifts[index]["list_items"] as? [Object] ?? []
+                if let link = links.firstIndex(where: { $0["id"] as? Int == id }) {
+                    links[link]["status"] = body["status"] ?? "selected"; gifts[index]["list_items"] = links
+                    addedGifts = []; changed["gifts"] = gifts
+                    changed["ideas"] = records("ideas", in: fixtures).filter { $0["id"] as? Int != id }
+                    return try json(["id": id, "gift_id": gifts[index]["id"]!, "status": body["status"] ?? "selected"])
+                }
+            }
+            return try notFound()
+        }
+        return nil
     }
 
     private func notFound() throws -> HTTPResponse {
