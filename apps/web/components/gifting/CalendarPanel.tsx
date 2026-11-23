@@ -14,7 +14,7 @@ const season = (date: string) => {
   return month <= 2 || month === 12 ? "Winter" : month <= 5 ? "Spring" : month <= 8 ? "Summer" : "Autumn";
 };
 
-function AgendaRow({ occurrence: o }: { occurrence: Occurrence }) {
+export function AgendaRow({ occurrence: o }: { occurrence: Occurrence }) {
   const date = new Date(`${o.date}T12:00:00`);
   const gifts = Object.values(o.phases).reduce((sum, count) => sum + count, 0);
   return <Link href={`/events/${o.id}`} className={styles.agendaRow}>
@@ -27,10 +27,10 @@ function AgendaRow({ occurrence: o }: { occurrence: Occurrence }) {
       <div className={styles.agendaMeta}>
         <span>Recipients: {o.envelopes.length ? o.envelopes.map(e => e.person_name).join(", ") : "Not set"}</span>
         <span>{gifts} {gifts === 1 ? "gift" : "gifts"}</span>
-        <span>{phases.map(p => `${phaseLabel[p]}: ${o.phases[p]}`).join(" · ")}</span>
+        <span>{o.phases.bought} bought · {o.phases.in_hand} in hand</span>
         <span>Budget: {money(o.budget_total)}</span>
       </div>
-    </div>
+    </div><span className={styles.agendaCount}>{Math.max(0,Math.round((new Date(`${o.date}T12:00:00`).getTime()-new Date(`${localDate(new Date())}T12:00:00`).getTime())/86400000))}d →</span>
   </Link>;
 }
 
@@ -92,10 +92,12 @@ export function CalendarPanel({ occurrences, loading, error, retry, onClose }: {
           {!loading && !error && <>
             <TabsContent value="month" className={styles.viewContent}><h3>Selected date</h3>{selectedRows.length ? <EventCards rows={selectedRows} headingLevel={4} /> : <Empty>No events on this date.</Empty>}</TabsContent>
             <TabsContent value="upcoming" className={styles.viewContent}><h3>Next celebrations</h3>{upcoming.length ? <div className={styles.agendaList}>{upcoming.map(o => <AgendaRow key={o.id} occurrence={o} />)}</div> : <Empty>No upcoming events in this year range.</Empty>}{closed.length > 0 && <div className={styles.closedList}><h3>Closed events</h3>{closed.map(o => <details key={o.id} className={styles.closedEvent}><summary>{dateLabel(o.date)} · {o.name} <span>Closed</span></summary><AgendaRow occurrence={o} /></details>)}</div>}</TabsContent>
-            <TabsContent value="season" className={styles.viewContent}><h3>Season by season</h3>{grouped.length ? grouped.map(o => { const label = `${season(o.date)} ${o.date.slice(0, 4)}`; const show = label !== previous; previous = label; return <div key={o.id} className={styles.timelineItem}>{show && <h4>{label}</h4>}{o.closed ? <details className={styles.closedEvent}><summary>{dateLabel(o.date)} · {o.name} <span>Closed</span></summary><EventCards rows={[o]} headingLevel={5} /></details> : <EventCards rows={[o]} headingLevel={5} />}</div>; }) : <Empty>No events in this year range.</Empty>}</TabsContent>
+            <TabsContent value="season" className={styles.viewContent}><h3>Season by season</h3>{grouped.length ? grouped.map(o => { const label = `${season(o.date)} ${o.date.slice(0, 4)}`; const show = label !== previous; previous = label; return <div key={o.id} className={styles.timelineItem}>{show && <h4>{label}</h4>}{o.closed ? <details className={styles.closedEvent}><summary>{dateLabel(o.date)} · {o.name} <span>Closed</span></summary><EventCards rows={[o]} headingLevel={5} /></details> : <SeasonCard occurrence={o}/>}</div>; }) : <Empty>No events in this year range.</Empty>}</TabsContent>
           </>}
         </div>
       </div>
     </Tabs>
   </section>;
 }
+
+function SeasonCard({occurrence:o}:{occurrence:Occurrence}) { return <article className={styles.seasonCard}><div className={styles.toolbar}><div><h5><Link href={`/events/${o.id}`}>{o.name} →</Link></h5><p>{dateLabel(o.date)}</p></div><strong>{money(o.spent)} / {money(o.budget_total)}</strong></div>{o.envelopes.length?<div className={styles.seasonTable}><table><thead><tr><th>Person</th>{phases.map(p=><th key={p}>{phaseLabel[p]}</th>)}</tr></thead><tbody>{o.envelopes.map(e=><tr key={e.id}><th scope="row"><Link href={`/people/${e.person_id}/profile`}>{e.person_name}</Link></th>{phases.map(p=><td key={p}>{e.phases[p]}</td>)}</tr>)}</tbody></table></div>:<p>No recipients yet. <Link href={`/events/${o.id}`}>Start the plan →</Link></p>}</article>; }

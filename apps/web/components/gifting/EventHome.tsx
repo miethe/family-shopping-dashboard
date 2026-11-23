@@ -17,12 +17,13 @@ import {
   styles,
 } from "./shared";
 import { EventCards } from "./EventCards";
-import { CalendarPanel } from "./CalendarPanel";
+import { CalendarPanel, AgendaRow } from "./CalendarPanel";
 
 export function EventHome() {
   const query = useOccurrences();
   const occasions = useOccasions({ limit: 100 });
   const [showCalendar, setShowCalendar] = useState(false);
+  const planRef = useRef<HTMLDetailsElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [calendarMounted, setCalendarMounted] = useState(false);
   useEffect(() => {
@@ -74,15 +75,16 @@ export function EventHome() {
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const upcoming =
-    query.data?.filter((o) => !o.closed && o.date >= today) ?? [];
+    query.data?.filter((o) => !o.closed && o.date >= today).sort((a,b)=>a.date.localeCompare(b.date)) ?? [];
   const past = query.data?.filter((o) => o.closed || o.date < today) ?? [];
   return (
     <div className={styles.page}>
-      <Hero eyebrow="Gather & give" title="The event shelf">
-        <p>A little thought, saved for the right moment.</p>
+      <Hero eyebrow="Gather & give" title="Good days ahead.">
+        <p>Your family calendar, all in one place.</p>
       </Hero>
       <div className={styles.toolbar}>
         <h2>Upcoming events</h2>
+        <Button onClick={()=>{if(planRef.current){planRef.current.open=true;planRef.current.scrollIntoView({block:"start"});planRef.current.querySelector("select")?.focus();}}}>+ Event</Button>
         <Button
           ref={triggerRef}
           variant="outline"
@@ -108,9 +110,9 @@ export function EventHome() {
         (!upcoming.length ? (
           <Empty>No upcoming events yet. Start with a celebration below.</Empty>
         ) : (
-          <EventCards rows={upcoming} />
+          <div className={styles.agendaList}>{upcoming.map(o=><AgendaRow key={o.id} occurrence={o}/>)}</div>
         ))}</>}
-      <details className={styles.shelf}>
+      <details ref={planRef} className={styles.shelf}>
         <summary>Plan an event</summary>
         <div className={styles.shelfBody}>
           <form
