@@ -79,7 +79,7 @@ export function DesktopNav() {
       <div className="mt-auto pt-3 flex shrink-0 flex-col items-center gap-4">
         <button
           onClick={logout}
-          className="text-white/70 hover:text-white transition-colors group"
+          className="min-w-[44px] min-h-[44px] flex items-center justify-center text-white/70 hover:text-white transition-colors group"
           title={user?.email || 'Profile'}
         >
           <div className="w-10 h-10 rounded-full bg-white/20 overflow-hidden ring-2 ring-white/30 group-hover:ring-white/50 transition-all duration-200">

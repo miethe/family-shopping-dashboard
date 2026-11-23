@@ -68,7 +68,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           className="flex-1 min-h-0 overflow-y-auto scroll-smooth"
         >
           {/* Max-width container with fade-in animation */}
-          <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8 py-6 pb-20 md:pb-8 fade-in">
+          <div className="max-w-[1600px] mx-auto pl-4 pr-20 md:px-6 lg:px-8 py-6 pb-[calc(10rem+env(safe-area-inset-bottom))] md:pb-8 fade-in">
             {children}
           </div>
         </main>

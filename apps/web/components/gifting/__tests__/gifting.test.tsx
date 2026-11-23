@@ -99,6 +99,7 @@ function mount(node: React.ReactNode) {
 }
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.clear();
   vi.mocked(giftingApi.occurrences).mockResolvedValue([event]);
   vi.mocked(giftingApi.occurrence).mockResolvedValue(event);
   vi.mocked(giftingApi.person).mockResolvedValue(person);
@@ -136,6 +137,24 @@ describe("Event gifting screens", () => {
     await user.click(screen.getByRole("tab", { name: "Upcoming" }));
     await user.keyboard("{Escape}");
     expect(screen.getByRole("button", { name: "Calendar view" })).toHaveFocus();
+  });
+  it("returns focus after switching calendar views with reduced motion", async () => {
+    const original = window.matchMedia;
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({ matches: query.includes("reduced-motion"), media: query, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
+    try {
+      vi.mocked(giftingApi.occurrences).mockResolvedValue([{ ...event, date: `${new Date().getFullYear() + 1}-01-12` }]);
+      const user = userEvent.setup();
+      mount(<EventHome />);
+      await screen.findByRole("heading", { name: "Winter gathering" });
+      await user.click(screen.getByRole("button", { name: "Calendar view" }));
+      await user.click(screen.getByRole("tab", { name: "Season" }));
+      await user.click(screen.getByRole("tab", { name: "Upcoming" }));
+      const panel = document.querySelector("#calendar-panel")!;
+      expect(within(panel as HTMLElement).getAllByRole("link", { name: /Winter gathering/ })).toHaveLength(1);
+      await user.keyboard("{Escape}");
+      expect(screen.getByRole("button", { name: "Calendar view" })).toHaveFocus();
+      await waitFor(() => expect(document.querySelector("#calendar-panel")).not.toBeInTheDocument());
+    } finally { window.matchMedia = original; }
   });
   it("changes a gift phase through its recipient envelope", async () => {
     const user = userEvent.setup();
