@@ -6,10 +6,10 @@ struct HomeView: View {
     @Environment(\.confettiTheme) private var theme
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(model.christmas ? "Hello, holiday magic" : "Hello, thoughtful you").font(ConfettiFont.display)
-                    if let holiday = model.holidays.min(by: { $0.daysUntil < $1.daysUntil }) {
+                    Text("Hello").font(ConfettiFont.display)
+                    if let holiday = model.dashboard?.primaryOccasion {
                         Text("Up next: \(holiday.name) · \(holiday.daysUntil) days")
                             .font(ConfettiFont.detail).foregroundStyle(ConfettiColor.muted)
                     } else { Text("Good things start with a little thought.").font(ConfettiFont.detail).foregroundStyle(ConfettiColor.muted) }
@@ -21,7 +21,7 @@ struct HomeView: View {
                 if !model.loaded && model.busy { ProgressView("Gathering your plans…").frame(maxWidth: .infinity) }
                 if model.christmas { festoon }
                 if let occasion = model.dashboard?.primaryOccasion {
-                    VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 12) {
                         ViewThatFits(in: .horizontal) {
                             HStack(alignment: .center, spacing: 16) {
                                 heroTitle(occasion.name, date: occasion.date.date)
@@ -45,7 +45,7 @@ struct HomeView: View {
                                 planButton(occasion.id)
                             }
                         }
-                    }.padding(20).foregroundStyle(.white)
+                    }.padding(16).foregroundStyle(.white)
                         .background(theme.accent, in: RoundedRectangle(cornerRadius: 26))
                 } else if !model.busy {
                     ConfettiCard(fill: ConfettiColor.blue) {
@@ -56,7 +56,7 @@ struct HomeView: View {
                         }
                     }
                 }
-                if let birthday = nextBirthday {
+                if let birthday = nextBirthday, !isHeroBirthday(birthday.person) {
                     Button { model.open("/people/\(birthday.person.id)/profile", title: birthday.person.displayName) } label: {
                         HStack {
                             Image(systemName: "birthday.cake").accessibilityHidden(true)
@@ -66,18 +66,18 @@ struct HomeView: View {
                         }.padding(14).foregroundStyle(ConfettiColor.ink).background(theme.birthdayFill, in: RoundedRectangle(cornerRadius: 15))
                     }.buttonStyle(.plain)
                 }
-                sectionTitle("Ideas inbox", action: "See all") { model.open("/ideas", title: "Ideas inbox") }
+                sectionTitle("Ideas inbox", action: "See all") { model.showIdeas = true }
                 if let inbox = model.inbox, !inbox.ideas.isEmpty {
                     VStack(spacing: 10) {
                         ForEach(Array(inbox.ideas.prefix(2)), id: \.id) { idea in
-                            Button { model.open("/ideas", title: "Ideas inbox") } label: {
-                                ConfettiCard {
+                            Button { model.showIdeas = true } label: {
+                                ConfettiCard(padding: 6) {
                                     HStack(spacing: 12) {
                                         Image(systemName: "lightbulb").font(.title2).frame(width: 46, height: 46)
                                             .background(ConfettiColor.butter, in: RoundedRectangle(cornerRadius: 15)).accessibilityHidden(true)
                                         VStack(alignment: .leading, spacing: 4) {
-                                            Text(idea.name).font(ConfettiFont.subheading)
-                                            Text("Saved for a thoughtful moment").font(ConfettiFont.caption).foregroundStyle(ConfettiColor.muted)
+                                            Text(idea.name).font(ConfettiFont.detail)
+
                                         }
                                         Spacer(minLength: 0)
                                         if let price = idea.price { Text(money(price)).font(ConfettiFont.label) }
@@ -96,11 +96,20 @@ struct HomeView: View {
                     }
                 }
                 if let budget = model.budget {
-                    ConfettiCard(fill: ConfettiColor.lavender) {
+                    ConfettiCard(fill: ConfettiColor.mint, padding: 12) {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("\(model.dashboard?.primaryOccasion?.name ?? "Gift") budget").font(ConfettiFont.label)
                             if let total = budget.budgetTotal {
-                                Text("\(money(budget.purchasedAmount)) / \(money(total))").font(ConfettiFont.detail)
+                                ViewThatFits(in: .horizontal) {
+                                    HStack {
+                                        Text("Gift budget").font(ConfettiFont.label)
+                                        Spacer()
+                                        Text("\(money(budget.purchasedAmount)) / \(money(total))").font(ConfettiFont.detail)
+                                    }
+                                    VStack(alignment: .leading) {
+                                        Text("Gift budget").font(ConfettiFont.label)
+                                        Text("\(money(budget.purchasedAmount)) / \(money(total))").font(ConfettiFont.detail)
+                                    }
+                                }
                                 ProgressView(value: min(max(budget.purchasedPercent, 0), 100), total: 100)
                                     .tint(theme.accent).accessibilityLabel("Budget spent")
                                 if budget.isOverBudget { Text("A little over budget — time to check the plan.").font(ConfettiFont.caption) }
@@ -114,7 +123,7 @@ struct HomeView: View {
                 sectionTitle("Your people", action: "See all") { model.selection = 1 }
                 if !model.people.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(alignment: .top, spacing: 18) {
+                        HStack(alignment: .top, spacing: 12) {
                             ForEach(Array(model.people.prefix(8)), id: \.id) { person in
                                 Button { model.open("/people/\(person.id)/profile", title: person.displayName) } label: {
                                     VStack(spacing: 8) {
@@ -169,6 +178,11 @@ struct HomeView: View {
                 Rectangle().fill([ConfettiColor.cranberry, ConfettiColor.butter, ConfettiColor.green][index % 3])
             }
         }.frame(height: 7).clipShape(Capsule()).accessibilityHidden(true)
+    }
+    private func isHeroBirthday(_ person: Person) -> Bool {
+        guard let title = model.dashboard?.primaryOccasion?.name,
+              let first = person.displayName.split(separator: " ").first else { return false }
+        return title.localizedCaseInsensitiveContains("birthday") && title.localizedCaseInsensitiveContains(String(first))
     }
     private var nextBirthday: (person: Person, days: Int)? {
         let calendar = Calendar.current

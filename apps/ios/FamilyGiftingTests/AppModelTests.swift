@@ -37,4 +37,46 @@ final class AppModelTests: XCTestCase {
         XCTAssertTrue(model.configured)
         XCTAssertFalse(model.signedIn)
     }
+    func testOfflineCaptureStaysVisible() async {
+        let model = AppModel(arguments: ["app", "--fixture", "sample", "--offline"])
+        await model.start()
+        let saved = await model.saveIdea(name: "Hartwell art set", url: "", notes: "", personIds: [])
+        XCTAssertTrue(saved)
+        XCTAssertEqual(model.pendingIdeas.count, 1)
+        XCTAssertFalse(model.pendingIdeas[0].attempted)
+        await model.flushIdeas()
+        XCTAssertEqual(model.pendingIdeas.count, 1)
+    }
+
+    func testOnlineCaptureAppearsInCatalogInbox() async {
+        let model = AppModel(arguments: ["app", "--fixture", "sample"])
+        await model.start()
+        let saved = await model.saveIdea(name: "Hartwell kite", url: "", notes: "", personIds: [])
+        XCTAssertTrue(saved)
+        XCTAssertTrue(model.pendingIdeas.isEmpty)
+        XCTAssertTrue(model.gifts.contains { $0.name == "Hartwell kite" })
+    }
+
+    func testNativeHomeDestinations() {
+        let model = AppModel(arguments: ["app", "--fixture", "sample"])
+        model.open("/people/3/profile", title: "Juno")
+        XCTAssertEqual(model.native?.path, "/people/3/profile")
+        XCTAssertNil(model.web)
+        model.open("/ideas", title: "Ideas")
+        XCTAssertTrue(model.showIdeas)
+        model.open("/budgets", title: "Budget")
+        XCTAssertEqual(model.web?.path, "/budgets")
+    }
+
+    func testSignOutHidesPendingAndNativeSheets() async {
+        let model = AppModel(arguments: ["app", "--fixture", "sample", "--offline"])
+        await model.start()
+        _ = await model.saveIdea(name: "Hartwell book", url: "", notes: "", personIds: [])
+        model.open("/people/new", title: "Add")
+        await model.signOut()
+        XCTAssertTrue(model.pendingIdeas.isEmpty)
+        XCTAssertNil(model.native)
+        XCTAssertFalse(model.showIdeas)
+    }
+
 }
