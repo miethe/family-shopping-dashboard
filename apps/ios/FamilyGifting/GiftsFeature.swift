@@ -9,6 +9,7 @@ struct NativeGiftsView: View {
     @State private var filter: GiftFilter = .all
     @State private var showAdd = false
     @State private var changingStatus = false
+    @State private var selectedGift: Int?
 
     private var matches: [Gift] {
         let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -44,9 +45,7 @@ struct NativeGiftsView: View {
             }
 
             ForEach(visibleGifts) { gift in
-                NavigationLink {
-                    NativeGiftDetailView(model: model, gift: gift)
-                } label: {
+                Button { selectedGift = gift.id } label: {
                     GiftCatalogRow(gift: gift, recipients: gift.recipients(from: model.people), imageURL: giftImageURL(gift.imageUrl, model: model))
                 }
                 .buttonStyle(.plain)
@@ -72,6 +71,9 @@ struct NativeGiftsView: View {
         .scrollContentBackground(.hidden)
         .background(theme.paper)
         .scrollDismissesKeyboard(.interactively)
+        .navigationDestination(item: $selectedGift) { id in
+            if let gift = model.gifts.first(where: { $0.id == id }) { NativeGiftDetailView(model: model, gift: gift) }
+        }
         .refreshable { await model.reload() }
         .sheet(isPresented: $showAdd) { GiftEditor(model: model, gift: nil) }
     }
@@ -376,6 +378,7 @@ struct NativeIdeasView: View {
     @Environment(\.confettiTheme) private var theme
     @State private var working = false
     @State private var showAdd = false
+    @State private var discard: PendingIdea?
 
     private var savedIdeas: [Gift] {
         model.gifts.filter { $0.status == .idea && $0.listItems.isEmpty }
@@ -393,8 +396,15 @@ struct NativeIdeasView: View {
             if !model.pendingIdeas.isEmpty {
                 Text("Pending ideas").font(ConfettiFont.heading).accessibilityAddTraits(.isHeader).giftListRow()
                 ForEach(model.pendingIdeas) { item in
-                    ideaCard(name: item.name, imageURL: nil, summary: item.rejection != nil ? "Needs review — server rejected this idea" : (item.attempted ? "Confirming previous save" : "Waiting to sync"))
-                        .giftListRow()
+                    ideaCard(name: item.name, imageURL: nil, summary: item.rejection != nil ? "Server rejected this idea" : (item.attempted ? "Previous save could not be confirmed" : "Waiting to sync")) {
+                        if item.attempted {
+                            Button("Try again") { Task { await model.flushIdeas(retrying: item.id); if model.error == nil { await model.reload() } } }
+                                .buttonStyle(ConfettiButtonStyle(.secondary))
+                        }
+                        Button("Discard", role: .destructive) { discard = item }
+                            .buttonStyle(ConfettiButtonStyle(.tertiary))
+                    }
+                    .giftListRow()
                 }
             }
             if let inbox = model.inbox, !inbox.ideas.isEmpty {
@@ -433,6 +443,15 @@ struct NativeIdeasView: View {
         }
         .refreshable { await model.reload() }
         .sheet(isPresented: $showAdd) { AddIdeaView(model: model) }
+        .alert("Discard saved idea?", isPresented: Binding(
+            get: { discard != nil },
+            set: { if !$0 { discard = nil } }
+        ), presenting: discard) { item in
+            Button("Discard", role: .destructive) { Task { await model.discardIdea(item.id) } }
+            Button("Cancel", role: .cancel) {}
+        } message: { _ in
+            Text("This removes the pending copy from this device.")
+        }
     }
 
     private func ideaCard(name: String, imageURL: String?, summary: String?) -> some View {
@@ -527,6 +546,10 @@ private struct GiftCatalogRow: View {
                             .accessibilityLabel("Location notes, \(notes)")
                     }
                 }.frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(ConfettiColor.muted)
+                    .accessibilityHidden(true)
             }
             .frame(minHeight: 44)
             .contentShape(Rectangle())

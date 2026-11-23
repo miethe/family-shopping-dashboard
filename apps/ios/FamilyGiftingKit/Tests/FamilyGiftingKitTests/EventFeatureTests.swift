@@ -46,7 +46,7 @@ struct EventFeatureTests {
             (200, Self.christmasPlan.replacingOccurrences(of: #""closed":false"#, with: #""closed":true"#)),
             (200, #"{"theme_key":"christmas"}"#)
         ])
-        let client = APIClient(transport: transport, tokenStore: MemoryTokenStore(token: "fixture-token"))
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: MemoryTokenStore(token: "fixture-token"))
         let date = try #require(CalendarDate("2026-12-25"))
 
         let occasion = try await client.createEventOccasion(EventOccasionCreate(

@@ -35,23 +35,29 @@ public actor IdeaQueue {
         var all = try read()
         if !all.contains(where: { $0.id == idea.id }) { all.append(idea); try write(all) }
     }
-    public func flush(account: String, find: @Sendable (UUID) async throws -> Bool,
+    public func flush(account: String, retrying retryID: UUID? = nil, find: @Sendable (UUID) async throws -> Bool,
                       send: @Sendable (PendingIdea) async throws -> Void) async throws {
-        guard !flushing else { return }; flushing = true
+        guard !flushing else {
+            if retryID != nil { throw IdeaQueueError.syncInProgress }
+            return
+        }
+        flushing = true
         defer { flushing = false }
-        for idea in try items(account: account) {
+        for idea in try items(account: account) where retryID == nil || idea.id == retryID {
             // A successful read is also the reachability probe, before any create request.
             if try await find(idea.id) { try remove(idea.id); continue }
-            guard !idea.attempted, idea.rejection == nil else { continue }
+            guard idea.rejection == nil, !idea.attempted || retryID == idea.id else { continue }
+            // An explicit retry may proceed only after this fresh lookup completed.
+
             try mark(idea.id, attempted: true)
             do { try await send(idea); try remove(idea.id) }
             catch {
                 // These URL errors mean no request reached the server; safe to retry later.
-                if let error = error as? URLError, [.notConnectedToInternet, .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed].contains(error.code) {
+                if let error = error as? URLError, requestWasNeverSent(error) {
                     try mark(idea.id, attempted: false)
-                } else if let error = error as? APIError, case .server(let code, _) = error, (400..<500).contains(code) {
+                } else if let error = error as? APIError, case .server(let code, _) = error, (400..<500).contains(code), code != 408 {
                     try mark(idea.id, attempted: false)
-                    if ![401, 403, 408, 429].contains(code) {
+                    if ![401, 403, 429].contains(code) {
                         var all = try read()
                         if let index = all.firstIndex(where: { $0.id == idea.id }) { all[index].rejection = code }
                         try write(all)
@@ -62,6 +68,12 @@ public actor IdeaQueue {
             }
         }
     }
+    public func discard(_ id: UUID, account: String) throws {
+        guard !flushing else { throw IdeaQueueError.syncInProgress }
+        guard try items(account: account).contains(where: { $0.id == id }) else { return }
+        try remove(id)
+    }
+
     private func remove(_ id: UUID) throws { try write(read().filter { $0.id != id }) }
     private func mark(_ id: UUID, attempted: Bool) throws {
         var all = try read()
@@ -70,25 +82,35 @@ public actor IdeaQueue {
     }
 }
 
+private enum IdeaQueueError: LocalizedError {
+    case syncInProgress
+    var errorDescription: String? { "Sync is in progress. Try again in a moment." }
+}
+
 public struct CaptureSession: Sendable {
     let revision: Int
 }
 
 extension APIClient {
-    public func captureSession() throws -> CaptureSession {
-        guard try hasSession() else { throw APIError.missingSession }
-        return CaptureSession(revision: sessionRevision)
+    public func captureSession() async throws -> CaptureSession {
+        let session = CaptureSession(revision: sessionRevision)
+        guard try await usableSession() != nil else { throw APIError.missingSession }
+        try checkCaptureSession(session)
+        return session
     }
     private func checkCaptureSession(_ session: CaptureSession) throws {
         guard session.revision == sessionRevision else { throw APIError.sessionChanged }
     }
     public func containsCapture(_ id: UUID, session: CaptureSession) async throws -> Bool {
         var cursor: Int?
+        var visited: Set<Int> = []
         repeat {
             try checkCaptureSession(session)
             let page = try await gifts(cursor: cursor, limit: 100)
             if page.items.contains(where: { $0.source == "ios:capture:" + id.uuidString }) { return true }
+            guard !page.hasMore || page.nextCursor != nil else { throw APIError.invalidPayload }
             cursor = page.nextCursor
+            if let cursor, !visited.insert(cursor).inserted { throw APIError.invalidPayload }
         } while cursor != nil
         return false
     }

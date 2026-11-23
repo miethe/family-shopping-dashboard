@@ -15,7 +15,6 @@ struct APIClientTests {
     }
 
     @Test func normalizesServerOrigin() throws {
-        #expect(ServerAddress.default.url.absoluteString == "http://10.42.10.76:3047")
         #expect(try ServerAddress(" HTTPS://Example.TEST:443/ \n").url.absoluteString == "https://example.test")
         #expect(try ServerAddress("http://[::1]:3047/").url.absoluteString == "http://[::1]:3047")
     }
@@ -23,18 +22,18 @@ struct APIClientTests {
     @Test func healthCheckTargetsCandidateWithoutSendingToken() async throws {
         let address = try ServerAddress("https://new.hartwell.example:8443")
         let transport = RecordingTransport([response(200, #"{"status":"healthy","db":"connected"}"#)])
-        let client = APIClient(transport: transport, tokenStore: MemoryTokenStore(token: "test-token"))
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: MemoryTokenStore(token: "test-token"))
         let health = try await client.validateServerAddress(address)
         let request = try #require(await transport.requests.first)
         #expect(health.db == "connected")
         #expect(request.url?.absoluteString == "https://new.hartwell.example:8443/health")
         #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
-        #expect(await client.address == .default)
+        #expect(await client.address == .fixture)
     }
 
     @Test func disconnectedHealthCheckFails() async {
         let transport = RecordingTransport([response(200, #"{"status":"healthy","db":"disconnected"}"#)])
-        let client = APIClient(transport: transport, tokenStore: MemoryTokenStore())
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: MemoryTokenStore())
         await #expect(throws: APIError.unhealthyServer) { try await client.health() }
     }
 
@@ -75,15 +74,15 @@ struct APIClientTests {
     @Test func rejectsAnExpiredOrWrongOriginTokenBeforeMakingARequest() async throws {
         let store = MemoryTokenStore()
         let transport = RecordingTransport([])
-        let client = APIClient(transport: transport, tokenStore: store)
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
         store.write(SessionCredential(accessToken: "expired-credential", expiresAt: .distantPast))
-        await #expect(throws: APIError.missingSession) { try await client.me() }
-        #expect(store.read() == nil)
+        await #expect(throws: APIError.expiredSession) { try await client.me() }
+        #expect(store.read()?.accessToken == "expired-credential")
 
         let otherStore = MemoryTokenStore()
         otherStore.write(SessionCredential(accessToken: "other-origin", expiresAt: .distantFuture,
                                            origin: URL(string: "https://other.hartwell.example")))
-        let otherClient = APIClient(transport: transport, tokenStore: otherStore)
+        let otherClient = APIClient(address: .fixture, transport: transport, tokenStore: otherStore)
         await #expect(throws: APIError.missingSession) { try await otherClient.me() }
         #expect(otherStore.read() == nil)
         #expect(await transport.requests.isEmpty)
@@ -94,7 +93,7 @@ struct APIClientTests {
         let transport = RecordingTransport([
             response(401, #"{"error":{"code":"TOKEN_EXPIRED","message":"Session expired","trace_id":"fixture-trace"}}"#)
         ])
-        let client = APIClient(transport: transport, tokenStore: store)
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
         do {
             _ = try await client.dashboard()
             Issue.record("Expected the request to fail with a 401 response.")
@@ -113,7 +112,7 @@ struct APIClientTests {
     @Test func unauthenticatedLoginFailureKeepsExistingSession() async throws {
         let store = MemoryTokenStore(token: "test-token")
         let transport = RecordingTransport([response(401, #"{"detail":"Invalid credentials"}"#)])
-        let client = APIClient(transport: transport, tokenStore: store)
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
         let expected = APIError.server(statusCode: 401, detail: APIErrorDetail(
             code: "HTTP_401", message: "Invalid credentials", traceId: nil))
         await #expect(throws: expected) { try await client.login(email: "sam@hartwell.example", password: "wrong") }
@@ -122,7 +121,7 @@ struct APIClientTests {
 
     @Test func giftFiltersUseRepeatedQueryKeys() async throws {
         let transport = RecordingTransport([response(200, #"{"items":[],"has_more":false}"#)])
-        let client = APIClient(transport: transport, tokenStore: MemoryTokenStore(token: "test-token"))
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: MemoryTokenStore(token: "test-token"))
         let page = try await client.gifts(cursor: 8, limit: 2, search: "arts & crafts", personIds: [3, 4],
                                           statuses: [.selected, .purchased], occasionIds: [2])
         #expect(page.items.isEmpty)
@@ -139,7 +138,7 @@ struct APIClientTests {
 
     @Test func malformedSuccessPayloadHasTypedError() async {
         let client = APIClient(
-            transport: RecordingTransport([response(200, #"{"unrelated": true}"#)]),
+            address: .fixture, transport: RecordingTransport([response(200, #"{"unrelated": true}"#)]),
             tokenStore: MemoryTokenStore(token: "test-token")
         )
         await #expect(throws: APIError.invalidPayload) { try await client.dashboard() }

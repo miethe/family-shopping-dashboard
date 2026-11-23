@@ -11,8 +11,8 @@ struct FamilyGiftingApp: App {
                 .confettiTheme(model.christmas ? .christmas : .everyday)
                 .task { await model.start() }
                 .onChange(of: scenePhase) { _, phase in
-                    if phase == .active && !model.starting && model.signedIn {
-                        Task { await model.flushIdeas(); await model.reload() }
+                    if phase == .active && !model.starting {
+                        Task { await model.resume() }
                     }
                 }
         }
@@ -51,7 +51,7 @@ struct RootView: View {
         .sheet(isPresented: $model.settings) { ServerSettings(model: model, firstLaunch: false) }
         .sheet(isPresented: $model.showIdeas) { NavigationStack { NativeIdeasView(model: model) } }
         .sheet(isPresented: $model.addIdea, onDismiss: { if model.captureSaved { model.captureSaved = false; model.showIdeas = true } }) { AddIdeaView(model: model) }
-        .sheet(item: $model.web, onDismiss: { Task { await model.flushIdeas(); await model.reload() } }) { destination in
+        .sheet(item: $model.web, onDismiss: { Task { await model.resume() } }) { destination in
             NavigationStack {
                 if let credential = model.credential, let origin = URL(string: model.address) {
                     SessionWebView(origin: origin, path: destination.path, token: credential.accessToken,

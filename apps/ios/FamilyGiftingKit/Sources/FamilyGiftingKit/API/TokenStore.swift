@@ -5,15 +5,23 @@ public struct SessionCredential: Codable, Equatable, Sendable {
     public let accessToken: String
     public let expiresAt: Date
     let origin: URL?
+    public let userID: Int?
+    let refreshToken: String?
+    let refreshExpiresAt: Date?
+    var refreshStartedAt: Date?
 
     public init(accessToken: String, expiresAt: Date) {
         self.init(accessToken: accessToken, expiresAt: expiresAt, origin: nil)
     }
 
-    init(accessToken: String, expiresAt: Date, origin: URL?) {
+    init(accessToken: String, expiresAt: Date, origin: URL?, userID: Int? = nil,
+         refreshToken: String? = nil, refreshExpiresAt: Date? = nil) {
         self.accessToken = accessToken
         self.expiresAt = expiresAt
         self.origin = origin
+        self.userID = userID
+        self.refreshToken = refreshToken
+        self.refreshExpiresAt = refreshExpiresAt
     }
 }
 

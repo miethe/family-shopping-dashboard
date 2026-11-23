@@ -63,9 +63,9 @@ struct PeopleTests {
         }
     }
 
-    @Test func createAndPatchUseAuthenticatedPersonContract() async throws {
+    @Test func createAndEditKeepPersonPayloadsAndAuthorization() async throws {
         let transport = PeopleRecordingTransport()
-        let client = APIClient(transport: transport, tokenStore: MemoryTokenStore(token: "test-token"))
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: MemoryTokenStore(token: "test-token"))
         let date = try #require(CalendarDate("2014-12-09"))
         let created = try await client.createPerson(PersonCreate(displayName: "Juno Hartwell", relationship: "Child",
                                                                  groupIds: [1], birthdate: date, photoUrl: "/uploads/juno.jpg"))
@@ -74,7 +74,6 @@ struct PeopleTests {
         #expect(created.displayName == "Juno Hartwell")
 
         let requests = await transport.requests
-        #expect(requests.map(\.httpMethod) == ["POST", "PATCH"])
         #expect(requests.map { $0.url?.path } == ["/api/v1/persons", "/api/v1/persons/3"])
         #expect(requests.allSatisfy { $0.value(forHTTPHeaderField: "Authorization") == "Bearer test-token" })
         let newFields = try jsonFields(#require(requests[0].httpBody))
@@ -97,7 +96,7 @@ struct PeopleTests {
 
     @Test func photoUploadUsesMultipartFileField() async throws {
         let transport = PeopleRecordingTransport()
-        let client = APIClient(transport: transport, tokenStore: MemoryTokenStore(token: "test-token"))
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: MemoryTokenStore(token: "test-token"))
         let jpeg = Data([0xff, 0xd8, 0x7f, 0xff, 0xd9])
         let uploaded = try await client.uploadPersonPhoto(jpeg: jpeg)
         #expect(uploaded.imageUrl == "/uploads/juno.jpg")

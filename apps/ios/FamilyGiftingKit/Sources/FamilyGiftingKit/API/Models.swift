@@ -23,7 +23,9 @@ struct LoginResponse: Decodable, Sendable {
     let email: String
     let createdAt: Date
     let updatedAt: Date
-    let token: TokenResponse
+    let token: TokenResponse?
+    let refreshToken: String?
+    let refreshExpiresIn: Int?
 
     var user: User {
         User(id: id, email: email, createdAt: createdAt, updatedAt: updatedAt)
@@ -34,11 +36,14 @@ struct TokenResponse: Decodable, Sendable {
     let accessToken: String
     let tokenType: String
     let expiresIn: Int
+    let refreshToken: String?
+    let refreshExpiresIn: Int?
 }
 
 struct Credentials: Encodable, Sendable {
     let email: String
     let password: String
+    let client: String?
 }
 
 public struct Dashboard: Codable, Sendable {

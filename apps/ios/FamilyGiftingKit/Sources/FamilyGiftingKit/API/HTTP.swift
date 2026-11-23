@@ -1,7 +1,7 @@
 import Foundation
 
 public struct ServerAddress: Equatable, Hashable, Sendable {
-    public static let `default` = try! ServerAddress("http://10.42.10.76:3047")
+    public static let fixture = try! ServerAddress("https://hartwell.example.invalid")
 
     public let url: URL
 
@@ -91,6 +91,7 @@ public enum APIError: LocalizedError, Equatable, Sendable {
     case invalidServerAddress
     case unhealthyServer
     case missingSession
+    case expiredSession
     case sessionChanged
     case invalidResponse
     case invalidPayload
@@ -108,6 +109,7 @@ public enum APIError: LocalizedError, Equatable, Sendable {
         case .invalidServerAddress: "Enter an HTTP or HTTPS address, with an optional port."
         case .unhealthyServer: "The server health check failed."
         case .missingSession: "Sign in to continue."
+        case .expiredSession: "Sign in again to sync. You can still save ideas offline."
         case .sessionChanged: "The session changed before the request finished. Try again."
         case .invalidResponse: "The server did not return an HTTP response."
         case .invalidPayload: "The server returned data the app cannot read."

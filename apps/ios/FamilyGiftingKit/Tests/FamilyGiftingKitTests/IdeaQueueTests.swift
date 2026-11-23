@@ -50,8 +50,52 @@ import Testing
         #expect(await receipt.count == 1)
         #expect(try await queue.items(account: "a").first?.attempted == true)
     }
+    @Test func timedOutWithoutCreationCanBeRetriedAfterFreshLookup() async throws {
+        let file = location(); defer { try? FileManager.default.removeItem(at: file) }
+        let queue = IdeaQueue(file: file)
+        let idea = PendingIdea(account: "fixture#1", name: "Paper kite")
+        let receipt = QueueReceipt()
+        try await queue.enqueue(idea)
+        await #expect(throws: URLError(.timedOut)) {
+            try await queue.flush(account: idea.account, find: { _ in false }, send: { _ in throw URLError(.timedOut) })
+        }
+        let restored = IdeaQueue(file: file)
+        await #expect(throws: URLError(.notConnectedToInternet)) {
+            try await restored.flush(account: idea.account, retrying: idea.id,
+                                     find: { _ in throw URLError(.notConnectedToInternet) },
+                                     send: { _ in await receipt.sent() })
+        }
+        #expect(await receipt.count == 0)
+        #expect(try await restored.items(account: idea.account).first?.attempted == true)
+        try await restored.flush(account: idea.account, retrying: idea.id, find: { _ in false },
+                                 send: { _ in await receipt.sent() })
+        #expect(await receipt.count == 1)
+        #expect(try await restored.items(account: idea.account).isEmpty)
+    }
+
+    @Test func retryReconcilesExistingReceiptAndDiscardIsAccountScoped() async throws {
+        let file = location(); defer { try? FileManager.default.removeItem(at: file) }
+        let queue = IdeaQueue(file: file)
+        let idea = PendingIdea(account: "fixture#1", name: "Paper lantern")
+        let other = PendingIdea(account: "fixture#2", name: "Card game")
+        try await queue.enqueue(idea)
+        try await queue.enqueue(other)
+        try await queue.discard(idea.id, account: other.account)
+        #expect(try await queue.items(account: idea.account) == [idea])
+        await #expect(throws: URLError(.timedOut)) {
+            try await queue.flush(account: idea.account, find: { _ in false }, send: { _ in throw URLError(.timedOut) })
+        }
+        let receipt = QueueReceipt()
+        try await queue.flush(account: idea.account, retrying: idea.id, find: { _ in true },
+                              send: { _ in await receipt.sent() })
+        #expect(await receipt.count == 0)
+        #expect(try await queue.items(account: idea.account).isEmpty)
+        try await queue.discard(other.id, account: other.account)
+        #expect(try await queue.items(account: other.account).isEmpty)
+    }
+
     @Test func supportedSourceMarkerAndSessionIsolation() async throws {
-        let client = APIClient(transport: FixtureTransport(scenario: .sample), tokenStore: MemoryTokenStore(token: FixtureTransport.token))
+        let client = APIClient(address: .fixture, transport: FixtureTransport(scenario: .sample), tokenStore: MemoryTokenStore(token: FixtureTransport.token))
         let session = try await client.captureSession()
         let idea = PendingIdea(account: "a", name: "Hartwell sketchbook")
         try await client.sendCapture(idea, session: session)

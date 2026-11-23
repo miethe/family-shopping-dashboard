@@ -107,7 +107,7 @@ struct FixtureContractTests {
 
     @Test func fixtureSignInAndGiftCreationWorkThroughTypedClient() async throws {
         let store = MemoryTokenStore()
-        let client = APIClient(transport: FixtureTransport(scenario: .empty), tokenStore: store)
+        let client = APIClient(address: .fixture, transport: FixtureTransport(scenario: .empty), tokenStore: store)
         let user = try await client.login(email: "sam@hartwell.example", password: "fixture-password")
         #expect(user.email == "sam@hartwell.example")
         #expect(try await client.me().id == user.id)
@@ -144,7 +144,7 @@ struct FixtureContractTests {
     }
 
     private func fixture(_ scenario: FixtureScenario = .sample) -> APIClient {
-        APIClient(transport: FixtureTransport(scenario: scenario), tokenStore: MemoryTokenStore(token: FixtureTransport.token))
+        APIClient(address: .fixture, transport: FixtureTransport(scenario: scenario), tokenStore: MemoryTokenStore(token: FixtureTransport.token))
     }
 }
 

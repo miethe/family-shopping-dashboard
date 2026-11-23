@@ -49,6 +49,12 @@ struct SignInView: View {
                     Button(register ? "Already part of the family? Sign in" : "New here? Create an account") {
                         register.toggle(); model.error = nil
                     }.buttonStyle(ConfettiButtonStyle(.tertiary, expands: true))
+                    if model.canCaptureOffline {
+                        Button("Save an idea offline") { model.addIdea = true }
+                            .buttonStyle(ConfettiButtonStyle(.secondary, expands: true))
+                        Button("Sign out of this device", role: .destructive) { Task { await model.signOut() } }
+                            .buttonStyle(ConfettiButtonStyle(.tertiary, expands: true))
+                    }
                     Button("Change family server") { model.settings = true }
                         .buttonStyle(ConfettiButtonStyle(.tertiary, expands: true))
                 }.padding(24).frame(maxWidth: 560)

@@ -67,7 +67,7 @@ struct GiftFeatureTests {
     }
 
     private func client(using transport: GiftMutationTransport) -> APIClient {
-        APIClient(transport: transport, tokenStore: MemoryTokenStore(token: "fixture-token"))
+        APIClient(address: .fixture, transport: transport, tokenStore: MemoryTokenStore(token: "fixture-token"))
     }
 }
 
