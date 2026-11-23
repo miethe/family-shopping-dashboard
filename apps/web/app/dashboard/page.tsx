@@ -1,2 +1,2 @@
-import { EventHome } from "@/components/gifting/EventHome";
-export default EventHome;
+import { Home } from '@/components/dashboard/Home';
+export default Home;

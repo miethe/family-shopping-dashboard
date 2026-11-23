@@ -15,10 +15,14 @@ interface StatsCardsProps {
   toBuy: number;
   purchased: number;
   occasionId?: number;
+  compact?: boolean;
+  total?: number;
 }
 
-export function StatsCards({ ideas, toBuy, purchased, occasionId }: StatsCardsProps) {
+export function StatsCards({ ideas, toBuy, purchased, occasionId, compact, total }: StatsCardsProps) {
   const router = useRouter();
+
+  if (compact) return <span>{total ? `${purchased} of ${total} gifts bought` : 'A little thought starts here'} <span aria-hidden="true">✨</span></span>;
 
   const stats = [
     {

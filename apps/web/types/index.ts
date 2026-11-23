@@ -250,6 +250,8 @@ export interface RecurrenceRule {
 }
 
 export interface Occasion extends TimestampFields {
+  /** Already returned by the holiday-linked occasion endpoint. */
+  holiday_id?: number | null;
   id: number;
   name: string;
   type: OccasionType;
