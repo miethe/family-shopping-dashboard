@@ -5,7 +5,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import JSON, Boolean, Date, Enum as SQLEnum, Index, Numeric, String, Text
+from sqlalchemy import JSON, Boolean, Date, Enum as SQLEnum, ForeignKey, Index, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
@@ -97,6 +97,8 @@ class Occasion(BaseModel):
         String(50),
         nullable=True,
     )
+
+    holiday_id: Mapped[int | None] = mapped_column(ForeignKey("holidays.id"), nullable=True)
 
     # Relationships
     lists: Mapped[list["List"]] = relationship(

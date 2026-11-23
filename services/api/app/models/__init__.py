@@ -6,6 +6,7 @@ from app.models.entity_budget import EntityBudget
 from app.models.field_option import FieldOption
 from app.models.gift import Gift, GiftPriority
 from app.models.gift_person import GiftPerson, GiftPersonRole
+from app.models.holiday import Holiday
 from app.models.group import Group, PersonGroup
 from app.models.list import List, ListType, ListVisibility
 from app.models.list_item import ListItem, ListItemStatus
