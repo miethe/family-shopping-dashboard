@@ -52,3 +52,24 @@
  .club-bottom-nav [aria-current=page],.club-bottom-nav [data-active=true] { color:rgb(var(--accent)); font-weight:700; }
  .club-bottom-nav [aria-current=page] .nav-icon,.club-bottom-nav [data-active=true] .nav-icon { background:rgb(var(--accent-soft)); box-shadow:0 0 0 5px rgb(var(--accent-soft)); border-radius:5px; }
 }
+/* Dialog positioning utilities have the same specificity as a single class.
+   The role selector keeps the sheet geometry authoritative in the shared dialog. */
+.club-more-sheet[role="dialog"] { top:auto; bottom:0; left:0; transform:none; width:100%; max-width:none; border:0; border-radius:30px 30px 0 0; padding:12px 24px max(25px,env(safe-area-inset-bottom)); display:block; max-height:calc(100dvh - 16px); overflow-y:auto; color:rgb(var(--ink)); }
+body:has(.club-more-sheet) div[data-state][class~="bg-black/50"] { background:rgb(var(--ink) / .4); backdrop-filter:none; }
+.club-more-grid a:nth-child(2) { order:3; } .club-more-grid a:nth-child(3) { order:5; } .club-more-grid a:nth-child(4) { order:4; } .club-more-grid a:nth-child(5) { order:2; } .club-more-grid a:nth-child(6) { order:6; }
+.club-content main .grid>* { min-width:0; }
+@media(min-width:768px) { .club-more-sheet[role="dialog"] { left:auto; right:24px; bottom:24px; max-width:440px; border-radius:30px; } }
+
+/* Compatibility aliases for literal utilities on pages awaiting later milestones.
+   All values resolve to the canonical tokens; page composition is unchanged. */
+.club-shell [class~="bg-[#214d40]"],.club-shell [class~="bg-[#91462d]"] { background-color:rgb(var(--accent)); }
+.club-shell [class~="bg-[#e5e7d8]"] { background-color:rgb(var(--blue)); }
+.club-shell [class~="bg-[#fffdf8]"] { background-color:rgb(var(--white)); }
+.club-shell [class~="bg-[#c8a166]"] { background-color:rgb(var(--butter)); }
+.club-shell [class~="bg-[#84a98c]"] { background-color:rgb(var(--mint)); }
+.club-shell [class~="text-[#f5f1e8]"],.club-shell [class~="text-[#eee6d7]"] { color:rgb(var(--white)); }
+.club-shell [class~="text-[#ddbea9]"] { color:rgb(var(--butter)); }
+.club-shell [class~="text-[#2b2622]"],.club-shell [class~="text-[#474039]"] { color:rgb(var(--ink)); }
+.club-shell [class~="border-[#bdb3a6]"] { border-color:rgb(var(--line)); }
+.club-shell [style*="Georgia"] { font-family:var(--font-family-display) !important; }
+@media(max-width:767px) { .club-content main .grid-cols-12 { column-gap:16px; } }
