@@ -265,6 +265,7 @@ export interface Occasion extends TimestampFields {
 }
 
 export interface OccasionCreate {
+  holiday_id?: number | null;
   name: string;
   type: OccasionType;
   date: string; // ISO date string
