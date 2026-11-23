@@ -35,5 +35,5 @@ it('pre-caches public icons and the manifest without signed-in pages', async () 
   let done: Promise<unknown> | undefined;
   handlers.install({ waitUntil: (promise: Promise<unknown>) => { done = promise; } });
   await done;
-  expect(Array.from(cache.addAll.mock.calls[0][0])).toEqual(['/manifest.json', '/icons/icon-180.png', '/icons/icon-192.png', '/icons/icon-512.png']);
+  expect(Array.from(cache.addAll.mock.calls[0][0])).toEqual(['/manifest.json', '/apple-icon', '/icon', '/app-icon']);
 });

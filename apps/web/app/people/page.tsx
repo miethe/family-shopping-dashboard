@@ -226,7 +226,6 @@ export default function RecipientsPage() {
           <p className="text-[#eee6d7]">
             {groupCounts.all} {groupCounts.all === 1 ? 'recipient' : 'recipients'}, organized in {Math.max(0, Object.values(groupCounts).filter(c => c > 0).length - 1)} {Math.max(0, Object.values(groupCounts).filter(c => c > 0).length - 1) === 1 ? 'group' : 'groups'}
           </p>
-          <span className="absolute right-5 bottom-3 text-[#ddbea9] text-5xl rotate-[15deg]" aria-hidden="true">✦</span>
         </div>
         <div className="mt-5">
           <Button size="lg" className="min-h-[44px] rounded-full whitespace-nowrap" onClick={() => setIsAddModalOpen(true)}>

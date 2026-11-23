@@ -37,9 +37,6 @@ export function Hero({
       <span className={styles.eyebrow}>{eyebrow}</span>
       <h1>{title}</h1>
       {children}
-      <span className={styles.sprig} aria-hidden="true">
-        ✦
-      </span>
     </header>
   );
 }
@@ -105,7 +102,7 @@ export function GiftCard({
   return (
     <article className={compact ? styles.compactGift : styles.gift}>
       <span className={styles.giftMark} aria-hidden="true">
-        ✧
+        🎁
       </span>
       <div className="min-w-0">
         <h3>{gift.name}</h3>

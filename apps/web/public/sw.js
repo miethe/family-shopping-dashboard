@@ -3,12 +3,12 @@
  * Cache public shell assets only. Gift plans always require a live request.
  */
 
-const CACHE_NAME = 'family-gifting-shell-v2';
+const CACHE_NAME = 'family-gifting-together-bow-v4';
 const STATIC_CACHE = [
   '/manifest.json',
-  '/icons/icon-180.png',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  '/apple-icon',
+  '/icon',
+  '/app-icon',
 ];
 
 // Install event - cache static assets

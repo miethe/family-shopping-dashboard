@@ -22,7 +22,7 @@ interface StatsCardsProps {
 export function StatsCards({ ideas, toBuy, purchased, occasionId, compact, total }: StatsCardsProps) {
   const router = useRouter();
 
-  if (compact) return <span>{total ? `${purchased} of ${total} gifts bought` : 'A little thought starts here'} <span aria-hidden="true">✨</span></span>;
+  if (compact) return <span>{total ? `${purchased} of ${total} gifts bought` : 'A little thought starts here'}</span>;
 
   const stats = [
     {

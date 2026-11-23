@@ -10,7 +10,8 @@ html[data-holiday-theme="christmas"] .home-event-hero {
 }
 html[data-holiday-theme="christmas"] .home-event-hero p { color:#ffe4e9; }
 html[data-holiday-theme="christmas"] .countdown-door { background:#fff5df; color:#ae2444; border:2px dashed #dc8092; box-shadow:4px 5px 0 #851735; }
-html[data-holiday-theme="christmas"] .hero-confetti { color:#a8e4cb; }
+html[data-holiday-theme="christmas"] .brand-bow { fill:rgb(var(--cranberry)); }
+html[data-holiday-theme="christmas"] .brand-icon-background { fill:rgb(var(--mint)); }
 html[data-holiday-theme="christmas"] .home-birthday { background:rgb(var(--mint)); }
 html[data-holiday-theme="christmas"] .home-festoon { display:block; height:8px; background:repeating-linear-gradient(120deg,#be2449 0 12px,#fff1cf 12px 24px,#207c63 24px 36px); border-radius:8px; margin-bottom:12px; }
 html[data-holiday-theme="christmas"] .home-budget-meter [role=progressbar]>div { background:rgb(var(--accent)); }

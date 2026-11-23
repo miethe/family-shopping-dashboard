@@ -66,7 +66,6 @@ export default function RegisterPage() {
           <p className="text-[0.72rem] font-bold uppercase tracking-[0.19em]">Gather &amp; give</p>
           <h1 className="text-[1.9rem] sm:text-[clamp(2.1rem,5vw,3.6rem)] leading-[1.08] mt-3 text-[#f5f1e8]" style={{ fontFamily: 'Georgia, serif' }}>Create Account</h1>
           <p className="mt-2 text-[#eee6d7] max-w-[78%]">Sign up to start planning gifts together.</p>
-          <span className="absolute right-5 bottom-3 text-[#ddbea9] text-5xl rotate-[15deg]" aria-hidden="true">✦</span>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 bg-[#fffdf8] border border-[#d1c8bc] rounded-[18px] p-6">

@@ -124,7 +124,6 @@ function EnvelopeCard({
             · {money(envelope.money_allowance)}
           </p>
         </div>
-        <span aria-hidden="true">✧</span>
       </div>
       <p>
         {money(envelope.spent)} bought ·{" "}
