@@ -338,6 +338,7 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
         onGroupByChange={setGroupBy}
       />
 
+      <div className="club-chips" aria-label="Gift statuses"><button aria-pressed={!filters.statuses.length} onClick={()=>setFilters({...filters,statuses:[]})}>All</button>{(['idea','selected','purchased','received'] as const).map(status=><button key={status} aria-pressed={filters.statuses.includes(status)} onClick={()=>setFilters({...filters,statuses:[status]})}>{status==='idea'?'Ideas':status==='selected'?'To buy':status==='purchased'?'Purchased':'Received'}</button>)}</div>
       {/* Select All Button - appears in selection mode */}
       {selection.isSelectionMode && data?.items && data.items.length > 0 && (
         <div className="flex items-center animate-in fade-in duration-200">

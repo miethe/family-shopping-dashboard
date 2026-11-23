@@ -151,7 +151,7 @@ function FilterDropdown({
             'min-w-[200px] max-w-[300px]',
             'p-3',
             'bg-white/95 dark:bg-warm-900/95',
-            'backdrop-blur-xl',
+            'backdrop-blur-none',
             'border border-white/20 dark:border-warm-700/30',
             'rounded-large',
             'shadow-lg',
@@ -250,10 +250,10 @@ export function GiftToolbar({
     <div
       className={cn(
         // Glassmorphism container
-        'flex flex-col md:flex-row items-stretch md:items-center gap-3',
-        'p-3 md:p-4',
-        'bg-white/70 dark:bg-warm-900/50',
-        'backdrop-blur-xl',
+        'club-gift-toolbar flex flex-wrap items-start gap-3',
+        'p-0',
+        'bg-transparent',
+        'backdrop-blur-none',
         'border border-white/20 dark:border-warm-700/30',
         'rounded-large',
         'shadow-subtle'
@@ -262,7 +262,7 @@ export function GiftToolbar({
       aria-label="Gift search and filters"
     >
       {/* Search Input - Full width on mobile, constrained on desktop */}
-      <div className="w-full md:max-w-[240px] relative">
+      <div className="flex-1 min-w-0 relative">
         <Icon
           name={IconNames.search}
           size="sm"
@@ -271,7 +271,7 @@ export function GiftToolbar({
         />
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Search gifts…"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           className={cn(
@@ -293,7 +293,7 @@ export function GiftToolbar({
       </div>
 
       {/* Filter Dropdowns - Wrap on mobile */}
-      <div className="flex flex-wrap items-center gap-2 md:gap-3 flex-1">
+      <details className="club-gift-filter-details"><summary>Filters ⌄</summary><div className="flex flex-wrap items-center gap-2 md:gap-3">
         {/* Status Filter */}
         <FilterDropdown
           label="Status"
@@ -479,7 +479,7 @@ export function GiftToolbar({
             <span>Clear ({activeCount})</span>
           </button>
         )}
-      </div>
+      </div></details>
     </div>
   );
 }
