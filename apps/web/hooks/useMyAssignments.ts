@@ -1,14 +1,4 @@
-/**
- * My Assignments Hook
- *
- * React Query hook for fetching list items assigned to the current user.
- * Provides filtering and grouping capabilities for assignment management.
- *
- * TODO: Backend needs GET /list-items?assigned_to=X endpoint.
- * Currently disabled - returns empty array.
- * See: https://github.com/family-gifting/dashboard/issues/TBD
- */
-
+import { listApi, listItemApi, personApi } from '@/lib/api/endpoints';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from './useAuth';
 import type { ListItemWithGift } from '@/types';
@@ -29,26 +19,26 @@ export interface AssignmentFilterParams {
   status?: string;
 }
 
-/**
- * Fetch all list items assigned to the current user
- * @param params - Optional filter parameters (status)
- *
- * NOTE: Currently returns empty array - backend endpoint not implemented.
- * Backend needs: GET /list-items?assigned_to=X or GET /users/{id}/assignments
- */
-export function useMyAssignments(params?: AssignmentFilterParams) {
-  const { user } = useAuth();
-
-  return useQuery({
-    queryKey: ['assignments', 'me', params],
-    queryFn: async () => {
-      // TODO: Implement when backend supports GET /list-items?assigned_to=X
-      // Currently no endpoint exists to query items by assigned user across all lists
-      console.warn('useMyAssignments: Backend endpoint not implemented');
-      return [] as AssignmentItem[];
-    },
-    enabled: !!user?.id,
-  });
+/** Read existing list/item endpoints sequentially to bound resource use. */
+export async function loadAssignments(userId:number,status?:string):Promise<AssignmentItem[]> {
+  const result:AssignmentItem[]=[];let cursor:number|undefined;
+  const names=new Map<number,string>();
+  do {
+    const page=await listApi.list({limit:100,cursor});
+    for(const list of page.items) {
+      const items=await listItemApi.list({list_id:list.id});
+      const assigned=items.filter(item=>item.assigned_to===userId&&(!status||item.status===status));
+      if(!assigned.length)continue;
+      if(list.person_id&&!names.has(list.person_id))names.set(list.person_id,(await personApi.get(list.person_id)).display_name);
+      result.push(...assigned.map(item=>({...item,list:{id:list.id,name:list.name,person_id:list.person_id,person_name:list.person_id?names.get(list.person_id):undefined}})));
+    }
+    cursor=page.has_more?page.next_cursor??undefined:undefined;
+  } while(cursor!==undefined);
+  return result;
+}
+export function useMyAssignments(params?:AssignmentFilterParams) {
+ const {user}=useAuth();
+ return useQuery({queryKey:['assignments','me',user?.id,params],queryFn:()=>loadAssignments(user!.id,params?.status),enabled:!!user?.id});
 }
 
 /**

@@ -1,0 +1,5 @@
+import {it,expect,vi} from 'vitest';
+import {loadAssignments} from '../useMyAssignments';
+import {listApi,listItemApi,personApi} from '@/lib/api/endpoints';
+vi.mock('@/lib/api/endpoints',()=>({listApi:{list:vi.fn()},listItemApi:{list:vi.fn()},personApi:{get:vi.fn()}}));
+it('reads every page and only returns the signed-in user’s matching items',async()=>{vi.mocked(listApi.list).mockResolvedValueOnce({items:[{id:1,name:'Birthday',person_id:3}],has_more:true,next_cursor:1} as any).mockResolvedValueOnce({items:[{id:2,name:'Winter'}],has_more:false} as any);vi.mocked(listItemApi.list).mockResolvedValueOnce([{id:1,assigned_to:7,status:'selected'},{id:2,assigned_to:8,status:'selected'}] as any).mockResolvedValueOnce([{id:3,assigned_to:7,status:'idea'}] as any);vi.mocked(personApi.get).mockResolvedValue({display_name:'Juno'} as any);const result=await loadAssignments(7,'selected');expect(result.map(x=>x.id)).toEqual([1]);expect(result[0].list?.person_name).toBe('Juno');expect(listApi.list).toHaveBeenLastCalledWith({limit:100,cursor:1});});
