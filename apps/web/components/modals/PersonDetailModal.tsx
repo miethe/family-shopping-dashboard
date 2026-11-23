@@ -1,5 +1,6 @@
 "use client";
 
+import { ProfileHero, ProfilePrompts } from '@/components/people/ProfileOverview';
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { EntityModal, useEntityModal } from "./EntityModal";
@@ -339,55 +340,13 @@ export function PersonDetailModal({
           {!isEditing ? (
             <>
               {/* VIEW MODE */}
-              {/* Hero Section with Avatar */}
-              <div
-                className={cn(
-                  "flex flex-col items-center text-center py-12 px-6",
-                  "min-h-[240px]",
-                  "bg-gradient-to-br from-orange-50 via-pink-50 to-rose-50",
-                  "rounded-2xl border border-orange-100"
-                )}
-              >
-                <button
-                  type="button"
-                  onClick={() => setShowImageDialog(true)}
-                  className="relative group cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-full"
-                  aria-label="Edit photo"
-                >
-                  <Avatar
-                    size="xl"
-                    className="ring-4 ring-white shadow-xl mb-4 group-hover:ring-orange-200 transition-all"
-                  >
-                    {person.photo_url && (
-                      <AvatarImage src={person.photo_url} alt={person.display_name} />
-                    )}
-                    <AvatarFallback>
-                      {getInitials(person.display_name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 rounded-full transition-all mb-4">
-                    <Edit className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                </button>
-
-                <h2 className="text-3xl font-bold text-warm-900 mb-2">
-                  {person.display_name}
-                </h2>
-
-                {person.relationship && (
-                  <Badge
-                    variant="default"
-                    className="text-sm px-4 py-1"
-                  >
-                    <Heart className="h-3 w-3 mr-1.5 text-orange-500" />
-                    {person.relationship}
-                  </Badge>
-                )}
-              </div>
+              <ProfileHero person={person}/>
+              <Button variant="outline" onClick={()=>setShowImageDialog(true)}>Edit photo</Button>
+              <ProfilePrompts person={person}/>
 
               {/* Tabs */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="w-full mb-6">
+                <TabsList className="club-profile-tabs w-full mb-6">
                   <TabsTrigger value="overview" className="flex-1">
                     Overview
                   </TabsTrigger>
@@ -756,7 +715,7 @@ export function PersonDetailModal({
             <>
               {/* EDIT MODE */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="w-full mb-6">
+                <TabsList className="club-profile-tabs w-full mb-6">
                   <TabsTrigger value="overview" className="flex-1">
                     Overview
                   </TabsTrigger>

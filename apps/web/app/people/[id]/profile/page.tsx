@@ -7,6 +7,8 @@
 
 'use client';
 
+import { ProfileOverview } from '@/components/people/ProfileOverview';
+import { PersonDetailModal } from '@/components/modals/PersonDetailModal';
 import { use, useState } from 'react';
 import { usePerson, useDeletePerson } from '@/hooks/usePersons';
 import { PageHeader } from '@/components/layout';
@@ -57,6 +59,7 @@ export default function PersonDetailPage({ params }: Props) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { confirm, dialog } = useConfirmDialog();
+  const [details,setDetails]=useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: person, isLoading, error } = usePerson(personId);
@@ -165,7 +168,9 @@ export default function PersonDetailPage({ params }: Props) {
           }
         />
 
-        <PersonDetail person={person} />
+        <ProfileOverview person={person} />
+        <Button variant="outline" onClick={()=>setDetails(true)}>More details, budgets & comments</Button>
+        <PersonDetailModal personId={String(person.id)} open={details} onOpenChange={setDetails}/>
 
         <Tabs defaultValue="info" className="w-full">
           <TabsList className="w-full">
