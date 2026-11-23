@@ -73,6 +73,24 @@ import Testing
         #expect(try await restored.items(account: idea.account).isEmpty)
     }
 
+    @Test func anOfflineManualRetryKeepsTheOriginalAttemptAmbiguous() async throws {
+        let file = location(); defer { try? FileManager.default.removeItem(at: file) }
+        let queue = IdeaQueue(file: file)
+        let idea = PendingIdea(account: "fixture#1", name: "Paper kite")
+        let receipt = QueueReceipt()
+        try await queue.enqueue(idea)
+        await #expect(throws: URLError(.timedOut)) {
+            try await queue.flush(account: idea.account, find: { _ in false }, send: { _ in throw URLError(.timedOut) })
+        }
+        await #expect(throws: URLError(.cannotConnectToHost)) {
+            try await queue.flush(account: idea.account, retrying: idea.id, find: { _ in false },
+                                  send: { _ in throw URLError(.cannotConnectToHost) })
+        }
+        try await queue.flush(account: idea.account, find: { _ in false }, send: { _ in await receipt.sent() })
+        #expect(await receipt.count == 0)
+        #expect(try await queue.items(account: idea.account).first?.attempted == true)
+    }
+
     @Test func retryReconcilesExistingReceiptAndDiscardIsAccountScoped() async throws {
         let file = location(); defer { try? FileManager.default.removeItem(at: file) }
         let queue = IdeaQueue(file: file)

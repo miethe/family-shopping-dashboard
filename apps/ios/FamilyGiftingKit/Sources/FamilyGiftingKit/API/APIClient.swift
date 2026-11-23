@@ -205,9 +205,10 @@ public actor APIClient {
             return try await request("/api/v1/auth/session/refresh", method: "POST", body: body, authenticated: false)
         } catch let error as APIError where error.isUnauthorized {
             // The stored account still identifies the offline journal. A fresh login is required.
-            if var saved = try savedCredential() {
-                saved.refreshStartedAt = .distantPast
-                try tokenStore.write(saved)
+            if let saved = try savedCredential() {
+                let expired = SessionCredential(accessToken: saved.accessToken, expiresAt: .distantPast,
+                                                origin: saved.origin, userID: saved.userID)
+                try tokenStore.write(expired)
             }
             throw APIError.expiredSession
         }

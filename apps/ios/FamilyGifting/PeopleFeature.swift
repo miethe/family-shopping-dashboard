@@ -1251,7 +1251,7 @@ private struct PersonSizesFields: View {
 private struct PersonPhotoDraft {
     var jpeg: Data?
     var uploadedURL: String?
-    var removesExisting = false
+    var prefersSticker = false
 
     func upload(client: APIClient) async throws -> String? {
         if let uploadedURL { return uploadedURL }
@@ -1270,7 +1270,7 @@ private struct PersonPhotoFields: View {
     var hasExistingPhoto = false
 
     var body: some View {
-        let photoAction = photo.jpeg == nil && (!hasExistingPhoto || photo.removesExisting) ? "Choose a photo" : "Choose another photo"
+        let photoAction = photo.jpeg == nil && (!hasExistingPhoto || photo.prefersSticker) ? "Choose a photo" : "Choose another photo"
         VStack(alignment: .leading, spacing: 13) {
             preview
                 .frame(maxWidth: .infinity)
@@ -1279,15 +1279,15 @@ private struct PersonPhotoFields: View {
                 Label(photoAction, systemImage: "photo")
             }
             .buttonStyle(ConfettiButtonStyle(.secondary, expands: true))
-            if photo.jpeg != nil || hasExistingPhoto && !photo.removesExisting {
+            if photo.jpeg != nil || hasExistingPhoto && !photo.prefersSticker {
                 Button("Use a sticker instead") {
-                    photo = PersonPhotoDraft(removesExisting: hasExistingPhoto)
+                    photo = PersonPhotoDraft(prefersSticker: hasExistingPhoto)
                     if sticker == nil { sticker = StickerImage(icon: .fox, tint: .yellow) }
                     selection = nil
                 }
                 .buttonStyle(ConfettiButtonStyle(.tertiary, expands: true))
             }
-            if photo.jpeg == nil && (!hasExistingPhoto || photo.removesExisting) {
+            if photo.jpeg == nil && (!hasExistingPhoto || photo.prefersSticker) {
                 PersonStickerPicker(name: name, sticker: $sticker)
             }
         }
@@ -1300,8 +1300,8 @@ private struct PersonPhotoFields: View {
                 .clipShape(RoundedRectangle(cornerRadius: 30))
                 .accessibilityHidden(true)
         } else {
-            StickerAvatar(name: name, sticker: photo.removesExisting || !hasExistingPhoto ? sticker : nil,
-                          photoURL: photo.removesExisting ? nil : existingURL, size: 104)
+            StickerAvatar(name: name, sticker: photo.prefersSticker || !hasExistingPhoto ? sticker : nil,
+                          photoURL: photo.prefersSticker ? nil : existingURL, size: 104)
         }
     }
 }

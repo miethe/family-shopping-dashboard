@@ -48,15 +48,14 @@ public actor IdeaQueue {
             if try await find(idea.id) { try remove(idea.id); continue }
             guard idea.rejection == nil, !idea.attempted || retryID == idea.id else { continue }
             // An explicit retry may proceed only after this fresh lookup completed.
-
             try mark(idea.id, attempted: true)
             do { try await send(idea); try remove(idea.id) }
             catch {
                 // These URL errors mean no request reached the server; safe to retry later.
                 if let error = error as? URLError, requestWasNeverSent(error) {
-                    try mark(idea.id, attempted: false)
+                    try mark(idea.id, attempted: idea.attempted)
                 } else if let error = error as? APIError, case .server(let code, _) = error, (400..<500).contains(code), code != 408 {
-                    try mark(idea.id, attempted: false)
+                    try mark(idea.id, attempted: idea.attempted)
                     if ![401, 403, 429].contains(code) {
                         var all = try read()
                         if let index = all.firstIndex(where: { $0.id == idea.id }) { all[index].rejection = code }

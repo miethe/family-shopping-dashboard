@@ -454,10 +454,6 @@ struct NativeIdeasView: View {
         }
     }
 
-    private func ideaCard(name: String, imageURL: String?, summary: String?) -> some View {
-        ideaCard(name: name, imageURL: imageURL, summary: summary) { EmptyView() }
-    }
-
     private func ideaCard<Action: View>(name: String, imageURL: String?, summary: String?, @ViewBuilder action: () -> Action) -> some View {
         ConfettiCard {
             VStack(alignment: .leading, spacing: 8) {
