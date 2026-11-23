@@ -32,8 +32,8 @@ final class AppModel {
     private var giftCursor: Int?
     private var occasionCursor: Int?
 
-    init() {
-        let args = ProcessInfo.processInfo.arguments
+    init(arguments: [String] = ProcessInfo.processInfo.arguments) {
+        let args = arguments
         #if DEBUG
         let scenarioIndex = args.firstIndex(of: "--fixture")
         #else

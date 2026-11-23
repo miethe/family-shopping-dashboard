@@ -32,6 +32,7 @@ targets:
     info:
       path: FamilyGifting/Info.plist
       properties:
+        ITSAppUsesNonExemptEncryption: false
         CFBundleDisplayName: Family Gifting
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
@@ -47,10 +48,21 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+  FamilyGiftingTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [FamilyGiftingTests]
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: FamilyGifting
 schemes:
   FamilyGifting:
     build:
       targets:
         FamilyGifting: all
+    test:
+      targets: [FamilyGiftingTests]
     run:
       config: Debug

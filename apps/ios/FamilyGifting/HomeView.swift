@@ -8,7 +8,7 @@ struct HomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(model.christmas ? "Hello, holiday magic ✦" : "Hello, thoughtful you ☀").font(ConfettiFont.display)
+                    Text(model.christmas ? "Hello, holiday magic" : "Hello, thoughtful you").font(ConfettiFont.display)
                     if let holiday = model.holidays.min(by: { $0.daysUntil < $1.daysUntil }) {
                         Text("Up next: \(holiday.name) · \(holiday.daysUntil) days")
                             .font(ConfettiFont.detail).foregroundStyle(ConfettiColor.muted)
@@ -36,12 +36,12 @@ struct HomeView: View {
                         Divider().overlay(.white.opacity(0.3))
                         ViewThatFits(in: .horizontal) {
                             HStack {
-                                Text("\(occasion.purchasedItems) of \(occasion.totalItems) gifts bought ✨").font(ConfettiFont.detail)
+                                Text("\(occasion.purchasedItems) of \(occasion.totalItems) gifts bought").font(ConfettiFont.detail)
                                 Spacer()
                                 planButton(occasion.id)
                             }
                             VStack(alignment: .leading) {
-                                Text("\(occasion.purchasedItems) of \(occasion.totalItems) gifts bought ✨").font(ConfettiFont.detail)
+                                Text("\(occasion.purchasedItems) of \(occasion.totalItems) gifts bought").font(ConfettiFont.detail)
                                 planButton(occasion.id)
                             }
                         }
@@ -59,7 +59,7 @@ struct HomeView: View {
                 if let birthday = nextBirthday {
                     Button { model.open("/people/\(birthday.person.id)/profile", title: birthday.person.displayName) } label: {
                         HStack {
-                            Text("🎂").accessibilityHidden(true)
+                            Image(systemName: "birthday.cake").accessibilityHidden(true)
                             Text("\(birthday.person.displayName)’s birthday").font(ConfettiFont.detail)
                             Spacer()
                             Text("\(birthday.days) days →").font(ConfettiFont.label)
@@ -73,7 +73,7 @@ struct HomeView: View {
                             Button { model.open("/ideas", title: "Ideas inbox") } label: {
                                 ConfettiCard {
                                     HStack(spacing: 12) {
-                                        Image(systemName: "sparkles").font(.title2).frame(width: 46, height: 46)
+                                        Image(systemName: "lightbulb").font(.title2).frame(width: 46, height: 46)
                                             .background(ConfettiColor.butter, in: RoundedRectangle(cornerRadius: 15)).accessibilityHidden(true)
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(idea.name).font(ConfettiFont.subheading)
