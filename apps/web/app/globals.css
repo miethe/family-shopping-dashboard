@@ -1,6 +1,7 @@
 @import "./tokens.css";
 @import "./shell.css";
 @import "./home.css";
+@import "./christmas.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
