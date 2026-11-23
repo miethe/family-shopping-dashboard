@@ -25,3 +25,37 @@
 .fg-theme select,.fg-theme textarea { max-width:100%; color:rgb(var(--ink)); }.fg-theme [role=tablist] { max-width:100%; }.fg-theme [role=tab] { min-height:44px; }.fg-theme [role=alert] { overflow-wrap:anywhere; }
 @media(max-width:767px) { .club-lists h1 { font-size:28px; }.club-lists [class~="p-8"] { padding:16px; }.club-standard-heading [class~="flex-shrink-0"] { flex-wrap:wrap; }.club-standard-heading [class~="flex-shrink-0"]>div { flex-wrap:wrap; } }
 .club-gift-filter-details { position:relative; }.club-gift-filter-details>summary { display:flex; align-items:center; min-height:44px; padding:10px 14px; border-radius:15px; background:rgb(var(--subtle)); font-size:13px; cursor:pointer; }.club-gift-filter-details[open]>div { position:absolute; z-index:20; right:0; top:52px; width:min(400px,calc(100vw - 40px)); padding:16px; background:white; border:1px solid rgb(var(--line)); border-radius:20px; box-shadow:var(--shadow-medium); }.club-gifts .club-chips { gap:6px; }.club-gifts .club-chips button { padding:10px 12px; }
+/* Visual review: readable profile cards and anchored creator actions. */
+.club-profile-gifts .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.club-profile-gifts .aspect-square { aspect-ratio:2/1; background:rgb(var(--selected)); }
+.club-profile-gifts .aspect-square svg { color:rgb(var(--accent)); width:40px; height:40px; }
+@media(max-width:767px) {
+ .club-phone-header .club-brand { min-height:44px; }
+ #main-content a,#main-content button { min-height:44px; min-width:44px; }
+ #main-content a:not([class]) { display:inline-flex; align-items:center; }
+ .creator-form { height:calc(100dvh - 73px); min-height:0; padding:22px 24px 16px; }
+ .creator-fields { min-height:0; overflow-y:auto; flex:1; align-content:start; padding:3px; margin-top:16px; }
+ .creator-footer { flex-shrink:0; padding-top:12px; background:rgb(var(--paper)); }
+ .creator-form>h2,.creator-form>p { flex-shrink:0; }
+ .creator-done .creator-avatar { width:125px; height:125px; margin-bottom:16px; }
+ .club-standard-heading:has(~ .club-profile-hero)>div,
+ .club-standard-heading:has(~ .club-gift-detail)>div { display:flex; align-items:center; justify-content:space-between; padding-bottom:0; }
+ .club-standard-heading:has(~ .club-profile-hero)>div>div:last-child>div:first-child,
+ .club-standard-heading:has(~ .club-gift-detail)>div>div:last-child>div:first-child { display:none; }
+ .club-standard-heading:has(~ .club-profile-hero) a,
+ .club-standard-heading:has(~ .club-gift-detail) a { margin-bottom:0; }
+ .club-gift-card { position:relative; padding-bottom:50px; }
+ .club-gift-actions { position:static; margin-top:0; }
+ .club-gift-actions>summary { position:absolute; bottom:4px; left:12px; right:12px; }
+ .club-gift-actions[open] { margin-top:8px; }
+ .club-gift-copy h3 button { min-height:44px; padding:6px 0; }
+ .club-gift-copy h3 { margin-bottom:0; }
+ .club-gift-meta { margin-top:0; }
+ .club-gift-copy>div:has([aria-label*="recipient"]) { margin:0; }
+ .club-gift-location { margin:4px 0 0; padding-top:6px; }
+ .club-gift-detail>div:last-child>div { padding:16px; }
+}
+@media(max-width:767px) {
+ [role=dialog] button,[role=dialog] a { min-height:44px; min-width:44px; }
+ [role=dialog] [role=tabpanel] .aspect-square { aspect-ratio:2/1; max-height:180px; background:rgb(var(--accent-soft)); }
+}
