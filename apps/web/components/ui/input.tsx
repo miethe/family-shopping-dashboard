@@ -31,13 +31,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           className={cn(
             // Base
-            'w-full px-4 py-3 bg-white text-base text-[#2b2622] font-normal',
+            'w-full px-4 py-3 bg-white text-base text-[rgb(var(--ink))] font-normal',
             'placeholder:text-warm-400',
             'min-h-[44px]', // Touch target
             // Border
-            'border border-[#bdb3a6] rounded-[10px] shadow-none',
+            'border border-[rgb(var(--line))] rounded-medium shadow-none',
             // Focus
-            'focus:outline-none focus:border-[#214d40] focus:ring-2 focus:ring-[#214d40]/25',
+            'focus:outline-none focus:border-[rgb(var(--accent))] focus:ring-2 focus:ring-[rgb(var(--accent))]/25',
             // Transitions
             'transition-all duration-200 ease-out',
             // Error state

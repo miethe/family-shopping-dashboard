@@ -1,4 +1,7 @@
-/* eslint-disable @next/next/no-page-custom-font */
+import localFont from 'next/font/local'
+const display = localFont({ src: './fonts/Montserrat-Bold.otf', variable: '--font-display', display: 'swap', weight: '700', fallback: ['system-ui'] })
+const body = localFont({ src: './fonts/OpenSans-Regular.ttf', variable: '--font-body', display: 'swap', weight: '400', fallback: ['system-ui'] })
+const symbols = localFont({ src: './fonts/MaterialSymbols.ttf', variable: '--font-symbols', display: 'block', preload: false })
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Providers } from '@/components/providers'
@@ -13,22 +16,13 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'Gifting',
   },
-  icons: {
-    icon: [
-      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/icons/icon-180.png', sizes: '180x180', type: 'image/png' },
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-  },
+
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#3b82f6',
+  themeColor: '#354de8',
   viewportFit: 'cover', // For iOS safe areas
 }
 
@@ -38,18 +32,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Preconnect to Google Fonts for faster loading */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* Material Symbols Outlined Font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html className={`${display.variable} ${body.variable} ${symbols.variable}`} lang="en" suppressHydrationWarning>
       <body>
         <Providers>
           <PWARegister />
