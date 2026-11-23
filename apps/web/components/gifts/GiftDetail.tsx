@@ -1,5 +1,6 @@
 'use client';
 
+import { GiftProgress } from './GiftProgress';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -37,9 +38,9 @@ export function GiftDetail({ gift }: GiftDetailProps) {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
+    <div className="club-gift-detail grid md:grid-cols-2 gap-6">
       {/* Image */}
-      <div className="aspect-square relative rounded-lg overflow-hidden bg-gray-100">
+      <div className="club-detail-art relative overflow-hidden">
         {gift.image_url ? (
           <Image
             src={gift.image_url}
@@ -94,9 +95,7 @@ export function GiftDetail({ gift }: GiftDetailProps) {
             </div>
           )}
 
-          {gift.notes && (
-            <div><h2 className="font-semibold">Where it is / notes</h2><p className="whitespace-pre-wrap">{gift.notes}</p></div>
-          )}
+          <GiftProgress gift={gift}/>
 
           <p className="text-sm text-gray-500 pt-2 border-t border-gray-200">
             Added {formatDate(gift.created_at)}

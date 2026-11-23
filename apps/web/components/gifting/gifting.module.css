@@ -418,3 +418,6 @@
   .hero p { font-size: 0.95rem; max-width: 72%; }
   .sprig { font-size: 36px; right: 16px; bottom: 10px; }
 }
+/* Confetti page anatomy: paper headings, white cards, sticker artwork. */
+.page { max-width:none; }.hero { padding:0; background:transparent; color:rgb(var(--ink)); border-radius:0; overflow:visible; }.hero h1 { font-size:42px; max-width:none; margin:8px 0 10px; letter-spacing:-1.8px; }.hero p { color:rgb(var(--muted)); max-width:none; font-size:14px; }.gift { border-radius:24px; padding:19px; }.gift h3 { font-size:17px; }.giftMark { height:140px; border-radius:18px; display:grid; place-items:center; font-size:65px; }.shelf { border-radius:24px; background:white; }.empty { background:white; border-radius:24px; }.compactGift { border-radius:20px; }
+@media(max-width:767px) { .hero { padding:0; }.hero h1 { font-size:28px; letter-spacing:-1px; }.hero p { max-width:none; font-size:13px; }.gift { display:grid; grid-template-columns:65px minmax(0,1fr); gap:12px; padding:12px; border-radius:20px; }.giftMark { height:71px; font-size:35px; margin:0; border-radius:13px; }.gift h3 { font-size:13px; }.gift p { font-size:12px; }.cardGrid { grid-template-columns:minmax(0,1fr); }.page .eyebrow { font-size:11px; }.page .note,.page .date { font-size:12px; } }

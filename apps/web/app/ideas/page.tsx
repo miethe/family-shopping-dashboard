@@ -1,4 +1,7 @@
 "use client";
+import { useState } from "react";
+import { QuickAddModal } from "@/components/quick-add";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useGiftingIdeas } from "@/hooks/useGifting";
@@ -10,13 +13,16 @@ import {
   styles,
 } from "@/components/gifting/shared";
 export default function IdeasPage() {
+  const [adding,setAdding]=useState(false);
   const query = useGiftingIdeas();
   const router = useRouter();
   return (
     <div className={styles.page}>
-      <Hero eyebrow="Thoughts worth keeping" title="Ideas">
+      <Hero eyebrow="Thoughts worth keeping" title="Good ideas start here.">
         <p>Saved for someone, or for a moment still to come.</p>
       </Hero>
+      <Button onClick={()=>setAdding(true)}>+ Add an idea</Button>
+      <QuickAddModal isOpen={adding} onClose={()=>setAdding(false)}/>
       <Link href="/gifts" className={styles.textLink}>All gifts &amp; status →</Link>
       <QueryState
         loading={query.isLoading}

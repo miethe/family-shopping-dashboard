@@ -51,7 +51,7 @@ function GiftsSkeleton() {
       </div>
 
       {/* Grid skeleton */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="club-gift-grid">
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
           <div key={i} className="space-y-3">
             <Skeleton className="aspect-square w-full" />
@@ -239,10 +239,10 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
   }, [selection]);
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="club-gifts space-y-6">
       <PageHeader
-        title="Gift Catalog"
-        subtitle="Browse and manage gift ideas"
+        title="Good things, saved."
+        subtitle="Every idea. Every hiding place."
         actions={
           <div className="flex gap-2">
             {/* Selection Mode Toggle */}
@@ -352,7 +352,7 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
       )}
 
       {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="club-gift-grid">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div key={i} className="space-y-3">
               <Skeleton className="aspect-square w-full" />
@@ -381,7 +381,7 @@ function GiftsPageContent({ onOpenDetail }: GiftsPageContentProps) {
           </Link>
         </div>
       ) : groupBy === 'none' ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="club-gift-grid">
           {data.items.map((gift) => {
             const mappedGift = mapGiftForCard(gift);
             return (
