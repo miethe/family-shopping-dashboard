@@ -127,7 +127,7 @@ struct HomeView: View {
                             ForEach(Array(model.people.prefix(8)), id: \.id) { person in
                                 Button { model.open("/people/\(person.id)/profile", title: person.displayName) } label: {
                                     VStack(spacing: 8) {
-                                        ConfettiAvatar(name: person.displayName, size: 54)
+                                        PersonAvatar(model: model, person: person, size: 54)
                                         Text(person.displayName).font(ConfettiFont.caption).lineLimit(2)
                                     }.frame(width: 68)
                                 }.buttonStyle(.plain).accessibilityLabel("Open \(person.displayName)’s profile")

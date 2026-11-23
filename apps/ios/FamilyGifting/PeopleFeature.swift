@@ -141,13 +141,18 @@ struct NativePeopleView: View {
         } else if matches.isEmpty && model.busy {
             ProgressView("Loading people…").frame(maxWidth: .infinity, minHeight: 100)
         } else {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: typeSize.isAccessibilitySize ? 330 : 150), spacing: 10)], spacing: 10) {
-                ForEach(matches) { person in
-                    Button { route = PersonRoute(person: person) } label: {
-                        PersonCard(model: model, person: person)
+            let columns = typeSize.isAccessibilitySize ? 1 : 2
+            Grid(horizontalSpacing: 10, verticalSpacing: 10) {
+                ForEach(Array(stride(from: 0, to: matches.count, by: columns)), id: \.self) { start in
+                    GridRow {
+                        ForEach(matches.dropFirst(start).prefix(columns)) { person in
+                            Button { route = PersonRoute(person: person) } label: {
+                                PersonCard(model: model, person: person)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityElement(children: .combine)
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityElement(children: .combine)
                 }
             }
         }
@@ -199,6 +204,7 @@ private struct PersonCard: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
                 }
+                Spacer(minLength: 0)
                 Divider()
                 Label("View", systemImage: "arrow.right")
                     .labelStyle(.trailingIcon)
@@ -207,6 +213,7 @@ private struct PersonCard: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .accessibilityHidden(true)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(Rectangle())
         }
     }
@@ -222,147 +229,79 @@ private extension LabelStyle where Self == TrailingIconLabelStyle {
     static var trailingIcon: Self { Self() }
 }
 
-private enum StickerIcon: String, CaseIterable, Identifiable {
-    case paw, lizard, bird, sun, leaf, sparkle, initial
-    var id: Self { self }
-
-    var glyph: String? {
-        switch self {
-        case .paw: "pawprint.fill"
-        case .lizard: "lizard.fill"
-        case .bird: "bird.fill"
-        case .sun: "sun.max.fill"
-        case .leaf: "leaf.fill"
-        case .sparkle: "sparkles"
-        case .initial: nil
-        }
-    }
-
-    var defaultColor: StickerColor {
-        switch self {
-        case .paw, .leaf: .pink
-        case .lizard: .mint
-        case .bird, .sun: .yellow
-        case .sparkle, .initial: .blue
-        }
-    }
-}
-
-private enum StickerColor: String, CaseIterable, Identifiable {
-    case pink, mint, yellow, blue
-    var id: Self { self }
+private extension StickerImage.Tint {
     var fill: Color {
-        switch self {
-        case .pink: ConfettiColor.pink
-        case .mint: ConfettiColor.mint
-        case .yellow: ConfettiColor.butter
-        case .blue: ConfettiColor.blue
-        }
+        let rgb = UInt32(rawValue.dropFirst(), radix: 16) ?? 0
+        return Color(red: Double((rgb >> 16) & 255) / 255,
+                     green: Double((rgb >> 8) & 255) / 255,
+                     blue: Double(rgb & 255) / 255)
     }
 }
 
-private struct PersonSticker: Equatable {
-    var icon: StickerIcon = .initial
-    var color: StickerColor = .blue
-
-    var storedValue: String { "\(icon.rawValue)/\(color.rawValue)" }
-
-    init(icon: StickerIcon = .initial) {
-        self.icon = icon
-        color = icon.defaultColor
-    }
-
-    init?(storedValue: String) {
-        let parts = storedValue.split(separator: "/")
-        guard parts.count == 2, let icon = StickerIcon(rawValue: String(parts[0])),
-              let color = StickerColor(rawValue: String(parts[1])) else { return nil }
-        self.icon = icon
-        self.color = color
-    }
-
-    @MainActor
-    static func key(model: AppModel, person: Person) -> String {
-        let scope = model.fixture ? "fixtures" : model.address
-        return "person-sticker/\(scope)/\(person.id)/\(person.createdAt.timeIntervalSince1970)"
-    }
-
-    @MainActor
-    static func current(model: AppModel, person: Person) -> Self {
-        let stored = UserDefaults.standard.string(forKey: key(model: model, person: person)) ?? ""
-        return Self(storedValue: stored) ?? fallback(model: model, person: person)
-    }
-
-    @MainActor
-    static func fallback(model: AppModel, person: Person) -> Self {
-        if model.fixture {
-            let icons: [Int: StickerIcon] = [3: .paw, 4: .lizard, 5: .bird, 6: .leaf, 7: .sun]
-            if let icon = icons[person.id] { return Self(icon: icon) }
-        }
-        let colors = StickerColor.allCases
-        var sticker = Self()
-        sticker.color = colors[Int(person.displayName.unicodeScalars.first?.value ?? 0) % colors.count]
-        return sticker
-    }
-
-    @MainActor
-    func save(model: AppModel, person: Person) {
-        UserDefaults.standard.set(storedValue, forKey: Self.key(model: model, person: person))
-    }
-}
-
-private struct PersonAvatar: View {
+struct PersonAvatar: View {
     let model: AppModel
     let person: Person
     let size: CGFloat
-    @AppStorage private var storedSticker: String
-
-    init(model: AppModel, person: Person, size: CGFloat) {
-        self.model = model
-        self.person = person
-        self.size = size
-        _storedSticker = AppStorage(wrappedValue: "", PersonSticker.key(model: model, person: person))
-    }
 
     var body: some View {
-        let sticker = PersonSticker(storedValue: storedSticker) ?? PersonSticker.fallback(model: model, person: person)
-        ConfettiAvatar(name: person.displayName, photoURL: personPhotoURL(person.photoUrl, model: model),
-                       sticker: sticker.icon.glyph, size: size, fill: sticker.color.fill)
+        StickerAvatar(name: person.displayName, sticker: StickerImage(dataURI: person.photoUrl),
+                      photoURL: personPhotoURL(person.photoUrl, model: model), size: size)
+    }
+}
+
+private struct StickerAvatar: View {
+    let name: String
+    let sticker: StickerImage?
+    var photoURL: URL? = nil
+    let size: CGFloat
+
+    var body: some View {
+        if let sticker {
+            Text(sticker.icon.rawValue)
+                .font(.system(size: size * 0.56))
+                .frame(width: size, height: size)
+                .background(sticker.tint.fill, in: RoundedRectangle(cornerRadius: size * 28 / 96))
+                .accessibilityLabel("\(name) avatar")
+                .accessibilityAddTraits(.isImage)
+        } else {
+            ConfettiAvatar(name: name, photoURL: photoURL, size: size)
+        }
     }
 }
 
 private struct PersonStickerPicker: View {
     let name: String
-    @Binding var sticker: PersonSticker
+    @Binding var sticker: StickerImage?
     @Environment(\.confettiTheme) private var theme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Sticker").font(ConfettiFont.label)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 48), spacing: 6)], alignment: .leading, spacing: 8) {
-                ForEach(StickerIcon.allCases) { icon in
+                ForEach(StickerImage.Icon.allCases, id: \.self) { icon in
                     Button {
-                        sticker = PersonSticker(icon: icon)
+                        sticker = StickerImage(icon: icon, tint: sticker?.tint ?? .yellow)
                     } label: {
-                        ConfettiAvatar(name: name, sticker: icon.glyph, size: 44, fill: icon.defaultColor.fill)
+                        StickerAvatar(name: name, sticker: StickerImage(icon: icon, tint: sticker?.tint ?? .yellow), size: 44)
                             .padding(2)
                             .overlay {
-                                if sticker.icon == icon { RoundedRectangle(cornerRadius: 17).strokeBorder(theme.accent, lineWidth: 2) }
+                                if sticker?.icon == icon { RoundedRectangle(cornerRadius: 17).strokeBorder(theme.accent, lineWidth: 2) }
                             }
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel(icon.rawValue.capitalized)
-                    .accessibilityAddTraits(sticker.icon == icon ? .isSelected : [])
+                    .accessibilityLabel(icon == .discoBall ? "Disco ball" : String(describing: icon).capitalized)
+                    .accessibilityAddTraits(sticker?.icon == icon ? .isSelected : [])
                 }
             }
             Text("Color").font(ConfettiFont.label)
             HStack(spacing: 6) {
-                ForEach(StickerColor.allCases) { color in
+                ForEach(StickerImage.Tint.allCases, id: \.self) { color in
                     Button {
-                        sticker.color = color
+                        sticker = StickerImage(icon: sticker?.icon ?? .fox, tint: color)
                     } label: {
                         Circle().fill(color.fill)
                             .overlay {
-                                if color == sticker.color {
+                                if color == sticker?.tint {
                                     Image(systemName: "checkmark").font(.caption.weight(.semibold)).foregroundStyle(ConfettiColor.ink)
                                 }
                             }
@@ -371,12 +310,10 @@ private struct PersonStickerPicker: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel(color.rawValue.capitalized)
-                    .accessibilityAddTraits(sticker.color == color ? .isSelected : [])
+                    .accessibilityLabel(String(describing: color).capitalized)
+                    .accessibilityAddTraits(sticker?.tint == color ? .isSelected : [])
                 }
             }
-            Text("Stickers and colors are saved on this device.")
-                .font(ConfettiFont.caption).foregroundStyle(ConfettiColor.muted)
         }
     }
 }
@@ -413,7 +350,7 @@ struct PersonCreatorView: View {
         preview.name = "Juno Hartwell"
         preview.relationship = "Child"
         preview.groupIDs = [1]
-        preview.sticker = PersonSticker(icon: .paw)
+        preview.sticker = StickerImage(icon: .fox, tint: .pink)
         preview.birthday = CalendarDate("2014-12-09")?.date ?? .now
         preview.includesBirthday = true
         _draft = State(initialValue: preview)
@@ -522,8 +459,7 @@ struct PersonCreatorView: View {
                     if let jpeg = photo.jpeg, let image = UIImage(data: jpeg) {
                         Image(uiImage: image).resizable().scaledToFill()
                     } else {
-                        ConfettiAvatar(name: draft.name, sticker: draft.sticker.icon.glyph, size: 138,
-                                       fill: draft.sticker.color.fill)
+                        StickerAvatar(name: draft.name, sticker: draft.sticker, size: 138)
                     }
                 }
                 .frame(width: 138, height: 138)
@@ -633,12 +569,11 @@ struct PersonCreatorView: View {
             let request = try step.creationInput(PersonCreate(
                 displayName: draft.name, relationship: draft.relationship,
                 groupIds: draft.groupIDs.sorted(), birthdate: draft.birthdate,
-                photoUrl: photoURL, interests: draft.interestValues,
+                photoUrl: photoURL ?? draft.sticker?.dataURI, interests: draft.interestValues,
                 sizeProfile: draft.sizes.compactMap(\.entry), notes: draft.notes.nonEmpty
             ), skipping: skipping)
             let person = try await model.client.createPerson(request)
-            if retainPicture { draft.sticker.save(model: model, person: person) }
-            else { photo = PersonPhotoDraft(); draft.sticker = PersonSticker() }
+            if !retainPicture { photo = PersonPhotoDraft(); draft.sticker = nil }
             created = person
             step = .complete
             success += 1
@@ -670,7 +605,7 @@ private struct PersonDraft {
     var name = ""
     var relationship = ""
     var groupIDs: Set<Int> = []
-    var sticker = PersonSticker()
+    var sticker: StickerImage?
     var includesBirthday = false
     var birthday = Date.now
     var interests = ""
@@ -962,7 +897,7 @@ private enum PersonProfileField: String, Identifiable {
     func value(for person: Person) -> String? {
         switch self {
         case .basics: person.displayName
-        case .photo: person.photoUrl?.nonEmpty.map { _ in "Photo added" }
+        case .photo: person.photoUrl?.nonEmpty.map { StickerImage(dataURI: $0) == nil ? "Photo added" : "Sticker" }
         case .birthday: person.birthdate?.date.formatted(date: .long, time: .omitted)
         case .interests: person.interests?.joined(separator: ", ").nonEmpty
         case .sizes: person.sizeProfile?.map { "\($0.type.capitalized) \($0.value)" }.joined(separator: " · ").nonEmpty
@@ -987,6 +922,7 @@ private struct PersonProfileEditor: View {
     @State private var saving = false
     @State private var error: String?
     @State private var failure = 0
+    @State private var photoToReplace: String?
 
     init(model: AppModel, person: Person, field: PersonProfileField, onSave: @escaping (Person) -> Void) {
         self.model = model
@@ -997,7 +933,7 @@ private struct PersonProfileEditor: View {
         initial.name = person.displayName
         initial.relationship = person.relationship ?? ""
         initial.groupIDs = Set(person.groups.map(\.id))
-        initial.sticker = PersonSticker.current(model: model, person: person)
+        initial.sticker = StickerImage(dataURI: person.photoUrl)
         initial.includesBirthday = person.birthdate != nil
         initial.birthday = person.birthdate?.date ?? .now
         initial.interests = person.interests?.joined(separator: "\n") ?? ""
@@ -1017,7 +953,7 @@ private struct PersonProfileEditor: View {
                     case .photo:
                         PersonPhotoFields(name: person.displayName, sticker: $draft.sticker, photo: $photo,
                                           selection: $selection, loading: loading,
-                                          existingURL: personPhotoURL(person.photoUrl, model: model), hasExistingPhoto: person.photoUrl != nil)
+                                          existingURL: personPhotoURL(person.photoUrl, model: model), hasExistingPhoto: person.photoUrl?.nonEmpty != nil && StickerImage(dataURI: person.photoUrl) == nil)
                     case .birthday:
                         PersonBirthdayFields(included: $draft.includesBirthday, date: $draft.birthday)
                     case .interests:
@@ -1048,6 +984,15 @@ private struct PersonProfileEditor: View {
                 }
             }
         }
+        .alert("Replace this photo?", isPresented: Binding(
+            get: { photoToReplace != nil },
+            set: { if !$0 { photoToReplace = nil } }
+        ), presenting: photoToReplace) { confirmed in
+            Button("Replace photo", role: .destructive) { Task { await save(confirmedPhoto: confirmed) } }
+            Button("Cancel", role: .cancel) {}
+        } message: { _ in
+            Text("The new picture will replace the current photo for everyone.")
+        }
         .interactiveDismissDisabled(saving)
         .task {
             guard field == .basics else { return }
@@ -1074,7 +1019,7 @@ private struct PersonProfileEditor: View {
         }
     }
 
-    private func save() async {
+    private func save(confirmedPhoto: String? = nil) async {
         guard !saving, !loading else { return }
         let validationMessage = switch field {
         case .basics: draft.basicsError
@@ -1098,19 +1043,26 @@ private struct PersonProfileEditor: View {
                 let groupIDs = draft.groupIDs == Set(person.groups.map(\.id)) ? nil : draft.groupIDs.sorted()
                 patch = .basics(displayName: draft.name.trimmed, relationship: draft.relationship.nonEmpty, groupIds: groupIDs)
             case .photo:
-                if photo.removesExisting { patch = .photo(nil) }
-                else if let url = try await photo.upload(client: model.client) {
+                let sticker = draft.sticker?.dataURI
+                let changesPhoto = photo.jpeg != nil || (sticker != nil && sticker != person.photoUrl)
+                guard changesPhoto else { dismiss(); return }
+                let latest = try await model.client.person(id: person.id).photoUrl?.nonEmpty
+                if let latest, StickerImage(dataURI: latest) == nil, latest != confirmedPhoto {
+                    photoToReplace = latest
+                    return
+                }
+                if let url = try await photo.upload(client: model.client) {
                     photo.uploadedURL = url
                     patch = .photo(url)
+                } else {
+                    patch = sticker.map { .photo($0) }
                 }
-                else { patch = nil }
             case .birthday: patch = .birthday(draft.birthdate)
             case .interests: patch = .interests(draft.interestValues)
             case .sizes: patch = .sizes(draft.sizes.compactMap(\.entry))
             case .notes: patch = .notes(draft.notes.nonEmpty)
             }
             let updated = if let patch { try await model.client.updatePerson(id: person.id, patch) } else { person }
-            if field == .photo { draft.sticker.save(model: model, person: updated) }
             onSave(updated)
             dismiss()
         } catch {
@@ -1310,7 +1262,7 @@ private struct PersonPhotoDraft {
 
 private struct PersonPhotoFields: View {
     let name: String
-    @Binding var sticker: PersonSticker
+    @Binding var sticker: StickerImage?
     @Binding var photo: PersonPhotoDraft
     @Binding var selection: PhotosPickerItem?
     let loading: Bool
@@ -1330,6 +1282,7 @@ private struct PersonPhotoFields: View {
             if photo.jpeg != nil || hasExistingPhoto && !photo.removesExisting {
                 Button("Use a sticker instead") {
                     photo = PersonPhotoDraft(removesExisting: hasExistingPhoto)
+                    if sticker == nil { sticker = StickerImage(icon: .fox, tint: .yellow) }
                     selection = nil
                 }
                 .buttonStyle(ConfettiButtonStyle(.tertiary, expands: true))
@@ -1347,8 +1300,8 @@ private struct PersonPhotoFields: View {
                 .clipShape(RoundedRectangle(cornerRadius: 30))
                 .accessibilityHidden(true)
         } else {
-            ConfettiAvatar(name: name, photoURL: photo.removesExisting ? nil : existingURL,
-                           sticker: sticker.icon.glyph, size: 104, fill: sticker.color.fill)
+            StickerAvatar(name: name, sticker: photo.removesExisting || !hasExistingPhoto ? sticker : nil,
+                          photoURL: photo.removesExisting ? nil : existingURL, size: 104)
         }
     }
 }

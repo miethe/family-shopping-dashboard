@@ -131,7 +131,7 @@ public extension APIClient {
     }
 
     func updatePerson(id: Int, _ input: PersonUpdate) async throws -> Person {
-        try await request("/api/v1/persons/\(id)", method: "PATCH", body: WireFormat.encoder().encode(input))
+        try await request("/api/v1/persons/\(id)", method: "PUT", body: WireFormat.encoder().encode(input))
     }
 
     func uploadPersonPhoto(jpeg: Data) async throws -> PersonPhotoUpload {

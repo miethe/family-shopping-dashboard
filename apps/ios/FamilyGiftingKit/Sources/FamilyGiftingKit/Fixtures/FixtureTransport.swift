@@ -228,7 +228,7 @@ public actor FixtureTransport: HTTPTransport {
         let path = request.url!.path
         let method = request.httpMethod ?? "GET"
         guard method != "GET" else { return nil }
-        if path == "/api/v1/upload/image" { return try json(["image_url": "/fixtures/avatar.jpg"]) }
+        if path == "/api/v1/upload/image", method == "POST" { return try json(["image_url": "/fixtures/avatar.jpg"]) }
         let body = (try? JSONSerialization.jsonObject(with: request.httpBody ?? Data()) as? Object) ?? [:]
         let parts = path.split(separator: "/").map(String.init)
         let now = ISO8601DateFormatter().string(from: .now)
@@ -261,7 +261,10 @@ public actor FixtureTransport: HTTPTransport {
             if key == "occasions", let holiday = body["holiday_id"] as? Int, records("holidays", in: fixtures).contains(where: { $0["id"] as? Int == holiday && $0["theme_key"] as? String == "christmas" && ($0["days_until"] as? Int ?? 999) <= ($0["theme_window_days"] as? Int ?? 0) }) { createdChristmas = true }
             rows.insert(row, at: 0); changed[key] = rows; return try json(row, status: 201)
         }
-        if parts.count == 4, method == "PATCH", ["persons", "gifts", "occasions"].contains(parts[2]), let id = Int(parts[3]) {
+        if parts.count == 4, ["persons", "gifts", "occasions"].contains(parts[2]), let id = Int(parts[3]) {
+            guard method == (parts[2] == "gifts" ? "PATCH" : "PUT") else {
+                return try error(405, code: "METHOD_NOT_ALLOWED", message: "This fixture does not support that method.")
+            }
             let key = parts[2]; var rows = records(key, in: fixtures)
             guard let index = rows.firstIndex(where: { $0["id"] as? Int == id }) else { return try notFound() }
             rows[index].merge(body, uniquingKeysWith: { _, n in n }); rows[index]["updated_at"] = now
