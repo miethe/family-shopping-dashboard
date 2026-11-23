@@ -22,7 +22,7 @@ export default function IdeasPage() {
         <p>Saved for someone, or for a moment still to come.</p>
       </Hero>
       <Button onClick={()=>setAdding(true)}>+ Add an idea</Button>
-      <QuickAddModal isOpen={adding} onClose={()=>setAdding(false)}/>
+      {adding&&<QuickAddModal isOpen={adding} onClose={()=>setAdding(false)}/>}
       <Link href="/gifts" className={styles.textLink}>All gifts &amp; status →</Link>
       <QueryState
         loading={query.isLoading}

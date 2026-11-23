@@ -25,8 +25,8 @@ describe('holiday integration', () => {
     const user = userEvent.setup(); mount(<EventHome />);
     await user.click(screen.getByText('Plan an event'));
     await user.selectOptions(screen.getByLabelText('Event'), 'holiday');
-    await user.selectOptions(await screen.findByLabelText('Holiday'), '1');
-    expect(screen.getByRole('option', { name: /Christmas ★/ })).toBeInTheDocument();
+    await user.click(await screen.findByRole('button', { name: /Christmas/ }));
+    expect(screen.getByText('★ Major')).toBeInTheDocument();
     expect(screen.getByLabelText(/Event name/)).toHaveValue('Christmas');
     expect(screen.getByLabelText(/^Date/)).toHaveValue('2099-12-25');
     await user.click(screen.getByRole('button', { name: 'Create occurrence' }));
