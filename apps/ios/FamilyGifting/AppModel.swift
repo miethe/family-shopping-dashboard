@@ -62,6 +62,8 @@ final class AppModel {
     }
 
     func handle(_ problem: Error) {
+        // Requests invalidated by sign-out/server changes are no longer user-visible work.
+        if let apiError = problem as? APIError, apiError == .sessionChanged { return }
         if let apiError = problem as? APIError, apiError.isUnauthorized {
             signedIn = false
             credential = nil
