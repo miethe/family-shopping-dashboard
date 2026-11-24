@@ -1,11 +1,11 @@
 import SwiftUI
 import AuthenticationServices
+import CryptoKit
 import FamilyGiftingKit
 
 struct WelcomeView: View {
     @Bindable var model: AppModel
     @State private var showEmail = false
-    @State private var requestNonce: String?
 
     private var isSigningIn: Bool { model.busy || model.authorizingWithApple }
 
@@ -89,26 +89,7 @@ struct WelcomeView: View {
     }
 
     private var appleButton: some View {
-        SignInWithAppleButton(.signIn) { request in
-            requestNonce = model.beginAppleSignIn()
-            request.nonce = requestNonce
-            request.state = requestNonce
-            request.requestedScopes = [.email]
-        } onCompletion: { result in
-            guard let nonce = requestNonce else { return }
-            requestNonce = nil
-            let token = result.flatMap { authorization -> Result<String, Error> in
-                guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
-                      credential.state == nonce,
-                      let data = credential.identityToken,
-                      let token = String(data: data, encoding: .utf8) else {
-                    return .failure(APIError.invalidPayload)
-                }
-                return .success(token)
-            }
-            Task { await model.completeAppleSignIn(nonce: nonce, result: token) }
-        }
-        .signInWithAppleButtonStyle(.black)
+        AppleAuthorizationButton(model: model)
         .frame(height: 52)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .disabled(model.address.isEmpty)
@@ -117,6 +98,7 @@ struct WelcomeView: View {
     private func showServerSettings() {
         guard !isSigningIn else { return }
         model.error = nil
+        model.serverOverrideUnlocked = true
         model.settings = true
     }
 }
@@ -192,21 +174,26 @@ struct ServerSettings: View {
                     TogetherBow(size: 60, icon: true).frame(maxWidth: .infinity)
                     Text("Family server").font(ConfettiFont.heading)
                     Text("Connect to the same home network as your family’s server. An HTTPS private address works here too.")
-                    TextField("Server address", text: $address).keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
-                        .accessibilityLabel("Family server address")
+                    if model.canEditServerAddress {
+                        TextField("Server address", text: $address).keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                            .accessibilityLabel("Family server address")
+                    } else {
+                        Text(model.address).textSelection(.enabled).accessibilityLabel("Family server address")
+                    }
                 } footer: {
                     Text("Changing the server signs you out. Your gifts stay on the server.")
                 }
                 if let error = model.error { Section { ErrorNotice(message: error) } }
-                Section {
+                if model.canEditServerAddress { Section {
                     Button(model.busy ? "Checking connection…" : "Check connection & continue") {
                         Task { await model.configure(address) }
                     }.disabled(model.busy || address.isEmpty).frame(minHeight: 44)
-                }
+                } }
             }
             .navigationTitle("Settings")
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
             .onAppear { address = model.address }
+            .onDisappear { model.serverOverrideUnlocked = false }
         }
     }
 }
@@ -257,6 +244,74 @@ struct AddIdeaView: View {
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
                 .sensoryFeedback(.success, trigger: saved)
                 .onAppear { model.error = nil }
+        }
+    }
+}
+
+// Fetch a fresh server challenge before presenting Apple's authorization sheet.
+private struct AppleAuthorizationButton: UIViewRepresentable {
+    let model: AppModel
+
+    func makeCoordinator() -> Coordinator { Coordinator(model: model) }
+
+    func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
+        let button = ASAuthorizationAppleIDButton(type: .signIn, style: .black)
+        button.addTarget(context.coordinator, action: #selector(Coordinator.signIn), for: .touchUpInside)
+        return button
+    }
+
+    func updateUIView(_ button: ASAuthorizationAppleIDButton, context: Context) {
+        button.isEnabled = !model.busy && !model.authorizingWithApple && !model.address.isEmpty
+    }
+
+    @MainActor final class Coordinator: NSObject, ASAuthorizationControllerDelegate,
+                                           ASAuthorizationControllerPresentationContextProviding {
+        let model: AppModel
+        private var nonce: String?
+        private var controller: ASAuthorizationController?
+
+        init(model: AppModel) { self.model = model }
+
+        @objc func signIn() {
+            Task {
+                guard let nonce = await model.beginAppleSignIn() else { return }
+                self.nonce = nonce
+                let request = ASAuthorizationAppleIDProvider().createRequest()
+                request.nonce = SHA256.hash(data: Data(nonce.utf8)).map { String(format: "%02x", $0) }.joined()
+                request.state = nonce
+                request.requestedScopes = [.email]
+                let controller = ASAuthorizationController(authorizationRequests: [request])
+                self.controller = controller
+                controller.delegate = self
+                controller.presentationContextProvider = self
+                controller.performRequests()
+            }
+        }
+
+        func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+            UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+                .flatMap(\.windows).first(where: \.isKeyWindow) ?? ASPresentationAnchor()
+        }
+
+        func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+            guard let nonce else { return }
+            guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  credential.state == nonce, let data = credential.identityToken,
+                  let token = String(data: data, encoding: .utf8) else {
+                finish(.failure(APIError.invalidPayload)); return
+            }
+            finish(.success(token))
+        }
+
+        func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+            finish(.failure(error))
+        }
+
+        private func finish(_ result: Result<String, Error>) {
+            guard let nonce else { return }
+            self.nonce = nil
+            self.controller = nil
+            Task { await model.completeAppleSignIn(nonce: nonce, result: result) }
         }
     }
 }

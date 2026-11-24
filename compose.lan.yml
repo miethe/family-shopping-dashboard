@@ -22,6 +22,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://gifting:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.lan}@postgres:5432/family_gifting
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in .env.lan}
+      APPLE_HOUSEHOLD_EMAILS: ${APPLE_HOUSEHOLD_EMAILS:-}
       CORS_ORIGINS: ${LAN_ORIGIN:?Set LAN_ORIGIN to the chosen phone URL}
       # Relative URLs stay on the same gateway as the web app.
       PUBLIC_API_URL: ''

@@ -3,6 +3,7 @@
 from asyncio import Lock
 from collections.abc import Callable
 from dataclasses import dataclass
+from hashlib import sha256
 from hmac import compare_digest
 from time import monotonic, time
 from typing import TypeGuard
@@ -24,6 +25,11 @@ JWKS_REFRESH_COOLDOWN_SECONDS = 10
 class InvalidAppleCredentialsError(UnauthorizedError):
     def __init__(self) -> None:
         super().__init__("INVALID_APPLE_CREDENTIALS", "Apple sign-in could not be verified")
+
+
+class AppleNotHouseholdError(AppException):
+    def __init__(self) -> None:
+        super().__init__("APPLE_NOT_HOUSEHOLD", "This Apple ID is not on the family list", 403)
 
 
 class AppleKeysUnavailableError(AppException):
@@ -100,11 +106,11 @@ class AppleTokenVerifier:
             raise InvalidAppleCredentialsError()
 
         token_nonce = claims.get("nonce")
-        if nonce is not None and (
+        if not nonce or (
             not isinstance(token_nonce, str)
             or not compare_digest(
                 token_nonce.encode("utf-8", errors="surrogatepass"),
-                nonce.encode("utf-8", errors="surrogatepass"),
+                sha256(nonce.encode("utf-8")).hexdigest().encode("ascii"),
             )
         ):
             raise InvalidAppleCredentialsError()

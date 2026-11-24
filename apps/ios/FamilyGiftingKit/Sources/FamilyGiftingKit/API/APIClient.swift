@@ -104,7 +104,17 @@ public actor APIClient {
         try await authenticate(credentials(email: email, password: password), diagnostic: diagnostic)
     }
 
-    public func loginWithApple(identityToken: String, nonce: String? = nil) async throws -> User {
+    public func appleChallenge() async throws -> String {
+        let revision = sessionRevision
+        let response: AppleChallengeResponse = try await request(
+            "/api/v1/auth/apple/challenge", method: "POST", authenticated: false
+        )
+        guard revision == sessionRevision else { throw APIError.sessionChanged }
+        guard !response.nonce.isEmpty else { throw APIError.invalidPayload }
+        return response.nonce
+    }
+
+    public func loginWithApple(identityToken: String, nonce: String) async throws -> User {
         let body = try WireFormat.encoder().encode(AppleSignInRequest(identityToken: identityToken, nonce: nonce))
         return try await exchangeLogin(at: "/api/v1/auth/apple", body: body)
     }
@@ -383,9 +393,13 @@ public actor APIClient {
     }
 }
 
+private struct AppleChallengeResponse: Decodable {
+    let nonce: String
+}
+
 private struct AppleSignInRequest: Encodable {
     let identityToken: String
-    let nonce: String?
+    let nonce: String
 }
 
 private struct RefreshRequest: Encodable {

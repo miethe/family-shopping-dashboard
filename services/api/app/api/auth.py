@@ -8,9 +8,18 @@ from app.core.apple_auth import (
     InvalidAppleCredentialsError,
     get_apple_token_verifier,
 )
+from app.core.apple_throttle import throttle_apple
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import UnauthorizedError, ValidationError
-from app.schemas.user import AppleLogin, TokenResponse, UserCreate, UserLogin, UserResponse
+from app.schemas.user import (
+    AppleChallengeResponse,
+    AppleLogin,
+    TokenResponse,
+    UserCreate,
+    UserLogin,
+    UserResponse,
+)
+from app.services.apple_challenge import AppleChallengeService
 from app.services.auth import AuthService
 from app.services.user import UserService
 
@@ -92,12 +101,28 @@ async def login(
     )
 
 
-@router.post("/apple", response_model=LoginResponse, summary="Sign in with Apple")
+@router.post(
+    "/apple/challenge",
+    response_model=AppleChallengeResponse,
+    dependencies=[Depends(throttle_apple)],
+    summary="Issue an Apple sign-in challenge",
+)
+async def apple_challenge(session: AsyncSession = Depends(get_db)) -> AppleChallengeResponse:
+    return await AppleChallengeService(session).issue()
+
+
+@router.post(
+    "/apple",
+    response_model=LoginResponse,
+    summary="Sign in with Apple",
+    dependencies=[Depends(throttle_apple)],
+)
 async def login_with_apple(
     credentials: AppleLogin,
     session: AsyncSession = Depends(get_db),
     verifier: AppleTokenVerifier = Depends(get_apple_token_verifier),
 ) -> LoginResponse:
+    await AppleChallengeService(session).consume(credentials.nonce)
     identity = await verifier.verify(credentials.identity_token, credentials.nonce)
     result = await UserService(session).authenticate_apple(identity)
     if result is None:
