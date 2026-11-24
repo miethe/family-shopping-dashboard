@@ -16,12 +16,16 @@ def valid_origin(value: str) -> bool:
                 url.password is not None or url.path not in ("", "/") or
                 url.query or url.fragment or "?" in value or "#" in value):
             return False
+        # urlsplit accepts characters after a closing IPv6 bracket; validate
+        # the complete authority before relying on its parsed host and port.
+        if not re.fullmatch(r"(?:\[[^\[\]]+\]|[^:\[\]@]+)(?::[0-9]+)?", url.netloc):
+            return False
         host, port = url.hostname, url.port
         if not host or (port is not None and not 1 <= port <= 65535):
             return False
         if url.netloc.endswith(":"):
             return False
-        if ":" in host:
+        if url.netloc.startswith("["):
             ipaddress.IPv6Address(host)
         elif len(host) > 253 or any(not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?", label) for label in host.split(".")):
             return False
