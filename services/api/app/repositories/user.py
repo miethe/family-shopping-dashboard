@@ -122,7 +122,7 @@ class UserRepository(BaseRepository[User]):
         query = select(User).where(User.apple_subject == subject).options(lazyload("*"))
         return (await self.session.scalars(query)).one_or_none()
 
-    async def exists_by_email(self, email: str) -> bool:
+    async def exists_by_email(self, email: str, *, case_sensitive: bool = True) -> bool:
         """
         Check if email exists (for registration validation).
 
@@ -131,7 +131,8 @@ class UserRepository(BaseRepository[User]):
         get_by_email() when only checking existence.
 
         Args:
-            email: Email address to check (case-sensitive)
+            email: Email address to check
+            case_sensitive: Whether the email must match the stored case
 
         Returns:
             True if email exists in database, False otherwise
@@ -153,6 +154,7 @@ class UserRepository(BaseRepository[User]):
             Uses SQL EXISTS which is more efficient than COUNT or full SELECT
             for large tables, as it stops at the first match.
         """
-        stmt = select(exists().where(User.email == email))
+        email_column = User.email if case_sensitive else func.lower(User.email)
+        stmt = select(exists().where(email_column == (email if case_sensitive else email.lower())))
         result = await self.session.execute(stmt)
         return result.scalar()

@@ -30,11 +30,13 @@ docker compose --env-file .env.lan -f compose.lan.yml ps
 
 The API image applies Alembic migrations before serving. The web image uses the repository's pnpm version and builds with `/api/v1` and `/ws`; changing the LAN IP does not require rebuilding browser endpoint addresses. Upload URLs also use the same origin. Only the gateway port is published; PostgreSQL, API and web remain on the Compose network. The database and upload directories use named volumes. The API's upload directory is owned by its non-root runtime user.
 
-The binding is an interface choice, not a firewall or household authorization system. Use the trusted home network; leave remote access to the separate app-ops decision. The current app offers open registration, a shared single-family dataset and no password recovery UI. Do not treat this instance as a multi-household service.
+The binding selects the host interface. Use the trusted home network for this single-household instance and leave remote access to the separate app-ops decision. The app uses a shared dataset and has no password recovery UI. Legacy registration is open when the effective household allowlist is empty. A configured allowlist gates registration by address, and someone can still register an allowed address before its owner because registration does not verify email ownership.
+
+An existing rehearsal pod created with `deploy/lan/podman-pod.sh` needs to be recreated to apply the gateway and API network settings. Rootless pods use `slirp4netns` to preserve the phones' connection addresses. Back up the data before replacing a pod and retain both named volumes. The `remove-all` operation deletes those volumes.
 
 ## Prove first use
 
-Before entering real data, use two disposable `example.test` accounts and sample entities:
+Before entering real data, use two disposable `example.test` accounts and sample entities. Include the sample addresses in the effective household allowlist if it is configured for the rehearsal.
 
 1. Open `http://<chosen-IP>:3030/health` and verify the JSON says both `status: healthy` and `db: connected`. A 200 response alone is insufficient.
 2. On phone A, visit `/register`, create sample account A, then sign out and sign back in at `/login`. Repeat on phone B for sample account B. Use the same address on both, on home Wi-Fi.
