@@ -4,8 +4,8 @@ set -euo pipefail
 usage() {
   cat <<'USAGE'
 Usage: testflight_upload.sh --version VERSION --build BUILD --output-dir DIR [--dry-run] [--skip-upload]
-       [--key-path PATH] [--key-id ID] [--issuer-id ID] [--team-id ID]
-Credentials may instead be supplied through ASC_KEY_PATH, ASC_KEY_ID, ASC_ISSUER_ID and ASC_TEAM_ID.
+       [--key-path PATH]
+Set ASC_KEY_ID, ASC_ISSUER_ID and ASC_TEAM_ID in the environment; ASC_KEY_PATH may supply the key path.
 The output directory is dedicated to this run: its archive, export and receipt are replaced.
 USAGE
 }
@@ -13,11 +13,11 @@ version='' build='' output='' key_path=${ASC_KEY_PATH:-} key_id=${ASC_KEY_ID:-} 
 dry_run=0 skip_upload=0
 while (($#)); do
   case "$1" in
-    --version|--build|--output-dir|--key-path|--key-id|--issuer-id|--team-id)
+    --version|--build|--output-dir|--key-path)
       (($# >= 2)) || { usage >&2; exit 2; }
       case "$1" in
         --version) version=$2;; --build) build=$2;; --output-dir) output=$2;;
-        --key-path) key_path=$2;; --key-id) key_id=$2;; --issuer-id) issuer_id=$2;; --team-id) team_id=$2;;
+        --key-path) key_path=$2;;
       esac
       shift 2;;
     --dry-run) dry_run=1; shift;; --skip-upload) skip_upload=1; shift;;
@@ -51,7 +51,7 @@ run_quietly() {
 }
 (cd "$ios_dir" && xcodegen generate)
 auth=(-authenticationKeyPath "$key_path" -authenticationKeyID "$key_id" -authenticationKeyIssuerID "$issuer_id" -allowProvisioningUpdates)
-run_quietly archive xcodebuild -project "$ios_dir/FamilyGifting.xcodeproj" -scheme FamilyGifting -configuration Release -destination 'generic/platform=iOS' -archivePath "$archive" "MARKETING_VERSION=$version" "CURRENT_PROJECT_VERSION=$build" "DEVELOPMENT_TEAM=$team_id" "${auth[@]}" archive
+run_quietly archive xcodebuild -project "$ios_dir/FamilyGifting.xcodeproj" -scheme FamilyGifting -configuration Release -destination 'generic/platform=iOS' -archivePath "$archive" -derivedDataPath "$output/DerivedData" "MARKETING_VERSION=$version" "CURRENT_PROJECT_VERSION=$build" "DEVELOPMENT_TEAM=$team_id" "${auth[@]}" archive
 app="$archive/Products/Applications/FamilyGifting.app"
 python3 - "$app" "$version" "$build" "$receipt" <<'PY'
 import json, pathlib, plistlib, sys

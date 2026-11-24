@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-base=${TMPDIR:-/tmp}
+base=${TMPDIR:?Set TMPDIR to the designated scratch directory}
 [[ -d $base ]] || { echo 'Scratch directory is unavailable.' >&2; exit 1; }
 work=$(mktemp -d "$base/fg-upload-test.XXXXXX")
 trap 'rm -rf -- "$work"' EXIT
@@ -35,6 +35,7 @@ export PATH="$work/bin:$PATH"
 touch "$work/key"
 export ASC_KEY_PATH="$work/key" ASC_KEY_ID=private_key_id ASC_ISSUER_ID=private_issuer ASC_TEAM_ID=private_team
 script=$(cd "$(dirname "$0")" && pwd)/testflight_upload.sh
+if "$script" --key-id forbidden --version 2.3.4 --build 17 --output-dir "$work/output" --dry-run > /dev/null 2>&1; then exit 1; fi
 args=(--version 2.3.4 --build 17 --output-dir "$work/output")
 "$script" "${args[@]}" > "$work/result"
 [[ $(wc -l < "$work/calls" | tr -d ' ') == 2 ]]
