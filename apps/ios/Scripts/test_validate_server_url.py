@@ -17,7 +17,10 @@ class ServerURLTests(unittest.TestCase):
         for value, expected in (("https://confetti.meaty.cloud:3447", 0), ("", 1),
                                 ("   ", 1), ("https://$(HOST)", 1), ("https://${HOST}", 1),
                                 ("https:///missing", 1), ("http://example.com", 1),
-                                ("https://example.com/path", 1)):
+                                ("https://example.com/path", 1),
+                                ("https://[::1]suffix:3447", 1), ("https://host:port:extra", 1),
+                                ("https://[::1]:3447", 0), ("https://user@host", 1),
+                                ("https://host:0", 1), ("https://host:99999", 1)):
             with self.subTest(value=value):
                 result = subprocess.run([sys.executable, str(script)],
                                         env={**os.environ, "CONFETTI_SERVER_URL": value},
