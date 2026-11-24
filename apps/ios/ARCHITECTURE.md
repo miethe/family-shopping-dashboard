@@ -33,7 +33,7 @@ The proposed App Group is `group.dev.familygifting.app`. The app binds it to the
 
 The share extension can save an HTTP(S) link or text offline after the main app establishes an account binding. A binding revision prevents a share sheet opened before an account change from saving to the next account. Outbox items retain their original origin and account across sign-out. The app imports only matching items into its private queue before sync. It preserves item IDs across the handoff and retires each outbox item after the private journal write succeeds. Both extensions link the extension-safe package product. Bearer credentials stay in the app's Keychain.
 
-The expected bundle IDs are `dev.familygifting.app.countdown` and `dev.familygifting.app.shareidea`. Binding the app and both extensions to the same App Group for device signing remains open under `req_01M85BY31FN9E5EN93K4MD47FX`. The local unsigned simulator review build can use a per-device synthetic store. The Release archive excludes that mode. Offline fixtures use only invented data.
+The expected bundle IDs are `dev.familygifting.app.countdown` and `dev.familygifting.app.shareidea`. Binding the app and both extensions to the same App Group for device signing remains open. The local unsigned simulator review build can use a per-device synthetic store. The Release archive excludes that mode. Offline fixtures use only invented data.
 
 ## Read-only server smoke check
 
