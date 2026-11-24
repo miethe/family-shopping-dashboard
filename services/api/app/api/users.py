@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_current_user, get_db
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import ForbiddenError, NotFoundError
 from app.schemas.user import UserResponse, UserUpdate
 from app.services.user import UserService
 
@@ -271,11 +271,12 @@ async def delete_user(
 
     Args:
         user_id: User ID to delete
-        current_user_id: Current authenticated user ID (validates auth, not used for access control)
+        current_user_id: Current authenticated user ID
         session: Database session (injected)
 
     Raises:
         HTTPException: 401 if token is invalid
+        HTTPException: 403 if deleting another user
         HTTPException: 404 if user not found
 
     Example:
@@ -297,11 +298,14 @@ async def delete_user(
 
     Note:
         - Requires valid Bearer token in Authorization header
-        - No ownership checks (family app with 2-3 users)
+        - Only the account owner can delete it
         - Deletion is permanent and irreversible
         - Returns 204 No Content on success
         - Returns 404 if user does not exist
     """
+    if current_user_id != user_id:
+        raise ForbiddenError(message="You can only delete your own account")
+
     service = UserService(session)
 
     # Check user exists first
