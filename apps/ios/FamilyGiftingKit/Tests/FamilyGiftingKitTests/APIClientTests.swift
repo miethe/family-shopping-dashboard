@@ -14,6 +14,10 @@ struct APIClientTests {
         #expect(throws: APIError.invalidServerAddress) { try ServerAddress(input) }
     }
 
+    @Test func acceptsHTTPSDefaultWithPort() throws {
+        #expect(try ServerAddress("https://confetti.meaty.cloud:3447").url.absoluteString == "https://confetti.meaty.cloud:3447")
+    }
+
     @Test func normalizesServerOrigin() throws {
         #expect(try ServerAddress(" HTTPS://Example.TEST:443/ \n").url.absoluteString == "https://example.test")
         #expect(try ServerAddress("http://[::1]:3047/").url.absoluteString == "http://[::1]:3047")
