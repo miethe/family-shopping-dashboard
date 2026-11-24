@@ -2,6 +2,7 @@
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings, settings
@@ -32,77 +33,90 @@ async def test_register_success(client: AsyncClient, monkeypatch: pytest.MonkeyP
 
 
 @pytest.mark.parametrize(
-    ("primary", "alias", "email", "expected"),
+    ("primary", "alias", "email"),
     [
-        (" Family@EXAMPLE.COM ,", "", "family@example.com", 201),
-        ("family@example.com", "", "FAMILY@example.com", 201),
-        ("family@example.com", "", "outsider@example.com", 400),
-        ("family@example.com", "", " family@example.com ", 400),
-        ("", " Family@EXAMPLE.COM ,", "family@example.com", 201),
-        (" , , ", "family@example.com", "outsider@example.com", 400),
-        ("family@example.com", "alias@example.com", "alias@example.com", 400),
+        (" Family@EXAMPLE.COM ,", "", "family@example.com"),
+        ("family@example.com", "", "FAMILY@example.com"),
+        ("family@example.com", "", "outsider@example.com"),
+        ("", " Family@EXAMPLE.COM ,", "family@example.com"),
+        (" , , ", "family@example.com", "outsider@example.com"),
+        ("family@example.com", "alias@example.com", "alias@example.com"),
     ],
 )
 @pytest.mark.asyncio
-async def test_register_household_allowlist(
+async def test_register_closed_for_every_address(
     client: AsyncClient,
+    async_session: AsyncSession,
     monkeypatch: pytest.MonkeyPatch,
     primary: str,
     alias: str,
     email: str,
-    expected: int,
 ) -> None:
     monkeypatch.setenv("APPLE_HOUSEHOLD_EMAILS", primary)
     monkeypatch.setenv("HOUSEHOLD_EMAILS", alias)
     config = Settings(_env_file=None)
     monkeypatch.setattr(settings, "APPLE_HOUSEHOLD_EMAILS", config.APPLE_HOUSEHOLD_EMAILS)
     monkeypatch.setattr(settings, "HOUSEHOLD_EMAILS", config.HOUSEHOLD_EMAILS)
-
-    credentials = {"email": email, "password": "password123"}
-    response = await client.post("/api/v1/auth/register", json=credentials)
-
-    assert response.status_code == expected
-    if expected == 201:
-        registered = response.json()
-        assert registered["email"] == email.lower()
-        for login_email in {email, registered["email"]}:
-            login = await client.post(
-                "/api/v1/auth/login", json={**credentials, "email": login_email}
-            )
-            assert login.status_code == 200
-            assert login.json()["id"] == registered["id"]
-    else:
-        assert response.json()["error"]["code"] == "REGISTRATION_NOT_HOUSEHOLD"
-        login = await client.post("/api/v1/auth/login", json=credentials)
-        assert login.status_code == 401
+    response = await client.post(
+        "/api/v1/auth/register", json={"email": email, "password": "password123"}
+    )
+    assert response.status_code == 403
+    error = response.json()["error"]
+    assert error["code"] == "REGISTRATION_CLOSED"
+    assert error["message"] == (
+        "Account registration is closed. Sign in with Apple or use your existing account."
+    )
+    assert error["trace_id"]
+    assert not (await async_session.scalars(select(User.id))).all()
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    ("configured", "use_uppercase", "expected"),
-    [(True, False, 400), (True, True, 400), (False, True, 201)],
-)
+async def test_closed_registration_rejects_incomplete_form(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(settings, "APPLE_HOUSEHOLD_EMAILS", "family@example.com")
+    response = await client.post("/api/v1/auth/register", json={})
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "REGISTRATION_CLOSED"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("configured", [False, True])
+async def test_registration_setting_preserves_existing_login(
+    client: AsyncClient, test_user: User, monkeypatch: pytest.MonkeyPatch, configured: bool
+) -> None:
+    # Existing accounts continue to work even when their address is outside the allowlist.
+    monkeypatch.setattr(
+        settings, "APPLE_HOUSEHOLD_EMAILS", "family@example.com" if configured else ""
+    )
+    monkeypatch.setattr(settings, "HOUSEHOLD_EMAILS", "")
+    response = await client.post(
+        "/api/v1/auth/login", json={"email": test_user.email, "password": "password123"}
+    )
+    assert response.status_code == 200
+    assert response.json()["id"] == test_user.id
+    assert response.json()["token"]["access_token"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(("use_uppercase", "expected"), [(False, 400), (True, 201)])
 async def test_register_duplicate_email(
     client: AsyncClient,
     test_user: User,
     monkeypatch: pytest.MonkeyPatch,
-    configured: bool,
     use_uppercase: bool,
     expected: int,
 ) -> None:
-    """Configured registration matches the case-insensitive Apple account lookup."""
-    monkeypatch.setattr(settings, "APPLE_HOUSEHOLD_EMAILS", test_user.email if configured else "")
+    """Empty allowlist preserves the legacy case-sensitive duplicate check."""
+    monkeypatch.setattr(settings, "APPLE_HOUSEHOLD_EMAILS", "")
     monkeypatch.setattr(settings, "HOUSEHOLD_EMAILS", "")
-    # Arrange
-    user_data = {
-        "email": test_user.email.upper() if use_uppercase else test_user.email,
-        "password": "password123",
-    }
-
-    # Act
-    response = await client.post("/api/v1/auth/register", json=user_data)
-
-    # Assert
+    response = await client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": test_user.email.upper() if use_uppercase else test_user.email,
+            "password": "password123",
+        },
+    )
     assert response.status_code == expected
     if expected == 400:
         assert response.json()["error"]["code"] == "DUPLICATE_EMAIL"
@@ -226,9 +240,7 @@ async def test_login_invalid_credentials(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
-async def test_login_wrong_password(
-    client: AsyncClient, test_user: User
-) -> None:
+async def test_login_wrong_password(client: AsyncClient, test_user: User) -> None:
     """Test login with correct email but wrong password returns 401."""
     # Arrange
     login_data = {"email": test_user.email, "password": "wrongpassword"}

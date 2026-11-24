@@ -4,11 +4,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.apple_auth import AppleIdentity
 from app.core.config import settings
-from app.core.exceptions import ForbiddenError, ValidationError
+from app.core.exceptions import ForbiddenError
 from app.models.user import User
 from app.repositories.user import UserRepository
 from app.schemas.user import TokenResponse, UserCreate, UserResponse, UserUpdate
 from app.services.auth import AuthService
+
+
+def require_registration_open() -> None:
+    """Close password sign-up entirely once household access is configured."""
+    if settings.apple_household_emails:
+        raise ForbiddenError(
+            code="REGISTRATION_CLOSED",
+            message=(
+                "Account registration is closed. Sign in with Apple or use your existing account."
+            ),
+        )
 
 
 class UserService:
@@ -50,7 +61,7 @@ class UserService:
             UserResponse DTO with user details (no password_hash)
 
         Raises:
-            ValidationError: If registration is limited to household email addresses
+            ForbiddenError: If household access is configured
             ValueError: If email already exists
 
         Example:
@@ -66,16 +77,11 @@ class UserService:
             Password is hashed using bcrypt before storage.
             Email uniqueness is enforced at application and database level.
         """
-        household_emails = settings.apple_household_emails
-        email = data.email.lower() if household_emails else data.email
-        if household_emails and email not in household_emails:
-            raise ValidationError(
-                code="REGISTRATION_NOT_HOUSEHOLD",
-                message="Registration is limited to household email addresses",
-            )
+        require_registration_open()
+        email = data.email
 
-        # Validate email uniqueness
-        if await self.repo.exists_by_email(email, case_sensitive=not household_emails):
+        # Preserve legacy registration behavior when the allowlist is empty.
+        if await self.repo.exists_by_email(email):
             raise ValueError(f"Email already registered: {data.email}")
 
         # Hash password before storage

@@ -21,7 +21,7 @@ from app.schemas.user import (
 )
 from app.services.apple_challenge import AppleChallengeService
 from app.services.auth import AuthService
-from app.services.user import UserService
+from app.services.user import UserService, require_registration_open
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -136,6 +136,7 @@ async def login_with_apple(
     "/register",
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_registration_open)],
     summary="Register new user account",
     description="Create new user with email and password (hashed before storage)",
 )
