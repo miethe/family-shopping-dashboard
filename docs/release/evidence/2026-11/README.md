@@ -20,7 +20,7 @@ For every screen, capture 2–3 states at 375px or 390px wide; also check 1280px
 | Capture | Global +; empty, filled, save/error | `capture-empty`, `capture-filled`, `capture-error` |
 | Person / budgets | `/people/<sample-id>`, `/budgets`; empty, populated, error | `person-empty`, `person-filled`, `budgets-filled` |
 
-Use filenames ending in `-375.png`, `-390.png` or `-1280.png`. Inspect each source PNG and record overlap, clipping, contrast, density, empty/error text and minimum touch targets. Exercise a failed API request and recovery; verify the service worker does not return an old successful response. Reload as the second user and confirm current gift phases and totals. Attach actual image pointers as `validation` evidence to the release parent and visual owner before closing either.
+Use filenames ending in `-375.png`, `-390.png` or `-1280.png`. Inspect each source PNG and record overlap, clipping, contrast, density, empty/error text and minimum touch targets. Exercise a failed API request and recovery; verify the service worker does not return an old successful response. Reload as the second user and confirm current gift phases and totals. Record links to the actual images as validation evidence before closing the release and visual review.
 
 ## Update 2026-11-18 (native browser lane, final)
 

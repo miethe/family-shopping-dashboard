@@ -18,7 +18,7 @@ Assessment base: `965a329`, development. [PR #19](https://github.com/miethe/fami
 
 The 2026-11-16 design decision is settled: dashboard-first home with an optional calendar, recipient envelopes, collapsible person shelves, compact capture drawer, event budgets, standalone web. Decision evidence: `evid_01M7JFBXGT3EXBB4Q5KA35CQ13`. Build within that direction; no new taste choice is needed.
 
-The apps hub handoff and the app-ops hub both say nothing has been deployed. The separately named `night-1110-gift` handoff concerns a different product (Bottega), and supplies no deployment for this app. Live registry inspection found no deploy target for this entry.
+The assessment found that nothing had been deployed. The separately named `night-1110-gift` handoff concerns a different product (Bottega), and supplies no deployment for this app. Live registry inspection found no deploy target for this entry.
 
 ## Core journeys
 
@@ -34,7 +34,7 @@ The apps hub handoff and the app-ops hub both say nothing has been deployed. The
 
 ## Reach
 
-**Today:** no assigned deployment host, URL or provisioned instance accounts. The existing `docker-compose.yml` is a development recipe: fixed workstation database bind mount, development JWT, published database/API ports, and browser URLs baked into the web build. `k8s/` has manifests and port-forward instructions, but no included ingress or measured deployed instance. These are recipes, not reachability evidence.
+**Today:** no assigned deployment host, URL or provisioned instance accounts. The existing `docker-compose.yml` is a development recipe: local persistent database storage, development JWT, published database/API ports, and browser URLs baked into the web build. `k8s/` has manifests and port-forward instructions, but no included ingress or measured deployed instance. These are recipes, not reachability evidence.
 
 **Smallest proposed LAN path:** standalone `compose.lan.yml` on an existing Docker host selected by the owner. Both phones use `http://<chosen-private-LAN-IP>:3030` on the home Wi-Fi and register distinct logins in the same single-family instance. `deploy/lan/nginx.conf` routes web, API, uploads and WebSocket traffic through that one address; only its explicitly selected interface/port is published. Named volumes retain PostgreSQL and uploads. See [LAN runbook](lan-first-use.md).
 
@@ -48,7 +48,7 @@ GitHub merged-PR query read 2026-11-18 local time; queried `merged:>=2026-10-19`
 | --- | ---: | --- | --- |
 | User-facing feature | 2 | [#19](https://github.com/miethe/family-shopping-dashboard/pull/19), [#21](https://github.com/miethe/family-shopping-dashboard/pull/21) | Owner's 11-16 event-first picks; build work package and calendar child. |
 | Polish / user-facing repair | 1 | [#18](https://github.com/miethe/family-shopping-dashboard/pull/18) | Fresh-install login failed; migration repair selected by that detected blocker. |
-| Test-only | 1 | [#20](https://github.com/miethe/family-shopping-dashboard/pull/20) | Inherited type-check red, tracked by `node_01M7JNFY7TNTPNXK2C577D92J4`. |
+| Test-only | 1 | [#20](https://github.com/miethe/family-shopping-dashboard/pull/20) | Inherited type-check red. |
 | Infra | 0 | — | — |
 | Perf | 0 | — | — |
 | Docs | 0 | — | — |
@@ -57,29 +57,27 @@ Three of four PRs change user behavior. This period does **not** establish a dri
 
 ## Cut line, ordered
 
-1. **One LAN address with persistent storage.** Build the existing Docker path into a portable package; preserve absolute endpoint overrides for development, add same-origin endpoint support, require private secrets, and prevent stale service-worker API replay. Then host rehearsal, restart/persistence proof and both-phone sign-in. Owner: child `node_01M7RSJ6HQ2ZHP457GA3H3A4WG`.
-2. **First shared holiday end to end.** Run two seeded accounts through person → event → allowance → idea → purchase phases → partner read → budgets/history; repair only observed blockers. Reuse/link `node_01M7JFC9ADE17ZBWZ7CTHN06RR`, including landed calendar child `node_01M7JFDEN7FHQPS4W2R13SPE1R`; do not rebuild the five screens.
-3. **Phone acceptance within the selected design.** Capture and inspect populated, empty and error states at 375/390px, plus a desktop check, and fix concrete clipping/contrast/density problems. Reuse/link `node_01M7JVKZ9ADMESTGRE4GR0VYZM`. No visual redesign.
-
-All three owners are tagged `release-cut-2026-11`; existing owners retain their original placement and are linked from release parent `node_01M7RRR81GBJF21T2Z8CFHMX4W`.
+1. **One LAN address with persistent storage.** Build the existing Docker path into a portable package; preserve absolute endpoint overrides for development, add same-origin endpoint support, require private secrets, and prevent stale service-worker API replay. Then host rehearsal, restart/persistence proof and both-phone sign-in.
+2. **First shared holiday end to end.** Run two seeded accounts through person → event → allowance → idea → purchase phases → partner read → budgets/history; repair only observed blockers. Reuse the existing screens and landed calendar.
+3. **Phone acceptance within the selected design.** Capture and inspect populated, empty and error states at 375/390px, plus a desktop check, and fix concrete clipping/contrast/density problems. No visual redesign.
 
 | Feature ID / beneficiary | User-visible acceptance | Owner / evidence |
 | --- | --- | --- |
-| `FG-REACH` / both household planners | Each phone signs in at one LAN address; plans/images survive restart | `node_01M7RSJ6HQ2ZHP457GA3H3A4WG`; [runbook](lan-first-use.md); host rehearsal open |
-| `FG-PLAN` / both household planners | Capture a gift for an event/person, update its phase, and the other planner sees matching totals/history | `node_01M7JFC9ADE17ZBWZ7CTHN06RR`; [HTTP smoke](evidence/2026-11/http-smoke.json); browser acceptance open |
-| `FG-PHONE` / each phone user | Chosen screens remain legible and operable at 375/390px in populated, empty and error states | `node_01M7JVKZ9ADMESTGRE4GR0VYZM`; [capture handoff](evidence/2026-11/README.md); source PNGs absent |
+| `FG-REACH` / both household planners | Each phone signs in at one LAN address; plans/images survive restart | [runbook](lan-first-use.md); host rehearsal open |
+| `FG-PLAN` / both household planners | Capture a gift for an event/person, update its phase, and the other planner sees matching totals/history | [HTTP smoke](evidence/2026-11/http-smoke.json); browser acceptance open |
+| `FG-PHONE` / each phone user | Chosen screens remain legible and operable at 375/390px in populated, empty and error states | [capture handoff](evidence/2026-11/README.md); source PNGs absent |
 
 Release state is **branch implementation with partial runtime verification**, not deployed, on-device or owner-accepted. Feature IDs identify the cut, not new task gates.
 
 ### Below the line
 
-Coverage expansion, test cleanup unrelated to these journeys, architecture refactors, performance tuning without a blocked journey, guest accounts/multi-family SaaS, automated price tracking, share-sheet/browser extensions, push/email notifications, estate integration, year-view budget redesign, new visual directions and App Store/native packaging. External-host selection and household isolation remain with app-ops `node_01M7JV03T4TA077EE6HST5WFD1` and `node_01M7JVKZKVYY83BSRVNWWSZ80Z`; they precede any off-LAN availability and are not bypassed here.
+Coverage expansion, test cleanup unrelated to these journeys, architecture refactors, performance tuning without a blocked journey, guest accounts/multi-family SaaS, automated price tracking, share-sheet/browser extensions, push/email notifications, external integration, year-view budget redesign, new visual directions and App Store/native packaging. External-host selection and household isolation remain open; they precede any off-LAN availability and are not bypassed here.
 
 ## Look at it
 
-No screen layout is changed in this release package. Fresh runtime screenshots are nevertheless still required for release acceptance. See [capture handoff](evidence/2026-11/README.md) for routes, states and filenames. No source PNG exists yet; overlap, clipping, contrast, density and error presentation remain **uninspected**, not passed. An ICA lane is ineligible for family instance data; use a personal native lane with disposable sample data.
+No screen layout is changed in this release package. Fresh runtime screenshots are nevertheless still required for release acceptance. See [capture handoff](evidence/2026-11/README.md) for routes, states and filenames. No source PNG exists yet; overlap, clipping, contrast, density and error presentation remain **uninspected**, not passed. Use disposable sample data for visual verification.
 
-## NEEDS-NICK
+## Owner decisions
 
 - Choose the existing Docker host and its private LAN IP for this instance; authorize the host deployment/rehearsal. No cloud account, spend, DNS change or outside route is required by this LAN cut.
 - Once the host rehearsal passes, open the supplied LAN address on each phone on home Wi-Fi, create separate accounts, and perform the shared holiday checklist in the runbook.
@@ -91,6 +89,6 @@ Current evidence: [HTTP smoke](evidence/2026-11/http-smoke.json), [web HTTP resp
 
 Production `pnpm build` passed both with existing defaults and with `NEXT_PUBLIC_API_URL=/api/v1 NEXT_PUBLIC_WS_URL=/ws`. It includes lint and TypeScript validation. The focused endpoint/cache suite passed 13 tests; the full web suite passed 638, with one skipped. Compose model validation passed without a daemon, confirmed only the selected gateway interface publishes a port, and rejected each empty required setting.
 
-The broad API suite was refused by the estate laptop test-placement guard (exit 4), before tests ran. Its exact command/output is retained in the leg's durable test handoff; the prescribed runner must supply the registry result. Commit hooks and an exact-commit registry receipt are still pending here.
+The broad API suite did not run in this assessment; a separate test run is required.
 
-Full Docker boot, PostgreSQL migration/restart proof, browser interactions, source PNGs and both-phone acceptance remain open until their missing execution capabilities are available. No host, DNS or off-LAN route was changed. Keep the release parent open.
+Full Docker boot, PostgreSQL migration/restart proof, browser interactions, source PNGs and both-phone acceptance remain open until their missing execution capabilities are available. No host, DNS or off-LAN route was changed.
