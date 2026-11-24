@@ -13,7 +13,7 @@ services:
     ports:
       - "${POSTGRES_EXTERNAL_PORT:-5442}:5432"
     volumes:
-      - /Users/miethe/dev/homelab/development/pg:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -84,3 +84,6 @@ services:
 networks:
   gifting-network:
     driver: bridge
+
+volumes:
+  postgres-data:
