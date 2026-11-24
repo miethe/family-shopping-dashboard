@@ -48,11 +48,20 @@ final class AppModel {
     var addIdea = false
     var captureSaved = false
     var settings = false
+    var serverOverrideUnlocked = false
+    var canEditServerAddress: Bool {
+        #if DEBUG
+        true
+        #else
+        serverOverrideUnlocked
+        #endif
+    }
     var selection = 0
     private var reloading = false
     private var sessionChanging = false
     private var appleNonce: String?
-    var authorizingWithApple: Bool { appleNonce != nil }
+    private var fetchingAppleChallenge = false
+    var authorizingWithApple: Bool { appleNonce != nil || fetchingAppleChallenge }
     private var personCursor: Int?
     private var giftCursor: Int?
     private var occasionCursor: Int?
@@ -171,16 +180,27 @@ final class AppModel {
         }
     }
 
-    func beginAppleSignIn() -> String? {
+    func beginAppleSignIn() async -> String? {
         guard !busy, !sessionChanging, !authorizingWithApple, !signedIn, !settings else { return nil }
         guard !address.isEmpty else {
             error = "A family server address is required. Open server settings to enter one."
             return nil
         }
-        let nonce = (0..<32).map { _ in String(format: "%02x", UInt8.random(in: .min ... .max)) }.joined()
-        appleNonce = nonce
+        fetchingAppleChallenge = true
+        let revision = presentationRevision
+        defer { fetchingAppleChallenge = false }
         error = nil
-        return nonce
+        do {
+            let nonce = try await client.appleChallenge()
+            guard revision == presentationRevision else { return nil }
+            appleNonce = nonce
+            return nonce
+        } catch {
+            if revision == presentationRevision {
+                self.error = "Couldn’t start Apple sign-in. Check your home network and try again."
+            }
+            return nil
+        }
     }
 
     func completeAppleSignIn(nonce: String, result: Result<String, Error>) async {
@@ -191,6 +211,9 @@ final class AppModel {
             await authenticate {
                 try await client.loginWithApple(identityToken: identityToken, nonce: nonce)
             } errorMessage: { error in
+                if case APIError.server(_, let detail) = error, detail?.code == "APPLE_NOT_HOUSEHOLD" {
+                    return "This Apple ID is not on the family list. Choose Share My Email next time. In Settings > Sign in with Apple > Stop using Apple Account, remove Confetti to choose again, or use Already have an account?"
+                }
                 if error is URLError {
                     return "Couldn’t reach your family server. Check your home network and Confetti’s Local Network access in Settings, then try again."
                 }

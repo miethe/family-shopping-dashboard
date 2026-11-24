@@ -12,6 +12,7 @@ struct OpenAPIContractTests {
         let date = try #require(CalendarDate("2026-12-09"))
         _ = try await client.health()
         _ = try await client.register(email: "sam@hartwell.example", password: "fixture-password")
+        _ = try await client.appleChallenge()
         _ = try await client.loginWithApple(identityToken: "fixture-apple-token", nonce: "fixture-nonce")
         _ = try await client.refreshSession()
         _ = try await client.me()
@@ -139,6 +140,9 @@ private actor ContractTransport: HTTPTransport {
             #expect(request.httpBody == nil)
         }
         var fixtureRequest = request
+        if path == "/api/v1/auth/apple/challenge" {
+            return HTTPResponse(statusCode: 200, body: Data(#"{"nonce":"fixture-nonce","expires_in":300}"#.utf8))
+        }
         if path == "/api/v1/auth/apple" {
             // Apple exchanges use the same response fixture as password login.
             fixtureRequest.url = try ServerAddress.fixture.endpoint("/api/v1/auth/login", query: [])

@@ -88,6 +88,19 @@ struct APIClientTests {
         #expect(await transport.requests.isEmpty)
     }
 
+    @Test func appleChallengeIsAnUnauthenticatedPostAndPreservesTheSession() async throws {
+        let store = MemoryTokenStore()
+        let transport = RecordingTransport([response(200, #"{"nonce":"server-nonce","expires_in":300}"#)])
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        #expect(try await client.appleChallenge() == "server-nonce")
+        let requests = await transport.requests
+        #expect(requests.count == 1)
+        #expect(requests[0].url?.path == "/api/v1/auth/apple/challenge")
+        #expect(requests[0].httpMethod == "POST")
+        #expect(requests[0].value(forHTTPHeaderField: "Authorization") == nil)
+        #expect(try store.read() == nil)
+    }
+
     @Test func appleSignInExchangesTheIdentityTokenAndNonceForAnOriginBoundSession() async throws {
         let transport = RecordingTransport([response(200, TestPayload.login), response(200, TestPayload.user)])
         let store = MemoryTokenStore(token: "previous-session")
@@ -121,11 +134,11 @@ struct APIClientTests {
         let rejection = APIError.server(statusCode: 401, detail: APIErrorDetail(
             code: "HTTP_401", message: "Apple sign-in could not be verified", traceId: nil
         ))
-        await #expect(throws: rejection) { try await client.loginWithApple(identityToken: "fixture-apple-token") }
+        await #expect(throws: rejection) { try await client.loginWithApple(identityToken: "fixture-apple-token", nonce: "fixture-nonce") }
         #expect(store.read()?.accessToken == "previous-session")
         let request = try #require(await transport.requests.first)
         let body = try #require(request.httpBody)
-        #expect(try JSONDecoder().decode([String: String].self, from: body) == ["identity_token": "fixture-apple-token"])
+        #expect(try JSONDecoder().decode([String: String].self, from: body) == ["identity_token": "fixture-apple-token", "nonce": "fixture-nonce"])
     }
 
     @Test func changingOriginDuringAppleSignInDiscardsTheStaleExchange() async throws {

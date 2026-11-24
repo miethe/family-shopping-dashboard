@@ -5,6 +5,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import lazyload
 
+from app.core.apple_auth import AppleNotHouseholdError
+from app.core.config import settings
 from app.models.user import UNUSABLE_PASSWORD_HASH, User
 from app.repositories.base import BaseRepository
 
@@ -81,8 +83,12 @@ class UserRepository(BaseRepository[User]):
 
     async def _resolve_apple_user(self, subject: str, verified_email: str | None) -> User | None:
         user = await self._get_by_apple_subject(subject)
-        if user is not None or verified_email is None:
+        if user is not None:
             return user
+        if verified_email is None:
+            return None
+        if verified_email.lower() not in settings.apple_household_emails:
+            raise AppleNotHouseholdError()
 
         email = verified_email.lower()
         email_matches = func.lower(User.email) == email

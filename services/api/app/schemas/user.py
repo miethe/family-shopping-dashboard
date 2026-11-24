@@ -56,10 +56,15 @@ class UserLogin(BaseModel):
 
 
 class AppleLogin(BaseModel):
-    """Native Apple identity token and optional nonce sent in the authorization request."""
+    """Native Apple identity token and raw server-issued nonce (required for authentication)."""
 
     identity_token: str = Field(min_length=1, max_length=8192)
     nonce: str | None = Field(default=None, min_length=1, max_length=256)
+
+
+class AppleChallengeResponse(BaseModel):
+    nonce: str
+    expires_in: int
 
 
 class TokenResponse(BaseModel):

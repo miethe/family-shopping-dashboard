@@ -42,6 +42,10 @@ def test_apple_migration_preserves_legacy_accounts_and_data(
         command.stamp(config, "a84_holidays")
         command.upgrade(config, "head")
         with engine.begin() as conn:
+            assert "apple_challenges" in sa.inspect(conn).get_table_names()
+            conn.exec_driver_sql(
+                "INSERT INTO apple_challenges VALUES ('hash', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+            )
             assert (
                 conn.exec_driver_sql("SELECT apple_subject FROM users WHERE id = 41").scalar()
                 is None
@@ -56,6 +60,7 @@ def test_apple_migration_preserves_legacy_accounts_and_data(
 
         command.downgrade(config, "a84_holidays")
         with engine.connect() as conn:
+            assert "apple_challenges" not in sa.inspect(conn).get_table_names()
             assert conn.exec_driver_sql("PRAGMA table_info(users)").all() == old_columns
             assert sa.inspect(conn).get_indexes("users") == old_indexes
             assert conn.exec_driver_sql(
@@ -67,3 +72,29 @@ def test_apple_migration_preserves_legacy_accounts_and_data(
             ]
     finally:
         engine.dispose()
+
+
+def test_apple_migration_generates_postgres_upgrade_and_downgrade(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from io import StringIO
+
+    monkeypatch.setattr(settings, "DATABASE_URL", "postgresql+psycopg://unused/unused")
+    api_dir = Path(__file__).parents[2]
+    output = StringIO()
+    config = Config(str(api_dir / "alembic.ini"), output_buffer=output)
+    config.set_main_option("script_location", str(api_dir / "alembic"))
+    command.upgrade(config, "a84_holidays:b49_apple_subject", sql=True)
+    upgrade = output.getvalue()
+    assert "ALTER TABLE users ADD COLUMN apple_subject VARCHAR(255)" in upgrade
+    assert "CREATE TABLE apple_challenges" in upgrade
+    assert "TIMESTAMP WITH TIME ZONE" in upgrade
+    assert "CREATE UNIQUE INDEX ix_users_apple_subject" in upgrade
+    assert "DROP TABLE users" not in upgrade
+    output.seek(0)
+    output.truncate(0)
+    command.downgrade(config, "b49_apple_subject:a84_holidays", sql=True)
+    downgrade = output.getvalue()
+    assert "DROP TABLE apple_challenges" in downgrade
+    assert "ALTER TABLE users DROP COLUMN apple_subject" in downgrade
+    assert "DROP TABLE users" not in downgrade

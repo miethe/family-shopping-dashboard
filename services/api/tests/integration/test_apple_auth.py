@@ -3,7 +3,9 @@
 import asyncio
 from collections.abc import Iterator
 from dataclasses import dataclass, field
+from hashlib import sha256
 from pathlib import Path
+from secrets import token_urlsafe
 from typing import Any
 
 import httpx
@@ -16,10 +18,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.apple_auth import JWKS_TTL_SECONDS, AppleTokenVerifier, get_apple_token_verifier
+from app.core.apple_throttle import AppleRateLimiter
+from app.core.config import settings
 from app.main import app
 from app.models.base import BaseModel
 from app.models.list import List
 from app.models.user import UNUSABLE_PASSWORD_HASH, User
+from app.repositories.apple_challenge import AppleChallengeRepository
 from app.repositories.user import UserRepository
 
 APPLE_PATH = "/api/v1/auth/apple"
@@ -33,6 +38,8 @@ class AppleProvider:
     published: tuple[str, ...] = ("original",)
     status: int = 200
     clock: float = 0
+    nonces: dict[str, str] = field(default_factory=dict)
+    session: AsyncSession | None = None
 
     def respond(self, request: httpx.Request) -> httpx.Response:
         assert request.method == "GET"
@@ -68,21 +75,38 @@ class AppleProvider:
         headers: dict[str, str] | None = None,
         **claims: Any,
     ) -> str:
+        raw_nonce = claims.pop("nonce", token_urlsafe(32))
         payload = {
             "iss": "https://appleid.apple.com",
             "aud": "dev.familygifting.app",
             "exp": 4_102_444_800,
             "sub": "synthetic-apple-subject",
+            "nonce": sha256(raw_nonce.encode()).hexdigest() if raw_nonce else None,
             "email": "new@example.com",
             "email_verified": True,
         } | claims
         payload = {name: value for name, value in payload.items() if value is not None}
-        return jwt.encode(
+        token = jwt.encode(
             payload,
             self.private_keys[signing_key],
             algorithm="RS256",
             headers={"kid": signing_key if kid is None else kid} | (headers or {}),
         )
+        self.nonces[token] = raw_nonce
+        return token
+
+    async def post(self, client: AsyncClient, path: str, *, json: dict) -> httpx.Response:
+        if path != APPLE_PATH:
+            return await client.post(path, json=json)
+        body = dict(json)
+        raw_nonce = body.get(
+            "nonce", self.nonces.get(body.get("identity_token"), token_urlsafe(32))
+        )
+        assert self.session is not None
+        if raw_nonce:
+            await AppleChallengeRepository(self.session).issue(raw_nonce)
+        body["nonce"] = raw_nonce
+        return await client.post(path, json=body)
 
 
 @pytest.fixture(scope="session")
@@ -94,8 +118,20 @@ def rsa_keys() -> dict[str, rsa.RSAPrivateKey]:
 
 
 @pytest.fixture
-def apple(rsa_keys: dict[str, rsa.RSAPrivateKey]) -> Iterator[AppleProvider]:
-    provider = AppleProvider(rsa_keys)
+def apple(
+    rsa_keys: dict[str, rsa.RSAPrivateKey],
+    async_session: AsyncSession,
+    monkeypatch: pytest.MonkeyPatch,
+) -> Iterator[AppleProvider]:
+    monkeypatch.setattr(
+        settings,
+        "APPLE_HOUSEHOLD_EMAILS",
+        " NEW@example.com , TEST@example.com, existing@example.com, changed@example.com",
+    )
+    monkeypatch.setattr(
+        "app.core.apple_throttle.apple_limiter", AppleRateLimiter(per_ip=1000, global_limit=2000)
+    )
+    provider = AppleProvider(rsa_keys, session=async_session)
     verifier = AppleTokenVerifier(
         transport=httpx.MockTransport(provider.respond), clock=lambda: provider.clock
     )
@@ -108,10 +144,11 @@ def apple(rsa_keys: dict[str, rsa.RSAPrivateKey]) -> Iterator[AppleProvider]:
 async def test_apple_links_existing_account_and_keeps_password_and_data(
     client: AsyncClient, test_user: User, test_list: List, apple: AppleProvider
 ) -> None:
-    password_login = await client.post(
-        PASSWORD_PATH, json={"email": test_user.email, "password": "password123"}
+    password_login = await apple.post(
+        client, PASSWORD_PATH, json={"email": test_user.email, "password": "password123"}
     )
-    result = await client.post(
+    result = await apple.post(
+        client,
         APPLE_PATH,
         json={
             "identity_token": apple.token(email=test_user.email.upper(), nonce="challenge"),
@@ -137,13 +174,15 @@ async def test_apple_links_existing_account_and_keeps_password_and_data(
 
     for email in ("changed@example.com", None):
         token = apple.token(email=email, email_verified=True if email is not None else None)
-        returning = await client.post(APPLE_PATH, json={"identity_token": token})
+        returning = await apple.post(client, APPLE_PATH, json={"identity_token": token})
         assert returning.status_code == 200
         assert returning.json()["id"] == test_user.id
         assert returning.json()["email"] == test_user.email
 
     assert (
-        await client.post(PASSWORD_PATH, json={"email": test_user.email, "password": "password123"})
+        await apple.post(
+            client, PASSWORD_PATH, json={"email": test_user.email, "password": "password123"}
+        )
     ).status_code == 200
     assert len(apple.requests) == 1
 
@@ -163,11 +202,11 @@ async def test_apple_links_existing_account_and_keeps_password_and_data(
 async def test_apple_rejects_unverified_or_invalid_email_for_bound_subject(
     client: AsyncClient, apple: AppleProvider, email: str, verified: object
 ) -> None:
-    first_sign_in = await client.post(APPLE_PATH, json={"identity_token": apple.token()})
+    first_sign_in = await apple.post(client, APPLE_PATH, json={"identity_token": apple.token()})
     assert first_sign_in.status_code == 200
 
     token = apple.token(email=email, email_verified=verified)
-    response = await client.post(APPLE_PATH, json={"identity_token": token})
+    response = await apple.post(client, APPLE_PATH, json={"identity_token": token})
     assert response.status_code == 401
     assert response.json()["error"]["code"] == "INVALID_APPLE_CREDENTIALS"
 
@@ -176,8 +215,8 @@ async def test_apple_rejects_unverified_or_invalid_email_for_bound_subject(
 async def test_apple_creates_an_account_with_a_disabled_password(
     client: AsyncClient, async_session: AsyncSession, apple: AppleProvider
 ) -> None:
-    result = await client.post(
-        APPLE_PATH, json={"identity_token": apple.token(email_verified="true")}
+    result = await apple.post(
+        client, APPLE_PATH, json={"identity_token": apple.token(email_verified="true")}
     )
     assert result.status_code == 200, result.text
     body = result.json()
@@ -187,12 +226,12 @@ async def test_apple_creates_an_account_with_a_disabled_password(
     assert user.apple_subject == "synthetic-apple-subject"
     assert user.password_hash == UNUSABLE_PASSWORD_HASH
 
-    password = await client.post(
-        PASSWORD_PATH, json={"email": body["email"], "password": UNUSABLE_PASSWORD_HASH}
+    password = await apple.post(
+        client, PASSWORD_PATH, json={"email": body["email"], "password": UNUSABLE_PASSWORD_HASH}
     )
     assert password.status_code == 401
-    conflict = await client.post(
-        APPLE_PATH, json={"identity_token": apple.token(sub="another-apple-subject")}
+    conflict = await apple.post(
+        client, APPLE_PATH, json={"identity_token": apple.token(sub="another-apple-subject")}
     )
     assert conflict.status_code == 401
     assert len((await async_session.scalars(select(User.id))).all()) == 1
@@ -207,7 +246,7 @@ async def test_apple_rejects_ambiguous_case_variant_emails(
     )
     await async_session.commit()
 
-    response = await client.post(APPLE_PATH, json={"identity_token": apple.token()})
+    response = await apple.post(client, APPLE_PATH, json={"identity_token": apple.token()})
     assert response.status_code == 401
     assert (await async_session.scalars(select(User.apple_subject))).all() == [None, None]
 
@@ -241,9 +280,10 @@ async def test_apple_rejects_invalid_claims_without_creating_a_user(
     claims: dict[str, Any],
     nonce: str | None,
 ) -> None:
-    response = await client.post(
-        APPLE_PATH, json={"identity_token": apple.token(**claims), "nonce": nonce}
-    )
+    token = apple.token(**claims)
+    if nonce is None:
+        nonce = apple.nonces[token]
+    response = await apple.post(client, APPLE_PATH, json={"identity_token": token, "nonce": nonce})
     assert response.status_code == 401, response.text
     assert response.json()["error"]["code"] == "INVALID_APPLE_CREDENTIALS"
     assert not (await async_session.scalars(select(User.id))).all()
@@ -254,15 +294,15 @@ async def test_apple_rejects_wrong_algorithm_and_invalid_signature(
     client: AsyncClient, apple: AppleProvider
 ) -> None:
     signed_with_wrong_algorithm = jwt.encode({}, "synthetic-fixture", "HS256", {"kid": "original"})
-    wrong_algorithm = await client.post(
-        APPLE_PATH, json={"identity_token": signed_with_wrong_algorithm}
+    wrong_algorithm = await apple.post(
+        client, APPLE_PATH, json={"identity_token": signed_with_wrong_algorithm}
     )
     assert wrong_algorithm.status_code == 401
     assert not apple.requests
 
     bad_signature = apple.token(signing_key="rotated", kid="original")
     assert (
-        await client.post(APPLE_PATH, json={"identity_token": bad_signature})
+        await apple.post(client, APPLE_PATH, json={"identity_token": bad_signature})
     ).status_code == 401
     assert len(apple.requests) == 1
 
@@ -273,7 +313,7 @@ async def test_apple_rejects_token_controlled_key_urls(
     client: AsyncClient, apple: AppleProvider, header: str
 ) -> None:
     token = apple.token(headers={header: "https://keys.example.invalid/"})
-    response = await client.post(APPLE_PATH, json={"identity_token": token})
+    response = await apple.post(client, APPLE_PATH, json={"identity_token": token})
     assert response.status_code == 401
     assert not apple.requests
 
@@ -283,7 +323,9 @@ async def test_jwks_refreshes_cache_on_rotation_and_expires_keys(
     client: AsyncClient, apple: AppleProvider
 ) -> None:
     async def login(kid: str) -> httpx.Response:
-        return await client.post(APPLE_PATH, json={"identity_token": apple.token(signing_key=kid)})
+        return await apple.post(
+            client, APPLE_PATH, json={"identity_token": apple.token(signing_key=kid)}
+        )
 
     assert (await login("original")).status_code == 200
     assert (await login("original")).status_code == 200
@@ -303,10 +345,12 @@ async def test_jwks_refreshes_cache_on_rotation_and_expires_keys(
 @pytest.mark.asyncio
 async def test_jwks_limits_unknown_key_refreshes(client: AsyncClient, apple: AppleProvider) -> None:
     assert (
-        await client.post(APPLE_PATH, json={"identity_token": apple.token()})
+        await apple.post(client, APPLE_PATH, json={"identity_token": apple.token()})
     ).status_code == 200
     for kid in ("unknown-1", "unknown-2", "unknown-3"):
-        response = await client.post(APPLE_PATH, json={"identity_token": apple.token(kid=kid)})
+        response = await apple.post(
+            client, APPLE_PATH, json={"identity_token": apple.token(kid=kid)}
+        )
         assert response.status_code == 401
     assert len(apple.requests) == 2
 
@@ -318,7 +362,7 @@ async def test_apple_fails_closed_for_unusable_jwks(
 ) -> None:
     apple.published = ("malformed",)
     apple.status = status
-    response = await client.post(APPLE_PATH, json={"identity_token": apple.token()})
+    response = await apple.post(client, APPLE_PATH, json={"identity_token": apple.token()})
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "APPLE_KEYS_UNAVAILABLE"
     assert len(apple.requests) == 1
@@ -327,8 +371,13 @@ async def test_apple_fails_closed_for_unusable_jwks(
 @pytest.mark.parametrize("same_email", [True, False])
 @pytest.mark.asyncio
 async def test_concurrent_apple_creation_resolves_the_same_subject(
-    tmp_path: Path, same_email: bool
+    tmp_path: Path, same_email: bool, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.setattr(
+        settings,
+        "APPLE_HOUSEHOLD_EMAILS",
+        "new@example.com,changed@example.com,existing@example.com",
+    )
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'race.db'}")
     async with engine.begin() as connection:
         await connection.run_sync(BaseModel.metadata.create_all)
@@ -359,7 +408,14 @@ async def test_concurrent_apple_creation_resolves_the_same_subject(
 
 
 @pytest.mark.asyncio
-async def test_concurrent_apple_link_cannot_replace_another_subject(tmp_path: Path) -> None:
+async def test_concurrent_apple_link_cannot_replace_another_subject(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        settings,
+        "APPLE_HOUSEHOLD_EMAILS",
+        "new@example.com,changed@example.com,existing@example.com",
+    )
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'link.db'}")
     async with engine.begin() as connection:
         await connection.run_sync(BaseModel.metadata.create_all)
@@ -389,3 +445,201 @@ async def test_concurrent_apple_link_cannot_replace_another_subject(tmp_path: Pa
             assert (await session.scalar(select(User.apple_subject))) in {"subject-a", "subject-b"}
     finally:
         await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_server_challenge_is_hashed_expiring_and_single_use(
+    client: AsyncClient, async_session: AsyncSession, apple: AppleProvider
+) -> None:
+    from datetime import datetime, timezone
+
+    from app.models.apple_challenge import AppleChallenge
+
+    challenge = await client.post(APPLE_PATH + "/challenge")
+    assert challenge.status_code == 200
+    raw = challenge.json()["nonce"]
+    assert challenge.json()["expires_in"] == 300
+    saved = await async_session.get(AppleChallenge, sha256(raw.encode()).hexdigest())
+    assert saved is not None
+    assert saved.nonce_hash != raw
+    assert (saved.expires_at - saved.created_at).total_seconds() == 300
+    body = {"identity_token": apple.token(nonce=raw), "nonce": raw}
+    assert (await client.post(APPLE_PATH, json=body)).status_code == 200
+    assert (await client.post(APPLE_PATH, json=body)).status_code == 401
+    assert await async_session.get(AppleChallenge, saved.nonce_hash, populate_existing=True) is None
+
+    expired = (await client.post(APPLE_PATH + "/challenge")).json()["nonce"]
+    saved = await async_session.get(AppleChallenge, sha256(expired.encode()).hexdigest())
+    saved.expires_at = datetime(2000, 1, 1, tzinfo=timezone.utc)
+    await async_session.commit()
+    assert (
+        await client.post(
+            APPLE_PATH,
+            json={
+                "identity_token": apple.token(nonce=expired),
+                "nonce": expired,
+            },
+        )
+    ).status_code == 401
+
+
+@pytest.mark.parametrize("nonce", [None, "unknown"])
+@pytest.mark.asyncio
+async def test_missing_or_unknown_challenge_rejected(
+    client: AsyncClient, apple: AppleProvider, nonce: str | None
+) -> None:
+    body = {"identity_token": apple.token()}
+    if nonce is not None:
+        body["nonce"] = nonce
+    assert (await client.post(APPLE_PATH, json=body)).status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_nonce_claim_must_be_hash_and_failed_exchange_consumes_challenge(
+    client: AsyncClient, apple: AppleProvider
+) -> None:
+    nonce = (await client.post(APPLE_PATH + "/challenge")).json()["nonce"]
+    body = {"identity_token": apple.token(nonce="different"), "nonce": nonce}
+    assert (await client.post(APPLE_PATH, json=body)).status_code == 401
+    body["identity_token"] = apple.token(nonce=nonce)
+    assert (await client.post(APPLE_PATH, json=body)).status_code == 401
+    assert len(apple.requests) == 1
+
+
+@pytest.mark.parametrize("email", ["outsider@example.com", "relay@privaterelay.appleid.com"])
+@pytest.mark.asyncio
+async def test_non_household_email_never_creates_or_links(
+    client: AsyncClient, async_session: AsyncSession, apple: AppleProvider, email: str
+) -> None:
+    response = await apple.post(
+        client, APPLE_PATH, json={"identity_token": apple.token(email=email)}
+    )
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "APPLE_NOT_HOUSEHOLD"
+    assert not (await async_session.scalars(select(User.id))).all()
+
+    existing = User(email=email, password_hash="!")
+    async_session.add(existing)
+    await async_session.commit()
+    response = await apple.post(
+        client, APPLE_PATH, json={"identity_token": apple.token(email=email)}
+    )
+    assert response.status_code == 403
+    await async_session.refresh(existing)
+    assert existing.apple_subject is None
+
+
+@pytest.mark.asyncio
+async def test_empty_allowlist_only_allows_bound_subjects(
+    client: AsyncClient,
+    test_user: User,
+    apple: AppleProvider,
+    monkeypatch: pytest.MonkeyPatch,
+    async_session: AsyncSession,
+) -> None:
+    monkeypatch.setattr(settings, "APPLE_HOUSEHOLD_EMAILS", "")
+    denied = await apple.post(
+        client, APPLE_PATH, json={"identity_token": apple.token(email=test_user.email)}
+    )
+    assert denied.status_code == 403
+    test_user.apple_subject = "synthetic-apple-subject"
+    await async_session.commit()
+    allowed = await apple.post(client, APPLE_PATH, json={"identity_token": apple.token(email=None)})
+    assert allowed.status_code == 200
+    assert allowed.json()["id"] == test_user.id
+    assert len((await async_session.scalars(select(User.id))).all()) == 1
+
+
+@pytest.mark.parametrize("verified", [False, "false", None])
+@pytest.mark.asyncio
+async def test_allowlisted_existing_email_still_requires_apple_verification(
+    client: AsyncClient,
+    test_user: User,
+    apple: AppleProvider,
+    verified: object,
+    async_session: AsyncSession,
+) -> None:
+    denied = await apple.post(
+        client,
+        APPLE_PATH,
+        json={
+            "identity_token": apple.token(email=test_user.email, email_verified=verified),
+            "email": "new@example.com",
+        },
+    )
+    assert denied.status_code == 401
+    await async_session.refresh(test_user)
+    assert test_user.apple_subject is None
+
+
+def test_allowlist_parsed_case_insensitively_at_startup(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.core.config import Settings
+
+    monkeypatch.setenv("APPLE_HOUSEHOLD_EMAILS", " FAMILY@example.com, other@example.com ,,")
+    config = Settings(_env_file=None)
+    monkeypatch.setenv("APPLE_HOUSEHOLD_EMAILS", "")
+    assert config.apple_household_emails == {"family@example.com", "other@example.com"}
+    assert Settings(_env_file=None).apple_household_emails == set()
+
+
+@pytest.mark.asyncio
+async def test_both_apple_endpoints_share_ip_and_global_throttle(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    now = [0.0]
+    limiter = AppleRateLimiter(per_ip=2, global_limit=3, clock=lambda: now[0])
+    monkeypatch.setattr("app.core.apple_throttle.apple_limiter", limiter)
+    assert (await client.post(APPLE_PATH + "/challenge")).status_code == 200
+    assert (await client.post(APPLE_PATH, json={"identity_token": "invalid"})).status_code == 401
+    assert (await client.post(APPLE_PATH + "/challenge")).status_code == 429
+    assert (await client.post(APPLE_PATH, json={"identity_token": "invalid"})).status_code == 429
+    # Different IPs remain subject to the process-wide budget.
+    limiter.check("other-ip")
+    from app.core.exceptions import AppException
+
+    with pytest.raises(AppException) as blocked:
+        limiter.check("third-ip")
+    assert blocked.value.status_code == 429
+    now[0] = 60
+    assert (await client.post(APPLE_PATH + "/challenge")).status_code == 200
+    assert len(limiter.events) == 1
+
+
+@pytest.mark.asyncio
+async def test_atomic_challenge_consumption_across_sessions(tmp_path: Path) -> None:
+    engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'challenge-race.db'}")
+    async with engine.begin() as connection:
+        await connection.run_sync(BaseModel.metadata.create_all)
+    sessions = async_sessionmaker(engine, expire_on_commit=False)
+    async with sessions() as session:
+        await AppleChallengeRepository(session).issue("one-use")
+    start = asyncio.Barrier(2)
+
+    async def consume() -> bool:
+        async with sessions() as session:
+            await start.wait()
+            return await AppleChallengeRepository(session).consume("one-use")
+
+    try:
+        assert sorted(await asyncio.gather(consume(), consume())) == [False, True]
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.parametrize("nonce_claim", [None, "raw"])
+@pytest.mark.asyncio
+async def test_token_requires_hashed_nonce_claim(
+    client: AsyncClient, apple: AppleProvider, nonce_claim: str | None
+) -> None:
+    nonce = (await client.post(APPLE_PATH + "/challenge")).json()["nonce"]
+    claims = jwt.get_unverified_claims(apple.token(nonce=nonce))
+    if nonce_claim is None:
+        del claims["nonce"]
+    else:
+        claims["nonce"] = nonce
+    token = jwt.encode(
+        claims, apple.private_keys["original"], algorithm="RS256", headers={"kid": "original"}
+    )
+    assert (
+        await client.post(APPLE_PATH, json={"identity_token": token, "nonce": nonce})
+    ).status_code == 401
