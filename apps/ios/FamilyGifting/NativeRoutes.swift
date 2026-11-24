@@ -43,6 +43,16 @@ struct FixtureScreen: View {
         case "gift-detail": if let gift = model.gifts.first { NativeGiftDetailView(model: model, gift: gift) }
         case "ideas", "offline": NativeIdeasView(model: model)
         case "capture": AddIdeaView(model: model)
+        case "share-host":
+            VStack(spacing: 20) {
+                Text("Synthetic share host").font(.title)
+                if let sample = URL(string: "https://example.invalid/kite") {
+                    ShareLink(item: sample, preview: SharePreview("Paper kite", image: Image(systemName: "gift"))) {
+                        Label("Share sample link", systemImage: "square.and.arrow.up")
+                    }
+                }
+                Button("Import shared ideas") { Task { await model.reload(); model.showIdeas = true } }
+            }
         case "events": NativeEventsView(model: model)
         case "holiday": NativeEventCreator(model: model) { _ in }
         case "more": MoreView(model: model)

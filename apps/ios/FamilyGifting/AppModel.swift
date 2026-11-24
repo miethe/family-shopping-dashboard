@@ -3,6 +3,9 @@ import Observation
 import Network
 import CryptoKit
 import FamilyGiftingKit
+import GiftingExtensions
+import WidgetKit
+import OSLog
 
 @MainActor @Observable
 final class AppModel {
@@ -20,6 +23,10 @@ final class AppModel {
     var showIdeas = false
     private var monitor: NWPathMonitor?
     private var queue: IdeaQueue?
+    private let extensions: ExtensionStore?
+    private let journalFile: URL?
+    private var presentationRevision = 0
+    private static let logger = Logger(subsystem: "dev.familygifting.app", category: "Extensions")
     private var offlineUserID: Int?
     private var accountCacheKey: String? {
         credential.map { "ideaAccount:" + address + ":" + SHA256.hash(data: Data($0.accessToken.utf8)).map { String(format: "%02x", $0) }.joined() }
@@ -48,7 +55,8 @@ final class AppModel {
     private var giftCursor: Int?
     private var occasionCursor: Int?
 
-    init(arguments: [String] = ProcessInfo.processInfo.arguments, fixtureClient: APIClient? = nil) {
+    init(arguments: [String] = ProcessInfo.processInfo.arguments, fixtureClient: APIClient? = nil,
+         extensionStore: ExtensionStore? = nil, journalFile: URL? = nil) {
         #if DEBUG
         let isUnitTest = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
         let args = isUnitTest && !arguments.contains("--fixture") ? arguments + ["--fixture", "sample"] : arguments
@@ -64,6 +72,13 @@ final class AppModel {
         let isFixture = scenarioIndex != nil
         let storedAddress = isFixture ? ServerAddress.fixture.url.absoluteString : (UserDefaults.standard.string(forKey: "serverAddress") ?? "")
         fixture = isFixture
+        self.journalFile = journalFile
+        #if DEBUG && FG_UNSIGNED_EXTENSION_FIXTURES && targetEnvironment(simulator)
+        let useSharedStore = isFixture && args.contains("--extension-fixtures")
+        #else
+        let useSharedStore = !isFixture
+        #endif
+        extensions = extensionStore ?? (useSharedStore ? ExtensionStore.shared() : nil)
         address = storedAddress
         configured = isFixture || (!storedAddress.isEmpty && UserDefaults.standard.bool(forKey: "serverValidated"))
         if isFixture {
@@ -82,10 +97,18 @@ final class AppModel {
                 if offlineUserID == nil, !fixture, let key = accountCacheKey {
                     offlineUserID = UserDefaults.standard.object(forKey: key) as? Int
                 }
+                bindExtensions(to: account)
                 credential = try await client.usableSession()
                 signedIn = credential != nil
                 if signedIn { await reload() }
-            } catch { handle(error) }
+                else { await importSharedIdeas() }
+            } catch {
+                if account == nil { bindExtensions(to: nil) }
+                handle(error)
+                await importSharedIdeas()
+            }
+        } else {
+            bindExtensions(to: nil)
         }
         if !fixture {
             let monitor = NWPathMonitor()
@@ -106,6 +129,7 @@ final class AppModel {
             } catch { handle(error) }
         }
         if signedIn { await reload() }
+        else { await importSharedIdeas() }
     }
 
     func handle(_ problem: Error) {
@@ -113,12 +137,14 @@ final class AppModel {
         if let apiError = problem as? APIError, apiError == .sessionChanged { return }
         if let apiError = problem as? APIError, apiError == .expiredSession {
             let retainedUser = currentUser?.id ?? offlineUserID
+            if let account { updateCountdown(nil, for: account) }
             clearData()
             offlineUserID = retainedUser
             signedIn = false
             web = nil; native = nil; showIdeas = false
             error = apiError.localizedDescription
         } else if let apiError = problem as? APIError, apiError.isUnauthorized {
+            bindExtensions(to: nil)
             signedIn = false
             credential = nil
             web = nil; native = nil; showIdeas = false
@@ -134,15 +160,16 @@ final class AppModel {
         busy = true; error = nil
         defer { busy = false }
         do {
-            if register { _ = try await client.register(email: email, password: password) }
-            else { _ = try await client.login(email: email, password: password) }
+            let user: User
+            if register { user = try await client.register(email: email, password: password) }
+            else { user = try await client.login(email: email, password: password) }
+            bindExtensions(to: address + "#" + String(user.id))
             clearData()
             credential = try await client.sessionToken()
             offlineUserID = credential?.userID
             signedIn = true
-            await reload()
             sessionChanging = false
-            await flushIdeas()
+            await reload()
         } catch { self.error = error.localizedDescription }
     }
 
@@ -154,6 +181,7 @@ final class AppModel {
         do {
             let next = try ServerAddress(input)
             _ = try await client.validateServerAddress(next)
+            bindExtensions(to: nil)
             try await client.setServerAddress(next)
             try await client.logout()
             address = next.url.absoluteString
@@ -169,28 +197,42 @@ final class AppModel {
     func signOut() async {
         sessionChanging = true
         defer { sessionChanging = false }
+        bindExtensions(to: nil)
         do { try await client.signOut() } catch { self.error = error.localizedDescription }
         signedIn = false; credential = nil; web = nil; native = nil; showIdeas = false; addIdea = false
         clearData()
     }
 
     private func clearData() {
+        presentationRevision += 1
         offlineUserID = nil; currentUser = nil; pendingIdeas = []; dashboard = nil; people = []; gifts = []; occasions = []; holidays = []
         inbox = nil; budget = nil; activity = nil; christmas = false; loaded = false
         personCursor = nil; giftCursor = nil; occasionCursor = nil
     }
 
     func reload() async {
-        guard signedIn, !reloading else { return }
+        guard signedIn, !reloading, !sessionChanging else { return }
+        let revision = presentationRevision
         reloading = true
         busy = true; error = nil
         defer { busy = false; reloading = false }
+        await importSharedIdeas()
+        guard revision == presentationRevision, signedIn, !sessionChanging else { return }
         do {
             credential = try await client.usableSession()
-            currentUser = try await client.me()
-            offlineUserID = currentUser?.id
+            let user = try await client.me()
+            guard revision == presentationRevision, !sessionChanging else { return }
+            if let previous = account, previous != address + "#" + String(user.id) {
+                clearData()
+            }
+            currentUser = user
+            offlineUserID = user.id
+            bindExtensions(to: account)
+            let loadedRevision = presentationRevision
+            let refreshAccount = account
             if !fixture, let key = accountCacheKey { UserDefaults.standard.set(offlineUserID, forKey: key) }
             await flushIdeas()
+            guard loadedRevision == presentationRevision, account == refreshAccount, !sessionChanging else { return }
             // A small family dataset: serial fetches keep server and memory load bounded.
             dashboard = try await client.dashboard()
             let theme = try await secondary { try await client.activeTheme() }
@@ -200,7 +242,9 @@ final class AppModel {
             let giftPage = try await client.gifts()
             gifts = giftPage.items; giftCursor = giftPage.nextCursor
             let occasionPage = try await client.occasions()
+            guard loadedRevision == presentationRevision, account == refreshAccount, !sessionChanging else { return }
             occasions = occasionPage.items; occasionCursor = occasionPage.nextCursor
+            if let refreshAccount { publishCountdown(for: refreshAccount) }
             inbox = try await secondary { try await client.ideas() }
             holidays = try await secondary { try await client.holidays() } ?? []
             activity = try await secondary { try await client.activity() }
@@ -255,7 +299,7 @@ final class AppModel {
     private func ideaJournal() -> IdeaQueue {
         if let queue { return queue }
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        let journal = IdeaQueue(file: base.appendingPathComponent(fixture ? "fixture-ideas-\(UUID()).json" : "pending-ideas.json"))
+        let journal = IdeaQueue(file: journalFile ?? base.appendingPathComponent(fixture ? "fixture-ideas-\(UUID()).json" : "pending-ideas.json"))
         queue = journal
         return journal
     }
@@ -266,6 +310,7 @@ final class AppModel {
         let journal = ideaJournal()
         let client = client
         do {
+            if let extensions { try await journal.importSharedIdeas(from: extensions, account: account) }
             let session = try await client.captureSession()
             let items = try await journal.items(account: account)
             guard self.account == account, signedIn, !sessionChanging else { return }
@@ -278,6 +323,47 @@ final class AppModel {
         }
         let remaining = try? await journal.items(account: account)
         if self.account == account, signedIn, !sessionChanging { pendingIdeas = remaining ?? pendingIdeas }
+    }
+
+    func importSharedIdeas() async {
+        guard !sessionChanging, let extensions, let account else { return }
+        let journal = ideaJournal()
+        do {
+            try await journal.importSharedIdeas(from: extensions, account: account)
+            let items = try await journal.items(account: account)
+            if self.account == account, signedIn, !sessionChanging { pendingIdeas = items }
+        } catch { Self.logger.error("Shared idea import failed.") }
+    }
+
+    private func bindExtensions(to account: String?) {
+        do {
+            if try extensions?.bind(account: account) == true {
+                WidgetCenter.shared.reloadTimelines(ofKind: ExtensionStore.widgetKind)
+            }
+        } catch { Self.logger.error("Couldn’t update the extension account binding.") }
+    }
+
+    private func publishCountdown(for account: String) {
+        guard let today = CalendarDate(localDate: .now) else { return }
+        let primary = dashboard?.primaryOccasion.flatMap { occasion in
+            occasion.date >= today ? (occasion.name, occasion.date) : nil
+        }
+        let upcoming = occasions.filter(\.isActive).compactMap { occasion -> (String, CalendarDate)? in
+            let date = occasion.nextOccurrence ?? occasion.date
+            return date >= today ? (occasion.name, date) : nil
+        }.min { $0.1 < $1.1 }
+        let snapshot = (primary ?? upcoming).map {
+            CountdownSnapshot(title: $0.0, day: $0.1.rawValue, accessValidUntil: credential?.expiresAt)
+        }
+        updateCountdown(snapshot, for: account)
+    }
+
+    private func updateCountdown(_ snapshot: CountdownSnapshot?, for account: String) {
+        do {
+            if try extensions?.publish(snapshot, for: account) == true {
+                WidgetCenter.shared.reloadTimelines(ofKind: ExtensionStore.widgetKind)
+            }
+        } catch { Self.logger.error("Couldn’t update the countdown cache.") }
     }
 
     func discardIdea(_ id: UUID) async {

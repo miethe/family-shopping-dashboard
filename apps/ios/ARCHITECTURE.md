@@ -23,11 +23,17 @@ The Kit implements the draft native session protocol behind the explicit `native
 | People: step-by-step creator, profiles, groups | `GET/POST /persons`, `GET/PUT /persons/{id}`, `GET/POST /groups`, person occasion/group links |
 | Gifts/Ideas: filters, detail, purchase, assignments | `GET/POST /gifts`, `GET/PATCH /gifts/{id}`, `POST /gifts/{id}/mark-purchased`, `/ideas/inbox`, `/lists` and `/lists/{id}/items` |
 | Events: native calendar + holiday picker | `GET/POST /occasions`, `GET/PUT /occasions/{id}`, `/holidays`, `/holidays/active-theme`, `/budgets/occasions/{id}/meter` |
-| Share extension: save Safari idea | `POST /gifts`; shared Keychain access group requires signing entitlements + explicit credential scope |
-| Countdown widget | App-group cached dashboard + occasion snapshot; no bearer in widget timeline; refresh through app |
+| Share extension | System share sheet for links and text. The containing app sends imported ideas through the existing `POST /gifts` queue. |
+| Countdown widget | App Group snapshot of the next dated occasion. WidgetKit reads the cache and opens Events on tap. |
 | Notifications | Local reminders from occasion dates first; remote pushes need server APNs device registration, delivery and removal endpoints |
 
-People, Gifts, and Events features can run in parallel in separate app feature folders after freezing package DTOs; one integration owner serializes shared `AppModel`/API/navigation edits. Share extension and widgets can follow in separate targets, with one owner integrating project/signing changes. Server session work is independent. Offline fixtures use only the invented Hartwell family. `--fixture sample|empty|christmas|signin` injects transport and blocks fallback web loading; release builds must not expose fixture mode.
+## Countdown and Share
+
+The proposed App Group is `group.dev.familygifting.app`. The app binds it to the current server origin and user ID, writes the next occasion title and calendar date after refresh, and requests a WidgetKit timeline reload after a cache change. Sign-out, an invalidated login, server changes and account switches clear the active countdown. Expired access clears the countdown while retaining the offline outbox binding. Snapshots expire with access or after seven days, whichever comes first, and the widget hides past dates. Its Home Screen gallery preview uses a generic event.
+
+The share extension can save an HTTP(S) link or text offline after the main app establishes an account binding. A binding revision prevents a share sheet opened before an account change from saving to the next account. Outbox items retain their original origin and account across sign-out. The app imports only matching items into its private queue before sync. It preserves item IDs across the handoff and retires each outbox item after the private journal write succeeds. Both extensions link the extension-safe package product. Bearer credentials stay in the app's Keychain.
+
+The expected bundle IDs are `dev.familygifting.app.countdown` and `dev.familygifting.app.shareidea`. Binding the app and both extensions to the same App Group for device signing remains open under `req_01M85BY31FN9E5EN93K4MD47FX`. The local unsigned simulator review build can use a per-device synthetic store. The Release archive excludes that mode. Offline fixtures use only invented data.
 
 ## Read-only server smoke check
 

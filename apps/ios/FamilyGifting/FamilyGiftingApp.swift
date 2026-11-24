@@ -10,6 +10,9 @@ struct FamilyGiftingApp: App {
             RootView(model: model)
                 .confettiTheme(model.christmas ? .christmas : .everyday)
                 .task { await model.start() }
+                .onOpenURL { url in
+                    if url.scheme == "familygifting", url.host == "countdown" { model.selection = 3 }
+                }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active && !model.starting {
                         Task { await model.resume() }

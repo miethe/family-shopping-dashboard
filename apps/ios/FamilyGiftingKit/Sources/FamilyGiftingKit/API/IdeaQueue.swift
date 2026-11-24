@@ -1,4 +1,5 @@
 import Foundation
+import GiftingExtensions
 
 public struct PendingIdea: Codable, Identifiable, Sendable, Equatable {
     public let id: UUID
@@ -35,6 +36,13 @@ public actor IdeaQueue {
         var all = try read()
         if !all.contains(where: { $0.id == idea.id }) { all.append(idea); try write(all) }
     }
+    public func importSharedIdeas(from store: ExtensionStore, account: String) throws {
+        try store.importIdeas(for: account) { shared in
+            try enqueue(PendingIdea(id: shared.id, account: account, name: shared.name,
+                                    url: shared.url, notes: shared.notes))
+        }
+    }
+
     public func flush(account: String, retrying retryID: UUID? = nil, find: @Sendable (UUID) async throws -> Bool,
                       send: @Sendable (PendingIdea) async throws -> Void) async throws {
         guard !flushing else {

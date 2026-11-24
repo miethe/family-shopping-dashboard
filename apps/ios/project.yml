@@ -24,6 +24,17 @@ targets:
         excludes: [Info.plist]
     dependencies:
       - package: FamilyGiftingKit
+        product: FamilyGiftingKit
+      - package: FamilyGiftingKit
+        product: GiftingExtensions
+      - target: CountdownWidget
+        embed: true
+      - target: ShareIdea
+        embed: true
+    entitlements:
+      path: Config/FamilyGifting.entitlements
+      properties:
+        com.apple.security.application-groups: [group.dev.familygifting.app]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.familygifting.app
@@ -39,6 +50,9 @@ targets:
         UILaunchStoryboardName: LaunchScreen
         UIAppFonts: [Montserrat-Bold.otf, OpenSans-Regular.ttf]
         UIUserInterfaceStyle: Light
+        CFBundleURLTypes:
+          - CFBundleURLName: dev.familygifting.app.countdown
+            CFBundleURLSchemes: [familygifting]
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         NSLocalNetworkUsageDescription: Connect to your family's gifting server on your home network.
@@ -48,6 +62,63 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+  CountdownWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: CountdownWidget
+        excludes: [Info.plist]
+    dependencies:
+      - package: FamilyGiftingKit
+        product: GiftingExtensions
+    entitlements:
+      path: Config/CountdownWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.dev.familygifting.app]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.familygifting.app.countdown
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+    info:
+      path: CountdownWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Gift Countdown
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+  ShareIdea:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: ShareIdea
+        excludes: [Info.plist]
+    dependencies:
+      - package: FamilyGiftingKit
+        product: GiftingExtensions
+    entitlements:
+      path: Config/ShareIdea.entitlements
+      properties:
+        com.apple.security.application-groups: [group.dev.familygifting.app]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.familygifting.app.shareidea
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+    info:
+      path: ShareIdea/Info.plist
+      properties:
+        CFBundleDisplayName: Family Gifting
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsText: true
+              NSExtensionActivationSupportsWebURLWithMaxCount: 1
   FamilyGiftingTests:
     type: bundle.unit-test
     platform: iOS
@@ -57,6 +128,8 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: FamilyGifting
+      - package: FamilyGiftingKit
+        product: GiftingExtensions
 schemes:
   FamilyGifting:
     build:

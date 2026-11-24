@@ -232,13 +232,11 @@ private extension LabelStyle where Self == TrailingIconLabelStyle {
     static var trailingIcon: Self { Self() }
 }
 
-private extension StickerImage.Tint {
-    var fill: Color {
-        let rgb = UInt32(rawValue.dropFirst(), radix: 16) ?? 0
-        return Color(red: Double((rgb >> 16) & 255) / 255,
-                     green: Double((rgb >> 8) & 255) / 255,
-                     blue: Double(rgb & 255) / 255)
-    }
+private func stickerColor(_ hex: String) -> Color {
+    let rgb = UInt32(hex.dropFirst(), radix: 16) ?? 0
+    return Color(red: Double((rgb >> 16) & 255) / 255,
+                 green: Double((rgb >> 8) & 255) / 255,
+                 blue: Double(rgb & 255) / 255)
 }
 
 struct PersonAvatar: View {
@@ -260,13 +258,26 @@ private struct StickerAvatar: View {
 
     var body: some View {
         if let sticker {
-            stickerGlyph(sticker.icon)
+            glyph(for: sticker)
                 .frame(width: size, height: size)
-                .background(sticker.tint.fill, in: RoundedRectangle(cornerRadius: size * 28 / 96))
+                .background(stickerColor(sticker.tint.rawValue), in: RoundedRectangle(cornerRadius: size * 28 / 96))
                 .accessibilityLabel("\(name) avatar")
                 .accessibilityAddTraits(.isImage)
         } else {
             ConfettiAvatar(name: name, photoURL: photoURL, size: size)
+        }
+    }
+
+    @ViewBuilder
+    private func glyph(for sticker: StickerImage) -> some View {
+        if let initial = sticker.initial {
+            Text(initial)
+                .font(.system(size: size * 0.52, weight: .semibold))
+                .foregroundStyle(ConfettiColor.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+        } else if let icon = sticker.icon {
+            stickerGlyph(icon)
         }
     }
 
@@ -336,9 +347,9 @@ private struct PersonStickerPicker: View {
             HStack(spacing: 6) {
                 ForEach(StickerImage.Tint.allCases, id: \.self) { color in
                     Button {
-                        sticker = StickerImage(icon: sticker?.icon ?? .fox, tint: color)
+                        sticker = sticker?.recolored(color) ?? StickerImage(icon: .fox, tint: color)
                     } label: {
-                        Circle().fill(color.fill)
+                        Circle().fill(stickerColor(color.rawValue))
                             .overlay {
                                 if color == sticker?.tint {
                                     Image(systemName: "checkmark").font(.caption.weight(.semibold)).foregroundStyle(ConfettiColor.ink)
