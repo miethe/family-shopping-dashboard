@@ -96,6 +96,25 @@ final class AppModelTests: XCTestCase {
         XCTAssertFalse(model.signedIn)
     }
 
+    func testAppleHouseholdRejectionLeavesWelcomeAndExistingAccountPathAvailable() async throws {
+        // Relay and shared-email mismatches receive the same server code.
+        let transport = AppleTestTransport(notHousehold: true)
+        let store = MemoryTokenStore()
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        let model = AppModel(arguments: ["app", "--fixture", "signin"], fixtureClient: client)
+        await model.start()
+        let challenge = await model.beginAppleSignIn()
+        let nonce = try XCTUnwrap(challenge)
+        await model.completeAppleSignIn(nonce: nonce, result: .success("fixture-apple-token"))
+
+        XCTAssertFalse(model.signedIn)
+        XCTAssertFalse(model.busy)
+        XCTAssertFalse(model.authorizingWithApple)
+        XCTAssertNil(model.currentUser)
+        XCTAssertNil(store.read())
+        XCTAssertEqual(model.error, "This Apple ID’s email is not on the family list. Use an Apple ID with an allowed email and choose Share My Email. If you chose Hide My Email, remove Confetti in Settings > Sign in with Apple > Stop using Apple Account to choose again. Or tap Already have an account? to sign in with email and password.")
+    }
+
     func testAppleNetworkErrorLeavesSignInAvailableForRetry() async throws {
         let transport = AppleTestTransport(offline: true)
         let store = MemoryTokenStore()
@@ -274,9 +293,13 @@ final class AppModelTests: XCTestCase {
 private actor AppleTestTransport: HTTPTransport {
     private let fixture = FixtureTransport(scenario: .sample)
     private let offline: Bool
+    private let notHousehold: Bool
     private(set) var exchanges = 0
 
-    init(offline: Bool = false) { self.offline = offline }
+    init(offline: Bool = false, notHousehold: Bool = false) {
+        self.offline = offline
+        self.notHousehold = notHousehold
+    }
 
     func send(_ request: URLRequest) async throws -> HTTPResponse {
         if request.url?.path == "/api/v1/auth/apple/challenge" {
@@ -285,6 +308,9 @@ private actor AppleTestTransport: HTTPTransport {
         guard request.url?.path == "/api/v1/auth/apple" else { return try await fixture.send(request) }
         exchanges += 1
         if offline { throw URLError(.notConnectedToInternet) }
+        if notHousehold {
+            return HTTPResponse(statusCode: 403, body: Data(#"{"error":{"code":"APPLE_NOT_HOUSEHOLD","message":"Unavailable"}}"#.utf8))
+        }
 
         // Feed the existing fixture's login response through the Apple endpoint's identical response contract.
         var login = request

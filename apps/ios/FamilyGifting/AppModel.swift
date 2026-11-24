@@ -212,7 +212,7 @@ final class AppModel {
                 try await client.loginWithApple(identityToken: identityToken, nonce: nonce)
             } errorMessage: { error in
                 if case APIError.server(_, let detail) = error, detail?.code == "APPLE_NOT_HOUSEHOLD" {
-                    return "This Apple ID is not on the family list. Choose Share My Email next time. In Settings > Sign in with Apple > Stop using Apple Account, remove Confetti to choose again, or use Already have an account?"
+                    return "This Apple ID’s email is not on the family list. Use an Apple ID with an allowed email and choose Share My Email. If you chose Hide My Email, remove Confetti in Settings > Sign in with Apple > Stop using Apple Account to choose again. Or tap Already have an account? to sign in with email and password."
                 }
                 if error is URLError {
                     return "Couldn’t reach your family server. Check your home network and Confetti’s Local Network access in Settings, then try again."
