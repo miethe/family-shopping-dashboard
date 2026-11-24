@@ -1,6 +1,6 @@
 # UI Extraction Guidance (Quick Reference)
 
-**TL;DR**: Extract reusable components from `skillmeat/web/` to `@miethe/ui` when they meet stable, genericity, and design system criteria. See full spec at `.claude/specs/ui-package-extraction-spec.md`.
+**TL;DR**: Extract reusable components from `skillmeat/web/` to `@example/ui` when they meet stable, genericity, and design system criteria. See full spec at `.claude/specs/ui-package-extraction-spec.md`.
 
 ---
 
@@ -11,7 +11,7 @@ A component is a good extraction candidate when it meets **ALL** of:
 1. **Reuse**: Used in 2+ SkillMeat features OR 2+ consumer projects
 2. **Generic**: No hard dependencies on SkillMeat services, hooks, or business logic
 3. **Stable API**: Props/behavior unchanged for 2+ weeks
-4. **Design System**: Uses only @miethe/ui tokens, Radix UI, shadcn primitives
+4. **Design System**: Uses only @example/ui tokens, Radix UI, shadcn primitives
 5. **Documented**: Public JSDoc comments; usage examples clear
 6. **Tested**: >80% unit test coverage with meaningful scenarios
 7. **Accessible**: WCAG 2.1 AA compliant; keyboard navigation verified
@@ -47,7 +47,7 @@ When identifying potential extraction candidates:
 
 2. **Flag sub-task** for evaluation if component passes initial criteria:
    ```
-   - TASK: Evaluate DiffViewer for @miethe/ui extraction
+   - TASK: Evaluate DiffViewer for @example/ui extraction
    ```
 
 ### During Phase Execution
@@ -71,12 +71,12 @@ Use this tree to decide:
 
 ## Extraction Process (9 Steps)
 
-1. **Fork Component** → Copy to temp branch in @miethe/ui
+1. **Fork Component** → Copy to temp branch in @example/ui
 2. **Refactor Dependencies** → Remove SkillMeat-specific imports
-3. **Create Package Entry** → Add export to `@miethe/ui/src/index.ts`
+3. **Create Package Entry** → Add export to `@example/ui/src/index.ts`
 4. **Port Tests** → Copy unit tests; verify in package context
 5. **Add Storybook Story** → Port/create story with all variants
-6. **Documentation** → README entry in `@miethe/ui/components/[Component]/`
+6. **Documentation** → README entry in `@example/ui/components/[Component]/`
 7. **Publish Package** → Version bump, publish to npm (semver)
 8. **Update Consumer** → Install new version in skillmeat/web; remove original; update imports
 9. **Verify & Cleanup** → Full test suite, no regressions; remove original directory
@@ -93,7 +93,7 @@ Use this tree to decide:
 - Documentation: JSDoc on component + all public props
 - Storybook: Story with primary use case + variants
 - No Breaking Changes: Props finalized; deprecation plan if needed
-- Peer Review: Code review from @miethe/ui maintainer
+- Peer Review: Code review from @example/ui maintainer
 
 ---
 
@@ -122,5 +122,5 @@ Use this tree to decide:
 ---
 
 **Full Spec**: `.claude/specs/ui-package-extraction-spec.md`
-**Package Repo**: `@miethe/ui` (npm)
+**Package Repo**: `@example/ui` (npm)
 **Last Updated**: 2026-03-15

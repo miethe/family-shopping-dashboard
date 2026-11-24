@@ -16,9 +16,9 @@ const Dashboard: React.FC<DashboardProps> = ({ setView, people }) => {
   ];
 
   const recentActivity: ActivityLog[] = [
-    { id: '1', actor: 'Jaden', actorAvatar: 'https://picsum.photos/seed/jaden/100', action: 'marked', target: '"Wireless Headphones"', status: 'Purchased' },
-    { id: '2', actor: 'Jaden', actorAvatar: 'https://picsum.photos/seed/jaden/100', action: 'marked', target: '"Wireless Bracoine"', status: 'Purchased' },
-    { id: '3', actor: 'Jaden', actorAvatar: 'https://picsum.photos/seed/jaden/100', action: 'marked', target: '"Collab Headphones"', status: 'Purchased' },
+    { id: '1', actor: 'Taylor', actorAvatar: 'https://picsum.photos/seed/taylor/100', action: 'marked', target: '"Wireless Headphones"', status: 'Purchased' },
+    { id: '2', actor: 'Taylor', actorAvatar: 'https://picsum.photos/seed/taylor/100', action: 'marked', target: '"Wireless Bracoine"', status: 'Purchased' },
+    { id: '3', actor: 'Taylor', actorAvatar: 'https://picsum.photos/seed/taylor/100', action: 'marked', target: '"Collab Headphones"', status: 'Purchased' },
   ];
 
   const ideaInbox = [

@@ -511,7 +511,7 @@ apps/web/
 
 ```bash
 # Navigate to web app
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/apps/web
 
 # Run hook tests
 npm test -- usePersonOccasionBudget.test.ts

@@ -1086,20 +1086,20 @@ test('displays warning when over budget', () => {
 ## 17. Files to Reference
 
 ### Component Examples
-- `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/ui/card.tsx`
-- `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/ui/status-pill.tsx`
+- `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/ui/card.tsx`
+- `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/ui/status-pill.tsx`
 
 ### Hook Examples
-- `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useGifts.ts`
-- `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useRealtimeSync.ts`
+- `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useGifts.ts`
+- `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useRealtimeSync.ts`
 
 ### Configuration Files
-- `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/tailwind.config.ts`
-- `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/next.config.ts`
+- `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/tailwind.config.ts`
+- `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/next.config.ts`
 
 ### Design Documentation
-- `/Users/miethe/dev/homelab/development/family-shopping-dashboard/docs/designs/budget-progression-meter-ui-spec.md`
-- `/Users/miethe/dev/homelab/development/family-shopping-dashboard/docs/designs/DESIGN-TOKENS.md`
+- `/Users/example/dev/homelab/development/family-shopping-dashboard/docs/designs/budget-progression-meter-ui-spec.md`
+- `/Users/example/dev/homelab/development/family-shopping-dashboard/docs/designs/DESIGN-TOKENS.md`
 
 ---
 

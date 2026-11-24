@@ -980,7 +980,7 @@ Various files based on bug fixes                # TEST-006
 
 ```bash
 # E2E tests
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/apps/web
 npm run test:e2e -- person-occasion-budgets.spec.ts
 
 # Accessibility tests
@@ -990,7 +990,7 @@ npm run test:e2e -- accessibility.spec.ts
 npm run lighthouse -- --only-categories=accessibility,performance /occasions/1
 
 # Load testing (from services/api directory)
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/services/api
 ab -n 1000 -c 100 http://localhost:8000/api/v1/persons/1/occasions/2/budget
 
 # Database query analysis (connect to PostgreSQL)
@@ -998,7 +998,7 @@ psql -d family_gifting_dev
 # Then run EXPLAIN ANALYZE queries
 
 # Bundle analysis
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/apps/web
 npm run build
 npm run analyze
 ```

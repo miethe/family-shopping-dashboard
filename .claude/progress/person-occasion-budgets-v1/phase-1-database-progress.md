@@ -192,7 +192,7 @@ services/api/
 
 ```bash
 # Navigate to API directory
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/services/api
 
 # Generate migration
 uv run alembic revision --autogenerate -m "Add budget fields to PersonOccasion"

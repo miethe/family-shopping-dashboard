@@ -347,7 +347,7 @@ pg_restore --list $BACKUP_FILE | head -20
 #### Docker Compose Deployment (Staging/Dev)
 
 ```bash
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard
+cd /Users/example/dev/homelab/development/family-shopping-dashboard
 
 # Pull latest code
 git pull origin main
@@ -386,7 +386,7 @@ curl -H "Authorization: Bearer $JWT_TOKEN" \
 #### Kubernetes Deployment (Production Homelab)
 
 ```bash
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard
+cd /Users/example/dev/homelab/development/family-shopping-dashboard
 
 # Build Docker image
 cd services/api
@@ -444,7 +444,7 @@ kubectl exec -it deployment/api --namespace=family-gifting -- \
 #### Docker Compose Deployment
 
 ```bash
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard
+cd /Users/example/dev/homelab/development/family-shopping-dashboard
 
 # Build frontend with production env vars
 cd apps/web
@@ -469,7 +469,7 @@ curl http://localhost:3030/
 #### Kubernetes Deployment
 
 ```bash
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard
+cd /Users/example/dev/homelab/development/family-shopping-dashboard
 
 # Build frontend
 cd apps/web
@@ -641,7 +641,7 @@ Trigger rollback if:
 #### Docker Compose Rollback
 
 ```bash
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard
+cd /Users/example/dev/homelab/development/family-shopping-dashboard
 
 # Stop current API
 docker-compose stop api
@@ -700,7 +700,7 @@ kubectl exec -it statefulset/postgres --namespace=family-gifting -- \
 #### Docker Compose Rollback
 
 ```bash
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard
+cd /Users/example/dev/homelab/development/family-shopping-dashboard
 
 # Stop current web
 docker-compose stop web

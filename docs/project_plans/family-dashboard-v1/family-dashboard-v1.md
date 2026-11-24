@@ -383,7 +383,7 @@ V1 must implement these entities and relationships in the backend and expose the
 * Designed for low user count (2–3 concurrent users), but stable.
 * Changes must not be lost on conflict:
 
-  * Last-write-wins acceptable, but show “Updated just now by Nick/Jaden” to reduce confusion.
+  * Last-write-wins acceptable, but show “Updated just now by Jordan/Taylor” to reduce confusion.
 
 ### 5.3 Security
 

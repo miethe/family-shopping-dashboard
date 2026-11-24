@@ -711,7 +711,7 @@ _No sessions yet. Notes will be added as work progresses._
 
 ## Additional Resources
 
-- **Implementation Plan**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/docs/project_plans/implementation_plans/features/image-upload-v1.md`
+- **Implementation Plan**: `/Users/example/dev/homelab/development/family-shopping-dashboard/docs/project_plans/implementation_plans/features/image-upload-v1.md`
 - **Architecture**: Layered architecture (Router → Service → Repository → DB)
 - **Design Reference**: Mobile-first, iOS safe areas, 44px touch targets
 - **Storage Strategy**: Local filesystem (Phase 1) → S3-ready interface (Phase 2)

@@ -96,7 +96,7 @@ Before implementing, explore existing patterns:
 ```markdown
 # Phase 1: Symbol discovery (always first)
 Task("codebase-explorer", "Find all React Query hooks to understand current data fetching patterns")
-Task("codebase-explorer", "Locate all @miethe/ui component usage to assess design system consistency")
+Task("codebase-explorer", "Locate all @example/ui component usage to assess design system consistency")
 Task("codebase-explorer", "Analyze state management patterns across the application")
 
 # Phase 2: Deep analysis (only if needed)

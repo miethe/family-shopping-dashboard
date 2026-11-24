@@ -10,8 +10,8 @@ const App: React.FC = () => {
 
   // Mock Global State for People
   const people: Person[] = [
-    { id: '1', name: 'Jaden', avatar: 'https://picsum.photos/seed/jaden/100', colorRing: '#AEC3B0' },
-    { id: '2', name: 'Peyton', avatar: 'https://picsum.photos/seed/peyton/100', colorRing: '#E07A5F' },
+    { id: '1', name: 'Taylor', avatar: 'https://picsum.photos/seed/taylor/100', colorRing: '#AEC3B0' },
+    { id: '2', name: 'Casey', avatar: 'https://picsum.photos/seed/peyton/100', colorRing: '#E07A5F' },
     { id: '3', name: 'Alexa', avatar: 'https://picsum.photos/seed/alexa/100', colorRing: '#DDBEA9' },
     { id: '4', name: 'Oirites', avatar: 'https://picsum.photos/seed/oirites/100', colorRing: '#81B29A' },
   ];

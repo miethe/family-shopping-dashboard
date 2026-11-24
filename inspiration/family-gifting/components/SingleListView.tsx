@@ -13,13 +13,13 @@ const SingleListView: React.FC<SingleListViewProps> = ({ onBack }) => {
 
   // Simple state for columns
   const [ideaItems, setIdeaItems] = useState([
-    { id: 1, name: 'Science Experiment Box', type: 'Idea', assigned: 'Jaden', price: '$35', img: 'https://picsum.photos/seed/science/200' },
+    { id: 1, name: 'Science Experiment Box', type: 'Idea', assigned: 'Taylor', price: '$35', img: 'https://picsum.photos/seed/science/200' },
   ]);
   const [shortlisted, setShortlisted] = useState([
     { id: 2, name: 'Art Supply Kit Deluxe', type: 'Shortlisted', hasComments: true, img: 'https://picsum.photos/seed/art/200' },
   ]);
   const [purchased, setPurchased] = useState([
-    { id: 3, name: 'LEGO Friends Botanical Garden', type: 'Purchased', assigned: 'Nick', img: 'https://picsum.photos/seed/lego/200' },
+    { id: 3, name: 'LEGO Friends Botanical Garden', type: 'Purchased', assigned: 'Jordan', img: 'https://picsum.photos/seed/lego/200' },
   ]);
   const [otherIdeas, setOtherIdeas] = useState([
       { id: 4, name: 'Adventure Book Series', img: 'https://picsum.photos/seed/book/200'}
@@ -28,7 +28,7 @@ const SingleListView: React.FC<SingleListViewProps> = ({ onBack }) => {
   const handleGenerateIdeas = async () => {
     setLoadingAI(true);
     // Mock data input for the AI
-    const ideas = await generateGiftIdeas("Peyton", "10", "science, art, and building things");
+    const ideas = await generateGiftIdeas("Casey", "10", "science, art, and building things");
     setGeneratedIdeas(ideas);
     setLoadingAI(false);
   };
@@ -55,7 +55,7 @@ const SingleListView: React.FC<SingleListViewProps> = ({ onBack }) => {
           <button onClick={onBack} className="text-gray-400 hover:text-salmon font-bold text-sm mb-2 transition-colors">
              &larr; Back to Lists
           </button>
-          <h1 className="text-4xl font-extrabold text-[#3D405B]">Peyton's Christmas Ideas</h1>
+          <h1 className="text-4xl font-extrabold text-[#3D405B]">Casey's Christmas Ideas</h1>
           <p className="text-gray-500 font-medium mt-1">8 items · 2 new</p>
         </div>
         
@@ -188,7 +188,7 @@ const SingleListView: React.FC<SingleListViewProps> = ({ onBack }) => {
             <div className="p-6 overflow-y-auto">
                {!generatedIdeas.length && !loadingAI && (
                  <div className="text-center py-8">
-                   <p className="text-gray-600 mb-6">Need inspiration for Peyton? Use Gemini AI to find the perfect gift.</p>
+                   <p className="text-gray-600 mb-6">Need inspiration for Casey? Use Gemini AI to find the perfect gift.</p>
                    <button 
                     onClick={handleGenerateIdeas}
                     className="bg-black text-white px-8 py-3 rounded-full font-bold hover:bg-gray-800 transition-all flex items-center gap-2 mx-auto"
