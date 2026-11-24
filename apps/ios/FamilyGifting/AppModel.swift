@@ -1,4 +1,5 @@
 import Foundation
+import AuthenticationServices
 import Observation
 import Network
 import CryptoKit
@@ -12,7 +13,6 @@ final class AppModel {
     let client: APIClient
     let fixture: Bool
     var address: String
-    var configured: Bool
     var signedIn = false
     var starting = true
     var busy = false
@@ -51,6 +51,8 @@ final class AppModel {
     var selection = 0
     private var reloading = false
     private var sessionChanging = false
+    private var appleNonce: String?
+    var authorizingWithApple: Bool { appleNonce != nil }
     private var personCursor: Int?
     private var giftCursor: Int?
     private var occasionCursor: Int?
@@ -70,7 +72,11 @@ final class AppModel {
         #endif
         let scenario = scenarioIndex.flatMap { args.indices.contains($0 + 1) ? args[$0 + 1] : nil }
         let isFixture = scenarioIndex != nil
-        let storedAddress = isFixture ? ServerAddress.fixture.url.absoluteString : (UserDefaults.standard.string(forKey: "serverAddress") ?? "")
+        let defaults = UserDefaults.standard
+        let storedOverride = defaults.bool(forKey: "serverValidated") ? defaults.string(forKey: "serverAddress") : nil
+        let server = isFixture ? .fixture : Self.initialServerAddress(
+            override: storedOverride, buildDefault: Bundle.main.object(forInfoDictionaryKey: "ConfettiServerURL") as? String
+        )
         fixture = isFixture
         self.journalFile = journalFile
         #if DEBUG && FG_UNSIGNED_EXTENSION_FIXTURES && targetEnvironment(simulator)
@@ -79,18 +85,22 @@ final class AppModel {
         let useSharedStore = !isFixture
         #endif
         extensions = extensionStore ?? (useSharedStore ? ExtensionStore.shared() : nil)
-        address = storedAddress
-        configured = isFixture || (!storedAddress.isEmpty && UserDefaults.standard.bool(forKey: "serverValidated"))
+        address = server?.url.absoluteString ?? ""
         if isFixture {
             client = fixtureClient ?? APIClient(address: .fixture, transport: FixtureTransport(scenario: FixtureScenario(rawValue: scenario ?? "sample") ?? .sample, offlineWrites: args.contains("--offline")), tokenStore: MemoryTokenStore(token: scenario == "signin" ? nil : "fixture-token"))
         } else {
-            client = APIClient(address: try? ServerAddress(storedAddress))
+            client = APIClient(address: server)
         }
+    }
+
+    static func initialServerAddress(override: String?, buildDefault: String?) -> ServerAddress? {
+        let validated = override.flatMap { try? ServerAddress($0) }
+        return validated ?? buildDefault.flatMap { try? ServerAddress($0) }
     }
 
     func start() async {
         defer { starting = false }
-        if configured {
+        if !address.isEmpty {
             do {
                 credential = try await client.savedCredential()
                 offlineUserID = credential?.userID
@@ -121,7 +131,7 @@ final class AppModel {
     }
 
     func resume() async {
-        guard !starting, !sessionChanging, signedIn || canCaptureOffline else { return }
+        guard !starting, !sessionChanging, !authorizingWithApple, signedIn || canCaptureOffline else { return }
         if !signedIn {
             do {
                 credential = try await client.usableSession()
@@ -155,25 +165,77 @@ final class AppModel {
     }
 
     func authenticate(email: String, password: String, register: Bool) async {
+        await authenticate {
+            if register { return try await client.register(email: email, password: password) }
+            return try await client.login(email: email, password: password)
+        }
+    }
+
+    func beginAppleSignIn() -> String? {
+        guard !busy, !sessionChanging, !authorizingWithApple, !signedIn, !settings else { return nil }
+        guard !address.isEmpty else {
+            error = "A family server address is required. Open server settings to enter one."
+            return nil
+        }
+        let nonce = (0..<32).map { _ in String(format: "%02x", UInt8.random(in: .min ... .max)) }.joined()
+        appleNonce = nonce
+        error = nil
+        return nonce
+    }
+
+    func completeAppleSignIn(nonce: String, result: Result<String, Error>) async {
+        guard appleNonce == nonce else { return }
+        appleNonce = nil
+        switch result {
+        case .success(let identityToken) where !identityToken.isEmpty:
+            await authenticate {
+                try await client.loginWithApple(identityToken: identityToken, nonce: nonce)
+            } errorMessage: { error in
+                if error is URLError {
+                    return "Couldn’t reach your family server. Check your home network and Confetti’s Local Network access in Settings, then try again."
+                }
+                return error.localizedDescription
+            }
+        case .failure(let problem) where (problem as? ASAuthorizationError)?.code == .canceled:
+            break
+        default:
+            error = "Apple sign-in couldn’t finish. Please try again."
+        }
+    }
+
+    private func authenticate(
+        using request: () async throws -> User, errorMessage: (Error) -> String = { $0.localizedDescription }
+    ) async {
+        guard !sessionChanging, !authorizingWithApple else { return }
         sessionChanging = true
-        defer { sessionChanging = false }
+        let revision = presentationRevision
         busy = true; error = nil
-        defer { busy = false }
+        defer {
+            if revision == presentationRevision { sessionChanging = false }
+            busy = false
+        }
         do {
-            let user: User
-            if register { user = try await client.register(email: email, password: password) }
-            else { user = try await client.login(email: email, password: password) }
+            let user = try await request()
+            let newCredential = try await client.sessionToken()
+            guard revision == presentationRevision else { return }
+            guard let newCredential else { throw APIError.missingSession }
             bindExtensions(to: address + "#" + String(user.id))
             clearData()
-            credential = try await client.sessionToken()
+            credential = newCredential
             offlineUserID = credential?.userID
             signedIn = true
             sessionChanging = false
             await reload()
-        } catch { self.error = error.localizedDescription }
+        } catch {
+            if revision == presentationRevision, (error as? APIError) != .sessionChanged {
+                self.error = errorMessage(error)
+            }
+        }
     }
 
     func configure(_ input: String) async {
+        guard !sessionChanging else { return }
+        appleNonce = nil
         sessionChanging = true
         defer { sessionChanging = false }
         busy = true; error = nil
@@ -189,12 +251,14 @@ final class AppModel {
                 UserDefaults.standard.set(address, forKey: "serverAddress")
                 UserDefaults.standard.set(true, forKey: "serverValidated")
             }
-            configured = true; signedIn = false; credential = nil; settings = false
+            signedIn = false; credential = nil; settings = false
             clearData()
         } catch { handle(error) }
     }
 
     func signOut() async {
+        appleNonce = nil
+        presentationRevision += 1
         sessionChanging = true
         defer { sessionChanging = false }
         bindExtensions(to: nil)

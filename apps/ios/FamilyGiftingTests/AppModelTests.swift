@@ -1,5 +1,6 @@
 import XCTest
 import UIKit
+import AuthenticationServices
 import FamilyGiftingKit
 import GiftingExtensions
 @testable import FamilyGifting
@@ -36,9 +37,78 @@ final class AppModelTests: XCTestCase {
     func testSignInFixtureStartsSignedOut() async {
         let model = AppModel(arguments: ["app", "--fixture", "signin"])
         await model.start()
-        XCTAssertTrue(model.configured)
+        XCTAssertEqual(model.address, ServerAddress.fixture.url.absoluteString)
         XCTAssertFalse(model.signedIn)
     }
+
+    func testBuildOriginIsAvailableWithoutAStoredServerOverride() throws {
+        let origin = try XCTUnwrap(Bundle.main.object(forInfoDictionaryKey: "ConfettiServerURL") as? String)
+        let configuredOrigin = try ServerAddress(origin)
+        XCTAssertEqual(AppModel.initialServerAddress(override: nil, buildDefault: origin), configuredOrigin)
+        XCTAssertEqual(AppModel.initialServerAddress(override: "https://preview.example.invalid/", buildDefault: origin)?.url.absoluteString,
+                       "https://preview.example.invalid")
+        XCTAssertEqual(AppModel.initialServerAddress(override: "https://preview.example.invalid/path", buildDefault: origin),
+                       configuredOrigin)
+    }
+
+    func testAppleCancellationIsNeutralAndAnAttemptCanOnlyCompleteOnce() async throws {
+        let transport = AppleTestTransport()
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: MemoryTokenStore())
+        let model = AppModel(arguments: ["app", "--fixture", "signin"], fixtureClient: client)
+        await model.start()
+        let nonce = try XCTUnwrap(model.beginAppleSignIn())
+        XCTAssertEqual(nonce.count, 64)
+        XCTAssertTrue(model.authorizingWithApple)
+        XCTAssertNil(model.beginAppleSignIn())
+        await model.completeAppleSignIn(nonce: nonce, result: .failure(ASAuthorizationError(.canceled)))
+        await model.completeAppleSignIn(nonce: nonce, result: .success("stale-token"))
+
+        XCTAssertFalse(model.authorizingWithApple)
+        XCTAssertFalse(model.busy)
+        XCTAssertFalse(model.signedIn)
+        XCTAssertNil(model.error)
+        let exchanges = await transport.exchanges
+        XCTAssertEqual(exchanges, 0)
+        XCTAssertNotEqual(model.beginAppleSignIn(), nonce)
+    }
+
+    func testAppleSignInUsesTheNormalSessionAndSignOutPath() async throws {
+        let transport = AppleTestTransport()
+        let store = MemoryTokenStore()
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        let model = AppModel(arguments: ["app", "--fixture", "signin"], fixtureClient: client)
+        await model.start()
+        let nonce = try XCTUnwrap(model.beginAppleSignIn())
+        await model.completeAppleSignIn(nonce: nonce, result: .success("fixture-apple-token"))
+
+        XCTAssertTrue(model.signedIn)
+        XCTAssertTrue(model.loaded)
+        XCTAssertFalse(model.busy)
+        XCTAssertEqual(model.currentUser?.id, store.read()?.userID)
+        XCTAssertEqual(model.credential?.accessToken, FixtureTransport.token)
+        await model.signOut()
+        XCTAssertNil(store.read())
+        XCTAssertNil(model.currentUser)
+        XCTAssertFalse(model.signedIn)
+    }
+
+    func testAppleNetworkErrorLeavesSignInAvailableForRetry() async throws {
+        let transport = AppleTestTransport(offline: true)
+        let store = MemoryTokenStore()
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        let model = AppModel(arguments: ["app", "--fixture", "signin"], fixtureClient: client)
+        await model.start()
+        let nonce = try XCTUnwrap(model.beginAppleSignIn())
+        await model.completeAppleSignIn(nonce: nonce, result: .success("fixture-apple-token"))
+
+        XCTAssertFalse(model.signedIn)
+        XCTAssertFalse(model.busy)
+        XCTAssertNil(store.read())
+        XCTAssertTrue(model.error?.contains("Local Network") == true)
+        XCTAssertNotNil(model.beginAppleSignIn())
+        XCTAssertNil(model.error)
+    }
+
     func testOfflineCaptureStaysVisible() async {
         let model = AppModel(arguments: ["app", "--fixture", "sample", "--offline"])
         await model.start()
@@ -195,6 +265,24 @@ final class AppModelTests: XCTestCase {
 
 }
 
+private actor AppleTestTransport: HTTPTransport {
+    private let fixture = FixtureTransport(scenario: .sample)
+    private let offline: Bool
+    private(set) var exchanges = 0
+
+    init(offline: Bool = false) { self.offline = offline }
+
+    func send(_ request: URLRequest) async throws -> HTTPResponse {
+        guard request.url?.path == "/api/v1/auth/apple" else { return try await fixture.send(request) }
+        exchanges += 1
+        if offline { throw URLError(.notConnectedToInternet) }
+
+        // Feed the existing fixture's login response through the Apple endpoint's identical response contract.
+        var login = request
+        login.url = ServerAddress.fixture.url.appending(path: "api/v1/auth/login")
+        return try await fixture.send(login)
+    }
+}
 
 private actor BrokenFeeds: HTTPTransport {
     private let fixture = FixtureTransport(scenario: .sample)
