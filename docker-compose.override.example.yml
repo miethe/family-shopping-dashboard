@@ -1,0 +1,4 @@
+services:
+  postgres:
+    volumes:
+      - ${POSTGRES_DATA_PATH:?Set POSTGRES_DATA_PATH to the existing database directory}:/var/lib/postgresql/data

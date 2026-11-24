@@ -15,6 +15,10 @@ docker-compose logs -f
 docker-compose down
 ```
 
+## Keep an existing development database
+
+The default uses a fresh named volume. To retain an existing bind-mounted database, copy `docker-compose.override.example.yml` to `docker-compose.override.yml`, set `POSTGRES_DATA_PATH` to the absolute path of the existing PostgreSQL data directory in your environment or `.env`, then run `docker compose up -d`. Back up the directory before changing mounts. Compose loads the override automatically.
+
 ## File Structure
 
 ```
