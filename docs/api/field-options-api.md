@@ -30,7 +30,7 @@ The Field Options API manages **admin-configurable dropdown/select values** used
 All endpoints require **Bearer token** authentication via JWT in the `Authorization` header:
 
 ```
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Authorization: Bearer <redacted-jwt>
 ```
 
 Without valid authentication, all endpoints return **401 Unauthorized**.

@@ -518,7 +518,7 @@ Run these tests immediately after deployment to verify core functionality.
 
 ```bash
 # Set auth token (replace with real token from login)
-export JWT_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+export JWT_TOKEN="<redacted-jwt>"
 
 # 1. Health check
 curl http://localhost:8030/health
