@@ -1,5 +1,125 @@
 import SwiftUI
+import AuthenticationServices
 import FamilyGiftingKit
+
+struct WelcomeView: View {
+    @Bindable var model: AppModel
+    @State private var showEmail = false
+    @State private var requestNonce: String?
+
+    private var isSigningIn: Bool { model.busy || model.authorizingWithApple }
+
+    var body: some View {
+        NavigationStack {
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: 28) {
+                        HStack(spacing: 10) {
+                            TogetherBow(size: 38, icon: true)
+                            Text("Confetti").font(ConfettiFont.heading)
+                        }
+
+                        VStack(spacing: 12) {
+                            Text("Good gifts.\nGreat people.")
+                                .font(.custom("Montserrat-Bold", size: 40, relativeTo: .largeTitle))
+                                .accessibilityAddTraits(.isHeader)
+                                .onLongPressGesture { showServerSettings() }
+                                .accessibilityAction(named: Text("Server settings")) { showServerSettings() }
+                            Text("A little thoughtfulness, all in one place.")
+                                .font(ConfettiFont.body).foregroundStyle(ConfettiColor.muted)
+                        }
+
+                        gift
+
+                        VStack(spacing: 6) {
+                            if let error = model.error { ErrorNotice(message: error) }
+                            appleButton
+                            if model.busy { ProgressView("Signing in…").font(ConfettiFont.caption) }
+                            Button("Already have an account?") {
+                                model.error = nil
+                                showEmail = true
+                            }.buttonStyle(ConfettiButtonStyle(.tertiary))
+                            if model.canCaptureOffline {
+                                Button("Save an idea offline") { model.addIdea = true }
+                                    .buttonStyle(ConfettiButtonStyle(.secondary))
+                                Button("Sign out of this device", role: .destructive) { Task { await model.signOut() } }
+                                    .buttonStyle(ConfettiButtonStyle(.tertiary))
+                            }
+                        }.disabled(isSigningIn)
+                    }
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 32)
+                    .frame(maxWidth: 420)
+                    .frame(maxWidth: .infinity, minHeight: geometry.size.height)
+                }
+            }
+            .foregroundStyle(ConfettiColor.ink)
+            .background(ConfettiColor.paper.ignoresSafeArea())
+            .toolbarVisibility(.hidden, for: .navigationBar)
+            .navigationDestination(isPresented: $showEmail) { SignInView(model: model) }
+            .onChange(of: showEmail) { _, isShowing in
+                if !isShowing { model.error = nil }
+            }
+        }
+    }
+
+    private var gift: some View {
+        ZStack {
+            Ellipse().fill(ConfettiColor.pink.opacity(0.55))
+                .frame(width: 112, height: 13).offset(y: 47)
+            HStack(spacing: -5) {
+                Ellipse().fill(ConfettiColor.pink).frame(width: 37, height: 23).rotationEffect(.degrees(34))
+                Ellipse().fill(ConfettiColor.pink).frame(width: 37, height: 23).rotationEffect(.degrees(-34))
+            }.offset(y: -17)
+            RoundedRectangle(cornerRadius: 9).fill(ConfettiColor.cobalt)
+                .frame(width: 80, height: 51).offset(y: 21)
+            RoundedRectangle(cornerRadius: 6).fill(ConfettiColor.cobalt)
+                .frame(width: 92, height: 19).offset(y: -3)
+            Rectangle().fill(ConfettiColor.butter)
+                .frame(width: 16, height: 59).offset(y: 17)
+            Image(systemName: "sparkle").font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(ConfettiColor.butter).offset(x: 68, y: -30)
+            RoundedRectangle(cornerRadius: 2).fill(ConfettiColor.pink)
+                .frame(width: 10, height: 10).rotationEffect(.degrees(35)).offset(x: -65, y: -18)
+            Circle().fill(ConfettiColor.mint).frame(width: 9, height: 9).offset(x: 70, y: 25)
+        }
+        .frame(width: 160, height: 112)
+        .accessibilityHidden(true)
+    }
+
+    private var appleButton: some View {
+        SignInWithAppleButton(.signIn) { request in
+            requestNonce = model.beginAppleSignIn()
+            request.nonce = requestNonce
+            request.state = requestNonce
+            request.requestedScopes = [.email]
+        } onCompletion: { result in
+            guard let nonce = requestNonce else { return }
+            requestNonce = nil
+            let token = result.flatMap { authorization -> Result<String, Error> in
+                guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                      credential.state == nonce,
+                      let data = credential.identityToken,
+                      let token = String(data: data, encoding: .utf8) else {
+                    return .failure(APIError.invalidPayload)
+                }
+                return .success(token)
+            }
+            Task { await model.completeAppleSignIn(nonce: nonce, result: token) }
+        }
+        .signInWithAppleButtonStyle(.black)
+        .frame(height: 52)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .disabled(model.address.isEmpty)
+    }
+
+    private func showServerSettings() {
+        guard !isSigningIn else { return }
+        model.error = nil
+        model.settings = true
+    }
+}
 
 struct SignInView: View {
     @Bindable var model: AppModel
@@ -13,60 +133,56 @@ struct SignInView: View {
         (!register || (password.count >= 8 && password.count <= 128 && password == confirm))
     }
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    TogetherBow(size: 76, icon: true).padding(.top, 24)
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Gather & give").font(ConfettiFont.label).textCase(.uppercase)
-                        Text(register ? "Make room for\nthe good stuff." : "Good gifts.\nGreat people.").font(ConfettiFont.display)
-                        Text(register ? "Create your account to start planning together." : "A little thoughtfulness, all in one place.")
-                            .font(ConfettiFont.body).foregroundStyle(ConfettiColor.muted)
-                    }
-                    ConfettiCard {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text(register ? "Create account" : "Welcome back").font(ConfettiFont.heading)
-                            TextField("Email", text: $email).textContentType(.username).keyboardType(.emailAddress)
-                                .textInputAutocapitalization(.never).autocorrectionDisabled()
-                                .accessibilityLabel("Email").frame(minHeight: 44)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                TogetherBow(size: 76, icon: true).padding(.top, 24)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Gather & give").font(ConfettiFont.label).textCase(.uppercase)
+                    Text(register ? "Make room for\nthe good stuff." : "Good gifts.\nGreat people.").font(ConfettiFont.display)
+                    Text(register ? "Create your account to start planning together." : "A little thoughtfulness, all in one place.")
+                        .font(ConfettiFont.body).foregroundStyle(ConfettiColor.muted)
+                }
+                ConfettiCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(register ? "Create account" : "Welcome back").font(ConfettiFont.heading)
+                        TextField("Email", text: $email).textContentType(.username).keyboardType(.emailAddress)
+                            .textInputAutocapitalization(.never).autocorrectionDisabled()
+                            .accessibilityLabel("Email").frame(minHeight: 44)
+                        Divider()
+                        SecureField("Password", text: $password).textContentType(register ? .newPassword : .password)
+                            .accessibilityLabel("Password").frame(minHeight: 44)
+                        if register {
+                            Text("Use 8–128 characters.").font(ConfettiFont.caption)
                             Divider()
-                            SecureField("Password", text: $password).textContentType(register ? .newPassword : .password)
-                                .accessibilityLabel("Password").frame(minHeight: 44)
-                            if register {
-                                Text("Use 8–128 characters.").font(ConfettiFont.caption)
-                                Divider()
-                                SecureField("Confirm password", text: $confirm).textContentType(.newPassword).frame(minHeight: 44)
-                                if !confirm.isEmpty && password != confirm { Text("Passwords don’t match yet.").font(ConfettiFont.caption) }
-                            }
-                            if let error = model.error { ErrorNotice(message: error) }
-                            Button {
-                                Task { await model.authenticate(email: email.trimmingCharacters(in: .whitespacesAndNewlines), password: password, register: register) }
-                            } label: {
-                                HStack { Text(model.busy ? "One moment…" : register ? "Create account" : "Sign in"); if model.busy { ProgressView().tint(.white) } }
-                            }.buttonStyle(ConfettiButtonStyle(.primary, expands: true)).disabled(!valid || model.busy)
+                            SecureField("Confirm password", text: $confirm).textContentType(.newPassword).frame(minHeight: 44)
+                            if !confirm.isEmpty && password != confirm { Text("Passwords don’t match yet.").font(ConfettiFont.caption) }
                         }
+                        if let error = model.error { ErrorNotice(message: error) }
+                        Button {
+                            Task { await model.authenticate(email: email.trimmingCharacters(in: .whitespacesAndNewlines), password: password, register: register) }
+                        } label: {
+                            HStack { Text(model.busy ? "One moment…" : register ? "Create account" : "Sign in"); if model.busy { ProgressView().tint(.white) } }
+                        }.buttonStyle(ConfettiButtonStyle(.primary, expands: true)).disabled(!valid || model.busy)
                     }
-                    Button(register ? "Already part of the family? Sign in" : "New here? Create an account") {
-                        register.toggle(); model.error = nil
-                    }.buttonStyle(ConfettiButtonStyle(.tertiary, expands: true))
-                    if model.canCaptureOffline {
-                        Button("Save an idea offline") { model.addIdea = true }
-                            .buttonStyle(ConfettiButtonStyle(.secondary, expands: true))
-                        Button("Sign out of this device", role: .destructive) { Task { await model.signOut() } }
-                            .buttonStyle(ConfettiButtonStyle(.tertiary, expands: true))
-                    }
-                    Button("Change family server") { model.settings = true }
+                }
+                Button(register ? "Already part of the family? Sign in" : "New here? Create an account") {
+                    register.toggle(); model.error = nil
+                }.buttonStyle(ConfettiButtonStyle(.tertiary, expands: true))
+                if model.canCaptureOffline {
+                    Button("Save an idea offline") { model.addIdea = true }
+                        .buttonStyle(ConfettiButtonStyle(.secondary, expands: true))
+                    Button("Sign out of this device", role: .destructive) { Task { await model.signOut() } }
                         .buttonStyle(ConfettiButtonStyle(.tertiary, expands: true))
-                }.padding(24).frame(maxWidth: 560)
-                    .frame(maxWidth: .infinity)
-            }.background(theme.paper).foregroundStyle(ConfettiColor.ink)
-        }
+                }
+            }.padding(24).frame(maxWidth: 560)
+                .frame(maxWidth: .infinity)
+        }.background(theme.paper).foregroundStyle(ConfettiColor.ink)
+            .toolbarVisibility(.visible, for: .navigationBar)
     }
 }
 
 struct ServerSettings: View {
     @Bindable var model: AppModel
-    let firstLaunch: Bool
     @State private var address = ""
     @Environment(\.dismiss) private var dismiss
     var body: some View {
@@ -74,7 +190,7 @@ struct ServerSettings: View {
             Form {
                 Section {
                     TogetherBow(size: 60, icon: true).frame(maxWidth: .infinity)
-                    Text(firstLaunch ? "Your family, connected." : "Family server").font(ConfettiFont.heading)
+                    Text("Family server").font(ConfettiFont.heading)
                     Text("Connect to the same home network as your family’s server. An HTTPS private address works here too.")
                     TextField("Server address", text: $address).keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
                         .accessibilityLabel("Family server address")
@@ -88,8 +204,8 @@ struct ServerSettings: View {
                     }.disabled(model.busy || address.isEmpty).frame(minHeight: 44)
                 }
             }
-            .navigationTitle(firstLaunch ? "Welcome" : "Settings")
-            .toolbar { if !firstLaunch { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } } }
+            .navigationTitle("Settings")
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
             .onAppear { address = model.address }
         }
     }

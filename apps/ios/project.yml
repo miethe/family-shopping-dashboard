@@ -34,6 +34,7 @@ targets:
     entitlements:
       path: Config/FamilyGifting.entitlements
       properties:
+        com.apple.developer.applesignin: [Default]
         com.apple.security.application-groups: [group.dev.familygifting.app]
     settings:
       base:
@@ -47,6 +48,7 @@ targets:
         CFBundleDisplayName: Family Gifting
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ConfettiServerURL: $(CONFETTI_SERVER_URL)
         UILaunchStoryboardName: LaunchScreen
         UIAppFonts: [Montserrat-Bold.otf, OpenSans-Regular.ttf]
         UIUserInterfaceStyle: Light
