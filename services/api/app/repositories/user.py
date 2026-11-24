@@ -1,9 +1,11 @@
 """User repository with authentication-specific queries."""
 
-from sqlalchemy import exists, select
+from sqlalchemy import exists, func, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import lazyload
 
-from app.models.user import User
+from app.models.user import UNUSABLE_PASSWORD_HASH, User
 from app.repositories.base import BaseRepository
 
 
@@ -66,6 +68,53 @@ class UserRepository(BaseRepository[User]):
         stmt = select(User).where(User.email == email)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def resolve_apple_user(self, subject: str, verified_email: str | None) -> User | None:
+        """Resolve a linked subject, or atomically link/create with a verified Apple email."""
+        for _ in range(2):
+            try:
+                return await self._resolve_apple_user(subject, verified_email)
+            except IntegrityError:
+                # A concurrent insert or link can win either unique index. Re-read its result.
+                await self.session.rollback()
+        return await self._get_by_apple_subject(subject)
+
+    async def _resolve_apple_user(self, subject: str, verified_email: str | None) -> User | None:
+        user = await self._get_by_apple_subject(subject)
+        if user is not None or verified_email is None:
+            return user
+
+        email = verified_email.lower()
+        email_matches = func.lower(User.email) == email
+        matches = (await self.session.scalars(select(User.id).where(email_matches).limit(2))).all()
+        if len(matches) > 1:
+            return None
+        if not matches:
+            return await self.create(
+                {
+                    "email": email,
+                    "password_hash": UNUSABLE_PASSWORD_HASH,
+                    "apple_subject": subject,
+                }
+            )
+
+        link = (
+            update(User)
+            .where(User.id == matches[0], User.apple_subject.is_(None), email_matches)
+            .values(apple_subject=subject)
+            .returning(User)
+            .options(lazyload("*"))
+        )
+        user = (await self.session.scalars(link)).one_or_none()
+        if user is None:
+            # A concurrent request may have linked this subject already. Never replace a binding.
+            return await self._get_by_apple_subject(subject)
+        await self.session.commit()
+        return user
+
+    async def _get_by_apple_subject(self, subject: str) -> User | None:
+        query = select(User).where(User.apple_subject == subject).options(lazyload("*"))
+        return (await self.session.scalars(query)).one_or_none()
 
     async def exists_by_email(self, email: str) -> bool:
         """

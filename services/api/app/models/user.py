@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Index, String
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
@@ -12,6 +12,9 @@ if TYPE_CHECKING:
     from app.models.list_item import ListItem
 
 from app.models.base import BaseModel
+
+# Apple-created accounts have no password credential. This marker is not a valid bcrypt hash.
+UNUSABLE_PASSWORD_HASH = "!"
 
 
 class User(BaseModel):
@@ -41,6 +44,8 @@ class User(BaseModel):
         String(255),  # Bcrypt hash length
         nullable=False,
     )
+
+    apple_subject: Mapped[str | None] = mapped_column(String(255), unique=True, index=True)
 
     # Relationships
     comments: Mapped[list["Comment"]] = relationship(
