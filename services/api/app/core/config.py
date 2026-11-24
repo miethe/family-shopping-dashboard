@@ -3,18 +3,21 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def _parse_household_emails(value: str) -> frozenset[str]:
+    return frozenset(email.strip().lower() for email in value.split(",") if email.strip())
+
+
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/family_gifting"
     APPLE_HOUSEHOLD_EMAILS: str = ""
+    HOUSEHOLD_EMAILS: str = ""
 
     @property
     def apple_household_emails(self) -> frozenset[str]:
-        return frozenset(
-            email.strip().lower()
-            for email in self.APPLE_HOUSEHOLD_EMAILS.split(",")
-            if email.strip()
+        return _parse_household_emails(self.APPLE_HOUSEHOLD_EMAILS) or _parse_household_emails(
+            self.HOUSEHOLD_EMAILS
         )
 
     API_PORT: int = 8000

@@ -128,6 +128,7 @@ def apple(
         "APPLE_HOUSEHOLD_EMAILS",
         " NEW@example.com , TEST@example.com, existing@example.com, changed@example.com",
     )
+    monkeypatch.setattr(settings, "HOUSEHOLD_EMAILS", "")
     monkeypatch.setattr(
         "app.core.apple_throttle.apple_limiter", AppleRateLimiter(per_ip=1000, global_limit=2000)
     )
@@ -509,7 +510,11 @@ async def test_nonce_claim_must_be_hash_and_failed_exchange_consumes_challenge(
 @pytest.mark.parametrize("email", ["outsider@example.com", "relay@privaterelay.appleid.com"])
 @pytest.mark.asyncio
 async def test_non_household_email_never_creates_or_links(
-    client: AsyncClient, async_session: AsyncSession, apple: AppleProvider, email: str
+    client: AsyncClient,
+    async_session: AsyncSession,
+    apple: AppleProvider,
+    monkeypatch: pytest.MonkeyPatch,
+    email: str,
 ) -> None:
     response = await apple.post(
         client, APPLE_PATH, json={"identity_token": apple.token(email=email)}
@@ -518,15 +523,54 @@ async def test_non_household_email_never_creates_or_links(
     assert response.json()["error"]["code"] == "APPLE_NOT_HOUSEHOLD"
     assert not (await async_session.scalars(select(User.id))).all()
 
-    existing = User(email=email, password_hash="!")
-    async_session.add(existing)
-    await async_session.commit()
+    with monkeypatch.context() as registration_settings:
+        registration_settings.setattr(settings, "APPLE_HOUSEHOLD_EMAILS", "")
+        registration_settings.setattr(settings, "HOUSEHOLD_EMAILS", "")
+        registered = await client.post(
+            "/api/v1/auth/register", json={"email": email, "password": "password123"}
+        )
+    assert registered.status_code == 201
+
     response = await apple.post(
         client, APPLE_PATH, json={"identity_token": apple.token(email=email)}
     )
     assert response.status_code == 403
-    await async_session.refresh(existing)
+    assert response.json()["error"]["code"] == "APPLE_NOT_HOUSEHOLD"
+    existing = await async_session.get(User, registered.json()["id"])
+    assert existing is not None
     assert existing.apple_subject is None
+
+
+@pytest.mark.asyncio
+async def test_profile_email_cannot_create_apple_link_target(
+    client: AsyncClient,
+    apple: AppleProvider,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    credentials = {"email": "legacy@example.com", "password": "password123"}
+    with monkeypatch.context() as registration_settings:
+        registration_settings.setattr(settings, "APPLE_HOUSEHOLD_EMAILS", "")
+        registration_settings.setattr(settings, "HOUSEHOLD_EMAILS", "")
+        registered = await client.post("/api/v1/auth/register", json=credentials)
+    assert registered.status_code == 201
+    legacy_user_id = registered.json()["id"]
+
+    login = await client.post(PASSWORD_PATH, json=credentials)
+    assert login.status_code == 200
+    headers = {"Authorization": f"Bearer {login.json()['token']['access_token']}"}
+    change = await client.put(
+        f"/api/v1/users/{legacy_user_id}", headers=headers, json={"email": "new@example.com"}
+    )
+    assert change.status_code == 403
+    assert change.json()["error"]["code"] == "PROFILE_EMAIL_LOCKED"
+    profile = await client.get("/api/v1/auth/me", headers=headers)
+    assert profile.status_code == 200
+    assert profile.json()["email"] == credentials["email"]
+
+    apple_login = await apple.post(client, APPLE_PATH, json={"identity_token": apple.token()})
+    assert apple_login.status_code == 200
+    assert apple_login.json()["email"] == "new@example.com"
+    assert apple_login.json()["id"] != legacy_user_id
 
 
 @pytest.mark.asyncio

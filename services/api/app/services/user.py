@@ -3,6 +3,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.apple_auth import AppleIdentity
+from app.core.config import settings
+from app.core.exceptions import ForbiddenError, ValidationError
 from app.models.user import User
 from app.repositories.user import UserRepository
 from app.schemas.user import TokenResponse, UserCreate, UserResponse, UserUpdate
@@ -48,6 +50,7 @@ class UserService:
             UserResponse DTO with user details (no password_hash)
 
         Raises:
+            ValidationError: If registration is limited to household email addresses
             ValueError: If email already exists
 
         Example:
@@ -63,17 +66,23 @@ class UserService:
             Password is hashed using bcrypt before storage.
             Email uniqueness is enforced at application and database level.
         """
+        household_emails = settings.apple_household_emails
+        email = data.email.lower() if household_emails else data.email
+        if household_emails and email not in household_emails:
+            raise ValidationError(
+                code="REGISTRATION_NOT_HOUSEHOLD",
+                message="Registration is limited to household email addresses",
+            )
+
         # Validate email uniqueness
-        if await self.repo.exists_by_email(data.email):
+        if await self.repo.exists_by_email(email, case_sensitive=not household_emails):
             raise ValueError(f"Email already registered: {data.email}")
 
         # Hash password before storage
         password_hash = self.auth.hash_password(data.password)
 
         # Create user in database
-        user = await self.repo.create(
-            {"email": data.email, "password_hash": password_hash}
-        )
+        user = await self.repo.create({"email": email, "password_hash": password_hash})
 
         # Convert ORM model to DTO
         return UserResponse(
@@ -121,6 +130,13 @@ class UserService:
         """
         # Get user by email
         user = await self.repo.get_by_email(email)
+        normalized_email = email.lower()
+        if (
+            user is None
+            and normalized_email != email
+            and normalized_email in settings.apple_household_emails
+        ):
+            user = await self.repo.get_by_email(normalized_email)
         if user is None:
             return None
 
@@ -234,6 +250,7 @@ class UserService:
             Updated UserResponse DTO if user found, None otherwise
 
         Raises:
+            ForbiddenError: If either address is protected or the account is linked to Apple
             ValueError: If new email already exists for different user
 
         Example:
@@ -258,11 +275,19 @@ class UserService:
 
         # Build update dict (only non-None fields)
         update_data = {}
-        if data.email is not None:
-            # Validate email uniqueness (if changing)
-            if data.email != existing_user.email:
-                if await self.repo.exists_by_email(data.email):
-                    raise ValueError(f"Email already registered: {data.email}")
+        if data.email is not None and data.email != existing_user.email:
+            household_emails = settings.apple_household_emails
+            if (
+                existing_user.apple_subject is not None
+                or existing_user.email.strip().lower() in household_emails
+                or data.email.strip().lower() in household_emails
+            ):
+                raise ForbiddenError(
+                    code="PROFILE_EMAIL_LOCKED",
+                    message="This email change is unavailable",
+                )
+            if await self.repo.exists_by_email(data.email):
+                raise ValueError(f"Email already registered: {data.email}")
             update_data["email"] = data.email
 
         # Update user if there are changes

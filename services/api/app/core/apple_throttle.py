@@ -44,5 +44,5 @@ apple_limiter = AppleRateLimiter()
 
 
 def throttle_apple(request: Request) -> None:
-    # Do not trust caller-supplied forwarding headers.
+    # Uvicorn resolves the client address for explicitly trusted gateway peers.
     apple_limiter.check(request.client.host if request.client else "unknown")
