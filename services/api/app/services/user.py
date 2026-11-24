@@ -2,6 +2,8 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.apple_auth import AppleIdentity
+from app.models.user import User
 from app.repositories.user import UserRepository
 from app.schemas.user import TokenResponse, UserCreate, UserResponse, UserUpdate
 from app.services.auth import AuthService
@@ -126,7 +128,17 @@ class UserService:
         if not self.auth.verify_password(password, user.password_hash):
             return None
 
-        # Generate JWT token
+        return self._authenticated_session(user)
+
+    async def authenticate_apple(
+        self, identity: AppleIdentity
+    ) -> tuple[UserResponse, TokenResponse] | None:
+        user = await self.repo.resolve_apple_user(identity.subject, identity.verified_email)
+        if user is None:
+            return None
+        return self._authenticated_session(user)
+
+    def _authenticated_session(self, user: User) -> tuple[UserResponse, TokenResponse]:
         access_token = self.auth.create_access_token(user_id=user.id)
 
         # Convert ORM model to DTO

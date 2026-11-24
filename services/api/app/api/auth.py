@@ -1,11 +1,16 @@
 """Authentication API routes for user registration and login."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.apple_auth import (
+    AppleTokenVerifier,
+    InvalidAppleCredentialsError,
+    get_apple_token_verifier,
+)
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import UnauthorizedError, ValidationError
-from app.schemas.user import TokenResponse, UserCreate, UserLogin, UserResponse
+from app.schemas.user import AppleLogin, TokenResponse, UserCreate, UserLogin, UserResponse
 from app.services.auth import AuthService
 from app.services.user import UserService
 
@@ -85,6 +90,21 @@ async def login(
         updated_at=user.updated_at,
         token=token,
     )
+
+
+@router.post("/apple", response_model=LoginResponse, summary="Sign in with Apple")
+async def login_with_apple(
+    credentials: AppleLogin,
+    session: AsyncSession = Depends(get_db),
+    verifier: AppleTokenVerifier = Depends(get_apple_token_verifier),
+) -> LoginResponse:
+    identity = await verifier.verify(credentials.identity_token, credentials.nonce)
+    result = await UserService(session).authenticate_apple(identity)
+    if result is None:
+        raise InvalidAppleCredentialsError()
+
+    user, token = result
+    return LoginResponse(**user.model_dump(), token=token)
 
 
 @router.post(

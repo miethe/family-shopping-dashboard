@@ -1,8 +1,8 @@
 """User DTOs for authentication and profile management."""
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
 
-from app.schemas.base import BaseSchema, TimestampSchema
+from app.schemas.base import TimestampSchema
 
 
 class UserCreate(BaseModel):
@@ -53,6 +53,13 @@ class UserLogin(BaseModel):
 
     email: str = Field(..., description="User email address")
     password: str = Field(..., description="Plain text password")
+
+
+class AppleLogin(BaseModel):
+    """Native Apple identity token and optional nonce sent in the authorization request."""
+
+    identity_token: str = Field(min_length=1, max_length=8192)
+    nonce: str | None = Field(default=None, min_length=1, max_length=256)
 
 
 class TokenResponse(BaseModel):
