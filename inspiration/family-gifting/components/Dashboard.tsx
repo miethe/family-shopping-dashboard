@@ -16,15 +16,15 @@ const Dashboard: React.FC<DashboardProps> = ({ setView, people }) => {
   ];
 
   const recentActivity: ActivityLog[] = [
-    { id: '1', actor: 'Taylor', actorAvatar: 'https://picsum.photos/seed/taylor/100', action: 'marked', target: '"Wireless Headphones"', status: 'Purchased' },
-    { id: '2', actor: 'Taylor', actorAvatar: 'https://picsum.photos/seed/taylor/100', action: 'marked', target: '"Wireless Bracoine"', status: 'Purchased' },
-    { id: '3', actor: 'Taylor', actorAvatar: 'https://picsum.photos/seed/taylor/100', action: 'marked', target: '"Collab Headphones"', status: 'Purchased' },
+    { id: '1', actor: 'Person A', actorAvatar: 'https://picsum.photos/seed/person-a/100', action: 'marked', target: '"Sample Gift A"', status: 'Purchased' },
+    { id: '2', actor: 'Person A', actorAvatar: 'https://picsum.photos/seed/person-a/100', action: 'marked', target: '"Sample Gift B"', status: 'Purchased' },
+    { id: '3', actor: 'Person A', actorAvatar: 'https://picsum.photos/seed/person-a/100', action: 'marked', target: '"Sample Gift C"', status: 'Purchased' },
   ];
 
   const ideaInbox = [
-    { id: '1', name: 'Buauna Contates Headphones', img: 'https://picsum.photos/seed/headphone/100' },
-    { id: '2', name: 'Shopping Lifetest Gift Ideas', img: 'https://picsum.photos/seed/gift/100' },
-    { id: '3', name: 'Burging Gift Audio', img: 'https://picsum.photos/seed/audio/100' },
+    { id: '1', name: 'Sample Gift A', img: 'https://picsum.photos/seed/headphone/100' },
+    { id: '2', name: 'Sample Gift B', img: 'https://picsum.photos/seed/gift/100' },
+    { id: '3', name: 'Sample Gift C', img: 'https://picsum.photos/seed/audio/100' },
   ];
 
   return (
