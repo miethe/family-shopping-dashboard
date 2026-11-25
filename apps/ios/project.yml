@@ -31,6 +31,10 @@ targets:
         embed: true
       - target: ShareIdea
         embed: true
+    preBuildScripts:
+      - name: Validate server URL
+        script: python3 "$SRCROOT/Scripts/validate_server_url.py"
+        basedOnDependencyAnalysis: false
     entitlements:
       path: Config/FamilyGifting.entitlements
       properties:
