@@ -59,7 +59,13 @@ class AppleTokenVerifier:
         self._refresh_after = float("-inf")
         self._lock = Lock()
 
-    async def verify(self, identity_token: str, nonce: str | None) -> AppleIdentity:
+    async def verify(
+        self,
+        identity_token: str,
+        nonce: str | None,
+        *,
+        on_subject: Callable[[str], None] | None = None,
+    ) -> AppleIdentity:
         try:
             header = jwt.get_unverified_header(identity_token)
             kid = header.get("kid")
@@ -104,6 +110,9 @@ class AppleTokenVerifier:
             or not subject.isprintable()
         ):
             raise InvalidAppleCredentialsError()
+
+        if on_subject is not None:
+            on_subject(subject)
 
         token_nonce = claims.get("nonce")
         if not nonce or (
