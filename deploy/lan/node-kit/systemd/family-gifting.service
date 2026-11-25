@@ -1,0 +1,16 @@
+# Family Gifting household instance (LAN only, 10.42.10.76:3047). Starts/stops ONLY the named pod
+# "family-gifting" created by infra/agentic-node/family-gifting/deploy.sh. Linger is on -> boots with the node.
+[Unit]
+Description=Family Gifting household pod (family-gifting, LAN :3047)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+TimeoutStartSec=180
+ExecStart=/usr/bin/podman pod start family-gifting
+ExecStop=/usr/bin/podman pod stop --time 15 family-gifting
+
+[Install]
+WantedBy=default.target

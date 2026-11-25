@@ -1,0 +1,9 @@
+# Nightly pg_dump + uploads tar of the family-gifting pod to node-local ~/family-gifting/backups (keeps 14 nightly).
+[Unit]
+Description=Family Gifting nightly backup (pg_dump to node-local disk)
+After=family-gifting.service
+
+[Service]
+Type=oneshot
+Nice=10
+ExecStart=%h/family-gifting/deploy.sh backup nightly
