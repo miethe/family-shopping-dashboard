@@ -1,13 +1,27 @@
 """Authentication API routes for user registration and login."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.apple_auth import (
+    AppleTokenVerifier,
+    InvalidAppleCredentialsError,
+    get_apple_token_verifier,
+)
+from app.core.apple_throttle import throttle_apple
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import UnauthorizedError, ValidationError
-from app.schemas.user import TokenResponse, UserCreate, UserLogin, UserResponse
+from app.schemas.user import (
+    AppleChallengeResponse,
+    AppleLogin,
+    TokenResponse,
+    UserCreate,
+    UserLogin,
+    UserResponse,
+)
+from app.services.apple_challenge import AppleChallengeService
 from app.services.auth import AuthService
-from app.services.user import UserService
+from app.services.user import UserService, require_registration_open
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -88,9 +102,41 @@ async def login(
 
 
 @router.post(
+    "/apple/challenge",
+    response_model=AppleChallengeResponse,
+    dependencies=[Depends(throttle_apple)],
+    summary="Issue an Apple sign-in challenge",
+)
+async def apple_challenge(session: AsyncSession = Depends(get_db)) -> AppleChallengeResponse:
+    return await AppleChallengeService(session).issue()
+
+
+@router.post(
+    "/apple",
+    response_model=LoginResponse,
+    summary="Sign in with Apple",
+    dependencies=[Depends(throttle_apple)],
+)
+async def login_with_apple(
+    credentials: AppleLogin,
+    session: AsyncSession = Depends(get_db),
+    verifier: AppleTokenVerifier = Depends(get_apple_token_verifier),
+) -> LoginResponse:
+    await AppleChallengeService(session).consume(credentials.nonce)
+    identity = await verifier.verify(credentials.identity_token, credentials.nonce)
+    result = await UserService(session).authenticate_apple(identity)
+    if result is None:
+        raise InvalidAppleCredentialsError()
+
+    user, token = result
+    return LoginResponse(**user.model_dump(), token=token)
+
+
+@router.post(
     "/register",
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_registration_open)],
     summary="Register new user account",
     description="Create new user with email and password (hashed before storage)",
 )

@@ -278,6 +278,52 @@
         "title": "Allowance",
         "type": "object"
       },
+      "AppleChallengeResponse": {
+        "properties": {
+          "expires_in": {
+            "title": "Expires In",
+            "type": "integer"
+          },
+          "nonce": {
+            "title": "Nonce",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nonce",
+          "expires_in"
+        ],
+        "title": "AppleChallengeResponse",
+        "type": "object"
+      },
+      "AppleLogin": {
+        "properties": {
+          "identity_token": {
+            "maxLength": 8192,
+            "minLength": 1,
+            "title": "Identity Token",
+            "type": "string"
+          },
+          "nonce": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nonce"
+          }
+        },
+        "required": [
+          "identity_token"
+        ],
+        "title": "AppleLogin",
+        "type": "object"
+      },
       "AssignmentUpdate": {
         "properties": {
           "assigned_to_id": {
@@ -5959,6 +6005,68 @@
         "summary": "Get User Activity",
         "tags": [
           "activity"
+        ]
+      }
+    },
+    "/api/v1/auth/apple": {
+      "post": {
+        "operationId": "login_with_apple_api_v1_auth_apple_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppleLogin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "Sign in with Apple",
+        "tags": [
+          "authentication"
+        ]
+      }
+    },
+    "/api/v1/auth/apple/challenge": {
+      "post": {
+        "operationId": "apple_challenge_api_v1_auth_apple_challenge_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleChallengeResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Issue an Apple sign-in challenge",
+        "tags": [
+          "authentication"
         ]
       }
     },

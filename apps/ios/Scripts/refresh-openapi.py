@@ -38,7 +38,8 @@ def contract_snapshot(openapi):
                 continue
             for status, response in operation.get("responses", {}).items():
                 if "$ref" not in response:
-                    response["description"] = HTTPStatus(int(status)).phrase
+                    # Keep the snapshot stable across Python's HTTP 422 phrase change.
+                    response["description"] = "Unprocessable Entity" if status == "422" else HTTPStatus(int(status)).phrase
     return snapshot
 
 

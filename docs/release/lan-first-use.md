@@ -30,11 +30,19 @@ docker compose --env-file .env.lan -f compose.lan.yml ps
 
 The API image applies Alembic migrations before serving. The web image uses the repository's pnpm version and builds with `/api/v1` and `/ws`; changing the LAN IP does not require rebuilding browser endpoint addresses. Upload URLs also use the same origin. Only the gateway port is published; PostgreSQL, API and web remain on the Compose network. The database and upload directories use named volumes. The API's upload directory is owned by its non-root runtime user.
 
-The binding is an interface choice, not a firewall or household authorization system. Use the trusted home network; leave remote access to the separate app-ops decision. The current app offers open registration, a shared single-family dataset and no password recovery UI. Do not treat this instance as a multi-household service.
+The binding selects the host interface. Use the trusted home network for this single-household instance and leave remote access to the separate app-ops decision. The app uses a shared dataset and has no password recovery UI. Legacy registration is open when the effective household allowlist is empty. Deployment must set `APPLE_HOUSEHOLD_EMAILS` (or its `HOUSEHOLD_EMAILS` fallback) in the API environment on the node. A non-empty effective allowlist closes ALL email/password registration, including allowed addresses and the web dashboard sign-up, with HTTP 403 `REGISTRATION_CLOSED` in the existing error envelope. Existing password login and verified, allowlisted Apple creation/linking continue. Keep real emails, names, team IDs and secrets out of this public repository. Until the node environment is set, an empty allowlist deliberately keeps registration open exactly as before.
+
+An existing rehearsal pod created with `deploy/lan/podman-pod.sh` needs to be recreated to apply the gateway and API network settings. Rootless pods use `slirp4netns` to preserve the phones' connection addresses. Back up the data before replacing a pod and retain both named volumes. The `remove-all` operation deletes those volumes.
+
+## Apple sign-in refusal (round 3)
+
+An unbound Apple ID whose verified email is outside the effective household list is refused before account creation, whether Apple shared a relay address or the real email. The app stays on the Confetti welcome screen and shows a family-list message above Sign in with Apple. The visible “Already have an account?” button opens the existing email/password sign-in screen. The message now explains both email choices instead of assuming Hide My Email was selected. No empty account is created. Already-bound Apple subjects keep their existing sign-in behavior.
+
+The installed 0.1.0 (1) build keeps using `/api/v1/auth/register` and its existing error envelope. Once the node environment is configured, it receives `REGISTRATION_CLOSED` with “Account registration is closed. Sign in with Apple or use your existing account.” The web dashboard uses that same route, so its sign-up closes too. An empty effective allowlist keeps legacy registration open exactly as before; setting the node environment is required to activate this closure. No live deployment or migration is part of this change.
 
 ## Prove first use
 
-Before entering real data, use two disposable `example.test` accounts and sample entities:
+Before entering real data, use two disposable `example.test` accounts and sample entities. For legacy registration rehearsal only, use an isolated test deployment with an empty effective allowlist. With household access configured, verify `/register` refuses both sample addresses; use existing accounts or allowlisted Apple sign-in instead.
 
 1. Open `http://<chosen-IP>:3030/health` and verify the JSON says both `status: healthy` and `db: connected`. A 200 response alone is insufficient.
 2. On phone A, visit `/register`, create sample account A, then sign out and sign back in at `/login`. Repeat on phone B for sample account B. Use the same address on both, on home Wi-Fi.

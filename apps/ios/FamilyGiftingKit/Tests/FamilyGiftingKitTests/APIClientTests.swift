@@ -88,6 +88,75 @@ struct APIClientTests {
         #expect(await transport.requests.isEmpty)
     }
 
+    @Test func appleChallengeIsAnUnauthenticatedPostAndPreservesTheSession() async throws {
+        let store = MemoryTokenStore()
+        let transport = RecordingTransport([response(200, #"{"nonce":"server-nonce","expires_in":300}"#)])
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        #expect(try await client.appleChallenge() == "server-nonce")
+        let requests = await transport.requests
+        #expect(requests.count == 1)
+        #expect(requests[0].url?.path == "/api/v1/auth/apple/challenge")
+        #expect(requests[0].httpMethod == "POST")
+        #expect(requests[0].value(forHTTPHeaderField: "Authorization") == nil)
+        #expect(try store.read() == nil)
+    }
+
+    @Test func appleSignInExchangesTheIdentityTokenAndNonceForAnOriginBoundSession() async throws {
+        let transport = RecordingTransport([response(200, TestPayload.login), response(200, TestPayload.user)])
+        let store = MemoryTokenStore(token: "previous-session")
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+
+        let user = try await client.loginWithApple(identityToken: "fixture-apple-token", nonce: "fixture-nonce")
+        let saved = try #require(store.read())
+        #expect(user.id == 1)
+        #expect(saved.userID == 1)
+        #expect(saved.origin == ServerAddress.fixture.url)
+        #expect(saved.accessToken == "test-token")
+        #expect(try await client.me().id == user.id)
+
+        let requests = await transport.requests
+        let exchange = try #require(requests.first)
+        #expect(exchange.url?.path == "/api/v1/auth/apple")
+        #expect(exchange.httpMethod == "POST")
+        #expect(exchange.value(forHTTPHeaderField: "Authorization") == nil)
+        #expect(exchange.value(forHTTPHeaderField: "Content-Type") == "application/json")
+        let body = try #require(exchange.httpBody)
+        #expect(try JSONDecoder().decode([String: String].self, from: body) == [
+            "identity_token": "fixture-apple-token", "nonce": "fixture-nonce"
+        ])
+        #expect(requests.last?.value(forHTTPHeaderField: "Authorization") == "Bearer test-token")
+    }
+
+    @Test func rejectedAppleExchangeKeepsThePreviousSession() async throws {
+        let store = MemoryTokenStore(token: "previous-session")
+        let transport = RecordingTransport([response(401, #"{"detail":"Apple sign-in could not be verified"}"#)])
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        let rejection = APIError.server(statusCode: 401, detail: APIErrorDetail(
+            code: "HTTP_401", message: "Apple sign-in could not be verified", traceId: nil
+        ))
+        await #expect(throws: rejection) { try await client.loginWithApple(identityToken: "fixture-apple-token", nonce: "fixture-nonce") }
+        #expect(store.read()?.accessToken == "previous-session")
+        let request = try #require(await transport.requests.first)
+        let body = try #require(request.httpBody)
+        #expect(try JSONDecoder().decode([String: String].self, from: body) == ["identity_token": "fixture-apple-token", "nonce": "fixture-nonce"])
+    }
+
+    @Test func changingOriginDuringAppleSignInDiscardsTheStaleExchange() async throws {
+        let newOrigin = try ServerAddress("https://other.example.invalid")
+        let transport = SuspendedExchange()
+        let store = MemoryTokenStore()
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        let exchange = Task { try await client.loginWithApple(identityToken: "fixture-apple-token", nonce: "fixture-nonce") }
+
+        let request = await transport.waitForRequest()
+        try await client.setServerAddress(newOrigin)
+        await transport.finish()
+        await #expect(throws: APIError.sessionChanged) { try await exchange.value }
+        #expect(request.url?.host == ServerAddress.fixture.url.host)
+        #expect(await client.address == newOrigin)
+        #expect(store.read() == nil)
+    }
+
     @Test func unauthorizedResponseClearsSessionAndReturnsErrorEnvelope() async throws {
         let store = MemoryTokenStore(token: "test-token")
         let transport = RecordingTransport([
@@ -161,6 +230,31 @@ private actor RecordingTransport: HTTPTransport {
         requests.append(request)
         guard !responses.isEmpty else { throw APIError.invalidResponse }
         return responses.removeFirst()
+    }
+}
+
+private actor SuspendedExchange: HTTPTransport {
+    private var request: URLRequest?
+    private var onRequest: CheckedContinuation<URLRequest, Never>?
+    private var onFinish: CheckedContinuation<HTTPResponse, Never>?
+
+    func send(_ request: URLRequest) async throws -> HTTPResponse {
+        await withCheckedContinuation { continuation in
+            onFinish = continuation
+            self.request = request
+            onRequest?.resume(returning: request)
+            onRequest = nil
+        }
+    }
+
+    func waitForRequest() async -> URLRequest {
+        if let request { return request }
+        return await withCheckedContinuation { onRequest = $0 }
+    }
+
+    func finish() {
+        onFinish?.resume(returning: response(200, TestPayload.login))
+        onFinish = nil
     }
 }
 

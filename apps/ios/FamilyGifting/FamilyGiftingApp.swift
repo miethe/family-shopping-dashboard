@@ -27,8 +27,7 @@ struct RootView: View {
     var body: some View {
         SwiftUI.Group {
             if model.starting { ProgressView("Gathering the good stuff…") }
-            else if !model.configured { ServerSettings(model: model, firstLaunch: true) }
-            else if !model.signedIn { SignInView(model: model) }
+            else if !model.signedIn { WelcomeView(model: model) }
             else {
                 #if DEBUG
                 if model.fixture, let index = ProcessInfo.processInfo.arguments.firstIndex(of: "--screen"), ProcessInfo.processInfo.arguments.indices.contains(index + 1) {
@@ -51,7 +50,7 @@ struct RootView: View {
             }
         }
         .sheet(item: $model.native) { NativeDestinationView(model: model, destination: $0) }
-        .sheet(isPresented: $model.settings) { ServerSettings(model: model, firstLaunch: false) }
+        .sheet(isPresented: $model.settings) { ServerSettings(model: model) }
         .sheet(isPresented: $model.showIdeas) { NavigationStack { NativeIdeasView(model: model) } }
         .sheet(isPresented: $model.addIdea, onDismiss: { if model.captureSaved { model.captureSaved = false; model.showIdeas = true } }) { AddIdeaView(model: model) }
         .sheet(item: $model.web, onDismiss: { Task { await model.resume() } }) { destination in

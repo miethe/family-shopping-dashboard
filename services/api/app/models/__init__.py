@@ -1,5 +1,6 @@
 """Database models for the Family Gifting Dashboard API."""
 
+from app.models.apple_challenge import AppleChallenge
 from app.models.base import BaseModel, TimestampMixin
 from app.models.comment import Comment, CommentParentType
 from app.models.entity_budget import EntityBudget
@@ -19,6 +20,7 @@ from app.models.user import User
 __all__ = [
     # Base
     "BaseModel",
+    "AppleChallenge",
     "TimestampMixin",
     # Core entities
     "User",

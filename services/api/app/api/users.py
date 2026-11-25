@@ -160,13 +160,13 @@ async def update_user(
     """
     Update user profile.
 
-    Updates a user's profile information. Currently supports updating email address.
+    Updates the authenticated user's profile information. Currently supports email address changes.
     Future versions will support additional profile fields (name, avatar_url, etc.).
 
     Args:
         user_id: User ID to update
         data: Update data (email and/or other future profile fields)
-        current_user_id: Current authenticated user ID (validates auth, not used for access control)
+        current_user_id: Current authenticated user ID (from JWT, injected)
         session: Database session (injected)
 
     Returns:
@@ -174,6 +174,7 @@ async def update_user(
 
     Raises:
         HTTPException: 401 if token is invalid
+        ForbiddenError: 403 if updating another user's profile or a protected email address
         HTTPException: 404 if user not found
         HTTPException: 400 if email already exists or validation fails
 
@@ -217,39 +218,32 @@ async def update_user(
 
     Note:
         - Requires valid Bearer token in Authorization header
-        - No ownership checks (family app with 2-3 users)
         - Email uniqueness is enforced across the system
         - Only non-None fields are updated (partial updates supported)
     """
-    service = UserService(session)
-
-    # Check user exists first
-    existing_user = await service.get(user_id)
-    if existing_user is None:
-        raise NotFoundError(
-            code="USER_NOT_FOUND",
-            message=f"User with ID {user_id} not found",
+    if user_id != current_user_id:
+        raise ForbiddenError(
+            code="PROFILE_UPDATE_FORBIDDEN",
+            message="You can only update your own profile",
         )
 
-    # Attempt to update user
+    service = UserService(session)
     try:
         updated_user = await service.update(user_id, data)
-
-        if updated_user is None:
-            # Should not happen since we checked existence, but handle gracefully
-            raise NotFoundError(
-                code="USER_NOT_FOUND",
-                message=f"User with ID {user_id} not found",
-            )
-
-        return updated_user
-
     except ValueError as e:
         # Service raises ValueError for duplicate email
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Validation failed: {str(e)}",
         ) from e
+
+    if updated_user is None:
+        raise NotFoundError(
+            code="USER_NOT_FOUND",
+            message=f"User with ID {user_id} not found",
+        )
+
+    return updated_user
 
 
 @router.delete(

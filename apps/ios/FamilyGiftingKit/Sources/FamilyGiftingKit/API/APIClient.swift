@@ -104,6 +104,21 @@ public actor APIClient {
         try await authenticate(credentials(email: email, password: password), diagnostic: diagnostic)
     }
 
+    public func appleChallenge() async throws -> String {
+        let revision = sessionRevision
+        let response: AppleChallengeResponse = try await request(
+            "/api/v1/auth/apple/challenge", method: "POST", authenticated: false
+        )
+        guard revision == sessionRevision else { throw APIError.sessionChanged }
+        guard !response.nonce.isEmpty else { throw APIError.invalidPayload }
+        return response.nonce
+    }
+
+    public func loginWithApple(identityToken: String, nonce: String) async throws -> User {
+        let body = try WireFormat.encoder().encode(AppleSignInRequest(identityToken: identityToken, nonce: nonce))
+        return try await exchangeLogin(at: "/api/v1/auth/apple", body: body)
+    }
+
     public func register(email: String, password: String) async throws -> User {
         let credentials = credentials(email: email, password: password)
         let revision = sessionRevision
@@ -125,10 +140,13 @@ public actor APIClient {
     }
 
     private func authenticate(_ credentials: Credentials, diagnostic: Bool = false) async throws -> User {
+        try await exchangeLogin(at: "/api/v1/auth/login", body: WireFormat.encoder().encode(credentials), diagnostic: diagnostic)
+    }
+
+    private func exchangeLogin(at path: String, body: Data, diagnostic: Bool = false) async throws -> User {
         let revision = sessionRevision
         let response: LoginResponse = try await request(
-            "/api/v1/auth/login", method: "POST", body: WireFormat.encoder().encode(credentials),
-            authenticated: false, diagnostic: diagnostic
+            path, method: "POST", body: body, authenticated: false, diagnostic: diagnostic
         )
         guard revision == sessionRevision else { throw APIError.sessionChanged }
         guard let token = response.token else { throw APIError.invalidPayload }
@@ -373,6 +391,15 @@ public actor APIClient {
         }
         return response
     }
+}
+
+private struct AppleChallengeResponse: Decodable {
+    let nonce: String
+}
+
+private struct AppleSignInRequest: Encodable {
+    let identityToken: String
+    let nonce: String
 }
 
 private struct RefreshRequest: Encodable {

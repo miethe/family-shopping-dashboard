@@ -1,5 +1,6 @@
 import XCTest
 import UIKit
+import AuthenticationServices
 import FamilyGiftingKit
 import GiftingExtensions
 @testable import FamilyGifting
@@ -36,9 +37,103 @@ final class AppModelTests: XCTestCase {
     func testSignInFixtureStartsSignedOut() async {
         let model = AppModel(arguments: ["app", "--fixture", "signin"])
         await model.start()
-        XCTAssertTrue(model.configured)
+        XCTAssertEqual(model.address, ServerAddress.fixture.url.absoluteString)
         XCTAssertFalse(model.signedIn)
     }
+
+    func testBuildOriginIsAvailableWithoutAStoredServerOverride() throws {
+        let origin = try XCTUnwrap(Bundle.main.object(forInfoDictionaryKey: "ConfettiServerURL") as? String)
+        let configuredOrigin = try ServerAddress(origin)
+        XCTAssertEqual(AppModel.initialServerAddress(override: nil, buildDefault: origin), configuredOrigin)
+        XCTAssertEqual(AppModel.initialServerAddress(override: "https://preview.example.invalid/", buildDefault: origin)?.url.absoluteString,
+                       "https://preview.example.invalid")
+        XCTAssertEqual(AppModel.initialServerAddress(override: "https://preview.example.invalid/path", buildDefault: origin),
+                       configuredOrigin)
+    }
+
+    func testAppleCancellationIsNeutralAndAnAttemptCanOnlyCompleteOnce() async throws {
+        let transport = AppleTestTransport()
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: MemoryTokenStore())
+        let model = AppModel(arguments: ["app", "--fixture", "signin"], fixtureClient: client)
+        await model.start()
+        let challenge = await model.beginAppleSignIn()
+        let nonce = try XCTUnwrap(challenge)
+        XCTAssertFalse(nonce.isEmpty)
+        XCTAssertTrue(model.authorizingWithApple)
+        let overlapping = await model.beginAppleSignIn()
+        XCTAssertNil(overlapping)
+        await model.completeAppleSignIn(nonce: nonce, result: .failure(ASAuthorizationError(.canceled)))
+        await model.completeAppleSignIn(nonce: nonce, result: .success("stale-token"))
+
+        XCTAssertFalse(model.authorizingWithApple)
+        XCTAssertFalse(model.busy)
+        XCTAssertFalse(model.signedIn)
+        XCTAssertNil(model.error)
+        let exchanges = await transport.exchanges
+        XCTAssertEqual(exchanges, 0)
+        let next = await model.beginAppleSignIn()
+        XCTAssertNotEqual(next, nonce)
+    }
+
+    func testAppleSignInUsesTheNormalSessionAndSignOutPath() async throws {
+        let transport = AppleTestTransport()
+        let store = MemoryTokenStore()
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        let model = AppModel(arguments: ["app", "--fixture", "signin"], fixtureClient: client)
+        await model.start()
+        let challenge = await model.beginAppleSignIn()
+        let nonce = try XCTUnwrap(challenge)
+        await model.completeAppleSignIn(nonce: nonce, result: .success("fixture-apple-token"))
+
+        XCTAssertTrue(model.signedIn)
+        XCTAssertTrue(model.loaded)
+        XCTAssertFalse(model.busy)
+        XCTAssertEqual(model.currentUser?.id, store.read()?.userID)
+        XCTAssertEqual(model.credential?.accessToken, FixtureTransport.token)
+        await model.signOut()
+        XCTAssertNil(store.read())
+        XCTAssertNil(model.currentUser)
+        XCTAssertFalse(model.signedIn)
+    }
+
+    func testAppleHouseholdRejectionLeavesWelcomeAndExistingAccountPathAvailable() async throws {
+        // Relay and shared-email mismatches receive the same server code.
+        let transport = AppleTestTransport(notHousehold: true)
+        let store = MemoryTokenStore()
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        let model = AppModel(arguments: ["app", "--fixture", "signin"], fixtureClient: client)
+        await model.start()
+        let challenge = await model.beginAppleSignIn()
+        let nonce = try XCTUnwrap(challenge)
+        await model.completeAppleSignIn(nonce: nonce, result: .success("fixture-apple-token"))
+
+        XCTAssertFalse(model.signedIn)
+        XCTAssertFalse(model.busy)
+        XCTAssertFalse(model.authorizingWithApple)
+        XCTAssertNil(model.currentUser)
+        XCTAssertNil(store.read())
+        XCTAssertEqual(model.error, "This Apple ID’s email is not on the family list. Use an Apple ID with an allowed email and choose Share My Email. If you chose Hide My Email, remove Confetti in Settings > Sign in with Apple > Stop using Apple Account to choose again. Or tap Already have an account? to sign in with email and password.")
+    }
+
+    func testAppleNetworkErrorLeavesSignInAvailableForRetry() async throws {
+        let transport = AppleTestTransport(offline: true)
+        let store = MemoryTokenStore()
+        let client = APIClient(address: .fixture, transport: transport, tokenStore: store)
+        let model = AppModel(arguments: ["app", "--fixture", "signin"], fixtureClient: client)
+        await model.start()
+        let challenge = await model.beginAppleSignIn()
+        let nonce = try XCTUnwrap(challenge)
+        await model.completeAppleSignIn(nonce: nonce, result: .success("fixture-apple-token"))
+
+        XCTAssertFalse(model.signedIn)
+        XCTAssertFalse(model.busy)
+        XCTAssertNil(store.read())
+        XCTAssertTrue(model.error?.contains("Local Network") == true)
+        let retry = await model.beginAppleSignIn()
+        XCTAssertNotNil(retry)
+        XCTAssertNil(model.error)
+    }
+
     func testOfflineCaptureStaysVisible() async {
         let model = AppModel(arguments: ["app", "--fixture", "sample", "--offline"])
         await model.start()
@@ -195,6 +290,34 @@ final class AppModelTests: XCTestCase {
 
 }
 
+private actor AppleTestTransport: HTTPTransport {
+    private let fixture = FixtureTransport(scenario: .sample)
+    private let offline: Bool
+    private let notHousehold: Bool
+    private(set) var exchanges = 0
+
+    init(offline: Bool = false, notHousehold: Bool = false) {
+        self.offline = offline
+        self.notHousehold = notHousehold
+    }
+
+    func send(_ request: URLRequest) async throws -> HTTPResponse {
+        if request.url?.path == "/api/v1/auth/apple/challenge" {
+            return HTTPResponse(statusCode: 200, body: Data("{\"nonce\":\"\(UUID().uuidString)\",\"expires_in\":300}".utf8))
+        }
+        guard request.url?.path == "/api/v1/auth/apple" else { return try await fixture.send(request) }
+        exchanges += 1
+        if offline { throw URLError(.notConnectedToInternet) }
+        if notHousehold {
+            return HTTPResponse(statusCode: 403, body: Data(#"{"error":{"code":"APPLE_NOT_HOUSEHOLD","message":"Unavailable"}}"#.utf8))
+        }
+
+        // Feed the existing fixture's login response through the Apple endpoint's identical response contract.
+        var login = request
+        login.url = ServerAddress.fixture.url.appending(path: "api/v1/auth/login")
+        return try await fixture.send(login)
+    }
+}
 
 private actor BrokenFeeds: HTTPTransport {
     private let fixture = FixtureTransport(scenario: .sample)
