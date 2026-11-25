@@ -673,6 +673,27 @@ async def test_authenticated_challenge_ignores_forwarded_headers(
 
 
 @pytest.mark.asyncio
+async def test_garbage_with_valid_bearer_does_not_spend_user_budget(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from app.services.auth import AuthService
+
+    monkeypatch.setattr(
+        "app.core.apple_throttle.apple_limiter",
+        AppleRateLimiter(per_subject=1, anonymous_limit=1),
+    )
+    token = AuthService().create_access_token(user_id=42)
+    headers = {"Authorization": f"Bearer {token}"}
+    assert (
+        await client.post(APPLE_PATH, json={"identity_token": "garbage"}, headers=headers)
+    ).status_code == 401
+    assert (
+        await client.post(APPLE_PATH, json={"identity_token": "garbage"}, headers=headers)
+    ).status_code == 429
+    assert (await client.post(APPLE_PATH + "/challenge", headers=headers)).status_code == 200
+
+
+@pytest.mark.asyncio
 async def test_atomic_challenge_consumption_across_sessions(tmp_path: Path) -> None:
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'challenge-race.db'}")
     async with engine.begin() as connection:

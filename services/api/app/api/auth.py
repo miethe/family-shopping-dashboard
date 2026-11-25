@@ -139,7 +139,7 @@ async def login_with_apple(
         )
     except InvalidAppleCredentialsError:
         if not verified_subject:
-            apple_throttle.apple_limiter.check(signed_in_subject)
+            apple_throttle.apple_limiter.check(None)
         await AppleChallengeService(session).consume(credentials.nonce)
         raise
     await AppleChallengeService(session).consume(credentials.nonce)
