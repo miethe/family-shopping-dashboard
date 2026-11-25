@@ -84,4 +84,3 @@ services:
 networks:
   gifting-network:
     driver: bridge
-
