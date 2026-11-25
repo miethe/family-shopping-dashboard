@@ -1,0 +1,10 @@
+[Unit]
+Description=Family Gifting watchdog
+After=family-gifting.service
+
+[Service]
+Type=oneshot
+# Bounded calls, probes and retries have ample time to finish.
+# Default KillMode is safe: container helpers start in independent scopes.
+TimeoutStartSec=600
+ExecStart=%h/family-gifting/deploy.sh watchdog
