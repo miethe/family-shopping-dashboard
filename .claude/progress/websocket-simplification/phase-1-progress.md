@@ -490,8 +490,8 @@ Removes unnecessary WebSocket subscription overhead from data hooks. These pages
 
 ### Key Files Location
 
-- Hooks to modify: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/`
-- useRealtimeSync hook (being removed): `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useRealtimeSync.ts`
+- Hooks to modify: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/`
+- useRealtimeSync hook (being removed): `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useRealtimeSync.ts`
 - React Query setup: Check `apps/web/lib/query-client.ts` or similar
 
 ### Integration Points

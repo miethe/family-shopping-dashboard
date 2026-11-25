@@ -6,7 +6,7 @@ Complete code snippets from the explored files for quick reference.
 
 ## 1. Frontend: Person Modal - Linked Entities Tab
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/modals/PersonDetailModal.tsx`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/modals/PersonDetailModal.tsx`
 
 **Lines 585-694: Linked Entities Tab Content**
 
@@ -75,7 +75,7 @@ Complete code snippets from the explored files for quick reference.
 
 ## 2. Frontend: LinkedGiftsSection Component
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/people/LinkedGiftsSection.tsx`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/people/LinkedGiftsSection.tsx`
 
 **Lines 31-149: Main Component**
 
@@ -205,7 +205,7 @@ export function LinkedGiftsSection({
 
 ## 3. Frontend: useGiftsByPerson Hook
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useGifts.ts`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useGifts.ts`
 
 **Lines 41-46: Fetch gifts linked to a specific person**
 
@@ -250,7 +250,7 @@ export function useGifts(params?: GiftListParams, options: UseGiftsOptions = {})
 
 ## 4. Backend: GET /gifts Endpoint
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/api/gifts.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/api/gifts.py`
 
 **Lines 23-115: List and filter gifts endpoint**
 
@@ -303,7 +303,7 @@ async def list_gifts(
 
 ## 5. Backend: GiftRepository.get_filtered() - Core Query
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/gift.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/gift.py`
 
 **Lines 255-400: Filtered list with cursor pagination**
 
@@ -411,7 +411,7 @@ async def get_filtered(
 
 ## 6. Backend: GiftPerson Model (Junction Table)
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/models/gift_person.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/models/gift_person.py`
 
 **Lines 17-83: Gift-Person association**
 
@@ -485,7 +485,7 @@ class GiftPerson(BaseModel):
 
 ## 7. Backend: PersonRepository.get_gift_budget()
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/person.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/person.py`
 
 **Lines 294-445: Budget calculation (simplified)**
 
@@ -584,7 +584,7 @@ async def get_gift_budget(
 
 ## 8. Backend: GiftRepository - Attach People
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/gift.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/gift.py`
 
 **Lines 422-448: Attach multiple people to a gift**
 
@@ -646,7 +646,7 @@ async def get_linked_people(self, gift_id: int) -> list[int]:
 
 ## 9. Backend: GiftService - Create with people
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/services/gift.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/services/gift.py`
 
 **Lines 61-112: Create gift with linked people**
 
@@ -694,7 +694,7 @@ async def create(self, data: GiftCreate) -> GiftResponse:
 
 ## 10. MiniGiftCard Component
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/people/LinkedGiftsSection.tsx`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/people/LinkedGiftsSection.tsx`
 
 **Lines 151-218: Compact gift card for grid display**
 

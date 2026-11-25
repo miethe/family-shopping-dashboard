@@ -217,6 +217,9 @@ from app.api import occasions
 
 app.include_router(occasions.router, prefix=API_V1_PREFIX)
 
+from app.api import holidays
+app.include_router(holidays.router, prefix=API_V1_PREFIX)
+
 # User routes (profile management)
 from app.api import users
 

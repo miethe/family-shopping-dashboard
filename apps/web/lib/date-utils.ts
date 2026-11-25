@@ -20,6 +20,8 @@ export function parseLocalDate(dateString: string | Date | null | undefined): Da
     return dateString;
   }
 
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return new Date(dateString);
+
   // Parse "YYYY-MM-DD" as local date (not UTC)
   const [year, month, day] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day);

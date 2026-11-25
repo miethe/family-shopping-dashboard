@@ -6,7 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const avatarVariants = cva(
-  'relative flex shrink-0 overflow-hidden rounded-full',
+  'relative flex shrink-0 overflow-hidden rounded-large',
   {
     variants: {
       size: {
@@ -158,7 +158,7 @@ const AvatarFallback = React.forwardRef<
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cn(
-      'flex h-full w-full items-center justify-center rounded-full bg-warm-100 text-warm-700 font-medium',
+      'flex h-full w-full items-center justify-center rounded-large bg-blue text-charcoal font-medium',
       className
     )}
     {...props}

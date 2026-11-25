@@ -15,6 +15,10 @@ docker-compose logs -f
 docker-compose down
 ```
 
+## Keep an existing development database
+
+The default bind mount is `../pg`, the existing database directory relative to the repository. Set `POSTGRES_DATA_PATH` if your existing database is elsewhere. For a fresh database, copy `docker-compose.override.example.yml` to `docker-compose.override.yml` before running `docker compose up -d`. Back up the existing directory before changing mounts. Compose loads the override automatically.
+
 ## File Structure
 
 ```
@@ -34,7 +38,7 @@ docker-compose down
 ### PostgreSQL Database
 - **Image**: postgres:16-alpine
 - **Port**: 5432
-- **Volume**: postgres_data (persisted)
+- **Volume**: `../pg` bind mount (persisted by default)
 - **Health Check**: pg_isready every 10s
 
 ### FastAPI API

@@ -169,7 +169,7 @@ unless the task prompt explicitly names the brief. Authoritative spec:
 | `intent_ref` | string or `null` | Forward-compat for INTENT.md system; leave null | `null` |
 | `epic_ref` | string or `null` | Forward-compat for Epic-level INTENT.md; leave null | `null` |
 | `related_documents` | string[] | Related briefs, SPIKEs, design specs | `[]` |
-| `owner` | string | Primary owner | `nick` |
+| `owner` | string | Primary owner | `jordan` |
 | `contributors` | string[] | Secondary contributors | `[]` |
 | `priority` | string | `low`, `medium`, `high`, `critical` | `medium` |
 | `confidence` | number | 0..1 — orchestrator's confidence in the plan | `0.75` |

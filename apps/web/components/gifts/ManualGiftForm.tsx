@@ -353,12 +353,12 @@ export function ManualGiftForm({ defaultListId, onSuccess }: ManualGiftFormProps
           <CollapsibleContent className="space-y-4 pt-4">
             {/* Notes Textarea (internal) */}
             <Textarea
-              label="Notes (Internal)"
+              label="Where it is / notes"
               placeholder="Private notes about this gift..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              helperText="Optional - private notes for your reference only"
+              helperText="Shared with your household, e.g. hidden in the hall closet"
               disabled={isPending}
             />
 

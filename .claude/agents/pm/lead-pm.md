@@ -206,7 +206,7 @@ Every orchestrated process must ensure:
 - **Error Handling**: ErrorResponse envelopes throughout
 - **Pagination**: Cursor-based pagination for all lists
 - **Authentication**: Clerk integration with RLS enforcement
-- **UI Consistency**: @miethe/ui components only
+- **UI Consistency**: @example/ui components only
 - **Observability**: OpenTelemetry spans and structured logging
 
 ### Quality Gates

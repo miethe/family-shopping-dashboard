@@ -228,13 +228,13 @@ export function AddPersonModal({
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-[#474039] mb-2">
               Relationship (optional)
             </label>
             <select
               value={relationship}
               onChange={(e) => setRelationship(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-[#bdb3a6] rounded-[10px] bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#214d40] focus:border-[#214d40]"
             >
               <option value="">Select a relationship</option>
               {RELATIONSHIP_OPTIONS.map((rel) => (
@@ -254,7 +254,7 @@ export function AddPersonModal({
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-[#474039] mb-2">
               Photo (optional)
             </label>
             <ImagePicker
@@ -281,7 +281,7 @@ export function AddPersonModal({
           <h3 className="text-lg font-semibold text-gray-900">Interests</h3>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-[#474039] mb-2">
               Add interests (optional)
             </label>
             <div className="flex gap-2 mb-2">
@@ -336,14 +336,14 @@ export function AddPersonModal({
           <h3 className="text-lg font-semibold text-gray-900">Sizes</h3>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-[#474039] mb-2">
               Add sizes (optional)
             </label>
             <div className="flex gap-2 mb-2">
               <select
                 value={newSizeType}
                 onChange={(e) => setNewSizeType(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent min-h-[44px]"
+                className="px-3 py-2 border border-[#bdb3a6] rounded-[10px] bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#214d40] focus:border-[#214d40] min-h-[44px]"
               >
                 <option value="">Select type...</option>
                 {SIZE_CATEGORIES.map((cat) => (
@@ -409,7 +409,7 @@ export function AddPersonModal({
           <h3 className="text-lg font-semibold text-gray-900">Groups</h3>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-[#474039] mb-2">
               Assign to groups (optional)
             </label>
             <GroupMultiSelect
@@ -427,7 +427,7 @@ export function AddPersonModal({
           <h3 className="text-lg font-semibold text-gray-900">Additional Information</h3>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-[#474039] mb-2">
               Notes (optional)
             </label>
             <textarea
@@ -435,7 +435,7 @@ export function AddPersonModal({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="General notes about this person..."
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-[#bdb3a6] rounded-[10px] bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#214d40] focus:border-[#214d40]"
             />
             <p className="mt-1 text-xs text-gray-500">
               Any additional notes or preferences
@@ -443,7 +443,7 @@ export function AddPersonModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-[#474039] mb-2">
               Gift Constraints (optional)
             </label>
             <textarea
@@ -451,7 +451,7 @@ export function AddPersonModal({
               onChange={(e) => setConstraints(e.target.value)}
               placeholder="e.g., Allergic to nuts, No electronics, Prefers sustainable products..."
               rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-[#bdb3a6] rounded-[10px] bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#214d40] focus:border-[#214d40]"
             />
             <p className="mt-1 text-xs text-gray-500">
               Important restrictions or preferences for gift selection

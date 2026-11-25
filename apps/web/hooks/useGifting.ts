@@ -32,6 +32,7 @@ export function useGiftingIdeas() {
   return useQuery({
     queryKey: ["gifting", "ideas"],
     queryFn: giftingApi.ideas,
+    staleTime: 0,
   });
 }
 export function useGiftingMutation<T, R>(fn: (data: T) => Promise<R>) {
@@ -40,7 +41,7 @@ export function useGiftingMutation<T, R>(fn: (data: T) => Promise<R>) {
     mutationFn: fn,
     onSuccess: async () => {
       await Promise.all(
-        ["gifting", "gifts", "persons", "ideas", "lists", "occasions"].map(
+        ["gifting", "gifts", "persons", "ideas", "lists", "occasions", "holiday-theme"].map(
           (key) => queryClient.invalidateQueries({ queryKey: [key] }),
         ),
       );

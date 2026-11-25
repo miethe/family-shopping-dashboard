@@ -336,26 +336,28 @@ export function GiftCard({
               </h3>
 
               {/* Status Badge - Always visible for quick status identification */}
-              {gift.status && (
+              {(gift.status || 'idea') && (
                 <div className="mb-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onStatusFilter?.(gift.status!);
+                          onStatusFilter?.(gift.status || 'idea');
                         }}
                         className="cursor-pointer hover:ring-2 hover:ring-primary-300 rounded-medium transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
-                        aria-label={`Filter by status: ${gift.status}`}
+                        aria-label={`Filter by status: ${gift.status || 'idea'}`}
                         type="button"
                       >
-                        <StatusPill status={gift.status} size="sm" />
+                        <StatusPill status={gift.status || 'idea'} size="sm" />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent>Click to filter by {gift.status}</TooltipContent>
+                    <TooltipContent>Click to filter by {gift.status || 'idea'}</TooltipContent>
                   </Tooltip>
                 </div>
               )}
+
+              {gift.notes && <p className="text-sm text-warm-600 truncate" title={gift.notes}>{gift.notes}</p>}
 
               {/* NEW: Linked Entities - after title, before footer */}
               {(gift.recipients?.length || gift.lists?.length) ? (
@@ -371,6 +373,12 @@ export function GiftCard({
                 </div>
               ) : null}
             </div>
+
+            {!selectionMode && (
+              <div className="md:hidden" onClick={(e) => e.stopPropagation()}>
+                <StatusButton giftId={gift.id} currentStatus={gift.status || 'idea'} />
+              </div>
+            )}
 
             {/* Footer: Price + Quick Purchase */}
             <div className="flex items-center justify-between mt-3">
@@ -453,7 +461,6 @@ export function GiftCard({
                   <StatusButton
                     giftId={gift.id}
                     currentStatus={gift.status || 'idea'}
-                    onStatusChange={handleStatusChange}
                   />
                 </div>
 

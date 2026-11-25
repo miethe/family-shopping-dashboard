@@ -76,7 +76,7 @@ export function StatusPill({
     <span
       data-status={status}
       className={cn(
-        'inline-flex items-center gap-1.5 font-semibold rounded-small border',
+        'inline-flex items-center gap-1.5 font-semibold rounded-small border border-transparent',
         'transition-all duration-300 ease-out',
         animated && 'animate-scale-in',
         sizeClasses[size],

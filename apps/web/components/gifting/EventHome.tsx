@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { holidayApi } from "@/lib/api/holidays";
 import { useOccurrences, useGiftingMutation } from "@/hooks/useGifting";
 import { useOccasions } from "@/hooks/useOccasions";
 import { occasionApi } from "@/lib/api/endpoints";
@@ -30,15 +32,35 @@ export function EventHome() {
     return () => window.clearTimeout(timer);
   }, [showCalendar]);
   const [eventId, setEventId] = useState("");
+  const [holidayId, setHolidayId] = useState("");
+  const [name, setName] = useState("");
+  const [dateValue, setDateValue] = useState("");
+  const [addingHoliday, setAddingHoliday] = useState(false);
+  const [holidayName, setHolidayName] = useState("");
+  const [holidayDate, setHolidayDate] = useState("");
+  const [major, setMajor] = useState(false);
+  const client = useQueryClient();
+  const holidays = useQuery({ queryKey: ["holidays"], queryFn: holidayApi.list, enabled: eventId === "holiday" });
+  const addHoliday = useMutation({
+    mutationFn: () => {
+      const [, month, day] = holidayDate.split("-").map(Number);
+      return holidayApi.create({ name: holidayName, key: holidayName.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""), month, day, is_major: major, theme_key: null, theme_window_days: 30 });
+    },
+    onSuccess: (holiday) => {
+      client.invalidateQueries({ queryKey: ["holidays"] });
+      setHolidayId(String(holiday.id)); setName(holiday.name); setDateValue(holiday.next_date); setAddingHoliday(false);
+    },
+  });
   const create = useGiftingMutation(async (form: FormData) => {
     const date = String(form.get("date"));
-    const event = eventId
+    const event = eventId && eventId !== "holiday"
       ? Number(eventId)
       : (
           await occasionApi.create({
             name: String(form.get("name")),
-            type: OccasionType.OTHER,
+            type: eventId === "holiday" ? OccasionType.HOLIDAY : OccasionType.OTHER,
             date,
+            ...(eventId === "holiday" ? { holiday_id: Number(holidayId) } : {}),
           })
         ).id;
     return giftingApi.create({
@@ -97,7 +119,7 @@ export function EventHome() {
               e.preventDefault();
               const form = e.currentTarget;
               create.mutate(new FormData(form), {
-                onSuccess: () => form.reset(),
+                onSuccess: () => { form.reset(); setEventId(""); setHolidayId(""); setName(""); setDateValue(""); },
               });
             }}
           >
@@ -109,6 +131,7 @@ export function EventHome() {
                 onChange={(e) => setEventId(e.target.value)}
               >
                 <option value="">New event</option>
+                <option value="holiday">Holiday</option>
                 {occasions.data?.items.map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.name}
@@ -116,11 +139,32 @@ export function EventHome() {
                 ))}
               </select>
             </label>
-            {!eventId && (
-              <Input label="Event name" name="name" required maxLength={255} />
+            {eventId === "holiday" && <>
+              <label className={styles.label}>Holiday
+                <select className={styles.select} value={holidayId} required onChange={(e) => {
+                  const selected = holidays.data?.find((h) => String(h.id) === e.target.value);
+                  setHolidayId(e.target.value); setName(selected?.name ?? ""); setDateValue(selected?.next_date ?? "");
+                }}>
+                  <option value="">Choose a holiday</option>
+                  {holidays.data?.map((h) => <option key={h.id} value={h.id}>{h.name}{h.is_major ? " ★" : ""} — {h.next_date} ({h.days_until} days)</option>)}
+                </select>
+              </label>
+              {holidays.error && <p role="alert">Could not load holidays.</p>}
+              <Button type="button" variant="outline" onClick={() => setAddingHoliday(!addingHoliday)}>Add a holiday</Button>
+              {addingHoliday && <fieldset>
+                <legend>New holiday</legend>
+                <Input label="Holiday name" value={holidayName} onChange={(e) => setHolidayName(e.target.value)} />
+                <Input label="Holiday date" type="date" value={holidayDate} onChange={(e) => setHolidayDate(e.target.value)} />
+                <label><input type="checkbox" checked={major} onChange={(e) => setMajor(e.target.checked)} /> Major holiday</label>
+                <Button type="button" disabled={!holidayName.trim() || !holidayDate || addHoliday.isPending} onClick={() => addHoliday.mutate()}>Save holiday</Button>
+                {addHoliday.error && <p role="alert">{addHoliday.error.message}</p>}
+              </fieldset>}
+            </>}
+            {(!eventId || eventId === "holiday") && (
+              <Input label="Event name" name="name" required maxLength={255} value={name} onChange={(e) => setName(e.target.value)} />
             )}
             <div className={styles.fields}>
-              <Input label="Date" name="date" type="date" required />
+              <Input label="Date" name="date" type="date" required value={dateValue} onChange={(e) => setDateValue(e.target.value)} />
               <Input
                 label="Money budget (optional)"
                 name="budget"

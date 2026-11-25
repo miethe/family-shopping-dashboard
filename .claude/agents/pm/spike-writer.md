@@ -59,7 +59,7 @@ Spawn experts as needed using `Task()`. Provide file paths, not file contents.
 - Technology stack implications
 
 **UI/UX research** — `ui-engineer-enhanced` or `frontend-architect`:
-- Component specifications for `@miethe/ui`
+- Component specifications for `@example/ui`
 - Next.js 15 App Router patterns, React 19 patterns
 - TanStack Query integration, accessibility (WCAG 2.1 AA)
 
@@ -154,7 +154,7 @@ Full details in `CLAUDE.md`. Key invariants for spike research:
 - **Backend layers**: FastAPI routers → services → repositories → SQLAlchemy ORM + Alembic
 - **Frontend**: Next.js 15 App Router + React 19 + Radix UI/shadcn + TanStack Query
 - **Auth**: `LocalAuthProvider` (default, zero-config), enterprise PAT for service clients — not Clerk
-- **UI package**: `@miethe/ui` for extracted content viewer components
+- **UI package**: `@example/ui` for extracted content viewer components
 - **Write-through**: All web mutations write filesystem first, then sync to DB cache
 - **Stale times**: 5min browsing, 30s interactive/monitoring, 2min deployments
 

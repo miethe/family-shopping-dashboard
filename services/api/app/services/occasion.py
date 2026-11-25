@@ -112,6 +112,7 @@ class OccasionService:
             is_active=occasion.is_active,
             next_occurrence=occasion.next_occurrence,
             subtype=occasion.subtype,
+            holiday_id=occasion.holiday_id,
             person_ids=person_ids,
             created_at=occasion.created_at,
             updated_at=occasion.updated_at,
@@ -289,6 +290,9 @@ class OccasionService:
             update_data["is_active"] = data.is_active
         if data.subtype is not None:
             update_data["subtype"] = data.subtype
+
+        if "holiday_id" in data.model_fields_set:
+            update_data["holiday_id"] = data.holiday_id
 
         # Update occasion if there are changes
         if update_data:

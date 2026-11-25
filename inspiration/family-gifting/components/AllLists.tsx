@@ -8,14 +8,14 @@ interface AllListsProps {
 
 const AllLists: React.FC<AllListsProps> = ({ setView }) => {
   const lists = [
-    { id: 1, title: "Peyton's Christmas Ideas", items: 8, type: 'Idea', status: 'Mustard', owner: 'Nick', ownerImg: 'https://picsum.photos/seed/nick/100', icon: Gift, color: 'bg-[#F2E8CF] text-[#BC8A5F]', statusColor: 'bg-[#C8A166] text-white', iconBg: 'bg-[#F5DEB3]' },
-    { id: 2, title: "Parker's Wishlist", items: 12, type: 'Wishlist', status: 'Status', owner: 'Jaden', ownerImg: 'https://picsum.photos/seed/jaden/100', icon: Star, color: 'bg-[#E1E5F2] text-[#4A5D8A]', statusColor: 'bg-[#8DA9C4] text-white', iconBg: 'bg-[#BFD7EA]' },
-    { id: 3, title: "Jaden's Surprise Gifts", items: 5, type: 'Hidden', status: 'Hidden', owner: 'Nick', ownerImg: 'https://picsum.photos/seed/nick/100', icon: Lock, color: 'bg-[#F4E3E1] text-[#A65D57]', statusColor: 'bg-[#C07E75] text-white', iconBg: 'bg-[#E6B8B3]' },
+    { id: 1, title: "Sample Wishlist A", items: 8, type: 'Idea', status: 'Mustard', owner: 'Person C', ownerImg: 'https://picsum.photos/seed/person-c/100', icon: Gift, color: 'bg-[#F2E8CF] text-[#BC8A5F]', statusColor: 'bg-[#C8A166] text-white', iconBg: 'bg-[#F5DEB3]' },
+    { id: 2, title: "Sample Wishlist B", items: 12, type: 'Wishlist', status: 'Status', owner: 'Person A', ownerImg: 'https://picsum.photos/seed/person-a/100', icon: Star, color: 'bg-[#E1E5F2] text-[#4A5D8A]', statusColor: 'bg-[#8DA9C4] text-white', iconBg: 'bg-[#BFD7EA]' },
+    { id: 3, title: "Sample Gifts C", items: 5, type: 'Hidden', status: 'Hidden', owner: 'Person C', ownerImg: 'https://picsum.photos/seed/person-c/100', icon: Lock, color: 'bg-[#F4E3E1] text-[#A65D57]', statusColor: 'bg-[#C07E75] text-white', iconBg: 'bg-[#E6B8B3]' },
   ];
 
   const generalLists = [
     { id: 4, title: "General Idea Inbox", items: 15, type: 'Neutral', status: 'Neutral', icon: Lightbulb, color: 'bg-[#F0F0F0] text-[#555]', statusColor: 'bg-[#999] text-white', iconBg: 'bg-[#DDD]' },
-    { id: 5, title: "Household Needs", items: 7, type: 'Sotus', status: 'Sotus', owner: 'Jaden', ownerImg: 'https://picsum.photos/seed/jaden/100', icon: HomeIcon, color: 'bg-[#E8F1E9] text-[#4A7C59]', statusColor: 'bg-[#84A98C] text-white', iconBg: 'bg-[#CDE3D0]' },
+    { id: 5, title: "Sample Wishlist D", items: 7, type: 'Sotus', status: 'Sotus', owner: 'Person A', ownerImg: 'https://picsum.photos/seed/person-a/100', icon: HomeIcon, color: 'bg-[#E8F1E9] text-[#4A7C59]', statusColor: 'bg-[#84A98C] text-white', iconBg: 'bg-[#CDE3D0]' },
   ];
 
   function HomeIcon(props: any) {

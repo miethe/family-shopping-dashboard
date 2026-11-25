@@ -581,7 +581,7 @@ services/api/
 
 ```bash
 # Navigate to API directory
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/services/api
 
 # Run integration tests
 uv run pytest tests/integration/test_person_budget_api.py -v

@@ -69,7 +69,7 @@ A private, always-on “family gifting table”: a shared space where spouses an
 
 * **UC2 – Capture random ideas year-round**
 
-  * See a LEGO set on a website → capture URL + quick tags → later assign to Peyton for her birthday.
+  * See a LEGO set on a website → capture URL + quick tags → later assign to Casey for her birthday.
 
 * **UC3 – Coordinate between partners**
 
@@ -78,7 +78,7 @@ A private, always-on “family gifting table”: a shared space where spouses an
 
 * **UC4 – Track gift history**
 
-  * “What did we get Parker last year?”
+  * “What did we get Morgan last year?”
   * Avoid repeats and see patterns/preferences over time.
 
 * **UC5 – Deal-aware planning** (later phases)
@@ -138,13 +138,13 @@ All entities must be represented as backend models, with API and UI surfaces.
 * Attributes:
 
   * `id`
-  * `name` (Christmas 2025, Parker’s 4th Birthday, etc.)
+  * `name` (Christmas 2025, Morgan’s 4th Birthday, etc.)
   * `type` (enum: Christmas, Birthday, Anniversary, Other)
   * `date` or `date_range`
   * `scope`:
 
     * Global (e.g., Christmas)
-    * Person-specific (e.g., “Peyton’s Birthday 2026”)
+    * Person-specific (e.g., “Casey’s Birthday 2026”)
     * Group (e.g., “Trip to Disney July 2027”)
   * `budget_total` (optional)
   * `notes`
@@ -242,7 +242,7 @@ All entities must be represented as backend models, with API and UI surfaces.
   * `resolved` (bool)
 * Capabilities:
 
-  * Support @mentions (`@Nick`, `@Jaden`).
+  * Support @mentions (`@Jordan`, `@Taylor`).
   * Threaded display at UI level (optional for v1; at minimum, ordered comments).
 
 #### 4.1.9 DealLink
@@ -545,7 +545,7 @@ All entities must be represented as backend models, with API and UI surfaces.
 
 * Ability to hide lists/items from:
 
-  * The person who is the target (e.g., Jaden cannot see “Jaden’s surprise gifts” list).
+  * The person who is the target (e.g., Taylor cannot see “Taylor’s surprise gifts” list).
 * Visibility rules:
 
   * `all_users`, `owners_only`, `hidden_from_target_person`.

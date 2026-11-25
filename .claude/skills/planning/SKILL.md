@@ -1865,7 +1865,7 @@ status: draft
 scope: process|tooling|workflow|infrastructure|documentation|other
 created: 2026-04-08
 updated: 2026-04-08
-owner: nick
+owner: jordan
 affects_skills: [skill-name-1, skill-name-2]
 affects_commands: [/command:name-1, /command:name-2]
 outcome: "Expected result or success criteria (optional)"

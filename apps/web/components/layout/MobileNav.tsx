@@ -1,99 +1,32 @@
 'use client';
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-
-/**
- * Bottom navigation bar for mobile devices
- * - Warm terracotta/rust background matching desktop sidebar
- * - Fixed to bottom of screen with safe-area padding
- * - 44px minimum touch targets (iOS guidelines)
- * - Active state with white highlight
- * - Material Symbols icons
- * - WCAG 2.1 AA compliant with aria-current support
- * - Safe area handled via CSS utility class
- */
-
-interface NavItem {
-  href: string;
-  label: string;
-  icon: string; // Material Symbols icon name
-}
-
-const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'Events', icon: 'calendar_month' },
-  { href: '/people', label: 'People', icon: 'groups' },
-  { href: '/ideas', label: 'Ideas', icon: 'lightbulb' },
-  { href: '/budgets', label: 'Budget', icon: 'savings' },
-];
-
+import { useRef, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { navItems, isDestinationActive } from './nav-config';
+import { NavIcon } from './NavIcon';
+const primary = ['/dashboard','/people','/gifts','/events'];
 export function MobileNav() {
   const pathname = usePathname();
-
-  return (
-    <nav
-      className={cn(
-        // Warm terracotta/rust background matching sidebar
-        'bg-[#B67352]',
-        // Fixed positioning
-        'fixed bottom-0 left-0 right-0 z-50',
-        // Safe area bottom padding + horizontal for landscape
-        'safe-area-fixed-bottom'
-      )}
-      role="navigation"
-      aria-label="Main navigation"
-    >
-      <div className="flex items-center justify-around px-2 py-2">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(item.href + '/') || (item.href === '/dashboard' && pathname?.startsWith('/events'));
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href as any}
-              prefetch={false}
-              className={cn(
-                // Layout
-                'flex flex-col items-center justify-center',
-                // 44px minimum touch target (iOS guidelines)
-                'min-w-[44px] min-h-[44px]',
-                'px-3 py-2',
-                // Border radius matching design tokens
-                'rounded-2xl',
-                // Transitions and interactions
-                'transition-all duration-300 ease-out',
-                'active:scale-95',
-                // Active state - white highlight
-                isActive
-                  ? 'bg-white/30 text-white shadow-lg'
-                  : 'text-white/70 hover:bg-white/20 hover:text-white'
-              )}
-              aria-current={isActive ? 'page' : undefined}
-              aria-label={`${item.label}${isActive ? ' - current page' : ''}`}
-            >
-              <span
-                className={cn(
-                  'material-symbols-outlined text-[24px]',
-                  // Filled style for active state
-                  isActive && 'filled'
-                )}
-                aria-hidden="true"
-              >
-                {item.icon}
-              </span>
-              <span
-                className={cn(
-                  'text-[10px] font-bold mt-1',
-                  'text-white'
-                )}
-              >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
+  const [open,setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const { user, logout } = useAuth();
+  const more = navItems.filter(item => !primary.includes(item.href));
+  return <>
+    <nav className="club-bottom-nav" aria-label="Main navigation">
+      {primary.map(href => { const item = navItems.find(i => i.href === href)!; return <Link key={href} href={item.href} prefetch={false} aria-current={isDestinationActive(pathname,href) ? 'page' : undefined}><NavIcon name={item.icon}/><span>{item.label}</span></Link>; })}
+      <button ref={trigger} onClick={()=>setOpen(true)} aria-label="More" aria-haspopup="dialog" aria-expanded={open} data-active={more.some(i=>isDestinationActive(pathname,i.href))}><NavIcon name="more"/><span>More</span></button>
     </nav>
-  );
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="club-more-sheet" onCloseAutoFocus={e=>{e.preventDefault();trigger.current?.focus();}}>
+        <div className="sheet-handle" aria-hidden="true"/>
+        <DialogTitle>A little more</DialogTitle>
+        <DialogDescription>Everything in your family space.</DialogDescription>
+        <div className="club-more-grid">{more.map(item=><Link key={item.href} href={item.href} onClick={()=>setOpen(false)}><NavIcon name={item.icon}/>{item.label}</Link>)}</div>
+        <div className="club-theme-note"><strong>Seasonal themes</strong><p>A little celebration when a saved holiday is near.</p><p className="christmas-only">Christmas is ready to party.</p></div>
+        <div className="club-sheet-user"><span>{user?.email.split('@')[0] || 'You'} · Your family</span><button onClick={logout}>Sign out</button></div>
+      </DialogContent>
+    </Dialog>
+  </>;
 }

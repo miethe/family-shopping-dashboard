@@ -67,7 +67,7 @@ Task("data-layer-expert", "Design schema for [feature] with RLS")
 
 ```markdown
 Task("frontend-architect", "Design component architecture for [feature]")
-Task("ui-engineer", "Implement [component] with @miethe/ui")
+Task("ui-engineer", "Implement [component] with @example/ui")
 ```
 
 **Debug:**
@@ -177,7 +177,7 @@ Task("explore", "Analyze [pattern] in [files from Phase 1]")
 
 | Standard | Requirement | Action |
 |----------|------------|--------|
-| Components | @miethe/ui only, no direct Radix | Review frontend-architect designs |
+| Components | @example/ui only, no direct Radix | Review frontend-architect designs |
 | State | React Query (server), Zustand (client) | Approve architecture before implementation |
 | Routing | Next.js 14 App Router | Enforce structure |
 | A11y | WCAG 2.1 AA | Ensure ui-engineer compliance |
@@ -259,7 +259,7 @@ Before approving any specialist work:
 - [ ] Error handling follows ErrorResponse pattern
 - [ ] Authentication/RLS properly enforced
 - [ ] Pagination uses cursor-based approach
-- [ ] UI uses @miethe/ui components only
+- [ ] UI uses @example/ui components only
 - [ ] Observability spans and logs included
 - [ ] Tests cover critical paths
 - [ ] Accessibility requirements met (WCAG 2.1 AA)
@@ -270,9 +270,9 @@ Before approving any specialist work:
 
 **Backend:** FastAPI, SQLAlchemy, Alembic, PostgreSQL, OpenTelemetry
 
-**Frontend:** Next.js 14 App Router, React Query, Zustand, @miethe/ui, @meaty/tokens
+**Frontend:** Next.js 14 App Router, React Query, Zustand, @example/ui, @meaty/tokens
 
-**Mobile:** Expo/RN, @miethe/ui
+**Mobile:** Expo/RN, @example/ui
 
 **Auth:** Clerk with JWKS caching
 

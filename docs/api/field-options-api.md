@@ -30,7 +30,7 @@ The Field Options API manages **admin-configurable dropdown/select values** used
 All endpoints require **Bearer token** authentication via JWT in the `Authorization` header:
 
 ```
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Authorization: Bearer <redacted-jwt>
 ```
 
 Without valid authentication, all endpoints return **401 Unauthorized**.
@@ -188,19 +188,19 @@ Authorization: Bearer <token>
 **Get all wine type options:**
 ```bash
 curl -X GET "http://localhost:8000/api/v1/field-options?entity=person&field_name=wine_types" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  --oauth2-bearer "$TOKEN"
 ```
 
 **Get gift priority options with pagination:**
 ```bash
 curl -X GET "http://localhost:8000/api/v1/field-options?entity=gift&field_name=priority&skip=0&limit=10" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  --oauth2-bearer "$TOKEN"
 ```
 
 **Include soft-deleted options:**
 ```bash
 curl -X GET "http://localhost:8000/api/v1/field-options?entity=person&field_name=wine_types&include_inactive=true" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  --oauth2-bearer "$TOKEN"
 ```
 
 ---
@@ -299,7 +299,7 @@ Content-Type: application/json
 **Create a wine type:**
 ```bash
 curl -X POST "http://localhost:8000/api/v1/field-options" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  --oauth2-bearer "$TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "entity": "person",
@@ -313,7 +313,7 @@ curl -X POST "http://localhost:8000/api/v1/field-options" \
 **Create a gift priority level:**
 ```bash
 curl -X POST "http://localhost:8000/api/v1/field-options" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  --oauth2-bearer "$TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "entity": "gift",
@@ -385,7 +385,7 @@ Authorization: Bearer <token>
 
 ```bash
 curl -X GET "http://localhost:8000/api/v1/field-options/3" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  --oauth2-bearer "$TOKEN"
 ```
 
 ---
@@ -481,7 +481,7 @@ Content-Type: application/json
 **Update label only:**
 ```bash
 curl -X PUT "http://localhost:8000/api/v1/field-options/3" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  --oauth2-bearer "$TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "display_label": "Champagne & Sparkling Wine"
@@ -491,7 +491,7 @@ curl -X PUT "http://localhost:8000/api/v1/field-options/3" \
 **Update order only:**
 ```bash
 curl -X PUT "http://localhost:8000/api/v1/field-options/3" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  --oauth2-bearer "$TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "display_order": 1
@@ -501,7 +501,7 @@ curl -X PUT "http://localhost:8000/api/v1/field-options/3" \
 **Update both fields:**
 ```bash
 curl -X PUT "http://localhost:8000/api/v1/field-options/3" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  --oauth2-bearer "$TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "display_label": "Champagne & Sparkling Wine",
@@ -634,13 +634,13 @@ Authorization: Bearer <token>
 **Soft delete (default, safe):**
 ```bash
 curl -X DELETE "http://localhost:8000/api/v1/field-options/3" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  --oauth2-bearer "$TOKEN"
 ```
 
 **Hard delete (permanent):**
 ```bash
 curl -X DELETE "http://localhost:8000/api/v1/field-options/3?hard_delete=true" \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  --oauth2-bearer "$TOKEN"
 ```
 
 ---

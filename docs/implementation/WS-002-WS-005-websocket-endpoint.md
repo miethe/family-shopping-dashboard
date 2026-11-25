@@ -158,7 +158,7 @@ await manager.broadcast_event(event: WSEvent)
 
 ```javascript
 // Connect with JWT token
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+const token = "<redacted-jwt>";
 const ws = new WebSocket(`ws://localhost:8000/ws?token=${token}`);
 
 ws.onopen = () => {

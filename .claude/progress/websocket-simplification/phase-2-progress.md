@@ -308,7 +308,7 @@ Completes the data hook migration by replacing WebSocket in the last complex hoo
 
 ### Key Files Location
 
-- Hook to modify: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useIdeas.ts`
+- Hook to modify: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useIdeas.ts`
 - Referenced hook: `usePollingFallback` (already exists, just being enabled unconditionally)
 
 ### Why Polling for Activity Feed

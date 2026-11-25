@@ -413,13 +413,13 @@ Comprehensive description of the component, its purpose, and use cases within th
 ## Installation
 
 ```bash
-pnpm add @miethe/ui
+pnpm add @example/ui
 ```
 
 ## Basic Usage
 
 ```typescript
-import { ComponentName } from '@miethe/ui';
+import { ComponentName } from '@example/ui';
 
 export default function Example() {
   return (
@@ -514,7 +514,7 @@ The component implements:
 
 ### With Icons
 ```typescript
-import { ComponentName, Icon } from '@miethe/ui';
+import { ComponentName, Icon } from '@example/ui';
 
 <ComponentName>
   <Icon name="check" />
@@ -757,7 +757,7 @@ Task("documentation-writer", "Create API documentation for collaboration endpoin
 # From frontend-architect
 Task("documentation-writer", "Write setup guide for running the web app locally")
 
-Task("documentation-writer", "Document all @miethe/ui components with accessibility notes")
+Task("documentation-writer", "Document all @example/ui components with accessibility notes")
 ```
 
 ## Output Format

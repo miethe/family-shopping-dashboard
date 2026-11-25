@@ -1,0 +1,6 @@
+.build/
+.swiftpm/
+*.xcodeproj/
+Config/Local.xcconfig
+.leg-artifacts/
+.DS_Store

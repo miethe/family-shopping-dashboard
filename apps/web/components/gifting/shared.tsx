@@ -37,9 +37,6 @@ export function Hero({
       <span className={styles.eyebrow}>{eyebrow}</span>
       <h1>{title}</h1>
       {children}
-      <span className={styles.sprig} aria-hidden="true">
-        ✦
-      </span>
     </header>
   );
 }
@@ -105,7 +102,7 @@ export function GiftCard({
   return (
     <article className={compact ? styles.compactGift : styles.gift}>
       <span className={styles.giftMark} aria-hidden="true">
-        ✧
+        🎁
       </span>
       <div className="min-w-0">
         <h3>{gift.name}</h3>
@@ -113,7 +110,9 @@ export function GiftCard({
           {gift.price == null ? "Price unknown" : money(gift.price)}
           {gift.quantity > 1 ? ` × ${gift.quantity}` : ""}
         </p>
-        {compact && gift.phase === "given" && <small>Given</small>}
+        {compact && gift.phase === "given" && (
+          <small style={{ display: "block" }}>Given</small>
+        )}
         <StoreLink url={gift.url} />
       </div>
       {children}

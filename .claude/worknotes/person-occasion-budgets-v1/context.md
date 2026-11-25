@@ -413,7 +413,7 @@ Add session notes as implementation progresses:
 
 ### For Backend Work (Phases 1-3)
 ```bash
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/services/api
 
 # Create migration
 uv run alembic revision --autogenerate -m "Add budget fields to PersonOccasion"
@@ -428,7 +428,7 @@ uv run pytest tests/integration/ -v
 
 ### For Frontend Work (Phases 4-5)
 ```bash
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/apps/web
 
 # Type check
 npm run type-check
@@ -442,7 +442,7 @@ npm run dev
 
 ### For E2E Testing (Phase 6)
 ```bash
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/apps/web
 
 # Run E2E tests
 npm run test:e2e -- person-occasion-budgets.spec.ts
@@ -454,7 +454,7 @@ npm run lighthouse -- --only-categories=accessibility,performance /occasions/1
 ## References
 
 ### Internal Docs
-- **Project CLAUDE.md**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/CLAUDE.md`
+- **Project CLAUDE.md**: `/Users/example/dev/homelab/development/family-shopping-dashboard/CLAUDE.md`
 - **API Patterns**: `services/api/CLAUDE.md`
 - **Frontend Patterns**: `apps/web/CLAUDE.md`
 

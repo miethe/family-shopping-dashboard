@@ -1,0 +1,22 @@
+/* The existing API provider owns the attribute. No date, preference, or route trigger here. */
+html[data-holiday-theme="christmas"] {
+  --paper:255 246 237;
+  --accent:var(--cranberry);
+  --accent-soft:255 224 230;
+}
+html[data-holiday-theme="christmas"] .home-event-hero {
+  background-image:radial-gradient(circle at 12% 15%,#ffffff66 1.5px,transparent 2px),radial-gradient(circle at 80% 55%,#ffdf7088 2px,transparent 2.5px);
+  background-size:47px 51px,71px 67px;
+}
+html[data-holiday-theme="christmas"] .home-event-hero p { color:#ffe4e9; }
+html[data-holiday-theme="christmas"] .countdown-door { background:#fff5df; color:#ae2444; border:2px dashed #dc8092; box-shadow:4px 5px 0 #851735; }
+html[data-holiday-theme="christmas"] .brand-bow { fill:rgb(var(--cranberry)); }
+html[data-holiday-theme="christmas"] .brand-icon-background { fill:rgb(var(--mint)); }
+html[data-holiday-theme="christmas"] .home-birthday { background:rgb(var(--mint)); }
+html[data-holiday-theme="christmas"] .home-festoon { display:block; height:8px; background:repeating-linear-gradient(120deg,#be2449 0 12px,#fff1cf 12px 24px,#207c63 24px 36px); border-radius:8px; margin-bottom:12px; }
+html[data-holiday-theme="christmas"] .home-budget-meter [role=progressbar]>div { background:rgb(var(--accent)); }
+html[data-holiday-theme="christmas"] .christmas-only { display:block; }
+@media(max-width:767px) { html[data-holiday-theme="christmas"] .home-festoon { height:7px; margin-bottom:10px; } }
+
+html[data-holiday-theme="christmas"] .everyday-only { display:none; }
+html[data-holiday-theme="christmas"] h1 .christmas-only,html[data-holiday-theme="christmas"] .home-eyebrow .christmas-only { display:inline; }

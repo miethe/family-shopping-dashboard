@@ -46,7 +46,7 @@ export function useGifts(params?: GiftListParams, options: UseGiftsOptions = {})
   const query = useQuery({
     queryKey: ['gifts', params],
     queryFn: () => giftApi.list(params),
-    staleTime: 1000 * 60 * 5, // 5 minutes - moderate updates, search-heavy
+    staleTime: 0, // Refresh when returning to the catalog on another device
     refetchOnWindowFocus: true,
     enabled,
   });

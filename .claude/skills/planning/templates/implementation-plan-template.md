@@ -160,7 +160,7 @@ Following MeatyPrompts layered architecture:
 2. **Repository Layer** - DB I/O, transactions, cursor pagination
 3. **Service Layer** - Business logic, DTOs, validation
 4. **API Layer** - FastAPI routers, endpoints, OpenAPI docs
-5. **UI Layer** - React components from @miethe/ui
+5. **UI Layer** - React components from @example/ui
 6. **Testing Layer** - Unit, integration, E2E
 7. **Documentation Finalization** - CHANGELOG, README, context, guides
 8. **Deployment Layer** - Feature flags, monitoring, rollout
@@ -304,7 +304,7 @@ The final phase (Documentation Finalization) cannot be sealed until:
 |---------|-----------|-------------|-------------------|----------|--------------|
 | UI-001 | Component Design | Design/update UI components | Components support all states | 3 pts | API-004 |
 | UI-002 | Hooks Implementation | Create state management hooks | Hooks handle loading/error/success | 2 pts | UI-001 |
-| UI-003 | Component Implementation | Implement components in @miethe/ui | Components render correctly | 3 pts | UI-002 |
+| UI-003 | Component Implementation | Implement components in @example/ui | Components render correctly | 3 pts | UI-002 |
 | UI-004 | API Integration | Integrate with backend API | UI reflects backend functionality | 3 pts | UI-003 |
 | UI-005 | Accessibility | Implement a11y features | WCAG 2.1 AA compliance | 2 pts | UI-004 |
 | UI-006 | Responsive Design | Ensure mobile responsiveness | Works on all device sizes | 2 pts | UI-004 |

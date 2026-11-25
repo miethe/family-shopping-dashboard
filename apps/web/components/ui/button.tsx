@@ -4,12 +4,12 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center font-semibold transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 min-h-[44px] min-w-[44px] active:scale-[0.98]',
+  'inline-flex items-center justify-center font-display font-semibold transition-all duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 min-h-[44px] min-w-[44px] active:scale-[0.98]',
   {
     variants: {
       variant: {
-        default: 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-low hover:shadow-medium active:shadow-subtle focus-visible:ring-primary-500 focus-visible:ring-offset-bg-base',
-        primary: 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-low hover:shadow-medium active:shadow-subtle focus-visible:ring-primary-500 focus-visible:ring-offset-bg-base',
+        default: 'bg-[rgb(var(--accent))] text-[rgb(var(--paper))] hover:bg-[rgb(var(--accent))] active:bg-[rgb(var(--accent))] shadow-none focus-visible:ring-[rgb(var(--accent))] focus-visible:ring-offset-bg-base',
+        primary: 'bg-[rgb(var(--accent))] text-[rgb(var(--paper))] hover:bg-[rgb(var(--accent))] active:bg-[rgb(var(--accent))] shadow-none focus-visible:ring-[rgb(var(--accent))] focus-visible:ring-offset-bg-base',
         secondary: 'bg-transparent text-warm-900 border-2 border-warm-300 hover:bg-warm-100 hover:border-warm-400 active:bg-warm-200 focus-visible:ring-primary-500',
         outline: 'bg-transparent text-warm-900 border-2 border-warm-300 hover:bg-warm-100 hover:border-warm-400 active:bg-warm-200 focus-visible:ring-primary-500',
         ghost: 'bg-transparent text-warm-900 hover:bg-warm-100 active:bg-warm-200 focus-visible:ring-primary-500',
@@ -19,9 +19,9 @@ const buttonVariants = cva(
         link: 'text-primary-600 underline-offset-4 hover:underline focus-visible:ring-primary-500',
       },
       size: {
-        default: 'px-6 py-3 text-base font-semibold rounded-large h-11',
+        default: 'px-[18px] py-3 text-sm font-semibold rounded-medium h-11',
         sm: 'px-4 py-2 text-sm rounded-medium h-11', // Changed from h-8 to h-11 (44px) for touch target
-        md: 'px-6 py-3 text-base font-semibold rounded-large h-11',
+        md: 'px-[18px] py-3 text-sm font-semibold rounded-medium h-11',
         lg: 'px-8 py-4 text-lg rounded-xlarge h-13',
         xl: 'px-10 py-5 text-xl font-bold rounded-2xlarge h-16',
         icon: 'h-11 w-11 rounded-large',

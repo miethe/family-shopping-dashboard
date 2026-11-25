@@ -1,0 +1,141 @@
+name: FamilyGifting
+options:
+  deploymentTarget:
+    iOS: "26.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+configFiles:
+  Debug: Config/Base.xcconfig
+  Release: Config/Base.xcconfig
+packages:
+  FamilyGiftingKit:
+    path: FamilyGiftingKit
+targets:
+  FamilyGifting:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: FamilyGifting
+        excludes: [Info.plist]
+    dependencies:
+      - package: FamilyGiftingKit
+        product: FamilyGiftingKit
+      - package: FamilyGiftingKit
+        product: GiftingExtensions
+      - target: CountdownWidget
+        embed: true
+      - target: ShareIdea
+        embed: true
+    entitlements:
+      path: Config/FamilyGifting.entitlements
+      properties:
+        com.apple.security.application-groups: [group.dev.familygifting.app]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.familygifting.app
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+    info:
+      path: FamilyGifting/Info.plist
+      properties:
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleDisplayName: Family Gifting
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchStoryboardName: LaunchScreen
+        UIAppFonts: [Montserrat-Bold.otf, OpenSans-Regular.ttf]
+        UIUserInterfaceStyle: Light
+        CFBundleURLTypes:
+          - CFBundleURLName: dev.familygifting.app.countdown
+            CFBundleURLSchemes: [familygifting]
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        NSLocalNetworkUsageDescription: Connect to your family's gifting server on your home network.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+  CountdownWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: CountdownWidget
+        excludes: [Info.plist]
+    dependencies:
+      - package: FamilyGiftingKit
+        product: GiftingExtensions
+    entitlements:
+      path: Config/CountdownWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.dev.familygifting.app]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.familygifting.app.countdown
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+    info:
+      path: CountdownWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Gift Countdown
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+  ShareIdea:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: ShareIdea
+        excludes: [Info.plist]
+    dependencies:
+      - package: FamilyGiftingKit
+        product: GiftingExtensions
+    entitlements:
+      path: Config/ShareIdea.entitlements
+      properties:
+        com.apple.security.application-groups: [group.dev.familygifting.app]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.familygifting.app.shareidea
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+    info:
+      path: ShareIdea/Info.plist
+      properties:
+        CFBundleDisplayName: Family Gifting
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsText: true
+              NSExtensionActivationSupportsWebURLWithMaxCount: 1
+  FamilyGiftingTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [FamilyGiftingTests]
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: FamilyGifting
+      - package: FamilyGiftingKit
+        product: GiftingExtensions
+schemes:
+  FamilyGifting:
+    build:
+      targets:
+        FamilyGifting: all
+    test:
+      targets: [FamilyGiftingTests]
+    run:
+      config: Debug

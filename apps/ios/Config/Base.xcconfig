@@ -1,0 +1,2 @@
+// Signing is deliberately local. Simulator builds need no team.
+#include? "Local.xcconfig"

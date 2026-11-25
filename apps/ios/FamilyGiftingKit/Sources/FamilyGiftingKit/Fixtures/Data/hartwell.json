@@ -1,0 +1,902 @@
+{
+  "user": {
+    "id": 1,
+    "email": "sam@hartwell.example",
+    "created_at": "2026-11-18T17:00:00.123Z",
+    "updated_at": "2026-11-18T17:00:00.123Z"
+  },
+  "sample_dashboard": {
+    "primary_occasion": {
+      "id": 1,
+      "name": "Juno’s Birthday",
+      "date": "2026-12-09",
+      "days_until": 16,
+      "total_items": 3,
+      "purchased_items": 1
+    },
+    "people_needing_gifts": [
+      {
+        "id": 3,
+        "display_name": "Juno Hartwell",
+        "pending_gifts": 2,
+        "photo_url": null,
+        "next_occasion": "2026-12-09",
+        "gift_counts": {
+          "idea": 1,
+          "needed": 1,
+          "purchased": 1
+        }
+      },
+      {
+        "id": 4,
+        "display_name": "Milo Hartwell",
+        "pending_gifts": 1,
+        "photo_url": null,
+        "next_occasion": "2026-12-25",
+        "gift_counts": {
+          "idea": 0,
+          "needed": 1,
+          "purchased": 0
+        }
+      },
+      {
+        "id": 5,
+        "display_name": "Wren Hartwell",
+        "pending_gifts": 1,
+        "photo_url": null,
+        "next_occasion": "2026-12-25",
+        "gift_counts": {
+          "idea": 0,
+          "needed": 1,
+          "purchased": 0
+        }
+      },
+      {
+        "id": 6,
+        "display_name": "Nana Jo",
+        "pending_gifts": 1,
+        "photo_url": null,
+        "next_occasion": "2026-12-25",
+        "gift_counts": {
+          "idea": 1,
+          "needed": 0,
+          "purchased": 0
+        }
+      }
+    ],
+    "total_ideas": 3,
+    "total_purchased": 3,
+    "my_assignments": 2
+  },
+  "christmas_dashboard": {
+    "primary_occasion": {
+      "id": 2,
+      "name": "Christmas",
+      "date": "2026-12-25",
+      "days_until": 32,
+      "total_items": 7,
+      "purchased_items": 3
+    },
+    "people_needing_gifts": [
+      {
+        "id": 3,
+        "display_name": "Juno Hartwell",
+        "pending_gifts": 2,
+        "photo_url": null,
+        "next_occasion": "2026-12-25",
+        "gift_counts": {
+          "idea": 1,
+          "needed": 1,
+          "purchased": 1
+        }
+      },
+      {
+        "id": 4,
+        "display_name": "Milo Hartwell",
+        "pending_gifts": 1,
+        "photo_url": null,
+        "next_occasion": "2026-12-25",
+        "gift_counts": {
+          "idea": 0,
+          "needed": 1,
+          "purchased": 0
+        }
+      },
+      {
+        "id": 5,
+        "display_name": "Wren Hartwell",
+        "pending_gifts": 1,
+        "photo_url": null,
+        "next_occasion": "2026-12-25",
+        "gift_counts": {
+          "idea": 0,
+          "needed": 1,
+          "purchased": 0
+        }
+      },
+      {
+        "id": 6,
+        "display_name": "Nana Jo",
+        "pending_gifts": 1,
+        "photo_url": null,
+        "next_occasion": "2026-12-25",
+        "gift_counts": {
+          "idea": 1,
+          "needed": 0,
+          "purchased": 0
+        }
+      }
+    ],
+    "total_ideas": 3,
+    "total_purchased": 3,
+    "my_assignments": 2
+  },
+  "persons": [
+    {
+      "id": 1,
+      "display_name": "Sam Hartwell",
+      "relationship": "Parent",
+      "birthdate": "1987-05-03",
+      "anniversary": "2011-06-18",
+      "notes": "Enjoys useful things for the kitchen.",
+      "interests": [
+        "Cooking",
+        "Trail running"
+      ],
+      "size_profile": null,
+      "sizes": null,
+      "advanced_interests": null,
+      "constraints": null,
+      "photo_url": "/fixtures/avatar.jpg",
+      "groups": [
+        {
+          "id": 1,
+          "name": "At Home",
+          "color": "#B24D39"
+        }
+      ],
+      "occasion_ids": [
+        2
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 2,
+      "display_name": "Riley Hartwell",
+      "relationship": "Parent",
+      "birthdate": "1988-09-19",
+      "anniversary": "2011-06-18",
+      "notes": "Prefers handwritten notes and experiences.",
+      "interests": [
+        "Gardening",
+        "Ceramics"
+      ],
+      "size_profile": null,
+      "sizes": null,
+      "advanced_interests": null,
+      "constraints": null,
+      "photo_url": null,
+      "groups": [
+        {
+          "id": 1,
+          "name": "At Home",
+          "color": "#B24D39"
+        }
+      ],
+      "occasion_ids": [
+        2
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 3,
+      "display_name": "Juno Hartwell",
+      "relationship": "Child",
+      "birthdate": "2014-12-09",
+      "anniversary": null,
+      "notes": "Loves sketching planets and making comic books.",
+      "interests": [
+        "Drawing",
+        "Reading",
+        "Space"
+      ],
+      "size_profile": [
+        {
+          "type": "shoe",
+          "value": "US 5",
+          "fit": "Regular",
+          "brand": null,
+          "notes": null
+        }
+      ],
+      "sizes": {
+        "shoe": "US 5"
+      },
+      "advanced_interests": {
+        "hobbies_and_media": {
+          "hobbies": [
+            "painting_drawing"
+          ],
+          "reading_genres": [
+            "sci_fi"
+          ]
+        }
+      },
+      "constraints": null,
+      "photo_url": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2228%22%20fill%3D%22%23ffd1df%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2266%22%20text-anchor%3D%22middle%22%20font-size%3D%2254%22%3E%F0%9F%A6%8A%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "groups": [
+        {
+          "id": 1,
+          "name": "At Home",
+          "color": "#B24D39"
+        }
+      ],
+      "occasion_ids": [
+        1,
+        2
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 4,
+      "display_name": "Milo Hartwell",
+      "relationship": "Child",
+      "birthdate": "2017-03-15",
+      "anniversary": null,
+      "notes": "Likes building small models with moving parts.",
+      "interests": [
+        "Building",
+        "Dinosaurs"
+      ],
+      "size_profile": null,
+      "sizes": null,
+      "advanced_interests": null,
+      "constraints": null,
+      "photo_url": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2228%22%20fill%3D%22%23c7e9d9%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2266%22%20text-anchor%3D%22middle%22%20font-size%3D%2254%22%3E%F0%9F%A6%95%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "groups": [
+        {
+          "id": 1,
+          "name": "At Home",
+          "color": "#B24D39"
+        }
+      ],
+      "occasion_ids": [
+        2
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 5,
+      "display_name": "Wren Hartwell",
+      "relationship": "Child",
+      "birthdate": "2020-05-17",
+      "anniversary": null,
+      "notes": "Notices every bird on neighborhood walks.",
+      "interests": [
+        "Music",
+        "Birds"
+      ],
+      "size_profile": null,
+      "sizes": null,
+      "advanced_interests": null,
+      "constraints": null,
+      "photo_url": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2228%22%20fill%3D%22%23ffdf70%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2266%22%20text-anchor%3D%22middle%22%20font-size%3D%2254%22%3E%F0%9F%90%A5%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "groups": [
+        {
+          "id": 1,
+          "name": "At Home",
+          "color": "#B24D39"
+        }
+      ],
+      "occasion_ids": [
+        2
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 6,
+      "display_name": "Nana Jo",
+      "relationship": "Grandparent",
+      "birthdate": "1957-01-10",
+      "anniversary": null,
+      "notes": "Collects favorite recipes from the family.",
+      "interests": [
+        "Baking",
+        "Knitting"
+      ],
+      "size_profile": null,
+      "sizes": null,
+      "advanced_interests": null,
+      "constraints": null,
+      "photo_url": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2228%22%20fill%3D%22%23ffd1df%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2266%22%20text-anchor%3D%22middle%22%20font-size%3D%2254%22%3E%F0%9F%8C%B7%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "groups": [
+        {
+          "id": 2,
+          "name": "Grandparents",
+          "color": "#777A49"
+        }
+      ],
+      "occasion_ids": [
+        2
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 7,
+      "display_name": "Pop Dee",
+      "relationship": "Grandparent",
+      "birthdate": "1955-07-22",
+      "anniversary": null,
+      "notes": "Likes spending time at the workbench.",
+      "interests": [
+        "Woodworking",
+        "Puzzles"
+      ],
+      "size_profile": null,
+      "sizes": null,
+      "advanced_interests": null,
+      "constraints": null,
+      "photo_url": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2228%22%20fill%3D%22%23e2e7ff%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2266%22%20text-anchor%3D%22middle%22%20font-size%3D%2254%22%3E%F0%9F%8C%9E%3C%2Ftext%3E%3C%2Fsvg%3E",
+      "groups": [
+        {
+          "id": 2,
+          "name": "Grandparents",
+          "color": "#777A49"
+        }
+      ],
+      "occasion_ids": [
+        2
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    }
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "name": "At Home",
+      "description": "The Hartwell household",
+      "color": "#B24D39",
+      "member_count": 5,
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 2,
+      "name": "Grandparents",
+      "description": "Nana Jo and Pop Dee",
+      "color": "#777A49",
+      "member_count": 2,
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    }
+  ],
+  "gifts": [
+    {
+      "id": 8,
+      "name": "Pocket constellation guide",
+      "url": null,
+      "price": "12.50",
+      "image_url": null,
+      "source": null,
+      "description": null,
+      "notes": "For the next clear night.",
+      "priority": "medium",
+      "status": "idea",
+      "quantity": 1,
+      "sale_price": null,
+      "purchase_date": null,
+      "additional_urls": [],
+      "extra_data": {},
+      "from_santa": false,
+      "stores": [],
+      "person_ids": [
+        3
+      ],
+      "gift_people": [
+        {
+          "person_id": 3,
+          "role": "recipient"
+        }
+      ],
+      "list_items": [
+        {
+          "id": 81,
+          "list_id": 1,
+          "list_name": "Juno’s Birthday",
+          "status": "idea"
+        }
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 7,
+      "name": "Watercolor field kit",
+      "url": null,
+      "price": "32.00",
+      "image_url": null,
+      "source": null,
+      "description": null,
+      "notes": "A compact set for drawing outside.",
+      "priority": "high",
+      "status": "purchased",
+      "quantity": 1,
+      "sale_price": "28.00",
+      "purchase_date": "2026-11-20",
+      "additional_urls": [],
+      "extra_data": {},
+      "from_santa": false,
+      "stores": [],
+      "person_ids": [
+        3
+      ],
+      "gift_people": [
+        {
+          "person_id": 3,
+          "role": "recipient"
+        }
+      ],
+      "list_items": [
+        {
+          "id": 71,
+          "list_id": 1,
+          "list_name": "Juno’s Birthday",
+          "status": "purchased"
+        },
+        {
+          "id": 72,
+          "list_id": 2,
+          "list_name": "Christmas",
+          "status": "purchased"
+        }
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 6,
+      "name": "Reference book of birds",
+      "url": null,
+      "price": "21.95",
+      "image_url": null,
+      "source": null,
+      "description": null,
+      "notes": "Something to bring on walks.",
+      "priority": "medium",
+      "status": "selected",
+      "quantity": 1,
+      "sale_price": null,
+      "purchase_date": null,
+      "additional_urls": [],
+      "extra_data": {},
+      "from_santa": false,
+      "stores": [],
+      "person_ids": [
+        5
+      ],
+      "gift_people": [
+        {
+          "person_id": 5,
+          "role": "recipient"
+        }
+      ],
+      "list_items": [
+        {
+          "id": 62,
+          "list_id": 2,
+          "list_name": "Christmas",
+          "status": "selected"
+        }
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 5,
+      "name": "Build-your-own marble run",
+      "url": null,
+      "price": "38.40",
+      "image_url": null,
+      "source": null,
+      "description": null,
+      "notes": "Look for the set with a wooden track.",
+      "priority": "high",
+      "status": "selected",
+      "quantity": 1,
+      "sale_price": null,
+      "purchase_date": null,
+      "additional_urls": [],
+      "extra_data": {},
+      "from_santa": true,
+      "stores": [],
+      "person_ids": [
+        4
+      ],
+      "gift_people": [
+        {
+          "person_id": 4,
+          "role": "recipient"
+        }
+      ],
+      "list_items": [
+        {
+          "id": 52,
+          "list_id": 2,
+          "list_name": "Christmas",
+          "status": "selected"
+        }
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 4,
+      "name": "Hand-stamped recipe cards",
+      "url": null,
+      "price": "14.00",
+      "image_url": null,
+      "source": null,
+      "description": null,
+      "notes": "Ask Riley for the favorite shortbread recipe.",
+      "priority": "low",
+      "status": "idea",
+      "quantity": 1,
+      "sale_price": null,
+      "purchase_date": null,
+      "additional_urls": [],
+      "extra_data": {},
+      "from_santa": false,
+      "stores": [],
+      "person_ids": [
+        6
+      ],
+      "gift_people": [
+        {
+          "person_id": 6,
+          "role": "recipient"
+        }
+      ],
+      "list_items": [
+        {
+          "id": 42,
+          "list_id": 2,
+          "list_name": "Christmas",
+          "status": "idea"
+        },
+        {
+          "id": 43,
+          "list_id": 3,
+          "list_name": "Nana Jo’s Birthday",
+          "status": "idea"
+        }
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 3,
+      "name": "Workbench puzzle box",
+      "url": null,
+      "price": "27.50",
+      "image_url": null,
+      "source": null,
+      "description": null,
+      "notes": null,
+      "priority": "medium",
+      "status": "purchased",
+      "quantity": 1,
+      "sale_price": null,
+      "purchase_date": "2026-11-20",
+      "additional_urls": [],
+      "extra_data": {},
+      "from_santa": false,
+      "stores": [],
+      "person_ids": [
+        7
+      ],
+      "gift_people": [
+        {
+          "person_id": 7,
+          "role": "recipient"
+        }
+      ],
+      "list_items": [
+        {
+          "id": 32,
+          "list_id": 2,
+          "list_name": "Christmas",
+          "status": "purchased"
+        }
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 2,
+      "name": "Seed-saving journal",
+      "url": null,
+      "price": "19.50",
+      "image_url": null,
+      "source": null,
+      "description": null,
+      "notes": null,
+      "priority": "medium",
+      "status": "idea",
+      "quantity": 1,
+      "sale_price": null,
+      "purchase_date": null,
+      "additional_urls": [],
+      "extra_data": {},
+      "from_santa": false,
+      "stores": [],
+      "person_ids": [
+        2
+      ],
+      "gift_people": [
+        {
+          "person_id": 2,
+          "role": "recipient"
+        }
+      ],
+      "list_items": [
+        {
+          "id": 22,
+          "list_id": 2,
+          "list_name": "Christmas",
+          "status": "idea"
+        }
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 1,
+      "name": "Small-batch spice sampler",
+      "url": null,
+      "price": "24.25",
+      "image_url": null,
+      "source": null,
+      "description": null,
+      "notes": null,
+      "priority": "low",
+      "status": "received",
+      "quantity": 1,
+      "sale_price": null,
+      "purchase_date": "2026-11-20",
+      "additional_urls": [],
+      "extra_data": {},
+      "from_santa": false,
+      "stores": [],
+      "person_ids": [
+        1
+      ],
+      "gift_people": [
+        {
+          "person_id": 1,
+          "role": "recipient"
+        }
+      ],
+      "list_items": [
+        {
+          "id": 12,
+          "list_id": 2,
+          "list_name": "Christmas",
+          "status": "received"
+        }
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    }
+  ],
+  "occasions": [
+    {
+      "id": 1,
+      "name": "Juno’s Birthday",
+      "type": "recurring",
+      "date": "2026-12-09",
+      "description": "A birthday afternoon with sketchbooks and cake.",
+      "recurrence_rule": {
+        "frequency": "yearly"
+      },
+      "is_active": true,
+      "next_occurrence": "2026-12-09",
+      "subtype": "birthday",
+      "holiday_id": null,
+      "person_ids": [
+        3
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 2,
+      "name": "Christmas",
+      "type": "holiday",
+      "date": "2026-12-25",
+      "description": "Christmas morning at the Hartwells’.",
+      "recurrence_rule": null,
+      "is_active": true,
+      "next_occurrence": "2026-12-25",
+      "subtype": null,
+      "holiday_id": 1,
+      "person_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    },
+    {
+      "id": 3,
+      "name": "Nana Jo’s Birthday",
+      "type": "recurring",
+      "date": "2027-01-10",
+      "description": "Coffee and birthday cake with Nana Jo.",
+      "recurrence_rule": {
+        "frequency": "yearly"
+      },
+      "is_active": true,
+      "next_occurrence": "2027-01-10",
+      "subtype": "birthday",
+      "holiday_id": null,
+      "person_ids": [
+        6
+      ],
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "updated_at": "2026-11-18T17:00:00.123Z"
+    }
+  ],
+  "holidays": [
+    {
+      "id": 1,
+      "name": "Christmas",
+      "key": "christmas",
+      "month": 12,
+      "day": 25,
+      "is_major": true,
+      "theme_key": "christmas",
+      "theme_window_days": 30,
+      "next_date": "2026-12-25",
+      "days_until": 32
+    },
+    {
+      "id": 2,
+      "name": "New Year’s Day",
+      "key": "new-years-day",
+      "month": 1,
+      "day": 1,
+      "is_major": true,
+      "theme_key": null,
+      "theme_window_days": 0,
+      "next_date": "2027-01-01",
+      "days_until": 39
+    },
+    {
+      "id": 3,
+      "name": "Valentine’s Day",
+      "key": "valentines-day",
+      "month": 2,
+      "day": 14,
+      "is_major": true,
+      "theme_key": null,
+      "theme_window_days": 0,
+      "next_date": "2027-02-14",
+      "days_until": 83
+    }
+  ],
+  "budgets": {
+    "1": {
+      "budget_total": "140.00",
+      "purchased_amount": "28.00",
+      "planned_amount": "12.50",
+      "remaining_amount": "99.50",
+      "purchased_percent": 20.0,
+      "planned_percent": 8.928571428571429,
+      "remaining_percent": 71.07142857142857,
+      "is_over_budget": false,
+      "has_budget": true
+    },
+    "2": {
+      "budget_total": "500.00",
+      "purchased_amount": "79.75",
+      "planned_amount": "93.85",
+      "remaining_amount": "326.40",
+      "purchased_percent": 15.95,
+      "planned_percent": 18.77,
+      "remaining_percent": 65.28,
+      "is_over_budget": false,
+      "has_budget": true
+    }
+  },
+  "ideas": [
+    {
+      "id": 81,
+      "name": "Pocket constellation guide",
+      "image_url": null,
+      "price": 12.5,
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "added_by": {
+        "id": 1,
+        "email": "sam@hartwell.example"
+      }
+    },
+    {
+      "id": 42,
+      "name": "Hand-stamped recipe cards",
+      "image_url": null,
+      "price": 14.0,
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "added_by": {
+        "id": 1,
+        "email": "sam@hartwell.example"
+      }
+    },
+    {
+      "id": 22,
+      "name": "Seed-saving journal",
+      "image_url": null,
+      "price": 19.5,
+      "created_at": "2026-11-18T17:00:00.123Z",
+      "added_by": {
+        "id": 1,
+        "email": "sam@hartwell.example"
+      }
+    }
+  ],
+  "activity": [
+    {
+      "id": 3,
+      "action": "gift_purchased",
+      "actor": {
+        "id": 2,
+        "email": "riley@hartwell.example"
+      },
+      "entity_type": "gift",
+      "entity_id": 7,
+      "entity_name": "Watercolor field kit",
+      "extra_data": null,
+      "created_at": "2026-11-20T21:30:00Z"
+    },
+    {
+      "id": 2,
+      "action": "status_changed",
+      "actor": {
+        "id": 1,
+        "email": "sam@hartwell.example"
+      },
+      "entity_type": "gift",
+      "entity_id": 5,
+      "entity_name": "Build-your-own marble run",
+      "extra_data": {
+        "old_status": "idea",
+        "new_status": "selected"
+      },
+      "created_at": "2026-11-19T16:15:00-05:00"
+    },
+    {
+      "id": 1,
+      "action": "gift_added",
+      "actor": {
+        "id": 1,
+        "email": "sam@hartwell.example"
+      },
+      "entity_type": "gift",
+      "entity_id": 8,
+      "entity_name": "Pocket constellation guide",
+      "extra_data": null,
+      "created_at": "2026-11-18T17:00:00.123Z"
+    }
+  ]
+}

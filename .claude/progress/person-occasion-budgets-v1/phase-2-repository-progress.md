@@ -346,7 +346,7 @@ services/api/
 
 ```bash
 # Navigate to API directory
-cd /Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api
+cd /Users/example/dev/homelab/development/family-shopping-dashboard/services/api
 
 # Run repository tests
 uv run pytest tests/unit/repositories/test_person_occasion_repository.py -v

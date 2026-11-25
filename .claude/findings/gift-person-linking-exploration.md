@@ -28,7 +28,7 @@ Backend:
 
 ### Frontend Components
 
-**Location**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components`
+**Location**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components`
 
 1. **PersonDetailModal.tsx** (lines 28-597)
    - Main person detail view with tabs
@@ -56,7 +56,7 @@ Backend:
 
 ### Backend Services
 
-**Location**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app`
+**Location**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app`
 
 1. **api/gifts.py** - Router Layer
    - **Endpoint**: `GET /gifts` (lines 23-115)
@@ -192,7 +192,7 @@ This means:
 
 ## 5. Person Modal: "Linked Entities" Tab Structure
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/modals/PersonDetailModal.tsx`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/modals/PersonDetailModal.tsx`
 
 ### Tab Navigation (lines 371-388)
 ```tsx

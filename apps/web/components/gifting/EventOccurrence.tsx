@@ -124,7 +124,6 @@ function EnvelopeCard({
             · {money(envelope.money_allowance)}
           </p>
         </div>
-        <span aria-hidden="true">✧</span>
       </div>
       <p>
         {money(envelope.spent)} bought ·{" "}
@@ -153,8 +152,9 @@ function EnvelopeCard({
       {envelope.gifts.map((g) => (
         <GiftCard compact gift={g} key={g.placement_id}>
           <label className={styles.label}>
-            Phase for {g.name}
+            Phase
             <select
+              aria-label={`Phase for ${g.name}`}
               className={styles.select}
               value={g.phase}
               disabled={phase.isPending}

@@ -1,0 +1,101 @@
+{
+  "sources": [
+    "apps/web/app/tokens.css",
+    "apps/web/app/christmas.css",
+    "apps/web/app/globals.css"
+  ],
+  "colors": {
+    "paper": "#FAF7F0",
+    "ink": "#232442",
+    "muted": "#686778",
+    "white": "#FFFFFF",
+    "whiteHalf": "#FFFFFF80",
+    "clear": "#00000000",
+    "line": "#E6E3DB",
+    "subtle": "#ECE9DF",
+    "cobalt": "#354DE8",
+    "blue": "#E2E7FF",
+    "pink": "#FFD1DF",
+    "butter": "#FFDF70",
+    "mint": "#C7E9D9",
+    "green": "#236448",
+    "lavender": "#E9E7FC",
+    "purple": "#4D438B",
+    "selected": "#FFF0B4",
+    "ochre": "#705000",
+    "purchased": "#DCE4FF",
+    "purchasedInk": "#2943A7",
+    "received": "#CEEEDD",
+    "cranberry": "#BE2449",
+    "christmasPaper": "#FFF6ED",
+    "christmasAccentSoft": "#FFE0E6",
+    "christmasDoor": "#FFF5DF",
+    "christmasDoorInk": "#AE2444",
+    "christmasDoorStroke": "#DC8092",
+    "christmasDoorShadow": "#851735"
+  },
+  "themes": {
+    "everyday": {
+      "paper": "paper",
+      "accent": "cobalt",
+      "accentSoft": "blue",
+      "birthdayFill": "butter",
+      "brandBackground": "pink",
+      "countdownFill": "clear",
+      "countdownInk": "white",
+      "countdownStroke": "whiteHalf"
+    },
+    "christmas": {
+      "paper": "christmasPaper",
+      "accent": "cranberry",
+      "accentSoft": "christmasAccentSoft",
+      "birthdayFill": "mint",
+      "brandBackground": "mint",
+      "countdownFill": "christmasDoor",
+      "countdownInk": "christmasDoorInk",
+      "countdownStroke": "christmasDoorStroke"
+    }
+  },
+  "fontFamilies": {
+    "display": "Montserrat-Bold",
+    "body": "OpenSans"
+  },
+  "type": {
+    "display": {"family": "display", "size": 29, "relativeTo": "largeTitle"},
+    "heading": {"family": "display", "size": 18, "relativeTo": "title2"},
+    "subheading": {"family": "display", "size": 16, "relativeTo": "headline"},
+    "body": {"family": "body", "size": 16, "relativeTo": "body"},
+    "detail": {"family": "body", "size": 14, "relativeTo": "subheadline"},
+    "caption": {"family": "body", "size": 13, "relativeTo": "caption"},
+    "label": {"family": "display", "size": 13, "relativeTo": "subheadline"},
+    "countdown": {"family": "display", "size": 40, "relativeTo": "largeTitle"},
+    "countdownLabel": {"family": "body", "size": 12, "relativeTo": "caption"}
+  },
+  "spacing": {
+    "tiny": 4,
+    "small": 8,
+    "medium": 12,
+    "regular": 16,
+    "roomy": 20,
+    "large": 24,
+    "section": 32,
+    "wide": 40,
+    "spacious": 48,
+    "touchTarget": 44
+  },
+  "radii": {
+    "small": 8,
+    "medium": 15,
+    "large": 20,
+    "xLarge": 26,
+    "xxLarge": 30,
+    "xxxLarge": 36,
+    "door": 17
+  },
+  "shadows": {
+    "low": {"color": "ink", "opacity": 0.04, "radius": 0, "x": 0, "y": 2},
+    "medium": {"color": "ink", "opacity": 0.10, "radius": 24, "x": 0, "y": 8},
+    "high": {"color": "ink", "opacity": 0.19, "radius": 80, "x": 0, "y": 25},
+    "christmasDoor": {"color": "christmasDoorShadow", "opacity": 1, "radius": 0, "x": 4, "y": 5}
+  }
+}

@@ -46,6 +46,7 @@ class OccasionCreate(BaseModel):
         description="Subtype for recurring occasions (e.g., 'birthday', 'anniversary')",
         examples=["birthday", "anniversary", "holiday"],
     )
+    holiday_id: int | None = None
     person_ids: list[int] = Field(
         default_factory=list,
         description="Optional list of person IDs to link to this occasion",
@@ -63,6 +64,7 @@ class OccasionUpdate(BaseModel):
     recurrence_rule: dict[str, Any] | None = None
     is_active: bool | None = None
     subtype: str | None = Field(None, max_length=50)
+    holiday_id: int | None = None
     person_ids: list[int] | None = None
 
 
@@ -78,6 +80,7 @@ class OccasionResponse(TimestampSchema):
     is_active: bool = True
     next_occurrence: datetime.date | None = None
     subtype: str | None = None
+    holiday_id: int | None = None
     person_ids: list[int] = Field(
         default_factory=list,
         description="IDs of persons linked to this occasion",

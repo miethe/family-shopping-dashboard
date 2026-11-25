@@ -1,0 +1,4 @@
+services:
+  postgres:
+    volumes:
+      - ./fresh-postgres-data:/var/lib/postgresql/data

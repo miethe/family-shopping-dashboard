@@ -7,11 +7,11 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-surface-primary border-border-subtle shadow-low',
+        default: 'bg-[rgb(var(--white))] border-[rgb(var(--line))] shadow-none',
         glass: 'bg-white/60 backdrop-blur-md border-white/40 shadow-glass',
-        elevated: 'bg-surface-primary border-border-subtle shadow-medium hover:shadow-high',
-        interactive: 'bg-surface-primary border-border-subtle shadow-low hover:shadow-medium hover:border-border-medium active:shadow-subtle cursor-pointer hover:scale-[1.01] active:scale-[0.99]',
-        stat: 'bg-surface-primary border-border-subtle shadow-subtle hover:shadow-medium',
+        elevated: 'bg-[rgb(var(--white))] border-[rgb(var(--line))] shadow-none',
+        interactive: 'bg-[rgb(var(--white))] border-[rgb(var(--line))] shadow-none hover:border-[rgb(var(--accent))] cursor-pointer active:scale-[0.99]',
+        stat: 'bg-[rgb(var(--white))] border-[rgb(var(--line))] shadow-none',
         flat: 'bg-surface-secondary border-transparent',
       },
       padding: {

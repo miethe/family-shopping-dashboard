@@ -1,0 +1,19 @@
+# systemd --user unit for the family-gifting LAN rehearsal pod (agentic-nuc; linger is on,
+# so it starts at boot). It only starts/stops the ONE named pod created by
+# deploy/lan/podman-pod.sh; it never builds, creates or removes anything else.
+# Install: ./deploy/lan/podman-pod.sh install-unit      Remove: ./deploy/lan/podman-pod.sh remove-all
+# LAN-only: the pod publishes a single port on the bind IP set in .env.lan.
+[Unit]
+Description=Family Gifting LAN rehearsal pod (family-gifting-rehearsal)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+TimeoutStartSec=180
+ExecStart=/usr/bin/podman pod start family-gifting-rehearsal
+ExecStop=/usr/bin/podman pod stop --time 15 family-gifting-rehearsal
+
+[Install]
+WantedBy=default.target

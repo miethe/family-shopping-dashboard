@@ -634,7 +634,7 @@ Retrieves complete budget meter data for an occasion.
 
 ```
 GET /api/budgets/meter/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+Authorization: Bearer <redacted-jwt>
 ```
 
 ### Response (200 OK)
@@ -683,7 +683,7 @@ Set or update the total budget for an occasion.
 
 ```
 PATCH /api/occasions/1/budget
-Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+Authorization: Bearer <redacted-jwt>
 Content-Type: application/json
 
 {
@@ -723,7 +723,7 @@ Create or update a sub-budget for an entity (person, category, etc.) within an o
 
 ```
 POST /api/budgets/sub-budget
-Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+Authorization: Bearer <redacted-jwt>
 Content-Type: application/json
 
 {

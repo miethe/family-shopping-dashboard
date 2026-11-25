@@ -315,4 +315,4 @@ This exploration provides the foundation for:
 
 **Status**: Complete
 **Files Created**: 3 detailed documents in `.claude/findings/`
-**Location**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/.claude/findings/`
+**Location**: `/Users/example/dev/homelab/development/family-shopping-dashboard/.claude/findings/`

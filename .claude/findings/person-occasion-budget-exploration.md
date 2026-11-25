@@ -27,7 +27,7 @@ However, **"Person Budget per Occasion" is NOT yet implemented**. The current sy
 
 ### 1.1 Database Model
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/models/person.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/models/person.py`
 
 **Core Fields**:
 ```python
@@ -57,7 +57,7 @@ class Person(BaseModel):
 
 ### 1.2 Person Schema (DTOs)
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/schemas/person.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/schemas/person.py`
 
 Standard CRUD operations:
 - `PersonCreate`: For creation (display_name, relationship, birthdate, photo_url, interests, constraints, size_profile, group_ids, advanced_interests)
@@ -67,7 +67,7 @@ Standard CRUD operations:
 
 ### 1.3 Advanced Interests Structure
 
-**Spec File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/docs/api/person-entity-spec.md`
+**Spec File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/docs/api/person-entity-spec.md`
 
 5 major categories (all optional, sparse allowed):
 
@@ -83,7 +83,7 @@ Standard CRUD operations:
 
 ### 2.1 Database Model
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/models/occasion.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/models/occasion.py`
 
 **Core Fields**:
 ```python
@@ -121,7 +121,7 @@ class PersonOccasion:
 
 ### 2.2 Occasion Schema (DTOs)
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/schemas/occasion.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/schemas/occasion.py`
 
 - `OccasionCreate`: name, type, date, description, recurrence_rule, is_active, subtype, person_ids
 - `OccasionUpdate`: All fields optional
@@ -134,7 +134,7 @@ class PersonOccasion:
 
 ### 3.1 Entity Budget Model (Sub-budgets)
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/models/entity_budget.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/models/entity_budget.py`
 
 **Purpose**: Allocate budgets to specific gifts or lists WITHIN an occasion
 
@@ -156,7 +156,7 @@ class EntityBudget(BaseModel):
 
 ### 3.2 Budget Repository
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/budget.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/budget.py`
 
 **Methods**:
 
@@ -188,7 +188,7 @@ total_cost = effective_price * quantity
 
 ### 3.3 Person Gift Budget
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/person.py` (lines 294-445)
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/repositories/person.py` (lines 294-445)
 
 **Dataclass**: `PersonBudgetResult`
 
@@ -244,7 +244,7 @@ class PersonBudgetResult:
    AND Gift.purchase_date IS NULL
    ```
 
-**Frontend Type**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/types/budget.ts`
+**Frontend Type**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/types/budget.ts`
 
 ```typescript
 interface PersonBudget {
@@ -267,7 +267,7 @@ interface PersonBudget {
 
 ### 4.1 GiftPerson Junction Table
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/models/gift_person.py`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/models/gift_person.py`
 
 ```python
 class GiftPerson(BaseModel):
@@ -315,7 +315,7 @@ class GiftPerson(BaseModel):
 
 ### 5.1 Person Budget Bar Component
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/people/PersonBudgetBar.tsx`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/people/PersonBudgetBar.tsx`
 
 **Props**:
 ```typescript
@@ -352,7 +352,7 @@ Per Role (Recipient or Purchaser):
 
 ### 5.2 Stacked Progress Bar Component
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/ui/stacked-progress-bar.tsx`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/ui/stacked-progress-bar.tsx`
 
 **Props**:
 ```typescript
@@ -388,7 +388,7 @@ interface StackedProgressBarProps {
 
 ### 5.3 Person Modal Tabs
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/modals/PersonDetailModal.tsx`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/modals/PersonDetailModal.tsx`
 
 **Tabs**:
 1. **Overview**: Basic info (name, relationship, birthdate, photo, interests, sizes, constraints, notes)
@@ -401,7 +401,7 @@ interface StackedProgressBarProps {
 
 ### 5.4 Linked Gifts Section
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/components/people/LinkedGiftsSection.tsx`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/components/people/LinkedGiftsSection.tsx`
 
 **Groups Gifts By**:
 ```typescript
@@ -419,7 +419,7 @@ if (gift.purchase_date) {
 
 ### 5.5 React Hooks
 
-**File**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useGifts.ts`
+**File**: `/Users/example/dev/homelab/development/family-shopping-dashboard/apps/web/hooks/useGifts.ts`
 
 ```typescript
 export function useGiftsByPerson(personId: number, options = {}) {
@@ -448,7 +448,7 @@ export function usePersonBudget(personId: number, occasionId?: number) {
 
 ### 6.1 Person Endpoints
 
-**Router**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/api/persons.py`
+**Router**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/api/persons.py`
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
@@ -477,7 +477,7 @@ export function usePersonBudget(personId: number, occasionId?: number) {
 
 ### 6.2 Occasion Endpoints
 
-**Router**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/services/api/app/api/occasions.py`
+**Router**: `/Users/example/dev/homelab/development/family-shopping-dashboard/services/api/app/api/occasions.py`
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
@@ -687,17 +687,17 @@ function formatCurrency(amount: number): string {
 
 ## 11. RELATED DOCUMENTATION
 
-**Person Entity Spec**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/docs/api/person-entity-spec.md`
+**Person Entity Spec**: `/Users/example/dev/homelab/development/family-shopping-dashboard/docs/api/person-entity-spec.md`
 - Complete field reference
 - Validation rules
 - Advanced interests structure
 
-**Gift-Person Exploration**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/.claude/findings/gift-person-linking-exploration.md`
+**Gift-Person Exploration**: `/Users/example/dev/homelab/development/family-shopping-dashboard/.claude/findings/gift-person-linking-exploration.md`
 - Detailed analysis of dual linking mechanisms
 - Identified gaps
 - Recommendations
 
-**Budget Progress Meter PRD**: `/Users/miethe/dev/homelab/development/family-shopping-dashboard/docs/project_plans/PRDs/features/budget-progression-meter-v1.md`
+**Budget Progress Meter PRD**: `/Users/example/dev/homelab/development/family-shopping-dashboard/docs/project_plans/PRDs/features/budget-progression-meter-v1.md`
 - Feature specification (if exists)
 
 ---
