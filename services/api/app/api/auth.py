@@ -1,14 +1,15 @@
 """Authentication API routes for user registration and login."""
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core import apple_throttle
 from app.core.apple_auth import (
     AppleTokenVerifier,
     InvalidAppleCredentialsError,
     get_apple_token_verifier,
 )
-from app.core.apple_throttle import throttle_apple
+from app.core.apple_throttle import authenticated_subject, throttle_apple
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import UnauthorizedError, ValidationError
 from app.schemas.user import (
@@ -115,15 +116,33 @@ async def apple_challenge(session: AsyncSession = Depends(get_db)) -> AppleChall
     "/apple",
     response_model=LoginResponse,
     summary="Sign in with Apple",
-    dependencies=[Depends(throttle_apple)],
 )
 async def login_with_apple(
     credentials: AppleLogin,
+    request: Request,
     session: AsyncSession = Depends(get_db),
     verifier: AppleTokenVerifier = Depends(get_apple_token_verifier),
 ) -> LoginResponse:
+    verified_subject = False
+    signed_in_subject = authenticated_subject(request)
+
+    def throttle_verified(subject: str) -> None:
+        nonlocal verified_subject
+        verified_subject = True
+        apple_throttle.apple_limiter.check(signed_in_subject or f"apple:{subject}")
+
+    try:
+        identity = await verifier.verify(
+            credentials.identity_token,
+            credentials.nonce,
+            on_subject=throttle_verified,
+        )
+    except InvalidAppleCredentialsError:
+        if not verified_subject:
+            apple_throttle.apple_limiter.check(signed_in_subject)
+        await AppleChallengeService(session).consume(credentials.nonce)
+        raise
     await AppleChallengeService(session).consume(credentials.nonce)
-    identity = await verifier.verify(credentials.identity_token, credentials.nonce)
     result = await UserService(session).authenticate_apple(identity)
     if result is None:
         raise InvalidAppleCredentialsError()

@@ -95,7 +95,9 @@ class AppleProvider:
         self.nonces[token] = raw_nonce
         return token
 
-    async def post(self, client: AsyncClient, path: str, *, json: dict) -> httpx.Response:
+    async def post(
+        self, client: AsyncClient, path: str, *, json: dict, headers: dict | None = None
+    ) -> httpx.Response:
         if path != APPLE_PATH:
             return await client.post(path, json=json)
         body = dict(json)
@@ -106,7 +108,7 @@ class AppleProvider:
         if raw_nonce:
             await AppleChallengeRepository(self.session).issue(raw_nonce)
         body["nonce"] = raw_nonce
-        return await client.post(path, json=body)
+        return await client.post(path, json=body, headers=headers)
 
 
 @pytest.fixture(scope="session")
@@ -130,7 +132,8 @@ def apple(
     )
     monkeypatch.setattr(settings, "HOUSEHOLD_EMAILS", "")
     monkeypatch.setattr(
-        "app.core.apple_throttle.apple_limiter", AppleRateLimiter(per_ip=1000, global_limit=2000)
+        "app.core.apple_throttle.apple_limiter",
+        AppleRateLimiter(per_subject=1000, anonymous_limit=2000),
     )
     provider = AppleProvider(rsa_keys, session=async_session)
     verifier = AppleTokenVerifier(
@@ -627,26 +630,46 @@ def test_allowlist_parsed_case_insensitively_at_startup(monkeypatch: pytest.Monk
 
 
 @pytest.mark.asyncio
-async def test_both_apple_endpoints_share_ip_and_global_throttle(
+async def test_verified_subjects_and_anonymous_buckets_are_isolated(
+    client: AsyncClient, apple: AppleProvider, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    limiter = AppleRateLimiter(per_subject=1, anonymous_limit=1)
+    monkeypatch.setattr("app.core.apple_throttle.apple_limiter", limiter)
+    headers = {"X-Forwarded-For": "192.0.2.1", "X-Real-IP": "192.0.2.1"}
+    token_a = apple.token(sub="subject-a", email=None)
+    token_b = apple.token(sub="subject-b", email=None)
+    first = await apple.post(
+        client, APPLE_PATH, json={"identity_token": token_a, "nonce": "incorrect"}, headers=headers
+    )
+    assert first.status_code == 401
+    headers["X-Forwarded-For"] = headers["X-Real-IP"] = "192.0.2.2"
+    blocked = await apple.post(
+        client, APPLE_PATH, json={"identity_token": token_a}, headers=headers
+    )
+    assert blocked.status_code == 429
+    garbage = await client.post(APPLE_PATH, json={"identity_token": "garbage"}, headers=headers)
+    assert garbage.status_code == 401
+    headers["X-Forwarded-For"] = headers["X-Real-IP"] = "192.0.2.2"
+    assert (
+        await client.post(APPLE_PATH, json={"identity_token": "other"}, headers=headers)
+    ).status_code == 429
+    assert (await client.post(APPLE_PATH + "/challenge")).status_code == 200
+    second = await apple.post(client, APPLE_PATH, json={"identity_token": token_b})
+    assert second.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_authenticated_challenge_ignores_forwarded_headers(
     client: AsyncClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    now = [0.0]
-    limiter = AppleRateLimiter(per_ip=2, global_limit=3, clock=lambda: now[0])
-    monkeypatch.setattr("app.core.apple_throttle.apple_limiter", limiter)
-    assert (await client.post(APPLE_PATH + "/challenge")).status_code == 200
-    assert (await client.post(APPLE_PATH, json={"identity_token": "invalid"})).status_code == 401
-    assert (await client.post(APPLE_PATH + "/challenge")).status_code == 429
-    assert (await client.post(APPLE_PATH, json={"identity_token": "invalid"})).status_code == 429
-    # Different IPs remain subject to the process-wide budget.
-    limiter.check("other-ip")
-    from app.core.exceptions import AppException
+    from app.services.auth import AuthService
 
-    with pytest.raises(AppException) as blocked:
-        limiter.check("third-ip")
-    assert blocked.value.status_code == 429
-    now[0] = 60
-    assert (await client.post(APPLE_PATH + "/challenge")).status_code == 200
-    assert len(limiter.events) == 1
+    monkeypatch.setattr("app.core.apple_throttle.apple_limiter", AppleRateLimiter(per_subject=1))
+    token = AuthService().create_access_token(user_id=42)
+    headers = {"Authorization": f"Bearer {token}", "X-Forwarded-For": "192.0.2.1"}
+    assert (await client.post(APPLE_PATH + "/challenge", headers=headers)).status_code == 200
+    headers.update({"X-Forwarded-For": "192.0.2.2", "X-Real-IP": "192.0.2.2"})
+    assert (await client.post(APPLE_PATH + "/challenge", headers=headers)).status_code == 429
 
 
 @pytest.mark.asyncio
